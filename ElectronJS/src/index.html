@@ -8,6 +8,7 @@
           name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <script src="js/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-i18n@9"></script>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     </link>
     <title>EasySpider: NoCode Visual Web Crawler</title>
@@ -129,7 +130,7 @@
                       class="btn btn-primary btn-lg"
                       style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">开始设计</a></p>
                 <p>
-                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">返回首页</a>
+                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">{{ $t('message.test2') }}</a>
                 </p>
             </div>
 
@@ -138,71 +139,7 @@
 </div>
 
 
-<script>
-    const {createApp} = Vue;
-
-    function getUrlParam(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-        var r = window.location.search.substr(1).match(reg); //匹配目标参数
-        if (r != null) return unescape(r[2]);
-        return "";
-    }
-
-    var global = createApp({
-        data() {
-            return {
-                init: true,
-                lang: 'zh',
-                user_data_folder: getUrlParam("user_data_folder"),
-                step: 0,
-                newest_version: '-', // 最新版本号
-            }
-        },
-        mounted() {
-            // 发送GET请求获取GitHub的Release API响应
-            const request = new XMLHttpRequest();
-            request.open('GET', `https://api.github.com/repos/NaiboWang/EasySpider/releases/latest`);
-            request.setRequestHeader('User-Agent', 'JavaScript');
-            request.onload = function() {
-                // 解析响应JSON并输出最新版本号
-                const release = JSON.parse(request.responseText);
-                const latestVersion = release.tag_name;
-                global.$data.newest_version = latestVersion;
-                // alert(`Latest version is ${latestVersion}`);
-            };
-            request.onerror = function() {
-                console.error('Error: failed to get latest version.');
-            };
-            request.send();
-        },
-        methods: {
-            changeLang(lang = 'zh') {
-                this.init = false;
-                this.lang = lang;
-            },
-            startDesign(lang, with_data = false) {
-                if (with_data) {
-                    console.log(this.user_data_folder)
-                    if (this.user_data_folder == null || this.user_data_folder == "") {
-                        if (lang == 'zh') {
-                            alert("请指定用户信息目录");
-                        } else {
-                            alert("Please specify the user information directory");
-                        }
-                        return;
-                    }
-                    window.electronAPI.startDesign(lang, this.user_data_folder);
-                } else {
-                    window.electronAPI.startDesign(lang);
-                }
-            },
-            startInvoke(lang) {
-                window.electronAPI.startInvoke(lang);
-            }
-        }
-    }).mount('#app');
-
-</script>
+<script type="module" src="index.js"></script>
 </body>
 
 </html>
