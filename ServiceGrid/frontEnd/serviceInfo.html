@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="vue.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <title>服务信息</title>
+    <style>
+        table {
+            table-layout: auto;
+        }
+        
+        table,
+        td,
+        th,
+        tr {
+            border-color: black!important;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            max-width: 400px;
+            min-width: 150px;
+        }
+        
+        .ID {
+            width: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row" style="margin-top: 40px;">
+        <div class="col-md-6" style="margin:0 auto" id="serviceList" v-if="show">
+            <h4 style="text-align: center;">服务信息</h4>
+            <p>服务名称：{{service["name"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">服务描述：{{service["desc"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">服务示例URL：{{service["url"]}}</p>
+            <p>输入参数：</p>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th style="min-width: 50px;">ID</th>
+                        <th>参数名称</th>
+                        <th>调用名称</th>
+                        <th>参数类型</th>
+                        <th>示例值</th>
+                        <th>参数描述</th>
+                    </tr>
+                    <tr v-if="service.inputParameters.length>0" v-for="i in service.inputParameters.length">
+                        <td style="min-width: 50px;">{{i}}</td>
+                        <td>{{service.inputParameters[i-1]["nodeName"]}}</td>
+                        <td>{{service.inputParameters[i-1]["name"]}}</td>
+                        <td>{{service.inputParameters[i-1]["type"]}}</td>
+                        <td>{{service.inputParameters[i-1]["exampleValue"]}}</td>
+                        <td>{{service.inputParameters[i-1]["desc"]}}</td>
+                    </tr>
+                    <tr v-if="service.inputParameters.length==0">
+                        <td>暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>输出参数：</p>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <th style="min-width: 50px;">ID</th>
+                        <th>参数名称</th>
+                        <th>参数类型</th>
+                        <th>示例值</th>
+                        <th>参数描述</th>
+                    </tr>
+                    <tr v-if="service.outputParameters.length>0" v-for="i in service.outputParameters.length">
+                        <td style="min-width: 50px;">{{i}}</td>
+                        <td>{{service.outputParameters[i-1]["name"]}}</td>
+                        <td>{{service.outputParameters[i-1]["type"]}}</td>
+                        <td>{{service.outputParameters[i-1]["exampleValue"]}}</td>
+                        <td>{{service.outputParameters[i-1]["desc"]}}</td>
+                    </tr>
+                    <tr v-if="service.outputParameters.length==0">
+                        <td style="min-width: 50px;">暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                        <td>暂无</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="modifyService(service['id'],service['url'])" class="btn btn-primary">修改服务</a>
+            <a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="invokeService(service['id'],service['url'])" class="btn btn-primary">调用服务</a>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script>
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
+    var sId = getUrlParam('id');
+    var app = new Vue({
+        el: '#serviceList',
+        data: {
+            service: {},
+            show: false, //是否渲染
+        },
+        methods: {
+            modifyService: function(id, url) {
+                let message = { //显示flowchart
+                    type: 1, //消息类型，传递链接
+                    message: {
+                        "id": id,
+                    }
+                };
+                // ws.send(JSON.stringify(message));
+                // window.location.href = url; //跳转链接
+                window.location.href = "FlowChart.html?id=" + id;
+            },
+            invokeService: function(id) {
+                window.location.href = "invokeService.html?id=" + id;
+            },
+        }
+    });
+    $.get("http://183.129.170.180:8041/backEnd/queryService?id=" + sId, function(result) {
+        app.$data.service = result;
+        app.$data.show = true;
+    });
+</script>

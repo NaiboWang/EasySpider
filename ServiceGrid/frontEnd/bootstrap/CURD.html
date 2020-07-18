@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <title>设计流程</title>
+    <style>
+        @font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('bootstrap/fonts/glyphicons-halflings-regular.eot');
+  src: url('bootstrap/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('bootstrap/fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 17px!important;
+        }
+ 
+        div.node {
+            height: 45px;
+            width: 120px;
+            border-radius: 7px;
+            border:skyblue solid;
+            background: rgb(73, 156, 189);
+            color:white;
+            text-align: center;
+            padding: 5px;
+            margin: 10px auto;
+        }
+        .arrow
+        {
+            margin: 10px auto;
+            text-align: center;
+            font-size: 23px!important;
+            color:black;
+        }
+        .arrow:hover
+        {
+            background-color: deepskyblue;
+            cursor: pointer;
+            color:white;
+        }
+        .branchAdd
+        {
+            margin: 10px auto;
+            text-align: center;
+            font-size: 18px!important;
+            color:black;
+        }
+        .branchAdd:hover
+        {
+            background-color: deepskyblue;
+            cursor: pointer;
+            color:white;
+        }
+        div.node:hover {
+            cursor: pointer;
+            background:navy;
+        }
+ 
+        .loop
+        {
+            border:skyblue solid;
+            text-align: center;
+            padding: 5px;
+            width:80%;
+            margin: 10px auto;
+            border-radius: 7px;
+        }
+        .judge
+        {
+            display:flex;
+            text-align: center;
+            padding: 5px;
+            width:100%;
+            margin: 10px auto;
+            justify-content: center; 
+            border-radius: 7px;
+        }
+        .branch
+        {
+            margin: 5px;
+            border:skyblue solid;
+            text-align: center;
+            padding: 5px;
+            width:200px;
+            min-width: 100px;
+            margin: 10px;
+            border-radius: 7px;
+        }
+        .sequence
+        {
+            display: block;
+        }
+        .toolbox button{
+            margin-top: 5px;
+            margin-left: 3px;
+            margin-bottom: 5px;
+            width:80%;
+            font-size:15px!important;
+        }
+        .cancel:focus
+        {
+            box-shadow: none;
+        }
+    </style>
+
+</head>
+<body>
+    <div style="display:flex">
+<div style="width: 200px;float:left">
+<div class="toolbox"  style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
+    <div style="padding: 10px;border-radius:10px;font-size: 20px;">工具箱</div>
+
+    <button type="button" data = 1 class="btn btn-xs btn-outline-primary openPage">打开网页</button>
+    <button type="button" data = 2 class="btn btn btn-outline-primary openPage">点击元素</button>
+    <button type="button" data = 3 class="btn btn btn-outline-primary openPage">提取数据</button>
+    <button type="button" data = 4 class="btn btn btn-outline-primary openPage">输入文字</button>
+    <button type="button" data = 5 class="btn btn btn-outline-primary openPage">识别验证码</button>
+    <button type="button" data = 6 class="btn btn btn-outline-primary openPage">切换下拉选项</button>
+    <button type="button" data = 7 class="btn btn btn-outline-primary openPage">移动到元素</button>
+    <button type="button" data = 8 class="btn btn btn-outline-primary openPage">循环</button>
+    <button type="button" data = 9 class="btn btn btn-outline-primary openPage">判断条件</button>
+    <div>-----------------</div>
+    <button type="button" data = 10 class="btn btn btn-outline-primary openPage">剪切当前元素</button>
+    <button type="button" data = 11 class="btn btn btn-outline-primary openPage">复制当前元素</button>
+    <button type="button" data = 12 class="btn btn btn-outline-primary openPage">删除当前元素</button>
+    <button type="button" data = 0 class="btn btn btn-outline-primary openPage cancel">取消操作</button>
+    <div>-----------------</div>
+    <div style="text-align: left;margin: 10px;font-size:15px!important">提示：点击上方操作按钮后点击要添加/剪切/复制的位置处的箭头，可按取消操作按钮取消。</div>
+</div>
+</div>
+<div  style="margin-top:20px;border: solid;height:850px;overflow: auto;width:85%;float:right;min-width:800px">
+<div id="0" >
+</div>
+<div style="border-radius: 50%;width: 40px;height: 40px;border:solid black;margin: 5px auto;background-color:lightcyan">
+    <p style="font-size: 29px!important;text-align: center;margin-left: 1px;margin-top: -6px;">■</p>
+</div>
+</div>
+</div>
+</body>
+</html>
+<script>
+
+    var first = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"打开网页1",
+        sequence:[]
+    };
+    var second = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"点击元素2",
+        sequence:[]
+    };
+
+    var fourth = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"关闭网页4",
+        sequence:[]
+    };
+    var fifth = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"提取数据5",
+        sequence:[]
+    };
+    var seventh = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"提取数据7",
+        sequence:[]
+    };
+    var sixth = {
+        id:0,
+        parentId:0,
+        type:1,
+        title:"循环操作6",
+        sequence:[seventh]
+    };
+    var n1 = {
+        id:0,
+        parentId:0,
+        type:1,
+        title:"循环操作",
+        sequence:[fifth]
+    };
+    var n2 = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"node5",
+        sequence:[]
+    };
+    var n3 = {
+        id:0,
+        parentId:0,
+        type:3, //判断分支
+        title:"判断分支1",
+        sequence:[]
+    };
+    var n4 = {
+        id:0,
+        parentId:0,
+        type:3,
+        title:"判断分支2",
+        sequence:[]
+    };
+    var n6 = {
+        id:0,
+        parentId:0,
+        type:0,
+        title:"正常操作",
+        sequence:[]
+    };
+
+    var n5 = {
+        id:0,
+        parentId:0,
+        type:3,
+        title:"判断分支3",
+        parameters:{
+            "pdtype":0,//判断的5种类型
+            "value":"",
+        },//所有操作的参数都放在这里，这个参数是顺序执行的条件
+        sequence:[n6]
+    };
+    var pd = {
+        id:0,
+        parentId:0,
+        type:2,
+        title:"判断操作",
+        parameters:{},
+        sequence:[n3,n4,n5]//执行的时候按照顺序检测一遍第一个满足条件的语句然后压栈执行
+    };
+    var third = {
+        id:0,
+        parentId:0,
+        type:1,
+        title:"循环操作3",
+        sequence:[n2,n1,pd]
+    };
+
+    var root = {
+        id:0,
+        parentId:0,
+        type:-1,
+        title:"root",
+        sequence:[second,sixth,fourth,third,first]
+    };
+	var queue = new Array();
+    var actionSequence = new Array();
+    var nowNode = null;//存储现在所在的节点
+    var lastNode = null;
+    // 根据元素类型返回不同元素的样式
+    function newNode(node)
+    {
+        id = node["id"];
+        title = node["title"];
+        type = node["type"];
+        if(type==0) //顺序
+        {
+                return `<div class="sequence"><div class="node clk" data="${id}" id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
+                <div >
+                    <p>${title}</p>
+                </div>
+            </div>
+            <p class="arrow" position=${node["position"]} data = "${id}" pId=${node["parentId"]}>↓</p></div>`;
+        }
+        else if(type==1) //循环
+        {
+            return `<div class="loop clk" data="${id}" id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
+             <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                <p class="arrow" position=-1 data = "${id}" pId=${id}>↓</p>
+            </div>
+            <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
+        }
+        else if(type==2) //判断
+        {
+            return `<div class="loop clk" data="${id}" position=${node["position"]} pId=${node["parentId"]}>
+                    <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                    <p class="branchAdd" data="${id}">点击此处在最左边增加条件分支</p>
+                    <div class="judge" id = "${id}">
+                    </div></div>
+                    <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
+        }
+        else //判断分支
+        {
+            return `<div class="branch clk" data="${id}" position=${node["position"]} pId=${node["parentId"]}>
+                    <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                    <p data = "${id}" class="arrow" position=-1 pId=${id}>↓</p>
+                    <div id = "${id}">
+                    </div></div>`;
+        }
+    }
+    //增加分支点击事件
+    function branchClick(e)
+    {
+        let judgeId = this.getAttribute('data');
+        var t = {
+                id:0,
+                parentId:0,
+                type:3,
+                option:12,
+                title:"条件分支",
+                sequence:[]
+            };
+        actionSequence[judgeId]["sequence"].splice(0,0,t);
+        refresh();
+        e.stopPropagation();//防止冒泡
+    }
+    //元素点击事件
+    function elementClick(e)
+    {
+        let title = this.getAttribute('data');
+        if(nowNode != null)
+        {
+            nowNode.style.borderColor="skyblue";
+        }
+        nowNode = this;
+        this.style.borderColor="blue";
+        e.stopPropagation();//防止冒泡
+    }
+    var option = 0;//选择要增加的内容
+    var title = "";
+    //箭头点击事件
+    function arrowClick(e)
+    {
+        if(option==10)
+        {
+            console.log(nowNode);
+            if(nowNode==null)
+            {
+                e.stopPropagation();//防止冒泡
+            }
+            else if($(nowNode).is(".branch"))
+            {
+                alert("判断分支不可移动！");
+                e.stopPropagation();//防止冒泡
+            }
+            else
+            {
+                let position = parseInt(nowNode.getAttribute('position'));
+                let pId = nowNode.getAttribute('pId');
+                var position2 = parseInt(this.getAttribute('position'));
+                var pId2 = this.getAttribute('pId');
+                var id = nowNode.getAttribute('data');
+                var pidt = pId2;
+                var move = true;
+                console.log(pidt,id);
+                while(pidt!=0)
+                {
+                    if(pidt==id)
+                    {
+                        move=false;
+                        break;
+                    }
+                    pidt = actionSequence[pidt]["parentId"];
+                }
+                if(move) //如果自己要移动到自己节点里就不允许移动
+                {
+                    let element = actionSequence[pId]["sequence"].splice(position,1);//在相应位置删除元素
+                    if(pId==pId2 && position<position2) //如果要移动的位置属于同一层并且是从前往后移动，注意需要控制数组插入位置向前错位
+                    {
+                        position2--;
+                    }
+                    console.log(element);
+                    actionSequence[pId2]["sequence"].splice(position2+1,0,element[0]);//在相应位置添加新元素
+                    refresh();//重新渲染页面
+                }
+                else
+                {
+                    alert("自己不能移动到自己的节点里！");
+                }
+                e.stopPropagation();//防止冒泡
+            }
+        }
+        else if(option>0)
+        {
+            var t = {
+                id:0,
+                parentId:0,
+                type:0,
+                option:option,
+                title:title,
+                sequence:[]
+            };
+            if(option == 8)//循环
+            {
+                t["type"]=1;
+            }
+            else if(option==9)//判断
+            {
+                t["type"]=2;
+                // 增加两个分支
+                var nt=
+                {
+                    id:0,
+                    parentId:0,
+                    type:3,
+                    option:option,
+                    title:"条件分支",
+                    sequence:[]
+                };
+                var nt2=
+                {
+                    id:0,
+                    parentId:0,
+                    type:3,
+                    option:option,
+                    title:"条件分支",
+                    sequence:[]
+                };
+                t["sequence"].push(nt);
+                t["sequence"].push(nt2);
+            }
+            let position = parseInt(this.getAttribute('position'));
+            let pId = this.getAttribute('pId');
+            actionSequence[pId]["sequence"].splice(position+1,0,t);//在相应位置添加新元素
+            refresh();//重新渲染页面
+            e.stopPropagation();//防止冒泡
+        }
+        option = 0;
+    }
+    $(".openPage").click(function(){
+        option = this.getAttribute("data");
+        title = this.innerHTML;
+        if(option>=10 && nowNode==null)
+        {
+            alert("目前未选中元素");
+        }
+        else if(option==12)
+        {
+            deleteElement();
+        }
+            
+    });
+
+    function bindEvents() 
+    {
+        // 清空原来的listener然后再添加新的listener
+        let rect = document.getElementsByClassName('clk');
+        for (let i = 0, rule; rule = rect[i++];) {
+            rule.removeEventListener('click',elementClick);
+            rule.addEventListener('click',elementClick);
+        }
+        let arr = document.getElementsByClassName('arrow');
+        for (let i = 0, rule; rule = arr[i++];) {
+            rule.removeEventListener('click',arrowClick);
+            rule.addEventListener('click',arrowClick);
+        }
+        let branch = document.getElementsByClassName('branchAdd');
+        for (let i = 0, rule; rule = branch[i++];) {
+            rule.removeEventListener('click',branchClick);
+            rule.addEventListener('click',branchClick);
+        }
+    }
+	//重新画图
+    function refresh()
+    {
+        $("#0").empty();
+        $("#0").append(`<div style="border-radius: 50%;width: 40px;height: 40px;border:solid;border-color:seagreen;margin:5px auto;background-color:lightcyan;margin-top:20px">
+                        <p style="font-size: 24px!important;text-align: center;margin-left: 6px;font-family:'Times New Roman'">▶</p>
+                        </div>
+                        <p id="testAdd" class="arrow" position=-1 pId=0>↓</p>`);
+        actionSequence.splice(0);
+        queue.splice(0);
+        var idd = 1;
+        queue.push(root);
+        actionSequence.push(root);
+        while(queue.length!=0)
+        {
+            var nd = queue.shift();
+            for(i = 0;i<nd.sequence.length;i++)
+            {
+                nd.sequence[i].parentId = nd.id;
+                nd.sequence[i]["position"] = i;
+                nd.sequence[i].id = idd++;
+                queue.push(nd.sequence[i]);
+                actionSequence.push(nd.sequence[i]);
+            }
+        }
+        console.log(actionSequence);
+        //第一个元素不渲染
+        for(i=1;i<actionSequence.length;i++)
+        {
+            parentId = actionSequence[i]["parentId"];
+            $("#"+parentId).append(newNode(actionSequence[i]));
+        }
+        bindEvents();
+    }
+    function deleteElement()
+    {
+        let position = parseInt(nowNode.getAttribute('position'));
+        let pId = nowNode.getAttribute('pId');
+        actionSequence[pId]["sequence"].splice(position,1);//在相应位置删除元素
+        refresh();//重新渲染页面
+        e.stopPropagation();//防止冒泡
+    }
+    document.oncontextmenu=function(){return false;}//屏蔽右键菜单
+    //删除元素
+    document.onkeydown = function (e)
+    {
+        if(nowNode!=null && e.keyCode == 46)
+        {
+            if(confirm("确定要删除元素吗？"))
+            {
+                deleteElement();
+            }
+        }
+    }
+    refresh();
+</script>

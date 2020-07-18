@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="vue.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <title>开始使用</title>
+
+</head>
+
+<body>
+    <div class="row" style="margin-top: 40px;">
+        <div style="margin:0 auto;width: 60%;min-width: 500px;" id="serviceList">
+            <h4 style="text-align: center;">服务列表</h4>
+            <div style="max-height: 700px;overflow: auto;margin-bottom: 10px">
+                <table style="table-layout: fixed;" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>服务名称</th>
+                            <th>URL</th>
+                            <th v-bind:colspan="type">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="i in list.length">
+                            <td>{{i}}</td>
+                            <td style="overflow: hidden;">{{list[i-1]["name"]}}</td>
+                            <td style="height: 30px;white-space: nowrap;overflow: hidden;">{{list[i-1]["url"]}}</td>
+                            <td><a href="javascript:void(0)" v-on:click="browseService(list[i-1]['id'])">查看服务信息</a></td>
+                            <td v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyService(list[i-1]['id'],list[i-1]['url'])">修改服务</a></td>
+                            <td><a href="javascript:void(0)" v-on:click="deleteService(list[i-1]['id'])">删除服务</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a v-if="type==3" href="newService.html" class="btn btn-primary">新服务</a>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script>
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return null; //返回参数值
+    }
+
+    var app = new Vue({
+        el: '#serviceList',
+        data: {
+            list: [],
+            type: 3, //记录服务行为
+        },
+        methods: {
+            modifyService: function(id, url) {
+                let message = { //显示flowchart
+                    type: 1, //消息类型，传递链接
+                    message: {
+                        "id": id,
+                    }
+                };
+                ws.send(JSON.stringify(message));
+                window.location.href = url; //跳转链接
+            },
+            browseService: function(id) {
+                window.location.href = "serviceInfo.html?id=" + id; //跳转链接
+            },
+            deleteService: function(id) {
+                if (confirm("确定要删除服务吗？")) {
+                    $.get("http://183.129.170.180:8041/backEnd/deleteService?id=" + id, function(res) {
+                        $.get("http://183.129.170.180:8041/backEnd/queryServices", function(re) {
+                            result = re.sort(desc);
+                            app.$data.list = result;
+                        });
+                    });
+
+                }
+            },
+        }
+    });
+
+    var desc = function(x, y) {
+        return (x["id"] < y["id"]) ? 1 : -1
+    }
+    $.get("http://183.129.170.180:8041/backEnd/queryServices", function(re) {
+        result = re.sort(desc);
+        app.$data.list = result;
+        if (getUrlParam("type") == "1") {
+            app.$data.type = 2;
+        }
+    });
+    ws = new WebSocket("ws://localhost:8084");
+    ws.onopen = function() {
+        // Web Socket 已连接上，使用 send() 方法发送数据
+        console.log("已连接");
+        message = {
+            type: 0, //消息类型，0代表链接操作
+            message: {
+                id: 1, //socket id
+            }
+        };
+        this.send(JSON.stringify(message));
+    };
+    ws.onclose = function() {
+        // 关闭 websocket
+        console.log("连接已关闭...");
+    };
+</script>

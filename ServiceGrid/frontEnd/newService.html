@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <title>新服务</title>
+
+</head>
+
+<body>
+    <div class="row" style="margin-top: 40px;">
+        <div class="col-md-6" style="margin:0 auto" style="text-align: center;">
+            <h4 style="text-align: center;">新服务</h4>
+            <div class="form-group">
+                <label for="exampleInputEmail1">输入要执行的网址（带http或https）：</label>
+                <textarea class="form-control" id="links" placeholder="links" style="min-height: 200px;">https://www.jd.com</textarea>
+            </div>
+
+            <button type="submit" id="send" class="btn btn-primary">开始包装</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script>
+    ws = new WebSocket("ws://localhost:8084");
+    ws.onopen = function() {
+        // Web Socket 已连接上，使用 send() 方法发送数据
+        console.log("已连接");
+        message = {
+            type: 0, //消息类型，0代表链接操作
+            message: {
+                id: 1, //socket id
+            }
+        };
+        this.send(JSON.stringify(message));
+    };
+    ws.onclose = function() {
+        // 关闭 websocket
+        console.log("连接已关闭...");
+    };
+    $("#send").click(() => {
+        let msg = {
+            "type": "openPage",
+            "url": $("#links").val().split("\n")[0],
+            "links": $("#links").val(),
+        }
+        message = {
+            type: 3, //消息类型，传递链接
+            from: 0,
+            message: {
+                pipe: JSON.stringify(msg), //socket id
+            }
+        };
+        if ($("#links").val().length <= 1) {
+            alert("请输入正确的网址！");
+        } else {
+            ws.send(JSON.stringify(message));
+            message = {
+                type: 1, //消息类型，传递链接
+                message: {
+                    id: -1,
+                },
+            };
+            ws.send(JSON.stringify(message));
+            window.location.href = $("#links").val().split("\n")[0]; //跳转链接
+        }
+    });
+</script>

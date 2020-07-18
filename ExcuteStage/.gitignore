@@ -1,0 +1,9 @@
+node_modules/
+*.txt
+*.csv
+.idea/
+.ipynb_checkpoints
+dist/
+build/
+__pycache__/
+*.spec
