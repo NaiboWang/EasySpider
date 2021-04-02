@@ -285,7 +285,7 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post("http://183.129.170.180:8041/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
@@ -317,7 +317,7 @@ var sId = getUrlParam('id');
 
 if (sId != null && sId != -1) //加载服务
 {
-    $.get("http://183.129.170.180:8041/backEnd/queryService?id=" + sId, function(result) {
+    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryService?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
         $("#serviceName").val(result["name"]);

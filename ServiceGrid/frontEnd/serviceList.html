@@ -75,8 +75,8 @@
             },
             deleteService: function(id) {
                 if (confirm("确定要删除服务吗？")) {
-                    $.get("http://183.129.170.180:8041/backEnd/deleteService?id=" + id, function(res) {
-                        $.get("http://183.129.170.180:8041/backEnd/queryServices", function(re) {
+                    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/deleteService?id=" + id, function(res) {
+                        $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryServices", function(re) {
                             result = re.sort(desc);
                             app.$data.list = result;
                         });
@@ -90,7 +90,7 @@
     var desc = function(x, y) {
         return (x["id"] < y["id"]) ? 1 : -1
     }
-    $.get("http://183.129.170.180:8041/backEnd/queryServices", function(re) {
+    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryServices", function(re) {
         result = re.sort(desc);
         app.$data.list = result;
         if (getUrlParam("type") == "1") {
