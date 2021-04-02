@@ -76,6 +76,10 @@ def invokeService(request):
     data = json.loads(request.POST['paras'])
     result = mycol.find({"id":int(tid)},{"_id":0})
     service = list(result)[0]
+    try:
+        service["links"] = data["urlList_0"]
+    except:
+        pass
     for key,value in data.items():
         for i in range(len(service["inputParameters"])):
             if key == service["inputParameters"][i]["name"]: #能调用
