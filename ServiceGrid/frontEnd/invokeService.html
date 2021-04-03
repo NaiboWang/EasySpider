@@ -38,7 +38,7 @@
             <h4 style="text-align: center;">服务信息</h4>
             <p>服务名称：{{service["name"]}}</p>
             <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">服务描述：{{service["desc"]}}</p>
-            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">任务号调用URL：http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/invokeService?id={{service["id"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">任务号调用URL：{{backEndAddress}}/backEnd/invokeService?id={{service["id"]}}</p>
             <p>请输入参数：</p>
             <form id="form">
                 <table class="table table-bordered">
@@ -85,7 +85,7 @@
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
         if (r != null) return unescape(r[2]);
-        return null; //返回参数值
+        return "http://183.129.170.180:8041"; //返回参数值,默认后台地址
     }
 
     var sId = getUrlParam('id');
@@ -95,6 +95,7 @@
             service: {},
             show: false, //是否渲染
             ID: "暂无",
+            backEndAddress: getUrlParam("backEndAddress"),
         },
         methods: {
             invokeService: function() {
@@ -104,7 +105,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddress + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -149,7 +150,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddress + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -170,7 +171,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddress + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -180,7 +181,7 @@
             },
         }
     });
-    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryService?id=" + sId, function(result) {
+    $.get(app.$data.backEndAddress + "/backEnd/queryService?id=" + sId, function(result) {
         app.$data.service = result;
         app.$data.show = true;
     });

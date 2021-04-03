@@ -107,7 +107,7 @@
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
         if (r != null) return unescape(r[2]);
-        return null; //返回参数值
+        return "http://183.129.170.180:8041"; //返回参数值,默认后台地址
     }
 
     var sId = getUrlParam('id');
@@ -116,6 +116,7 @@
         data: {
             service: {},
             show: false, //是否渲染
+            backEndAddress: getUrlParam("backEndAddress"),
         },
         methods: {
             modifyService: function(id, url) {
@@ -127,14 +128,14 @@
                 };
                 // ws.send(JSON.stringify(message));
                 // window.location.href = url; //跳转链接
-                window.location.href = "FlowChart.html?id=" + id;
+                window.location.href = "FlowChart.html?id=" + id + "&backEndAddress="+ app.$data.backEndAddress
             },
             invokeService: function(id) {
-                window.location.href = "invokeService.html?id=" + id;
+                window.location.href = "invokeService.html?id=" + id + "&backEndAddress="+ app.$data.backEndAddress;
             },
         }
     });
-    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryService?id=" + sId, function(result) {
+    $.get(app.$data.backEndAddress + "/backEnd/queryService?id=" + sId, function(result) {
         app.$data.service = result;
         app.$data.show = true;
     });

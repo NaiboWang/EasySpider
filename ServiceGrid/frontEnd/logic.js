@@ -125,6 +125,8 @@ function addParameters(t) {
     } else if (t.option == 4) { //输入文字
         t["parameters"]["value"] = "";
     } else if (t.option == 8) { //循环
+        t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
+        t["parameters"]["scrollCount"] = 0; //滚动次数
         t["parameters"]["loopType"] = 0; //默认循环类型
         t["parameters"]["xpath"] = "";
         t["parameters"]["pathList"] = "";
@@ -189,6 +191,17 @@ $("#confirm").mousedown(function() {
         }
     }
 });
+
+//获取url中的参数
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg); //匹配目标参数
+    if (r != null) return unescape(r[2]);
+    return "http://183.129.170.180:8041";
+}
+
+var sId = getUrlParam('id');
+var backEndAddress = getUrlParam("backEndAddress");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
@@ -285,7 +298,7 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post(backEndAddress + "/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
@@ -305,19 +318,10 @@ $("#saveAsButton").mousedown(function() {
     saveService(1);
 });
 
-//获取url中的参数
-function getUrlParam(name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-    var r = window.location.search.substr(1).match(reg); //匹配目标参数
-    if (r != null) return unescape(r[2]);
-    return null; //返回参数值
-}
-
-var sId = getUrlParam('id');
 
 if (sId != null && sId != -1) //加载服务
 {
-    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryService?id=" + sId, function(result) {
+    $.get(backEndAddress + "/backEnd/queryService?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
         $("#serviceName").val(result["name"]);

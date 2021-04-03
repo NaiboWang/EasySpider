@@ -50,7 +50,7 @@
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
         if (r != null) return unescape(r[2]);
-        return null; //返回参数值
+        return "http://183.129.170.180:8041"; //返回参数值,默认后台地址
     }
 
     var app = new Vue({
@@ -58,6 +58,7 @@
         data: {
             list: [],
             type: 3, //记录服务行为
+            backEndAddress: getUrlParam("backEndAddress"),
         },
         methods: {
             modifyService: function(id, url) {
@@ -71,12 +72,12 @@
                 window.location.href = url; //跳转链接
             },
             browseService: function(id) {
-                window.location.href = "serviceInfo.html?id=" + id; //跳转链接
+                window.location.href = "serviceInfo.html?id=" + id + "&backEndAddress="+ app.$data.backEndAddress; //跳转链接
             },
             deleteService: function(id) {
                 if (confirm("确定要删除服务吗？")) {
-                    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/deleteService?id=" + id, function(res) {
-                        $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryServices", function(re) {
+                    $.get(app.$data.backEndAddress + "/backEnd/deleteService?id=" + id, function(res) {
+                        $.get(app.$data.backEndAddress + "/backEnd/queryServices", function(re) {
                             result = re.sort(desc);
                             app.$data.list = result;
                         });
@@ -90,7 +91,7 @@
     var desc = function(x, y) {
         return (x["id"] < y["id"]) ? 1 : -1
     }
-    $.get("http://xtra3090.d2.comp.nus.edu.sg:8080/backEnd/queryServices", function(re) {
+    $.get(app.$data.backEndAddress + "/backEnd/queryServices", function(re) {
         result = re.sort(desc);
         app.$data.list = result;
         if (getUrlParam("type") == "1") {

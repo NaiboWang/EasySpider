@@ -43,6 +43,34 @@ def Log(text, text2=""):
     if switch:
         print(text, text2)
 
+# 屏幕滚动函数
+def scrollDown(para,rt=""):
+    try:
+        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+            for i in range(para["scrollCount"]):
+                time.sleep(1)  # 下拉完等1秒
+                Log("下拉完等待1秒")
+                body = browser.find_element_by_css_selector("body")
+                if para["scrollType"] == 1:
+                    body.send_keys(Keys.PGDN)
+                else:
+                    body.send_keys(Keys.END)
+    except TimeoutException:
+        Log('time out after 10 seconds when scrolling. ')
+        recordLog('time out after 10 seconds when scrolling')
+        browser.execute_script('window.stop()')
+        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+            for i in range(para["scrollCount"]):
+                time.sleep(1)  # 下拉完等1秒
+                Log("下拉完等待1秒")
+                body = browser.find_element_by_css_selector("body")
+                if para["scrollType"] == 1:
+                    body.send_keys(Keys.PGDN)
+                else:
+                    body.send_keys(Keys.END)
+        if rt != "":
+            rt.end()
+
 
 # 执行节点关键函数部分
 def excuteNode(nodeId, loopValue="", clickPath="", index=0):
@@ -221,6 +249,7 @@ def loopExcute(node, loopValue,clickPath="",index=0):
         pass  # 以后再做
     history["index"] = thisHistoryLength
     history["handle"] = browser.current_window_handle
+    scrollDown(node["parameters"])
 
 
 # 打开网页事件
@@ -248,18 +277,7 @@ def openPage(para, loopValue):
         browser.execute_script('window.stop()')
         history["index"] = browser.execute_script("return history.length")
         rt.end()
-    try:
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("下拉等待1秒")
-                body = browser.find_element_by_css_selector("body")
-                body.send_keys(Keys.END)
-    except TimeoutException:
-        Log('time out after 10 seconds when loading page: ' + url)
-        recordLog('time out after 10 seconds when loading page: ' + url)
-        browser.execute_script('window.stop()')
-        rt.end()
+    scrollDown(para, rt) # 控制屏幕向下滚动
     if containJudge:
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -343,24 +361,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             history["index"] = browser.execute_script("return history.length")
             rt.end()
         # 如果打开了新窗口，切换到新窗口
-    try:
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("下拉完等待1秒")
-                body = browser.find_element_by_css_selector("body")
-                body.send_keys(Keys.END)
-    except TimeoutException:
-        Log('time out after 10 seconds when scrolling. ')
-        recordLog('time out after 10 seconds when scrolling')
-        browser.execute_script('window.stop()')
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("下拉完等待1秒")
-                body = browser.find_element_by_css_selector("body")
-                body.send_keys(Keys.END)
-        rt.end()
+    scrollDown(para, rt) # 根据参数配置向下滚动
     if containJudge:  # 有判断语句才执行以下操作
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -576,10 +577,14 @@ if __name__ == '__main__':
         id = 7 #设置默认值
     print("id：",id)
     if len(sys.argv)>2:
-        saveName = "task_" + str(id) + "_" + sys.argv[2]  # 保存文件的名字
+        backEndAddress = sys.argv[2] 
+    else:
+        backEndAddress = "http://183.129.170.180:8041"
+    if len(sys.argv)>3:
+        saveName = "task_" + str(id) + "_" + sys.argv[3]  # 保存文件的名字
     else:
         saveName = "task_" + str(id) + "_" + str(random.randint(0, 999999999))  # 保存文件的名字
-    content = requests.get("http://183.129.170.180:8041/backEnd/queryTask?id=" + str(id))
+    content = requests.get(backEndAddress + "/backEnd/queryTask?id=" + str(id))
     service = json.loads(content.text)  # 加载服务信息
     print("name：",service["name"])
     procedure = service["graph"]  # 程序执行流程

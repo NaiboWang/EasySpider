@@ -128,6 +128,21 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
                         <label>XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
+                        <label>采集内容类型</label>
+                        <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
+                            <option value = 0>文本（包括子元素）</option>
+                            <option value = 1>文本（不包括子元素）</option>
+                            <option value = 2>innerHTML</option>
+                            <option value = 3>outerHTML</option>
+                        </select>
+                        <label>节点类型</label>
+                        <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
+                            <option value = 0>普通节点</option>
+                            <option value = 1>链接文本</option>
+                            <option value = 2>链接地址</option>
+                            <option value = 3>表单值</option>
+                            <option value = 4>图片地址</option>
+                        </select>
                         <label>参数描述:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
                         <label>元素找不到时的值:</label>
@@ -190,6 +205,15 @@
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
                     <label><b>历史记录回退后</b>等待秒数:</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+                    <label>执行完是否向下滚动:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>不滚动</option>
+                        <option value = 1>向下滚动一屏</option>
+                        <option value = 2>滚动到底部</option>
+                    </select>
+                    <label>滚动次数:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
