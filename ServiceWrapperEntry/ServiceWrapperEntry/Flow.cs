@@ -20,8 +20,8 @@ namespace ServiceWrapper
     {
         public ChromiumWebBrowser chromeBrowser;
         public bool ChromeNow = false; //标记现在所在窗口是否为chrome
-        public static string flowChartUrl = "http://183.129.170.180:8041/frontEnd/FlowChart.html?id="; //流程图所在的位置
-        public string url = flowChartUrl + "-1";
+        public static string flowChartUrl = PublicVariable.frontEndAddress + "/FlowChart.html?id="; //流程图所在的位置
+        public string url = flowChartUrl + "-1&backEndAddressServiceWrapper=" + PublicVariable.backEndAddress;
         public Flow()
         {
             InitializeComponent();
@@ -30,6 +30,7 @@ namespace ServiceWrapper
         {
             InitializeComponent();
             url = link;
+            button1.Show();
         }
         // P/Invoke declarations
         [DllImport("user32.dll")]
@@ -104,34 +105,15 @@ namespace ServiceWrapper
             PublicVariable.start.Show(); //重新显示初始框
         }
 
-        private void timer1_Tick_1(object sender, EventArgs e)
-        {
-
-            if (Start.chromeId != GetForegroundWindow())
-            {
-                SwapMouseButton(false);
-            }
-            else
-            {
-                SwapMouseButton(true);
-            }
-            //textBox1.Text = "当前进程：" + Process.GetCurrentProcess().ProcessName +
-            //    ",当前激活的进程：" + ;
-            ////打开chrome，跳转初始输入网页界面，传回主程序chrome的进程id号，然后打开链接
-        }
-
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             SetForegroundWindow(Start.chromeId); //打开流程图窗口后将chrome窗口显示到最前方
         }
 
-        private void timer2_Tick(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            if (Start.chromeId == GetForegroundWindow())
-            {
-                SwapMouseButton(true);
-                timer1.Enabled = true; //打开检测鼠标的程序
-            }
+            chromeBrowser.Back();
         }
+
     }
 }

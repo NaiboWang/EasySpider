@@ -1,0 +1,6 @@
+D:\我的文档\浙江大学\项目\高分项目\服务包装\服务包装手动版\客户端\WindowsFormsApp4\obj\x64\ServiceWrapper\WindowsFormsApp4.csprojAssemblyReference.cache
+D:\我的文档\浙江大学\项目\高分项目\服务包装\服务包装手动版\客户端\WindowsFormsApp4\obj\x64\ServiceWrapper\ServiceWrapper.Flow.resources
+D:\我的文档\浙江大学\项目\高分项目\服务包装\服务包装手动版\客户端\WindowsFormsApp4\obj\x64\ServiceWrapper\ServiceWrapper.Properties.Resources.resources
+D:\我的文档\浙江大学\项目\高分项目\服务包装\服务包装手动版\客户端\WindowsFormsApp4\obj\x64\ServiceWrapper\ServiceWrapper.Start.resources
+D:\我的文档\浙江大学\项目\高分项目\服务包装\服务包装手动版\客户端\WindowsFormsApp4\obj\x64\ServiceWrapper\WindowsFormsApp4.csproj.GenerateResource.cache
+D:\我的文档\浙江大学\项目\高分项目\服务包装\服务包装手动版\客户端\WindowsFormsApp4\obj\x64\ServiceWrapper\WindowsFormsApp4.csproj.CoreCompileInputs.cache

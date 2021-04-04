@@ -30,7 +30,7 @@ namespace ServiceWrapper
         public static IntPtr chromeId;
         public static string[] links;
         public Flow fr;
-        public string serviceListUrl = "http://183.129.170.180:8041/frontEnd/serviceList.html";
+        public string serviceListUrl = PublicVariable.frontEndAddress + "/serviceList.html?backEndAddressServiceWrapper=" + PublicVariable.backEndAddress;
 
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll", EntryPoint = "MoveWindow")]
         public static extern bool MoveWindow(System.IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
@@ -167,7 +167,7 @@ namespace ServiceWrapper
                 {
                     if (msg.message.id != -1) //读取服务流程，不是新增的时候
                     {
-                        fr.chromeBrowser.Load(Flow.flowChartUrl + msg.message.id.ToString());
+                        fr.chromeBrowser.Load(Flow.flowChartUrl + msg.message.id.ToString() + "&backEndAddressServiceWrapper=" + PublicVariable.backEndAddress);
                     }
                     //SwapMouseButton(true);
                     fr.Show();
@@ -211,7 +211,8 @@ namespace ServiceWrapper
             else if (msg.type == 5)
             {
                 string FileName = Application.StartupPath + @"/Chrome/ServiceWrapper_ExcuteStage.exe"; //启动的应用程序名称
-                Process.Start(FileName, msg.message.id.ToString()); //启动执行程序
+                string arguments = msg.message.id.ToString() + " " + PublicVariable.backEndAddress;
+                Process.Start(FileName, arguments); //启动执行程序
             }
         }
 
@@ -245,7 +246,7 @@ namespace ServiceWrapper
 
         private void button2_Click(object sender, EventArgs e)
         {
-            Flow fr2 = new Flow(serviceListUrl+"?type=1"); //加载的页面不可增加和修改服务
+            Flow fr2 = new Flow(serviceListUrl+"&type=1"); //加载的页面不可增加和修改服务
             fr2.closedriver = false;
             fr2.WindowState = FormWindowState.Maximized; //最大化窗口
             fr2.Show();

@@ -26,5 +26,7 @@ namespace ServiceWrapper
         public static Start start = null;
         public static Flow fr = null;
         public static Process chrome = null;
+        public static string frontEndAddress = "http://183.129.170.180:8041/frontEnd";
+        public static string backEndAddress = "http://183.129.170.180:8041";
     }
 }
