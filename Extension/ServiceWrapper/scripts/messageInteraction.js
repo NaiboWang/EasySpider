@@ -1,6 +1,6 @@
 //实现与后台和流程图部分的交互
 
-if (window.location.href.indexOf("183.129.170.180") >= 0) {
+if (window.location.href.indexOf("backEndAddressServiceWrapper") >= 0) {
     throw "serviceGrid"; //如果是服务器网页页面，则不执行工具
 }
 
