@@ -38,7 +38,7 @@
                     </tbody>
                 </table>
             </div>
-            <a v-if="type==3" href="newService.html" class="btn btn-primary">新服务</a>
+            <a v-if="type==3" href="javascript:void(0)" v-on:click="newService" class="btn btn-primary">新服务</a>
         </div>
     </div>
 
@@ -58,9 +58,12 @@
         data: {
             list: [],
             type: 3, //记录服务行为
-            backEndAddress: getUrlParam("backEndAddress"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
+            newService: function (){
+                window.location.href = "newService.html?backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;;
+            },
             modifyService: function(id, url) {
                 let message = { //显示flowchart
                     type: 1, //消息类型，传递链接
@@ -72,12 +75,12 @@
                 window.location.href = url; //跳转链接
             },
             browseService: function(id) {
-                window.location.href = "serviceInfo.html?id=" + id + "&backEndAddress="+ app.$data.backEndAddress; //跳转链接
+                window.location.href = "serviceInfo.html?id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
             },
             deleteService: function(id) {
                 if (confirm("确定要删除服务吗？")) {
-                    $.get(app.$data.backEndAddress + "/backEnd/deleteService?id=" + id, function(res) {
-                        $.get(app.$data.backEndAddress + "/backEnd/queryServices", function(re) {
+                    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/deleteService?id=" + id, function(res) {
+                        $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
                             result = re.sort(desc);
                             app.$data.list = result;
                         });
@@ -91,7 +94,7 @@
     var desc = function(x, y) {
         return (x["id"] < y["id"]) ? 1 : -1
     }
-    $.get(app.$data.backEndAddress + "/backEnd/queryServices", function(re) {
+    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
         result = re.sort(desc);
         app.$data.list = result;
         if (getUrlParam("type") == "1") {

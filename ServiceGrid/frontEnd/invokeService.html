@@ -38,7 +38,7 @@
             <h4 style="text-align: center;">服务信息</h4>
             <p>服务名称：{{service["name"]}}</p>
             <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">服务描述：{{service["desc"]}}</p>
-            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">任务号调用URL：{{backEndAddress}}/backEnd/invokeService?id={{service["id"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">任务号调用URL：{{backEndAddressServiceWrapper}}/backEnd/invokeService?id={{service["id"]}}</p>
             <p>请输入参数：</p>
             <form id="form">
                 <table class="table table-bordered">
@@ -95,7 +95,7 @@
             service: {},
             show: false, //是否渲染
             ID: "暂无",
-            backEndAddress: getUrlParam("backEndAddress"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
             invokeService: function() {
@@ -105,7 +105,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post(app.$data.backEndAddress + "/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -150,7 +150,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post(app.$data.backEndAddress + "/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -171,7 +171,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post(app.$data.backEndAddress + "/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -181,7 +181,7 @@
             },
         }
     });
-    $.get(app.$data.backEndAddress + "/backEnd/queryService?id=" + sId, function(result) {
+    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         app.$data.service = result;
         app.$data.show = true;
     });

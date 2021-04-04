@@ -116,7 +116,7 @@
         data: {
             service: {},
             show: false, //是否渲染
-            backEndAddress: getUrlParam("backEndAddress"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
             modifyService: function(id, url) {
@@ -128,14 +128,14 @@
                 };
                 // ws.send(JSON.stringify(message));
                 // window.location.href = url; //跳转链接
-                window.location.href = "FlowChart.html?id=" + id + "&backEndAddress="+ app.$data.backEndAddress
+                window.location.href = "FlowChart.html?id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
             },
             invokeService: function(id) {
-                window.location.href = "invokeService.html?id=" + id + "&backEndAddress="+ app.$data.backEndAddress;
+                window.location.href = "invokeService.html?id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
             },
         }
     });
-    $.get(app.$data.backEndAddress + "/backEnd/queryService?id=" + sId, function(result) {
+    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         app.$data.service = result;
         app.$data.show = true;
     });

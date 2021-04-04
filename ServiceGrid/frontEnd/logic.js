@@ -201,7 +201,7 @@ function getUrlParam(name) {
 }
 
 var sId = getUrlParam('id');
-var backEndAddress = getUrlParam("backEndAddress");
+var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
@@ -298,7 +298,7 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post(backEndAddress + "/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post(backEndAddressServiceWrapper + "/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
@@ -321,7 +321,7 @@ $("#saveAsButton").mousedown(function() {
 
 if (sId != null && sId != -1) //加载服务
 {
-    $.get(backEndAddress + "/backEnd/queryService?id=" + sId, function(result) {
+    $.get(backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
         $("#serviceName").val(result["name"]);
