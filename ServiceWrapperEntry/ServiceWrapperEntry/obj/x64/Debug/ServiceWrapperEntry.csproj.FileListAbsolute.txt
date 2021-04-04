@@ -189,6 +189,7 @@ C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\
 C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\bin\x64\Debug\WebDriver.dll
 C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\bin\x64\Debug\Newtonsoft.Json.xml
 C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\bin\x64\Debug\WebDriver.xml
+C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\obj\x64\Debug\ServiceWrapperEntry.csprojAssemblyReference.cache
 C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\obj\x64\Debug\ServiceWrapper.Flow.resources
 C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\obj\x64\Debug\ServiceWrapper.Properties.Resources.resources
 C:\Users\Naibo\Documents\ServiceWrapper\ServiceWrapperEntry\ServiceWrapperEntry\obj\x64\Debug\ServiceWrapper.Start.resources
