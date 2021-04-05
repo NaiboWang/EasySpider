@@ -130,18 +130,18 @@
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
                         <label>采集内容类型</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
-                            <option value = 0>文本（包括子元素）</option>
-                            <option value = 1>文本（不包括子元素）</option>
-                            <option value = 2>innerHTML</option>
-                            <option value = 3>outerHTML</option>
+                            <option :value = 0>文本（包括子元素）</option>
+                            <option :value = 1>文本（不包括子元素）</option>
+                            <option :value = 2>innerHTML</option>
+                            <option :value = 3>outerHTML</option>
                         </select>
                         <label>节点类型</label>
                         <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
-                            <option value = 0>普通节点</option>
-                            <option value = 1>链接文本</option>
-                            <option value = 2>链接地址</option>
-                            <option value = 3>表单值</option>
-                            <option value = 4>图片地址</option>
+                            <option :value = 0>普通节点</option>
+                            <option :value = 1>链接文本</option>
+                            <option :value = 2>链接地址</option>
+                            <option :value = 3>表单值</option>
+                            <option :value = 4>图片地址</option>
                         </select>
                         <label>参数描述:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["desc"]'></textarea>

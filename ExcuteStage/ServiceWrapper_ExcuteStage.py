@@ -255,6 +255,7 @@ def loopExcute(node, loopValue,clickPath="",index=0):
 # 打开网页事件
 def openPage(para, loopValue):
     rt = Time("打开网页")
+    time.sleep(2)  # 打开网页后强行等待至少2秒
     global links
     global urlId
     global history
@@ -560,15 +561,19 @@ def clean():
 
 if __name__ == '__main__':
     options = Options()
+    exe_path = "chromedriver.exe"
     if os.path.exists(os.getcwd()+"/ServiceWrapper"):
         options.binary_location="ServiceWrapper/Chrome/chrome.exe" #指定chrome位置
+        exe_path = "ServiceWrapper/Chrome/chromedriver.exe"
     elif os.path.exists(os.getcwd()+"/Debug"):
         options.binary_location="Debug/Chrome/chrome.exe" #指定chrome位置
+        exe_path = "Debug/Chrome/chromedriver.exe"
     elif os.getcwd().find("ExcuteStage") >= 0: #如果直接执行
-        options.binary_location = "../../bin/x64/Debug/Chrome/chrome.exe"  # 指定chrome位置
+        options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
+        exe_path = "./Chrome/chromedriver.exe"
     else:
         options.binary_location="chrome.exe" #指定chrome位置
-    browser = webdriver.Chrome(chrome_options=options)
+    browser = webdriver.Chrome(options=options, executable_path=exe_path)
     browser.get('about:blank')
     browser.set_page_load_timeout(10) # 加载页面最大超时时间
     if len(sys.argv)>1:
