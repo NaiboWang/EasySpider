@@ -8,22 +8,22 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <title>开始使用</title>
+    <title>Start</title>
 
 </head>
 
 <body>
     <div class="row" style="margin-top: 40px;">
         <div style="margin:0 auto;width: 60%;min-width: 500px;" id="serviceList">
-            <h4 style="text-align: center;">服务列表</h4>
+            <h4 style="text-align: center;">Service List</h4>
             <div style="max-height: 700px;overflow: auto;margin-bottom: 10px">
                 <table style="table-layout: fixed;" class="table table-hover">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>服务名称</th>
+                            <th>Service Name</th>
                             <th>URL</th>
-                            <th v-bind:colspan="type">操作</th>
+                            <th v-bind:colspan="type">Operations</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,14 +31,14 @@
                             <td>{{i}}</td>
                             <td style="overflow: hidden;">{{list[i-1]["name"]}}</td>
                             <td style="height: 30px;white-space: nowrap;overflow: hidden;">{{list[i-1]["url"]}}</td>
-                            <td><a href="javascript:void(0)" v-on:click="browseService(list[i-1]['id'])">查看服务信息</a></td>
-                            <td v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyService(list[i-1]['id'],list[i-1]['url'])">修改服务</a></td>
-                            <td><a href="javascript:void(0)" v-on:click="deleteService(list[i-1]['id'])">删除服务</a></td>
+                            <td><a href="javascript:void(0)" v-on:click="browseService(list[i-1]['id'])">Service Information</a></td>
+                            <td v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyService(list[i-1]['id'],list[i-1]['url'])">Modify Service</a></td>
+                            <td><a href="javascript:void(0)" v-on:click="deleteService(list[i-1]['id'])">Delete Service</a></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <a v-if="type==3" href="newService.html" class="btn btn-primary">新服务</a>
+            <a v-if="type==3" href="javascript:void(0)" v-on:click="newService" class="btn btn-primary">New Service</a>
         </div>
     </div>
 
@@ -50,7 +50,7 @@
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
         if (r != null) return unescape(r[2]);
-        return null; //返回参数值
+        return ""; //返回参数值,默认后台地址
     }
 
     var app = new Vue({
@@ -58,8 +58,12 @@
         data: {
             list: [],
             type: 3, //记录服务行为
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
+            newService: function (){
+                window.location.href = "newService.html?backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;;
+            },
             modifyService: function(id, url) {
                 let message = { //显示flowchart
                     type: 1, //消息类型，传递链接
@@ -71,12 +75,12 @@
                 window.location.href = url; //跳转链接
             },
             browseService: function(id) {
-                window.location.href = "serviceInfo.html?id=" + id; //跳转链接
+                window.location.href = "serviceInfo.html?id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
             },
             deleteService: function(id) {
                 if (confirm("确定要删除服务吗？")) {
-                    $.get("http://183.129.170.180:8041/backEnd/deleteService?id=" + id, function(res) {
-                        $.get("http://183.129.170.180:8041/backEnd/queryServices", function(re) {
+                    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/deleteService?id=" + id, function(res) {
+                        $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
                             result = re.sort(desc);
                             app.$data.list = result;
                         });
@@ -90,7 +94,7 @@
     var desc = function(x, y) {
         return (x["id"] < y["id"]) ? 1 : -1
     }
-    $.get("http://183.129.170.180:8041/backEnd/queryServices", function(re) {
+    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
         result = re.sort(desc);
         app.$data.list = result;
         if (getUrlParam("type") == "1") {

@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <title>服务调用</title>
+    <title>Service Invoke</title>
     <style>
         table {
             table-layout: auto;
@@ -35,20 +35,20 @@
 <body>
     <div class="row" style="margin-top: 40px;">
         <div class="col-md-6" style="margin:0 auto" id="serviceList" v-if="show">
-            <h4 style="text-align: center;">服务信息</h4>
-            <p>服务名称：{{service["name"]}}</p>
-            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">服务描述：{{service["desc"]}}</p>
-            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">任务号调用URL：http://183.129.170.180:8041/backEnd/invokeService?id={{service["id"]}}</p>
-            <p>请输入参数：</p>
+            <h4 style="text-align: center;">Service Information</h4>
+            <p>Service Name: {{service["name"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">Service Description: {{service["desc"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">URL: {{backEndAddressServiceWrapper}}/backEnd/invokeService?id={{service["id"]}}</p>
+            <p>Please Input Parameters: </p>
             <form id="form">
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
                             <th style="min-width: 50px;">ID</th>
-                            <th>参数名称</th>
-                            <th>调用名称</th>
-                            <th>参数类型</th>
-                            <th>参数值</th>
+                            <th>Parameter Name</th>
+                            <th>Invoke Name</th>
+                            <th>Parameter Type</th>
+                            <th>Parameter Value</th>
                         </tr>
 
                         <tr v-if="service.inputParameters.length>0" v-for="i in service.inputParameters.length">
@@ -62,16 +62,16 @@
                 </table>
             </form>
 
-            <button style="margin-left: 5px;" v-on:click="localExcuteInstant" class="btn btn-primary">直接本地执行</button>
-            <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">直接远程执行</button>
+            <button style="margin-left: 5px;" v-on:click="localExcuteInstant" class="btn btn-primary">Directly Run locally</button>
+            <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button>
             <div style="margin-bottom: 10px;">
-                <label style="margin-top: 10px;">任务ID:</label>
+                <label style="margin-top: 10px;">Task ID:</label>
                 <input class="form-control" v-model="ID"></input>
                 <p></p>
                 <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p>
-                <a href="javascript:void(0)" v-on:click="invokeService" class="btn btn-primary">获得任务ID</a>
-                <button v-on:click="localExcute" style="margin-left: 8px;" class="btn btn-primary">本地执行任务</button>
-                <button v-on:click="remoteExcute" style="margin-left: 8px;" class="btn btn-primary">远程执行任务</button></div>
+                <a href="javascript:void(0)" v-on:click="invokeService" class="btn btn-primary">Get Task ID</a>
+                <button v-on:click="localExcute" style="margin-left: 8px;" class="btn btn-primary">Run locally</button>
+                <button v-on:click="remoteExcute" style="margin-left: 8px;" class="btn btn-primary">Run remotely</button></div>
         </div>
 
     </div>
@@ -85,7 +85,7 @@
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
         var r = window.location.search.substr(1).match(reg); //匹配目标参数
         if (r != null) return unescape(r[2]);
-        return null; //返回参数值
+        return ""; //返回参数值,默认后台地址
     }
 
     var sId = getUrlParam('id');
@@ -95,6 +95,7 @@
             service: {},
             show: false, //是否渲染
             ID: "暂无",
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
             invokeService: function() {
@@ -104,7 +105,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post("http://183.129.170.180:8041/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -149,7 +150,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post("http://183.129.170.180:8041/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -170,7 +171,7 @@
                     t.forEach(function(item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post("http://183.129.170.180:8041/backEnd/invokeService?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/backEnd/invokeService?id=" + sId, {
                         id: this.service.id,
                         paras: JSON.stringify(para)
                     }, function(result) {
@@ -180,7 +181,7 @@
             },
         }
     });
-    $.get("http://183.129.170.180:8041/backEnd/queryService?id=" + sId, function(result) {
+    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         app.$data.service = result;
         app.$data.show = true;
     });

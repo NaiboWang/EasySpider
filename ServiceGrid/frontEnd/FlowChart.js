@@ -116,13 +116,13 @@ var app = new Vue({
                 return "OuterHTML";
             }
             if (nodeType == 2) {
-                return "链接地址";
+                return "Link Address";
             } else if (nodeType == 1) {
-                return "链接文本";
+                return "Link Text";
             } else if (nodeType == 4) {
-                return "图片地址";
+                return "Image Address";
             } else {
-                return "文本";
+                return "Text";
             }
         }
     }
@@ -160,7 +160,7 @@ function newNode(node) {
     {
         return `<div class="loop clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
-                    <p class="branchAdd" data="${id}">点击此处在最左边增加条件分支</p>
+                    <p class="branchAdd" data="${id}">Click here to add a new condition to the left most</p>
                     <div class="judge" id = "${id}">
                     </div></div>
                     <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
@@ -199,7 +199,7 @@ function branchMouseDown(e) {
             parentId: 0,
             type: 3,
             option: 10,
-            title: "条件分支",
+            title: "Condition",
             sequence: [],
             isInLoop: false,
         };
@@ -232,7 +232,7 @@ function branchClick(e) {
         parentId: 0,
         type: 3,
         option: 10,
-        title: "条件分支",
+        title: "Condition",
         sequence: [],
         isInLoop: false,
     };
@@ -269,7 +269,7 @@ function arrowClick(e) {
 function addElement(op, para) {
     option = op;
     if (option == 1) { //打开网页选项
-        title = "打开网页";
+        title = "Open Page";
     } else {
         title = $(".options")[option - 2].innerHTML; //获取新增操作名称
     }
@@ -287,7 +287,7 @@ function toolBoxKernel(e, para = null) {
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if (nowNode.getAttribute("dataType") > 0) {
-            alert("循环和判断、条件分支不可复制！");
+            alert("Cannot copy loop, if and condition!");
             e.stopPropagation(); //防止冒泡
         } else {
             let position = parseInt(nowNode.getAttribute('position'));
@@ -309,7 +309,7 @@ function toolBoxKernel(e, para = null) {
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if ($(nowNode).is(".branch")) {
-            alert("判断分支不可移动！");
+            alert("Cannot move condition branch!");
             e.stopPropagation(); //防止冒泡
         } else {
             let position = parseInt(nowNode.getAttribute('position'));
@@ -341,7 +341,7 @@ function toolBoxKernel(e, para = null) {
                 app._data.nowArrow = { "position": nodeList[element[0]]["position"], "pId": nodeList[element[0]]["parentId"], "num": 0 };
                 $("#" + nodeList[element[0]]["id"]).click();
             } else {
-                alert("自己不能移动到自己的节点里！");
+                alert("Cannot move inside self!");
             }
             e.stopPropagation(); //防止冒泡
         }
@@ -371,7 +371,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 1,
                 type: 3,
                 option: 10,
-                title: "条件分支",
+                title: "Condition",
                 sequence: [],
                 isInLoop: false,
             };
@@ -381,7 +381,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 2,
                 type: 3,
                 option: 10,
-                title: "条件分支",
+                title: "Condition",
                 sequence: [],
                 isInLoop: false,
             };
@@ -426,7 +426,7 @@ $(".options").mousedown(function() {
     option = parseInt(this.getAttribute("data"));
     title = this.innerHTML;
     if (option >= 10 && option <= 12 && (nowNode == null || nowNode.getAttribute("id") == 0)) {
-        alert("目前未选中元素");
+        alert("No element is selected now!");
     } else if (option == 12) {
         deleteElement();
         $(".options")[12].click();
@@ -501,13 +501,13 @@ function refresh(nowArrowReset = true) {
 
 function deleteElement() {
     if (nowNode.getAttribute("id") == 0) {
-        alert("当前未选中元素!"); //root
+        alert("No element is selected now!"); //root
         return;
     }
-    if (nodeList[actionSequence[nowNode.getAttribute("data")]]["option"] == 1) {
-        alert("打开网页操作不可删除！");
-        return;
-    }
+    // if (nodeList[actionSequence[nowNode.getAttribute("data")]]["option"] == 1) {
+    //     alert("Cannot delete the element of Open Page!");
+    //     return;
+    // }
     let position = parseInt(nowNode.getAttribute('position'));
     let pId = nowNode.getAttribute('pId');
     let tnode = nodeList[actionSequence[pId]]["sequence"].splice(position, 1); //在相应位置删除元素
@@ -539,7 +539,7 @@ document.oncontextmenu = function() {
     //删除元素
 document.onkeydown = function(e) {
     if (nowNode != null && e.keyCode == 46) {
-        if (confirm("确定要删除元素吗？")) {
+        if (confirm("Do you really want to delete the selected element?")) {
             deleteElement();
         }
     } else { //ctrl+s保存服务

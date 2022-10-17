@@ -125,6 +125,8 @@ function addParameters(t) {
     } else if (t.option == 4) { //输入文字
         t["parameters"]["value"] = "";
     } else if (t.option == 8) { //循环
+        t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
+        t["parameters"]["scrollCount"] = 0; //滚动次数
         t["parameters"]["loopType"] = 0; //默认循环类型
         t["parameters"]["xpath"] = "";
         t["parameters"]["pathList"] = "";
@@ -158,9 +160,9 @@ function modifyParameters(t, para) {
         t["parameters"]["loopType"] = para["loopType"];
         t["parameters"]["xpath"] = para["xpath"];
         if (para["nextPage"]) { //循环点击下一页的情况下
-            t["title"] = "循环点击下一页"
+            t["title"] = "Loop click next page"
         } else {
-            t["title"] = "循环"
+            t["title"] = "Loop"
         }
         if (para["loopType"] == 2) //如果是固定元素列表
         {
@@ -190,12 +192,23 @@ $("#confirm").mousedown(function() {
     }
 });
 
+//获取url中的参数
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg); //匹配目标参数
+    if (r != null) return unescape(r[2]);
+    return "";
+}
+
+var sId = getUrlParam('id');
+var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
+
 function saveService(type) {
     var serviceId = $("#serviceId").val();
-    var text = "确认要保存服务吗？";
+    var text = "Confirm to save service？";
     if (type == 1) { //服务另存为
         serviceId = -1;
-        text = "确认要另存为服务吗？";
+        text = "Confirm to save as service？";
     }
     if (confirm(text)) {
         let serviceName = $("#serviceName").val();
@@ -222,7 +235,7 @@ function saveService(type) {
                             value: nodeList[i]["parameters"]["links"],
                             desc: "要采集的网址列表,多行以\\n分开",
                             type: "string",
-                            exampleValue: "https://www.jd.com"
+                            exampleValue: nodeList[i]["parameters"]["links"]
                         });
                         links = nodeList[i]["parameters"]["links"];
                     }
@@ -243,17 +256,30 @@ function saveService(type) {
                     }
                 } else if (nodeList[i]["option"] == 8) //循环操作
                 {
-                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) //循环中的循环输入文本或循环输入网址
+                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) {
                         inputParameters.push({
-                        id: inputIndex,
-                        name: "loopText_" + inputIndex++,
-                        nodeId: i,
-                        nodeName: nodeList[i]["title"],
-                        desc: "要输入的文本/网址,多行以\\n分开",
-                        type: "string",
-                        exampleValue: nodeList[i]["parameters"]["textList"],
-                        value: nodeList[i]["parameters"]["textList"],
-                    });
+                            id: inputIndex,
+                            name: "loopText_" + inputIndex++,
+                            nodeId: i,
+                            nodeName: nodeList[i]["title"],
+                            desc: "要输入的文本/网址,多行以\\n分开",
+                            type: "string",
+                            exampleValue: nodeList[i]["parameters"]["textList"],
+                            value: nodeList[i]["parameters"]["textList"],
+                        });
+                    } //循环中的循环输入文本或循环输入网址
+                    else if (parseInt(nodeList[i]["parameters"]["loopType"]) == 0) {
+                        inputParameters.push({
+                            id: inputIndex,
+                            name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
+                            nodeId: i,
+                            nodeName: nodeList[i]["title"],
+                            desc: "循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）",
+                            type: "int",
+                            exampleValue: nodeList[i]["parameters"]["exitCount"],
+                            value: nodeList[i]["parameters"]["exitCount"],
+                        });
+                    }
                 } else if (nodeList[i]["option"] == 3) //提取数据操作
                 {
                     for (let j = 0; j < nodeList[i]["parameters"]["paras"].length; j++) {
@@ -285,7 +311,7 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post("http://183.129.170.180:8041/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post(backEndAddressServiceWrapper + "/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
@@ -305,19 +331,10 @@ $("#saveAsButton").mousedown(function() {
     saveService(1);
 });
 
-//获取url中的参数
-function getUrlParam(name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-    var r = window.location.search.substr(1).match(reg); //匹配目标参数
-    if (r != null) return unescape(r[2]);
-    return null; //返回参数值
-}
-
-var sId = getUrlParam('id');
 
 if (sId != null && sId != -1) //加载服务
 {
-    $.get("http://183.129.170.180:8041/backEnd/queryService?id=" + sId, function(result) {
+    $.get(backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
         $("#serviceName").val(result["name"]);

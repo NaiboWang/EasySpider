@@ -1,2 +1,9 @@
 .idea/
 node_modules/
+ServiceWrapper/
+Data/
+/GPUCache
+*.exe
+*.ini
+*.7z
+*.mp4

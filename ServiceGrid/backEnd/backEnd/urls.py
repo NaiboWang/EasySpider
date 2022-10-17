@@ -27,6 +27,4 @@ urlpatterns = [
     path('backEnd/invokeService',view.invokeService), #调用服务接口
     path('backEnd/queryTask',view.queryTask), #调用服务接口
     path('backEnd/queryTasks',view.queryTasks), #调用服务接口
-    path('backEnd/dongcang/insertInfo',view.insertInfo), 
-    path('backEnd/dongcang/queryInfos',view.queryInfos), 
 ]

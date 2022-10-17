@@ -16,29 +16,29 @@
 
 <body>
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存成功!
+        <button type="button" class="close" data-dismiss="alert">&times;</button> Hint: Save Successfully!
     </div>
     <div style="display:flex">
         <div style="width: 200px;float:left">
             <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
-                <div style="padding: 10px;border-radius:10px;font-size: 20px;">工具箱</div>
-                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">保存服务</button>
+                <div style="padding: 10px;border-radius:10px;font-size: 20px;">Toolbox</div>
+                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">Save Service</button>
                 <!-- <button type="button" data=1 class="btn btn-outline-primary options">打开网页</button> -->
-                <button type="button" data=2 class="btn btn-outline-primary options">点击元素</button>
-                <button type="button" data=3 class="btn btn-outline-primary options">提取数据</button>
-                <button type="button" data=4 class="btn btn-outline-primary options">输入文字</button>
-                <button type="button" data=5 class="btn btn-outline-primary options">识别验证码</button>
-                <button type="button" data=6 style="font-size: 14px!important;" class="btn btn-outline-primary options">切换下拉选项</button>
-                <button type="button" data=7 class="btn btn-outline-primary options">移动到元素</button>
-                <button type="button" data=8 class="btn btn-outline-primary options">循环</button>
-                <button type="button" data=9 class="btn btn-outline-primary options">判断条件</button>
+                <button type="button" data=2 class="btn btn-outline-primary options">Click Element</button>
+                <button type="button" data=3 class="btn btn-outline-primary options">Extract Data</button>
+                <button type="button" data=4 class="btn btn-outline-primary options">Input Text</button>
+                <!-- <button type="button" data=5 class="btn btn-outline-primary options">-</button> -->
+                <!-- <button type="button" data=6 style="font-size: 14px!important;" class="btn btn-outline-primary options">Change Option</button> -->
+                <!-- <button type="button" data=7 class="btn btn-outline-primary options">-</button> -->
+                <button type="button" data=8 class="btn btn-outline-primary options">Loop</button>
+                <button type="button" data=9 class="btn btn-outline-primary options">If Condition</button>
                 <div>-----------------</div>
-                <button type="button" data=13 class="btn btn-outline-primary options" title="调整下一个要插入的节点的位置">调整锚点</button>
-                <button type="button" data=10 class="btn btn-outline-primary options">剪切元素</button>
-                <button type="button" data=11 class="btn btn-outline-primary options">复制元素</button>
-                <button type="button" data=12 class="btn btn-outline-primary options">删除元素</button>
-                <button type="button" data=0 class="btn btn-outline-primary2 options">取消操作</button>
-                <div style="text-align: left;margin: 10px;font-size:15px!important">提示：点击上方操作按钮后点击要放置元素的位置处的箭头，可按取消操作按钮取消。</div>
+                <button type="button" data=13 class="btn btn-outline-primary options" title="调整下一个要插入的节点的位置">Set Anchor</button>
+                <button type="button" data=10 class="btn btn-outline-primary options">Cut Element</button>
+                <button type="button" data=11 class="btn btn-outline-primary options">Copy Element</button>
+                <button type="button" data=12 class="btn btn-outline-primary options">Del Element</button>
+                <button type="button" data=0 class="btn btn-outline-primary2 options">Cancel</button>
+                <div style="text-align: left;margin: 10px;font-size:15px!important"></div>
             </div>
         </div>
         <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right">
@@ -54,47 +54,47 @@
             </div> -->
             <div class="Modify" id="app">
                 <div>
-                    <label>选项名称:</label>
+                    <label>Option Name:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
                 </div>
                 <!-- 下面是10种不同类型操作选项的不同的配置页面 -->
                 <div class="elements" v-if="nodeType==1">
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的链接</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use link inside the Loop</p>
                     </div>
                     <div v-if='!useLoop'>
                         <label>url:</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>
-                        <label>填入的全部链接:</label>
+                        <label>All links filled:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
                     </div>
-                    <label>执行完是否向下滚动:</label>
+                    <label>After executed, whether scroll down:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>不滚动</option>
-                        <option value = 1>向下滚动一屏</option>
-                        <option value = 2>滚动到底部</option>
+                        <option value = 0>No</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
                       </select>
-                    <label>滚动次数:</label>
+                    <label>Scroll Times:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                 </div>
 
                 <div class="elements" v-if="nodeType==2">
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the Loop</p>
                     </div>
                     <div v-if='!useLoop'>
                         <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     </div>
-                    <label>执行完是否向下滚动:</label>
+                    <label>After executed, whether scroll down:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>不滚动</option>
-                        <option value = 1>向下滚动一屏</option>
-                        <option value = 2>滚动到底部</option>
+                        <option value = 0>No</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
                       </select>
-                    <label>滚动次数:</label>
+                    <label>Scroll Times:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
 
                 </div>
@@ -103,9 +103,9 @@
                     <div class="toolkitcontain">
                         <table class="toolkittb2" cellspacing="0">
                             <tbody>
-                                <th>字段名</th>
-                                <th style="width:200px">示例值</th>
-                                <th>操作</th>
+                                <th>Field Name</th>
+                                <th style="width:200px">Example Value</th>
+                                <th>Operations</th>
                             </tbody>
                         </table>
                         <table class="toolkittb4" cellspacing="0">
@@ -115,22 +115,37 @@
                                     </td>
                                     <td style="width:200px">{{paras.parameters[i-1]["exampleValues"][0]["value"]}}</td>
                                     <td>
-                                        <a v-on:mousedown="modifyParas(i-1)">修改</a>
-                                        <a v-on:mousedown="deleteParas(i-1)">删除</a>
-                                        <a v-on:mousedown="upParas(i-1)">上移</a>
-                                        <a v-on:mousedown="downParas(i-1)">下移</a>
+                                        <a v-on:mousedown="modifyParas(i-1)">Modify</a>
+                                        <a v-on:mousedown="deleteParas(i-1)">Delete</a>
+                                        <a v-on:mousedown="upParas(i-1)">Up</a>
+                                        <a v-on:mousedown="downParas(i-1)">Down</a>
                                     </td>
                                 </tr>
                         </table>
                     </div>
                     <div style="font-size: 13px;" v-if="paraIndex<paras.parameters.length">
-                        <label>当前编辑参数名: <strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
+                        <label>Current parameter name: <strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPATH</p>
                         <label>XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
-                        <label>参数描述:</label>
+                        <label>Extraction Type</label>
+                        <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
+                            <option :value = 0>Text (include child element)</option>
+                            <option :value = 1>Text (exclude child element)</option>
+                            <option :value = 2>innerHTML</option>
+                            <option :value = 3>outerHTML</option>
+                        </select>
+                        <label>Node Type</label>
+                        <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
+                            <option :value = 0>Ordinary Node</option>
+                            <option :value = 1>Link Text</option>
+                            <option :value = 2>Link Address</option>
+                            <option :value = 3>Form Value</option>
+                            <option :value = 4>Image Address</option>
+                        </select>
+                        <label>Parameter Description:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
-                        <label>元素找不到时的值:</label>
+                        <label>Absent value when cannot find the element:</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
                     </div>
 
@@ -140,10 +155,10 @@
                 <div class="elements" v-if="nodeType==4">
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use text inside the Loop</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>输入值:</label>
+                        <label>Input Value:</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
                     </div>
 
@@ -165,31 +180,40 @@
 
                 <div class="elements" v-if="nodeType==8">
                     <!-- 循环选项 -->
-                    <label>循环类型:</label>
+                    <label>Loop Type:</label>
                     <select v-model='loopType' class="form-control">
-                        <option value = 0>单个元素</option>
-                        <option value = 1>不固定元素列表</option>
-                        <option value = 2>固定元素列表</option>
-                        <option value = 3>文本列表</option>
-                        <option value = 4>网址列表</option>
+                        <option value = 0>Single Element</option>
+                        <option value = 1>Unfixed Element List</option>
+                        <option value = 2>Fixed Element List</option>
+                        <option value = 3>Text List</option>
+                        <option value = 4>Weblink List</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
                         <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     </div>
                     <div v-if='parseInt(loopType) == 2'>
-                        <label>XPath列表:</label>
+                        <label>XPath List:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["pathList"]'></textarea>
                     </div>
                     <div v-if='parseInt(loopType) > 2'>
-                        <label>内容列表:</label>
+                        <label>Content List:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
-                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表不设置）:</label>
+                    <label v-if='parseInt(loopType) == 0'>Max Loop time（0 means infinite）:</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
-                    <label><b>历史记录回退后</b>等待秒数:</label>
+                    <label><b>History back</b> wait time:</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+                    <label>After executed, whether scroll down:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>No</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
+                      </select>
+                    <label>Scroll Times:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
@@ -197,22 +221,22 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
-                    <label>条件类型:</label>
+                    <label>Condition Type:</label>
                     <select v-model='TClass' class="form-control">
-                        <option value = 0>无条件</option>
-                        <option value = 1>当前页面包括文本</option>
-                        <option value = 2>当前页面包括元素</option>
-                        <option v-if="nowNode['isInLoop']" value = 3>当前循环项包括文本</option>
-                        <option v-if="nowNode['isInLoop']" value = 4>当前循环项包括元素</option>
+                        <option value = 0>No Condition</option>
+                        <option value = 1>Text inside current page</option>
+                        <option value = 2>Element inside current page</option>
+                        <option v-if="nowNode['isInLoop']" value = 3>Text inside current loop</option>
+                        <option v-if="nowNode['isInLoop']" value = 4>Element inside current loop</option>
                       </select>
-                    <label v-if='TClass'>包含的文字/元素XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <label v-if='TClass'>Text/Xpath of Element: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                     <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath。" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                 </div>
                 <div style="margin-top:5px">
-                    <label><b>执行后</b>等待秒数:</label>
+                    <label>Seconds <b>after executed</b>:</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
                 </div>
-                <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">确定</button>
+                <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">Confirm</button>
 
             </div>
 
@@ -225,20 +249,20 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">保存服务</h4>
+                    <h4 class="modal-title" id="myModalLabel">Save Service</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                    <label>服务名称:</label>
+                    <label>Service Name:</label>
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="新web服务" id="serviceName" class="form-control"></input>
-                    <label>服务描述:</label>
+                    <label>Service Description:</label>
                     <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
-                    <button type="button" id="saveButton" class="btn btn-primary">保存</button>
+                    <button type="button" id="saveAsButton" class="btn btn-outline-primary">Save as</button>
+                    <button type="button" id="saveButton" class="btn btn-primary">Save</button>
                 </div>
             </div>
             <!-- /.modal-content -->

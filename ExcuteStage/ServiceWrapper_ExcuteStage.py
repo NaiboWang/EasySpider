@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import atexit  # 遇到错误退出时应执行的代码
 import json
 import re
 import sys
@@ -17,21 +18,32 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import random
 import numpy
 import csv
 import os
+from selenium.webdriver.common.by import By
+
+
+saveName, log, OUTPUT, browser, SAVED = None, "", "", None, False
+
+desired_capabilities = DesiredCapabilities.CHROME
+desired_capabilities["pageLoadStrategy"] = "none"
+
 
 class Time:
-    def __init__(self,type1=""):
-        self.t =  int(round(time.time() * 1000))
+    def __init__(self, type1=""):
+        self.t = int(round(time.time() * 1000))
         self.type = type1
-    
+
     def end(self):
         at = int(round(time.time() * 1000))
         Log(str(self.type)+":"+str(at-self.t))
 
 # 记录log
+
+
 def recordLog(str=""):
     global log
     log = log + str + "\n"
@@ -43,17 +55,48 @@ def Log(text, text2=""):
     if switch:
         print(text, text2)
 
+# 屏幕滚动函数
+
+
+def scrollDown(para, rt=""):
+    try:
+        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+            for i in range(para["scrollCount"]):
+                time.sleep(1)  # 下拉完等1秒
+                Log("下拉完等待1秒")
+                body = browser.find_element_by_css_selector("body")
+                if para["scrollType"] == 1:
+                    body.send_keys(Keys.PGDN)
+                else:
+                    body.send_keys(Keys.END)
+    except TimeoutException:
+        Log('time out after 10 seconds when scrolling. ')
+        recordLog('time out after 10 seconds when scrolling')
+        browser.execute_script('window.stop()')
+        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+            for i in range(para["scrollCount"]):
+                time.sleep(1)  # 下拉完等1秒
+                Log("下拉完等待1秒")
+                body = browser.find_element_by_css_selector("body")
+                if para["scrollType"] == 1:
+                    body.send_keys(Keys.PGDN)
+                else:
+                    body.send_keys(Keys.END)
+        if rt != "":
+            rt.end()
+
 
 # 执行节点关键函数部分
 def excuteNode(nodeId, loopValue="", clickPath="", index=0):
     node = procedure[nodeId]
     WebDriverWait(browser, 10).until
-    (EC.visibility_of_element_located((By.XPATH, node["parameters"]["xpath"])))  # 等待元素出现才进行操作，10秒内未出现则报错
+    # 等待元素出现才进行操作，10秒内未出现则报错
+    (EC.visibility_of_element_located((By.XPATH, node["parameters"]["xpath"])))
 
     # 根据不同选项执行不同操作
     if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
         for i in node["sequence"]:  # 从根节点开始向下读取
-            excuteNode(i, loopValue,clickPath,index)
+            excuteNode(i, loopValue, clickPath, index)
     elif node["option"] == 1:  # 打开网页操作
         recordLog("openPage")
         openPage(node["parameters"], loopValue)
@@ -67,10 +110,10 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
         inputInfo(node["parameters"], loopValue)
     elif node["option"] == 8:  # 循环
         recordLog("loop")
-        loopExcute(node, loopValue,clickPath,index)  # 执行循环
+        loopExcute(node, loopValue, clickPath, index)  # 执行循环
     elif node["option"] == 9:  # 条件分支
         recordLog("judge")
-        judgeExcute(node, loopValue,clickPath,index)
+        judgeExcute(node, loopValue, clickPath, index)
 
     # 执行完之后进行等待
     if node["option"] != 0:
@@ -82,7 +125,7 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
 
 
 # 对判断条件的处理
-def judgeExcute(node, loopElement,clickPath="",index=0):
+def judgeExcute(node, loopElement, clickPath="", index=0):
     rt = Time("条件判断")
     global bodyText  # 引入bodyText
     excuteBranchId = 0  # 要执行的BranchId
@@ -101,7 +144,7 @@ def judgeExcute(node, loopElement,clickPath="",index=0):
                 continue
         elif tType == 2:  # 当前页面包含元素
             try:
-                if browser.find_element_by_xpath(cnode["parameters"]["value"]):
+                if browser.find_element(By.XPATH, cnode["parameters"]["value"]):
                     excuteBranchId = i
                     break
             except:  # 找不到元素或者xpath写错了，下一个条件
@@ -115,22 +158,23 @@ def judgeExcute(node, loopElement,clickPath="",index=0):
                 continue
         elif tType == 4:  # 当前循环元素包括元素
             try:
-                if loopElement.find_element_by_xpath(cnode["parameters"]["value"][1:]):
+                if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:]):
                     excuteBranchId = i
                     break
             except:  # 找不到元素或者xpath写错了，下一个条件
                 continue
     rt.end()
-    excuteNode(excuteBranchId, loopElement,clickPath,index)
+    excuteNode(excuteBranchId, loopElement, clickPath, index)
 
 
 # 对循环的处理
-def loopExcute(node, loopValue,clickPath="",index=0):
+def loopExcute(node, loopValue, clickPath="", index=0):
     time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
     Log("循环执行前等待0.1秒")
     global history
     thisHandle = browser.current_window_handle  # 记录本次循环内的标签页的ID
-    thisHistoryLength = browser.execute_script('return history.length')  # 记录本次循环内的history的length
+    thisHistoryLength = browser.execute_script(
+        'return history.length')  # 记录本次循环内的history的length
     history["index"] = thisHistoryLength
     history["handle"] = thisHandle
 
@@ -139,9 +183,10 @@ def loopExcute(node, loopValue,clickPath="",index=0):
         count = 0  # 执行次数
         while True:  # do while循环
             try:
-                element = browser.find_element_by_xpath(node["parameters"]["xpath"])
+                element = browser.find_element(By.XPATH,
+                                               node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 挨个执行操作
-                    excuteNode(i, element, node["parameters"]["xpath"],0)
+                    excuteNode(i, element, node["parameters"]["xpath"], 0)
                 Log("click: ", node["parameters"]["xpath"])
                 recordLog("click:" + node["parameters"]["xpath"])
             except NoSuchElementException:
@@ -153,14 +198,17 @@ def loopExcute(node, loopValue,clickPath="",index=0):
             count = count + 1
             Log("页数：", count)
             recordLog("页数：" + str(count))
+            # print(node["parameters"]["exitCount"], "-------")
             if node["parameters"]["exitCount"] == count:  # 如果达到设置的退出循环条件的话
                 break
     elif int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
         try:
-            elements = browser.find_elements_by_xpath(node["parameters"]["xpath"])
+            elements = browser.find_elements(By.XPATH,
+                                             node["parameters"]["xpath"])
             for index in range(len(elements)):
                 for i in node["sequence"]:  # 挨个执行操作
-                    excuteNode(i, elements[index], node["parameters"]["xpath"], index)
+                    excuteNode(i, elements[index],
+                               node["parameters"]["xpath"], index)
                 if browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
                     while True:  # 一直关闭窗口直到当前标签页
                         browser.close()  # 关闭使用完的标签页
@@ -168,9 +216,11 @@ def loopExcute(node, loopValue,clickPath="",index=0):
                         if browser.current_window_handle == thisHandle:
                             break
                 if history["index"] != thisHistoryLength and history[
-                    "handle"] == browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
-                    difference = thisHistoryLength - history["index"]  # 计算历史记录变化差值
-                    browser.execute_script('history.go(' + str(difference) + ')')  # 回退历史记录
+                        "handle"] == browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
+                    difference = thisHistoryLength - \
+                        history["index"]  # 计算历史记录变化差值
+                    browser.execute_script(
+                        'history.go(' + str(difference) + ')')  # 回退历史记录
                     if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
                         time.sleep(node["parameters"]["historyWait"])
                     else:
@@ -186,7 +236,7 @@ def loopExcute(node, loopValue,clickPath="",index=0):
     elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
         for path in node["parameters"]["pathList"].split("\n"):  # 千万不要忘了分割！！
             try:
-                element = browser.find_element_by_xpath(path)
+                element = browser.find_element(By.XPATH, path)
                 for i in node["sequence"]:  # 挨个执行操作
                     excuteNode(i, element, path, 0)
                 if browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
@@ -196,9 +246,11 @@ def loopExcute(node, loopValue,clickPath="",index=0):
                         if browser.current_window_handle == thisHandle:
                             break
                 if history["index"] != thisHistoryLength and history[
-                    "handle"] == browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
-                    difference = thisHistoryLength - history["index"]  # 计算历史记录变化差值
-                    browser.execute_script('history.go(' + str(difference) + ')')  # 回退历史记录
+                        "handle"] == browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
+                    difference = thisHistoryLength - \
+                        history["index"]  # 计算历史记录变化差值
+                    browser.execute_script(
+                        'history.go(' + str(difference) + ')')  # 回退历史记录
                     if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
                         time.sleep(node["parameters"]["historyWait"])
                     else:
@@ -216,16 +268,18 @@ def loopExcute(node, loopValue,clickPath="",index=0):
         for text in textList:
             recordLog("input: " + text)
             for i in node["sequence"]:  # 挨个执行操作
-                excuteNode(i, text, "",0)
+                excuteNode(i, text, "", 0)
     elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
         pass  # 以后再做
     history["index"] = thisHistoryLength
     history["handle"] = browser.current_window_handle
+    scrollDown(node["parameters"])
 
 
 # 打开网页事件
 def openPage(para, loopValue):
     rt = Time("打开网页")
+    time.sleep(2)  # 打开网页后强行等待至少2秒
     global links
     global urlId
     global history
@@ -248,18 +302,7 @@ def openPage(para, loopValue):
         browser.execute_script('window.stop()')
         history["index"] = browser.execute_script("return history.length")
         rt.end()
-    try:
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("下拉等待1秒")
-                body = browser.find_element_by_css_selector("body")
-                body.send_keys(Keys.END)
-    except TimeoutException:
-        Log('time out after 10 seconds when loading page: ' + url)
-        recordLog('time out after 10 seconds when loading page: ' + url)
-        browser.execute_script('window.stop()')
-        rt.end()
+    scrollDown(para, rt)  # 控制屏幕向下滚动
     if containJudge:
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -285,7 +328,7 @@ def inputInfo(para, loopValue):
     Log("输入前等待1秒")
     rt = Time("输入文字")
     try:
-        textbox = browser.find_element_by_xpath(para["xpath"])
+        textbox = browser.find_element(By.XPATH, para["xpath"])
     except:
         Log("找不到输入框元素：" + para["xpath"] + "请尝试执行前等待")
         recordLog("找不到输入框元素：" + para["xpath"] + "请尝试执行前等待")
@@ -313,7 +356,8 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         path = para["xpath"]  # 不然使用元素定义的xpath
     tempHandleNum = len(browser.window_handles)  # 记录之前的窗口位置
     try:
-        script = 'var result = document.evaluate(`' + path + '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
+        script = 'var result = document.evaluate(`' + path + \
+            '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
         browser.execute_script(script, str(index))  # 用js的点击方法
 
     except TimeoutException:
@@ -343,24 +387,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             history["index"] = browser.execute_script("return history.length")
             rt.end()
         # 如果打开了新窗口，切换到新窗口
-    try:
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("下拉完等待1秒")
-                body = browser.find_element_by_css_selector("body")
-                body.send_keys(Keys.END)
-    except TimeoutException:
-        Log('time out after 10 seconds when scrolling. ')
-        recordLog('time out after 10 seconds when scrolling')
-        browser.execute_script('window.stop()')
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("下拉完等待1秒")
-                body = browser.find_element_by_css_selector("body")
-                body.send_keys(Keys.END)
-        rt.end()
+    scrollDown(para, rt)  # 根据参数配置向下滚动
     if containJudge:  # 有判断语句才执行以下操作
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -393,13 +420,19 @@ def getData(para, loopElement, isInLoop=True):
                 if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                     element = loopElement
                 else:
-                    element = loopElement.find_element_by_xpath(p["relativeXpath"][1:])
+                    element = loopElement.find_element(By.XPATH,
+                                                       p["relativeXpath"][1:])
             else:
-                element = browser.find_element_by_xpath(p["relativeXpath"])
+                element = browser.find_element(By.XPATH, p["relativeXpath"])
         except NoSuchElementException:  # 找不到元素的时候，使用默认值
-            outputParameters[p["name"]] = p["default"]
-            Log('Element not found,use default')
-            recordLog('Element not found,use default')
+            # print(p)
+            try:
+                content = p["default"]
+            except Exception as e:
+                content = ""
+            outputParameters[p["name"]] = content
+            Log('Element %s not found,use default' % p["relativeXpath"])
+            recordLog('Element %s not found, use default' % p["relativeXpath"])
             continue
         except TimeoutException:  # 超时的时候设置超时值
             Log('time out after 10 seconds when getting data')
@@ -409,9 +442,10 @@ def getData(para, loopElement, isInLoop=True):
                 if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                     element = loopElement
                 else:
-                    element = loopElement.find_element_by_xpath(p["relativeXpath"][1:])
+                    element = loopElement.find_element(By.XPATH,
+                                                       p["relativeXpath"][1:])
             else:
-                element = browser.find_element_by_xpath(p["relativeXpath"])
+                element = browser.find_element(By.XPATH, p["relativeXpath"])
             rt.end()
         try:
             if p["contentType"] == 2:
@@ -428,7 +462,8 @@ def getData(para, loopElement, isInLoop=True):
                 }\
                 var str = arr.join(" "); \
                 return str;'
-                content = browser.execute_script(command, element).replace("\n", "").replace("\\s+", " ")
+                content = browser.execute_script(command, element).replace(
+                    "\n", "").replace("\\s+", " ")
                 if p["nodeType"] == 2:
                     if element.get_attribute("href") != None:
                         content = element.get_attribute("href")
@@ -461,19 +496,22 @@ def getData(para, loopElement, isInLoop=True):
                         content = element.get_attribute("src")
                     else:
                         content = ""
-        except StaleElementReferenceException: #发生找不到元素的异常后，等待几秒重新查找
+        except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
             recordLog('StaleElementReferenceException：'+p["relativeXpath"])
-            time.sleep(3) 
+            time.sleep(3)
             try:
                 if p["relative"]:  # 是否相对xpath
                     if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                         element = loopElement
                         recordLog('StaleElementReferenceException：loopElement')
                     else:
-                        element = loopElement.find_element_by_xpath(p["relativeXpath"][1:])
-                        recordLog('StaleElementReferenceException：loopElement+relativeXPath')
+                        element = loopElement.find_element(By.XPATH,
+                                                           p["relativeXpath"][1:])
+                        recordLog(
+                            'StaleElementReferenceException：loopElement+relativeXPath')
                 else:
-                    element = browser.find_element_by_xpath(p["relativeXpath"])
+                    element = browser.find_element(
+                        By.XPATH, p["relativeXpath"])
                     recordLog('StaleElementReferenceException：relativeXpath')
                 if p["contentType"] == 2:
                     content = element.get_attribute('innerHTML')
@@ -489,7 +527,8 @@ def getData(para, loopElement, isInLoop=True):
                     }\
                     var str = arr.join(" "); \
                     return str;'
-                    content = browser.execute_script(command, element).replace("\n", "").replace("\\s+", " ")
+                    content = browser.execute_script(command, element).replace(
+                        "\n", "").replace("\\s+", " ")
                     if p["nodeType"] == 2:
                         if element.get_attribute("href") != None:
                             content = element.get_attribute("href")
@@ -524,7 +563,7 @@ def getData(para, loopElement, isInLoop=True):
                             content = ""
             except StaleElementReferenceException:
                 recordLog('StaleElementReferenceException：'+p["relativeXpath"])
-                continue # 再出现类似问题直接跳过
+                continue  # 再出现类似问题直接跳过
         outputParameters[p["name"]] = content
     global OUTPUT
     line = []
@@ -541,13 +580,12 @@ def isnull(s):
     return len(s) != 0
 
 
-import atexit #遇到错误退出时应执行的代码
-@atexit.register 
-def clean(): 
-    global saveName,log, OUTPUT,browser,SAVED
+@atexit.register
+def clean():
+    global saveName, log, OUTPUT, browser, SAVED
     if not SAVED:
         print('清理环境保存数据')
-        with open("Data/"+saveName + '_log.txt', 'w',encoding='utf-8-sig') as file_obj:
+        with open("Data/"+saveName + '_log.txt', 'w', encoding='utf-8-sig') as file_obj:
             file_obj.write(log)
             file_obj.close()
         with open("Data/"+saveName + '.csv', 'w', encoding='utf-8-sig', newline="") as f:
@@ -557,42 +595,53 @@ def clean():
             f.close()
         browser.quit()
 
+
 if __name__ == '__main__':
     options = Options()
+    exe_path = "chromedriver.exe"
     if os.path.exists(os.getcwd()+"/ServiceWrapper"):
-        options.binary_location="ServiceWrapper/Chrome/chrome.exe" #指定chrome位置
+        options.binary_location = "ServiceWrapper/Chrome/chrome.exe"  # 指定chrome位置
+        exe_path = "ServiceWrapper/Chrome/chromedriver.exe"
     elif os.path.exists(os.getcwd()+"/Debug"):
-        options.binary_location="Debug/Chrome/chrome.exe" #指定chrome位置
-    elif os.getcwd().find("ExcuteStage") >= 0: #如果直接执行
-        options.binary_location = "../../bin/x64/Debug/Chrome/chrome.exe"  # 指定chrome位置
+        options.binary_location = "Debug/Chrome/chrome.exe"  # 指定chrome位置
+        exe_path = "Debug/Chrome/chromedriver.exe"
+    elif os.getcwd().find("ExcuteStage") >= 0:  # 如果直接执行
+        options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
+        exe_path = "./Chrome/chromedriver.exe"
     else:
-        options.binary_location="chrome.exe" #指定chrome位置
-    browser = webdriver.Chrome(chrome_options=options)
+        options.binary_location = "chrome.exe"  # 指定chrome位置
+    browser = webdriver.Chrome(options=options, executable_path=exe_path)
     browser.get('about:blank')
-    browser.set_page_load_timeout(10) # 加载页面最大超时时间
-    if len(sys.argv)>1:
-        id = int(sys.argv[1]) #taskId这里修改
+    browser.set_page_load_timeout(10)  # 加载页面最大超时时间
+    browser.set_script_timeout(10)
+    if len(sys.argv) > 1:
+        id = int(sys.argv[1])  # taskId这里修改
     else:
-        id = 7 #设置默认值
-    print("id：",id)
-    if len(sys.argv)>2:
-        saveName = "task_" + str(id) + "_" + sys.argv[2]  # 保存文件的名字
+        id = 7  # 设置默认值
+    print("id：", id)
+    if len(sys.argv) > 2:
+        backEndAddress = sys.argv[2]
     else:
-        saveName = "task_" + str(id) + "_" + str(random.randint(0, 999999999))  # 保存文件的名字
-    content = requests.get("http://183.129.170.180:8041/backEnd/queryTask?id=" + str(id))
+        backEndAddress = "http://servicewrapper.naibo.wang"
+    if len(sys.argv) > 3:
+        saveName = "task_" + str(id) + "_" + sys.argv[3]  # 保存文件的名字
+    else:
+        saveName = "task_" + str(id) + "_" + \
+            str(random.randint(0, 999999999))  # 保存文件的名字
+    content = requests.get(backEndAddress + "/backEnd/queryTask?id=" + str(id))
     service = json.loads(content.text)  # 加载服务信息
-    print("name：",service["name"])
+    print("name：", service["name"])
     procedure = service["graph"]  # 程序执行流程
     links = list(filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
     OUTPUT = []  # 采集的数据
     OUTPUT.append([])  # 添加表头
-    containJudge = service["containJudge"] #是否含有判断语句
+    containJudge = service["containJudge"]  # 是否含有判断语句
     bodyText = ""  # 记录bodyText
     tOut = service["outputParameters"]  # 生成输出参数对象
     outputParameters = {}
     log = ""  # 记下现在总共开了多少个标签页
-    history = {"index":0,"handle":None} #记录页面现在所以在的历史记录的位置
-    SAVED=False #记录是否已经存储了
+    history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
+    SAVED = False  # 记录是否已经存储了
     for para in tOut:
         outputParameters[para["name"]] = ""
         OUTPUT[0].append(para["name"])
@@ -604,7 +653,7 @@ if __name__ == '__main__':
     print("执行完成！")
     recordLog("Done!")
     # dataPath = os.path.abspath(os.path.join(os.getcwd(), "../Data"))
-    with open("Data/"+saveName + '_log.txt', 'w',encoding='utf-8-sig') as file_obj:
+    with open("Data/"+saveName + '_log.txt', 'w', encoding='utf-8-sig') as file_obj:
         file_obj.write(log)
         file_obj.close()
     with open("Data/"+saveName + '.csv', 'w', encoding='utf-8-sig', newline="") as f:
