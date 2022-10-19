@@ -1,4 +1,3 @@
-
 from django.http import HttpResponse
 import pymongo
 import json
