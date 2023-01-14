@@ -36,7 +36,7 @@ def invokeService(id, data):
     count = len(os.listdir("tasks")) + 1
     service["id"] = count  # 修改id
     print(count)
-    with open("tasks/%d.json" % count, "w", ) as f:
+    with open("tasks/%d.json" % count, "w", encoding='utf-8') as f:
         s = json.dumps(service, ensure_ascii=False)
         f.write(s)
     return count

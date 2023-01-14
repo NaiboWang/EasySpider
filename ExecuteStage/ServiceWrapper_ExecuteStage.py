@@ -33,6 +33,7 @@ desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 outputParameters = {}
 
+
 class Time:
     def __init__(self, type1=""):
         self.t = int(round(time.time() * 1000))
@@ -65,7 +66,7 @@ def scrollDown(para, rt=""):
             for i in range(para["scrollCount"]):
                 time.sleep(1)  # 下拉完等1秒
                 Log("下拉完等待1秒")
-                body = browser.find_element(By.CSS_SELECTOR,"body")
+                body = browser.find_element(By.CSS_SELECTOR, "body")
                 if para["scrollType"] == 1:
                     body.send_keys(Keys.PGDN)
                 else:
@@ -78,7 +79,7 @@ def scrollDown(para, rt=""):
             for i in range(para["scrollCount"]):
                 time.sleep(1)  # 下拉完等1秒
                 Log("下拉完等待1秒")
-                body = browser.find_element(By.CSS_SELECTOR,"body")
+                body = browser.find_element(By.CSS_SELECTOR, "body")
                 if para["scrollType"] == 1:
                     body.send_keys(Keys.PGDN)
                 else:
@@ -106,7 +107,8 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
         clickElement(node["parameters"], loopValue, clickPath, index)
     elif node["option"] == 3:  # 提取数据
         recordLog("getData")
-        getData(node["parameters"], loopValue, node["isInLoop"], parentPath = clickPath, index = index)
+        getData(node["parameters"], loopValue, node["isInLoop"],
+                parentPath=clickPath, index=index)
     elif node["option"] == 4:  # 输入文字
         inputInfo(node["parameters"], loopValue)
     elif node["option"] == 8:  # 循环
@@ -184,20 +186,35 @@ def loopExcute(node, loopValue, clickPath="", index=0):
         count = 0  # 执行次数
         while True:  # do while循环
             try:
-                element = browser.find_element(By.XPATH,
-                                               node["parameters"]["xpath"])
+                finished = False
+                element = browser.find_element(
+                    By.XPATH, node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 挨个执行操作
                     excuteNode(i, element, node["parameters"]["xpath"], 0)
+                finished = True
                 Log("click: ", node["parameters"]["xpath"])
                 recordLog("click:" + node["parameters"]["xpath"])
-            # except NoSuchElementException:
-            except:
+            except NoSuchElementException:
+                # except:
+                print("\n\n-------Get Element Error-------\n\n")
                 Log("clickNotFound: ", node["parameters"]["xpath"])
                 recordLog("clickNotFound:" + node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                     if node["option"] != 2:
                         excuteNode(i, None, node["parameters"]["xpath"], 0)
+                finished = True
                 break  # 如果找不到元素，退出循环
+            finally:
+                if not finished:
+                    print("\n\n-------Retrying-------\n\n")
+                    Log("-------Retrying-------: ",
+                        node["parameters"]["xpath"])
+                    recordLog("clickNotFound:" + node["parameters"]["xpath"])
+                    for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
+                        if node["option"] != 2:
+                            excuteNode(i, None, node["parameters"]["xpath"], 0)
+                    break  # 如果找不到元素，退出循环
+
             count = count + 1
             Log("页数：", count)
             recordLog("页数：" + str(count))
@@ -274,7 +291,8 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                 excuteNode(i, text, "", 0)
     elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
         # tempList = node["parameters"]["textList"].split("\r\n")
-        urlList = list(filter(isnull, node["parameters"]["textList"].split("\n"))) # 去空行
+        urlList = list(
+            filter(isnull, node["parameters"]["textList"].split("\n")))  # 去空行
         # urlList = []
         # for url in tempList:
         #     if url != "":
@@ -292,6 +310,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
 def openPage(para, loopValue):
     rt = Time("打开网页")
     time.sleep(2)  # 打开网页后强行等待至少2秒
+    time.sleep(random.uniform(1, 10))  # 生成一个a到b的小数等待时间
     global links
     global urlId
     global history
@@ -333,7 +352,7 @@ def openPage(para, loopValue):
     if containJudge:
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
-            bodyText = browser.find_element(By.CSS_SELECTOR,"body").text
+            bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
             Log('URL Page: ' + url)
             recordLog('URL Page: ' + url)
         except TimeoutException:
@@ -343,7 +362,7 @@ def openPage(para, loopValue):
             time.sleep(1)
             Log("获得bodytext等待1秒")
             # 再执行一遍
-            bodyText = browser.find_element(By.CSS_SELECTOR,"body").text
+            bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
             rt.end()
         except Exception as e:
             Log(e)
@@ -374,7 +393,7 @@ def inputInfo(para, loopValue):
     else:
         textbox.send_keys(para["value"])
     global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
-    bodyText = browser.find_element(By.CSS_SELECTOR,"body").text
+    bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
     rt.end()
 
 
@@ -404,6 +423,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         recordLog(str(e))
     time.sleep(0.5)  # 点击之后等半秒
     Log("点击之后等待0.5秒")
+    time.sleep(random.uniform(1, 10))  # 生成一个a到b的小数等待时间
     if tempHandleNum != len(browser.window_handles):  # 如果有新标签页的行为发生
         browser.switch_to.window(browser.window_handles[-1])  # 跳转到新的标签页
         history["handle"] = browser.current_window_handle
@@ -425,7 +445,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
     if containJudge:  # 有判断语句才执行以下操作
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
-            bodyText = browser.find_element(By.CSS_SELECTOR,"body").text
+            bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
         except TimeoutException:
             Log('time out after 10 seconds when getting body text')
             recordLog('time out after 10 seconds when getting body text')
@@ -433,7 +453,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             time.sleep(1)
             Log("bodytext等待1秒")
             # 再执行一遍
-            bodyText = browser.find_element(By.CSS_SELECTOR,"body").text
+            bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
             rt.end()
         except Exception as e:
             Log(e)
@@ -442,7 +462,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
 
 
 # 提取数据事件
-def getData(para, loopElement, isInLoop=True, parentPath="", index = 0):
+def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
     if not isInLoop and para["wait"] == 0:
         time.sleep(1)  # 如果提取数据字段不在循环内而且设置的等待时间为0，默认等待1秒
         Log("提取数据等待1秒")
@@ -454,12 +474,14 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index = 0):
                 if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                     element = loopElement
                 else:
-                    if p["relativeXpath"].find("//")>=0: # 如果字串里有//即子孙查找，则不动语句
-                        full_path = "(" + parentPath + p["relativeXpath"] + ")" + "[" + str(index + 1) + "]"
+                    if p["relativeXpath"].find("//") >= 0:  # 如果字串里有//即子孙查找，则不动语句
+                        full_path = "(" + parentPath + \
+                            p["relativeXpath"] + ")" + \
+                            "[" + str(index + 1) + "]"
                         element = browser.find_element(By.XPATH, full_path)
                     else:
                         element = loopElement.find_element(By.XPATH,
-                                                       p["relativeXpath"][1:])
+                                                           p["relativeXpath"][1:])
             else:
                 element = browser.find_element(By.XPATH, p["relativeXpath"])
         except NoSuchElementException:  # 找不到元素的时候，使用默认值
@@ -638,6 +660,7 @@ def clean():
 if __name__ == '__main__':
     options = Options()
     exe_path = "chromedriver.exe"
+    option = webdriver.ChromeOptions()
     if os.path.exists(os.getcwd()+"/ServiceWrapper"):
         print("Finding chromedriver in ServiceWrapper",
               os.getcwd()+"/ServiceWrapper")
@@ -651,11 +674,37 @@ if __name__ == '__main__':
     elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
         print("Finding chromedriver in ServiceWrapper",
               os.getcwd()+"/Debug")
-        options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
-        exe_path = "./Chrome/chromedriver.exe"
+        option.binary_location = "./Application/chrome.exe"  # 指定chrome位置
+        # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
+        exe_path = "./Application/chromedriver.exe"
     else:
         options.binary_location = "chrome.exe"  # 指定chrome位置
-    browser = webdriver.Chrome(options=options, executable_path=exe_path)
+
+    option.add_experimental_option(
+        'excludeSwitches', ['enable-automation'])  # 以开发者模式
+
+    # user_data_dir = r''  # 注意没有Default！
+
+    # options.add_argument('--user-data-dir='+p)
+
+    # 总结：
+    # 0. 带Cookie需要用userdatadir
+    # 1. chrome_options才是配置用户文件和chrome文件地址的正确选项
+    # 2. User Profile文件夹的路径是：C:\Users\用户名\AppData\Local\Google\Chrome\User Data不要加Default
+    # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
+    # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
+
+    option.add_argument(
+        '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
+    option.add_argument("--profile-directory=Default")
+    # options.add_argument(
+    #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
+    option.add_argument(
+        "--disable-blink-features=AutomationControlled")  # TMALL 反扒
+    print(options)
+    browser = webdriver.Chrome(
+        options=options, chrome_options=option, executable_path=exe_path)
+    wait = WebDriverWait(browser, 10)
     browser.get('about:blank')
     browser.set_page_load_timeout(10)  # 加载页面最大超时时间
     browser.set_script_timeout(10)
@@ -675,7 +724,25 @@ if __name__ == '__main__':
     else:
         backEndAddress = "http://servicewrapper.naibo.wang"
 
-    content = requests.get(backEndAddress + "/backEnd/queryTask?id=" + str(id))
+    # TODO when transfer to electron, use commandline-config
+    config = {
+        "type": "remote",
+    }
+    from commandline_config import Config
+    c = Config(config)
+    co = c
+    co = {"type": "remote"}
+    if len(sys.argv) > 4:
+        co = sys.argv[4]
+    if co["type"] == "remote":
+        print("remote")
+        content = requests.get(
+            backEndAddress + "/backEnd/queryTask?id=" + str(id))
+        service = json.loads(content.text)
+    else:
+        print("local")
+        with open("tasks/" + str(id) + ".json", 'r', encoding='utf-8') as f:
+            content = f.read()
     service = json.loads(content.text)  # 加载服务信息
     print("name：", service["name"])
     procedure = service["graph"]  # 程序执行流程

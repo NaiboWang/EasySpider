@@ -9,3 +9,5 @@ __pycache__/
 *.spec
 Chrome/
 Data/
+tasks/
+Application/
