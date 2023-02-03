@@ -539,7 +539,7 @@ document.oncontextmenu = function() {
     //删除元素
 document.onkeydown = function(e) {
     if (nowNode != null && e.keyCode == 46) {
-        if (confirm("Do you really want to delete the selected element?")) {
+        if (confirm("Do you really want to delete the selected operation?")) {
             deleteElement();
         }
     } else { //ctrl+s保存服务

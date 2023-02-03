@@ -1,1 +1,0 @@
-pyinstaller -F --icon=favicon.ico .\ServiceWrapper_ExecuteStage.py

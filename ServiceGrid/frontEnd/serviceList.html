@@ -15,13 +15,14 @@
 <body>
     <div class="row" style="margin-top: 40px;">
         <div style="margin:0 auto;width: 60%;min-width: 500px;" id="serviceList">
-            <h4 style="text-align: center;">Service List</h4>
+            <h4 style="text-align: center;">Task List</h4>
+            <p><a v-if="type==3" href="javascript:void(0)" v-on:click="newService" class="btn btn-primary">New Task</a></p>
             <div style="max-height: 700px;overflow: auto;margin-bottom: 10px">
                 <table style="table-layout: fixed;" class="table table-hover">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Service Name</th>
+                            <th>Task Name</th>
                             <th>URL</th>
                             <th v-bind:colspan="type">Operations</th>
                         </tr>
@@ -31,14 +32,14 @@
                             <td>{{i}}</td>
                             <td style="overflow: hidden;">{{list[i-1]["name"]}}</td>
                             <td style="height: 30px;white-space: nowrap;overflow: hidden;">{{list[i-1]["url"]}}</td>
-                            <td><a href="javascript:void(0)" v-on:click="browseService(list[i-1]['id'])">Service Information</a></td>
-                            <td v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyService(list[i-1]['id'],list[i-1]['url'])">Modify Service</a></td>
-                            <td><a href="javascript:void(0)" v-on:click="deleteService(list[i-1]['id'])">Delete Service</a></td>
+                            <td><a href="javascript:void(0)" v-on:click="browseService(list[i-1]['id'])">Task Information</a></td>
+                            <td v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyService(list[i-1]['id'],list[i-1]['url'])">Modify Task</a></td>
+                            <td><a disabled href="javascript:void(0)" v-on:click="deleteService(list[i-1]['id'])">Delete Task</a></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <a v-if="type==3" href="javascript:void(0)" v-on:click="newService" class="btn btn-primary">New Service</a>
+            
         </div>
     </div>
 
@@ -78,14 +79,14 @@
                 window.location.href = "serviceInfo.html?id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
             },
             deleteService: function(id) {
-                if (confirm("确定要删除服务吗？")) {
+                if (confirm("Are you sure to remove the selected task?")) {
                     $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/deleteService?id=" + id, function(res) {
                         $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
                             result = re.sort(desc);
                             app.$data.list = result;
                         });
                     });
-
+                    // alert("Sorry, the task cannot be deleted since the system is a demo system for paper reviewers, please contact the author (naibowang@u.nus.edu) to remove it.")
                 }
             },
         }

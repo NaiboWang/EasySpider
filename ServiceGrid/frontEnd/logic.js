@@ -205,10 +205,10 @@ var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
-    var text = "Confirm to save service？";
+    var text = "Confirm to save this task?";
     if (type == 1) { //服务另存为
         serviceId = -1;
-        text = "Confirm to save as service？";
+        text = "Confirm to save as another task in the system?";
     }
     if (confirm(text)) {
         let serviceName = $("#serviceName").val();
@@ -233,7 +233,8 @@ function saveService(type) {
                             nodeId: i, //记录操作位于的节点位置，重要！！！
                             nodeName: nodeList[i]["title"],
                             value: nodeList[i]["parameters"]["links"],
-                            desc: "要采集的网址列表,多行以\\n分开",
+                            // desc: "要采集的网址列表,多行以\\n分开",
+                            desc: "List of URLs to be collected, separated by \\n for multiple lines",
                             type: "string",
                             exampleValue: nodeList[i]["parameters"]["links"]
                         });
@@ -248,7 +249,8 @@ function saveService(type) {
                             name: "inputText_" + inputIndex++,
                             nodeName: nodeList[i]["title"],
                             nodeId: i,
-                            desc: "要输入的文本，如京东搜索框输入：电脑",
+                            // desc: "要输入的文本，如京东搜索框输入：电脑",
+                            desc: "The text to be entered, such as 'computer' at eBay search box",
                             type: "string",
                             exampleValue: nodeList[i]["parameters"]["value"],
                             value: nodeList[i]["parameters"]["value"],
@@ -262,7 +264,8 @@ function saveService(type) {
                             name: "loopText_" + inputIndex++,
                             nodeId: i,
                             nodeName: nodeList[i]["title"],
-                            desc: "要输入的文本/网址,多行以\\n分开",
+                            // desc: "要输入的文本/网址,多行以\\n分开",
+                            desc:"Text/URL to be entered, multiple lines should be separated by \\n",
                             type: "string",
                             exampleValue: nodeList[i]["parameters"]["textList"],
                             value: nodeList[i]["parameters"]["textList"],
@@ -274,7 +277,8 @@ function saveService(type) {
                             name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
                             nodeId: i,
                             nodeName: nodeList[i]["title"],
-                            desc: "循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）",
+                            // desc: "循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）",
+                            desc: "Number of loop executions, 0 means unlimited loops (until element not found)",
                             type: "int",
                             exampleValue: nodeList[i]["parameters"]["exitCount"],
                             value: nodeList[i]["parameters"]["exitCount"],

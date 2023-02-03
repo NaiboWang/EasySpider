@@ -10,7 +10,7 @@
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
     <link rel="stylesheet" href="FlowChart.css"></link>
-    <title>设计流程</title>
+    <title>Workflow Manager</title>
 
 </head>
 
@@ -21,11 +21,11 @@
     <div style="display:flex">
         <div style="width: 200px;float:left">
             <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
-                <div style="padding: 10px;border-radius:10px;font-size: 20px;">Toolbox</div>
-                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">Save Service</button>
+                <div style="padding: 10px;border-radius:10px;font-size: 20px;">Toolkit</div>
+                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">Save Task</button>
                 <!-- <button type="button" data=1 class="btn btn-outline-primary options">打开网页</button> -->
                 <button type="button" data=2 class="btn btn-outline-primary options">Click Element</button>
-                <button type="button" data=3 class="btn btn-outline-primary options">Extract Data</button>
+                <button type="button" data=3 class="btn btn-outline-primary options">Collect Data</button>
                 <button type="button" data=4 class="btn btn-outline-primary options">Input Text</button>
                 <!-- <button type="button" data=5 class="btn btn-outline-primary options">-</button> -->
                 <!-- <button type="button" data=6 style="font-size: 14px!important;" class="btn btn-outline-primary options">Change Option</button> -->
@@ -33,7 +33,7 @@
                 <button type="button" data=8 class="btn btn-outline-primary options">Loop</button>
                 <button type="button" data=9 class="btn btn-outline-primary options">If Condition</button>
                 <div>-----------------</div>
-                <button type="button" data=13 class="btn btn-outline-primary options" title="调整下一个要插入的节点的位置">Set Anchor</button>
+                <button type="button" data=13 class="btn btn-outline-primary options" title="Adjust the position of the next node/operation to be inserted">Set Anchor</button>
                 <button type="button" data=10 class="btn btn-outline-primary options">Cut Element</button>
                 <button type="button" data=11 class="btn btn-outline-primary options">Copy Element</button>
                 <button type="button" data=12 class="btn btn-outline-primary options">Del Element</button>
@@ -85,7 +85,8 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the Loop</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <!-- <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label> -->
+                        <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     </div>
                     <label>After executed, whether scroll down:</label>
@@ -126,7 +127,7 @@
                     <div style="font-size: 13px;" v-if="paraIndex<paras.parameters.length">
                         <label>Current parameter name: <strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPATH</p>
-                        <label>XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPATH: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
                         <label>Extraction Type</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
@@ -162,7 +163,7 @@
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
                     </div>
 
-                    <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                 </div>
 
@@ -189,7 +190,7 @@
                         <option value = 4>Weblink List</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
-                        <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     </div>
                     <div v-if='parseInt(loopType) == 2'>
@@ -229,8 +230,10 @@
                         <option v-if="nowNode['isInLoop']" value = 3>Text inside current loop</option>
                         <option v-if="nowNode['isInLoop']" value = 4>Element inside current loop</option>
                       </select>
-                    <label v-if='TClass'>Text/Xpath of Element: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                    <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath。" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                    <label v-if='TClass'>Text/Xpath of Element: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <!-- <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath。" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea> -->
+                    <textarea onkeydown="inputDelete(event)" required placeholder="If it is the current loop that contains the element, enter the xpath of the relative element" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                    
                 </div>
                 <div style="margin-top:5px">
                     <label>Seconds <b>after executed</b>:</label>
@@ -249,15 +252,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">Save Service</h4>
+                    <h4 class="modal-title" id="myModalLabel">Save Task</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                    <label>Service Name:</label>
-                    <input onkeydown="inputDelete(event)" required name="serviceName" value="新web服务" id="serviceName" class="form-control"></input>
-                    <label>Service Description:</label>
+                    <label>Task Name:</label>
+                    <input onkeydown="inputDelete(event)" required name="serviceName" value="New Crawler Task" id="serviceName" class="form-control"></input>
+                    <label>Task Description:</label>
                     <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="modal-footer">

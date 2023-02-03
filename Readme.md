@@ -16,8 +16,40 @@ A service oriented architecture GUI visual code-free web crawler/spider (service
 数据存储后放在Data/文件夹内
 ## 中文视频教程：<https://github.com/NaiboWang/ServiceWrapper/releases/download/v0.5.0/tutorial_CN.mp4>
 
+## 版权声明 Copyright Declarationc
+
+该工具/软件已获得中华人民共和国国家知识产权局授权发明专利证书，因此知识产权受中国法律保护。本着科研和开源社区的开放精神，经浙江大学和相关人员授权，该工具代码公开且可供科研人员和其他相关人员免费使用。但**如需商业使用**，请通过邮件联系作者或浙江大学相关负责人。
+
+This tool/software has been granted a patent for invention by the State Intellectual Property Office of the People's Republic of China, and thus the intellectual property is protected by Chinese law. In the spirit of openness in research and open source community, the code of this tool is open and available for free use by researchers and other related persons with the authorization of Zhejiang University and related persons. However, if you need to use it **commercially**, please contact the author or the person in charge of Zhejiang University by email.
+
+![pic](media/patent.png){:height="10%" width="10%"}
+
+专利主要发明人信息：
+
+Main Inventor Information:
+
+王: 新加坡国立大学在读博士生，个人主页：<https://naibo.wang>
+
+Wang: Ph.D. student at National University of Singapore, personal homepage: <https://naibo.wang>
+
+尹: 浙江大学计算机学院教授，副院长，个人主页：<https://person.zju.edu.cn/0001038>
+
+Yin: Professor of College of Computer Science and Technology of Zhejiang University, deputy dean, personal page: < https://person.zju.edu.cn/0001038 >
+
+吴: 计算机科学家，中国科学院院士，其余信息详见：<https://baike.baidu.com/item/%E5%90%B4%E6%9C%9D%E6%99%96/41009>
+
+Wu: Computer Scientist, Academician of the Chinese Academy of Sciences. For more information, see: <https://en.wikipedia.org/wiki/Wu_Zhaohui>
+
+Any user (inside and outside China) can use this tool freely, but 
+
+## 免责声明
 
 
+
+## 可能的错误
+
+- System.Net.Sockets.SocketException 以一种访问权限不允许的方式做了一个访问套接字的尝试
+  重启电脑一般可以解决
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # 目录
@@ -25,8 +57,11 @@ A service oriented architecture GUI visual code-free web crawler/spider (service
 - [请您Star Please Star](#请您star-please-star)
 - [无代码服务可视化Web数据采集爬虫器 Code-Free Visual Web Data Crawler/Spider (Service Wrapper)](#无代码服务可视化web数据采集爬虫器-code-free-visual-web-data-crawlerspider-service-wrapper)
 - [发布版本](#发布版本)
-  - [Windows版本可执行程序：<https://github.com/NaiboWang/ServiceWrapper/releases/download/v0.5.0/ServiceWrapper.7z>](#windows版本可执行程序httpsgithubcomnaibowangservicewrapperreleasesdownloadv050servicewrapper7z)
-  - [中文视频教程：<https://github.com/NaiboWang/ServiceWrapper/releases/download/v0.5.0/tutorial_CN.mp4>](#中文视频教程httpsgithubcomnaibowangservicewrapperreleasesdownloadv050tutorial_cnmp4)
+  - [Windows版本可执行程序：https://github.com/NaiboWang/ServiceWrapper/releases/download/v0.5.0/ServiceWrapper.7z](#windows版本可执行程序httpsgithubcomnaibowangservicewrapperreleasesdownloadv050servicewrapper7z)
+  - [中文视频教程：https://github.com/NaiboWang/ServiceWrapper/releases/download/v0.5.0/tutorial\_CN.mp4](#中文视频教程httpsgithubcomnaibowangservicewrapperreleasesdownloadv050tutorial_cnmp4)
+  - [版权声明 Copyright Declarationc](#版权声明-copyright-declarationc)
+  - [免责声明](#免责声明)
+  - [可能的错误](#可能的错误)
 - [目录](#目录)
   - [界面截图](#界面截图)
       - [软件界面示例](#软件界面示例)

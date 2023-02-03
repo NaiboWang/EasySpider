@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <title>Service Information</title>
+    <title>Task Information</title>
     <style>
         table {
             table-layout: auto;
@@ -35,10 +35,12 @@
 <body>
     <div class="row" style="margin-top: 40px;">
         <div class="col-md-6" style="margin:0 auto" id="serviceList" v-if="show">
-            <h4 style="text-align: center;">Service Information</h4>
-            <p>Service Name: {{service["name"]}}</p>
-            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">Service Description: {{service["desc"]}}</p>
+            <h4 style="text-align: center;">Task Information</h4>
+            <p>Task Name: {{service["name"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">Task Description: {{service["desc"]}}</p>
             <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">Example URL: {{service["url"]}}</p>
+            <p><a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="modifyService(service['id'],service['url'])" class="btn btn-primary">Modify Task</a>
+            <a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="invokeService(service['id'],service['url'])" class="btn btn-primary">Invoke Task</a></p>
             <p>Input Parameters:</p>
             <table class="table table-bordered">
                 <tbody>
@@ -68,7 +70,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p>输出参数：</p>
+            <p>Output parameters: </p>
             <table class="table table-bordered">
                 <tbody>
                     <tr>
@@ -94,8 +96,6 @@
                     </tr>
                 </tbody>
             </table>
-            <a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="modifyService(service['id'],service['url'])" class="btn btn-primary">Modify Service</a>
-            <a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="invokeService(service['id'],service['url'])" class="btn btn-primary">Invoke Service</a>
         </div>
     </div>
 

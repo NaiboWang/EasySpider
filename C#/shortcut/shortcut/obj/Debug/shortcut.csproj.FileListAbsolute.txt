@@ -1,0 +1,11 @@
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.csproj.AssemblyReference.cache
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.csproj.SuggestedBindingRedirects.cache
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.Form1.resources
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.Properties.Resources.resources
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.csproj.GenerateResource.cache
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.csproj.CoreCompileInputs.cache
+C:\Users\q9823\source\repos\shortcut\shortcut\bin\Debug\shortcut.exe.config
+C:\Users\q9823\source\repos\shortcut\shortcut\bin\Debug\shortcut.exe
+C:\Users\q9823\source\repos\shortcut\shortcut\bin\Debug\shortcut.pdb
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.exe
+C:\Users\q9823\source\repos\shortcut\shortcut\obj\Debug\shortcut.pdb

@@ -8,20 +8,20 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="bootstrap/js/bootstrap.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <title>New Service</title>
+    <title>New Task</title>
 
 </head>
 
 <body>
     <div class="row" style="margin-top: 40px;">
         <div class="col-md-6" style="margin:0 auto" style="text-align: center;">
-            <h4 style="text-align: center;">New Service</h4>
+            <h4 style="text-align: center;">New Task</h4>
             <div class="form-group">
-                <label for="exampleInputEmail1">URL（http or https）：</label>
-                <textarea class="form-control" id="links" placeholder="links" style="min-height: 200px;">https://www.jd.com</textarea>
+                <label for="exampleInputEmail1">URL(http or https): </label>
+                <textarea class="form-control" id="links" placeholder="links" style="min-height: 200px;">https://www.ebay.com</textarea>
             </div>
 
-            <button type="submit" id="send" class="btn btn-primary">Start Wrapping</button>
+            <button type="submit" id="send" class="btn btn-primary">Start Design</button>
         </div>
     </div>
 
@@ -59,7 +59,7 @@
             }
         };
         if ($("#links").val().length <= 1) {
-            alert("请输入正确的网址！");
+            alert("Please input the correct URL, start with https:// or http://");
         } else {
             ws.send(JSON.stringify(message));
             message = {

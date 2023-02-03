@@ -2,7 +2,6 @@ from django.http import HttpResponse
 import pymongo
 import json
 from bson import json_util
-from dbconfig import myclient, mycol, taskcol
 """
 uncomment this to deploy database
 """

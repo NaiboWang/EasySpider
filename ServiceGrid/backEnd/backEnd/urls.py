@@ -16,15 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from . import view
-from django.conf.urls import url
+from django.urls import re_path as url
 
 urlpatterns = [
     url(r'^$', view.hello),
     path('backEnd/queryServices', view.queryServices),
     path('backEnd/queryService', view.queryService),
-    path('backEnd/manageService',view.manageService),
-    path('backEnd/deleteService',view.deleteService),
-    path('backEnd/invokeService',view.invokeService), #调用服务接口
-    path('backEnd/queryTask',view.queryTask), #调用服务接口
-    path('backEnd/queryTasks',view.queryTasks), #调用服务接口
+    path('backEnd/manageService', view.manageService),
+    path('backEnd/deleteService', view.deleteService),
+    path('backEnd/invokeService', view.invokeService),  # 调用服务接口
+    path('backEnd/queryTask', view.queryTask),  # 调用服务接口
+    path('backEnd/queryTasks', view.queryTasks),  # 调用服务接口
 ]

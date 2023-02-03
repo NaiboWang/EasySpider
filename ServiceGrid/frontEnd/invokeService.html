@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <title>Service Invoke</title>
+    <title>Task Invoke</title>
     <style>
         table {
             table-layout: auto;
@@ -35,9 +35,9 @@
 <body>
     <div class="row" style="margin-top: 40px;">
         <div class="col-md-6" style="margin:0 auto" id="serviceList" v-if="show">
-            <h4 style="text-align: center;">Service Information</h4>
-            <p>Service Name: {{service["name"]}}</p>
-            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">Service Description: {{service["desc"]}}</p>
+            <h4 style="text-align: center;">Task Invoke</h4>
+            <p>Task Name: {{service["name"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">Task Description: {{service["desc"]}}</p>
             <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">URL: {{backEndAddressServiceWrapper}}/backEnd/invokeService?id={{service["id"]}}</p>
             <p>Please Input Parameters: </p>
             <form id="form">
@@ -53,25 +53,26 @@
 
                         <tr v-if="service.inputParameters.length>0" v-for="i in service.inputParameters.length">
                             <td style="min-width: 50px;">{{i}}</td>
-                            <td>{{service.inputParameters[i-1]["nodeName"]}}</td>
+                            <td style="max-width: 100px;">{{service.inputParameters[i-1]["nodeName"]}}</td>
                             <td>{{service.inputParameters[i-1]["name"]}}</td>
-                            <td>{{service.inputParameters[i-1]["type"]}}</td>
-                            <td><textarea style="min-height: 100px;min-width: 300px;" v-bind:name="service.inputParameters[i-1]['name']" class="form-control" v-model="service.inputParameters[i-1]['value']"></textarea></td>
+                            <td style="max-width: 100px;">{{service.inputParameters[i-1]["type"]}}</td>
+                            <td><textarea style="min-height: 50px;min-width: 300px;" v-bind:name="service.inputParameters[i-1]['name']" class="form-control" v-model="service.inputParameters[i-1]['value']"></textarea></td>
                         </tr>
                     </tbody>
                 </table>
             </form>
 
-            <button style="margin-left: 5px;" v-on:click="localExcuteInstant" class="btn btn-primary">Directly Run locally</button>
-            <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button>
+            <button v-on:click="localExcuteInstant" class="btn btn-primary">Directly Run locally</button>
+            <!-- <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button> -->
             <div style="margin-bottom: 10px;">
-                <label style="margin-top: 10px;">Task ID:</label>
+                <label style="margin-top: 10px;">Execution ID (EID):</label>
                 <input class="form-control" v-model="ID"></input>
                 <p></p>
-                <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p>
+                <!-- <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p> -->
+                <p>Hint: Click the following button to get the Execution ID (EID) of current running task.</p>
                 <a href="javascript:void(0)" v-on:click="invokeService" class="btn btn-primary">Get Task ID</a>
                 <button v-on:click="localExcute" style="margin-left: 8px;" class="btn btn-primary">Run locally</button>
-                <button v-on:click="remoteExcute" style="margin-left: 8px;" class="btn btn-primary">Run remotely</button></div>
+                <!-- <button v-on:click="remoteExcute" style="margin-left: 8px;" class="btn btn-primary">Run remotely</button></div> -->
         </div>
 
     </div>
@@ -94,12 +95,12 @@
         data: {
             service: {},
             show: false, //是否渲染
-            ID: "暂无",
+            ID: "Empty",
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
             invokeService: function() {
-                if (confirm("确定要获得任务ID吗？")) {
+                if (confirm("Are you sure to get the execution ID (EID)?")) {
                     var para = {};
                     var t = $('#form').serializeArray();
                     t.forEach(function(item, index) {
@@ -114,11 +115,11 @@
                 }
             },
             localExcute: function() {
-                if (this.ID == "暂无") {
-                    alert("请先获得任务ID！");
+                if (this.ID == "Empty") {
+                    alert("Please get EID first！");
                     return;
                 }
-                if (confirm("确定要本地执行任务吗？")) {
+                if (confirm("Are you sure to run this task locally?")) {
                     let message = { //显示flowchart
                         type: 5, //消息类型，调用执行程序
                         message: {
@@ -129,11 +130,11 @@
                 }
             },
             remoteExcute: function() {
-                if (this.ID == "暂无") {
-                    alert("请先获得任务ID！");
+                if (this.ID == "Empty") {
+                    alert("Please get EID first！");
                     return;
                 }
-                if (confirm("确定要远程执行任务吗？")) {
+                if (confirm("Are you sure to run this task remotely?")) {
                     let message = { //显示flowchart
                         type: 5, //消息类型，调用执行程序
                         message: {
@@ -144,7 +145,7 @@
                 }
             },
             localExcuteInstant: function() {
-                if (confirm("确定要直接本地执行任务吗？")) {
+                if (confirm("Are you sure to run this task locally now？")) {
                     var para = {};
                     var t = $('#form').serializeArray();
                     t.forEach(function(item, index) {
@@ -165,7 +166,7 @@
                 }
             },
             remoteExcuteInstant: function() {
-                if (confirm("确定要直接远程执行任务吗？")) {
+                if (confirm("Are you sure to run this task remotely?")) {
                     var para = {};
                     var t = $('#form').serializeArray();
                     t.forEach(function(item, index) {
@@ -188,7 +189,7 @@
     ws = new WebSocket("ws://localhost:8084");
     ws.onopen = function() {
         // Web Socket 已连接上，使用 send() 方法发送数据
-        console.log("已连接");
+        console.log("Connected");
         message = {
             type: 0, //消息类型，0代表链接操作
             message: {
