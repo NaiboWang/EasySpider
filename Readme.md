@@ -10,9 +10,9 @@ A visual code-free/no-code web crawler/spider.
 
 ## For WWW demo paper reviewer
 
-If you encountered any questions when testing this software, please feel free to contact Naibo at: naibowang@u.nus.edu, I will help you any time.
+If you encountered any questions when testing this software, please feel free to contact Naibo at: naibowang@u.nus.edu, I will help you at any time.
 
-## Download
+## Download the software
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) of github to download the latest version of the software.
 
@@ -28,11 +28,6 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 
 See the [Copyright Declarartion Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
 
-## Ethics Discussion
+<!-- ## Ethics Discussion
 Various fields can benefit from web crawlers due to their open access nature.
-Inevitably, there will be some risk of malicious use or data infringement issue, 
-e.g., automatic order swiping and ticket grabbing,
-but this is contrary to our expectations.
-As a tool developer, we only hope that it can be used for legitimate purposes.
-We advocate the reasonable and legal utilization of our system, 
-respecting and protecting the data security and privacy.
+Inevitably, there will be some risk of malicious use or data infringement issue, e.g., automatic order swiping and ticket grabbing, but this is contrary to our expectations. As a tool developer, we only hope that it can be used for legitimate purposes. We advocate the reasonable and legal utilization of our system, respecting and protecting the data security and privacy. -->
