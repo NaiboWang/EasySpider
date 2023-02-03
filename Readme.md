@@ -22,7 +22,7 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 
 ## Copyright Declarartion
 
-See the [Copyright Declarartion](https://github.com/NaiboWang/EasySpider/releases) here.
+See the [Copyright Declarartion Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
 
 ## Ethics Discussion
 Various fields can benefit from web crawlers due to their open access nature.
