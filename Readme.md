@@ -8,6 +8,10 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 A visual code-free/no-code web crawler/spider.
 
+## For WWW demo paper reviewer
+
+If you encountered any questions when testing this software, please feel free to contact Naibo at: naibowang@u.nus.edu, I will help you any time.
+
 ## Download
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) of github to download the latest version of the software.
