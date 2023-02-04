@@ -24,9 +24,9 @@ Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUl
 
 Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
-## Copyright Declarartion
+## Copyright Declaration
 
-See the [Copyright Declarartion Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
+See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
 
 <!-- ## Ethics Discussion
 Various fields can benefit from web crawlers due to their open access nature.
