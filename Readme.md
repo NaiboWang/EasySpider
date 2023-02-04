@@ -12,9 +12,9 @@ A visual code-free/no-code web crawler/spider.
 
 If you encountered any questions when testing this software, please feel free to contact Naibo at: naibowang@u.nus.edu, I will help you at any time.
 
-## Download the software
+## Download EasySpider
 
-Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) of github to download the latest version of the software.
+Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) of github to download the latest version of EasySpider.
 
 ## Video Tutorials
 
