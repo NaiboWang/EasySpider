@@ -18,7 +18,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) o
 
 ## Video Tutorials
 
-Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of this software.
+Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
 ## Documentation
 
