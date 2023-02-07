@@ -665,24 +665,42 @@ def clean():
 
 if __name__ == '__main__':
     options = Options()
-    exe_path = "chromedriver.exe"
+    driver_path = "chromedriver.exe"
+    import platform
+    print(sys.platform, platform.architecture())
     option = webdriver.ChromeOptions()
-    if os.path.exists(os.getcwd()+"/EasySpider"):
+    if not os.path.exists(os.getcwd()+"/Data"):
+        os.mkdir(os.getcwd()+"/Data")
+    if os.path.exists(os.getcwd()+"/EasySpider/resources"):
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/EasySpider")
-        options.binary_location = "EasySpider/Chrome/chrome.exe"  # 指定chrome位置
-        exe_path = "EasySpider/Chrome/chromedriver.exe"
+        if sys.platform == "win32":
+            options.binary_location = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
+            driver_path = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
+        elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
+            options.binary_location = "EasySpider/chrome_linux64/chrome"
+            driver_path = "EasySpider/chrome_linux64/chromedriver_linux64"
+        elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
+            options.binary_location = "EasySpider/chrome_mac64/chrome"
+            driver_path = "EasySpider/chrome_mac64/chromedriver_mac64"
+        else:
+            print("Unsupported platform")
+            sys.exit()
+        print("Chrome location:", options.binary_location)
+        print("Chromedriver location:", driver_path)
     elif os.path.exists(os.getcwd()+"/Debug"):
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/Debug")
         options.binary_location = "Debug/Chrome/chrome.exe"  # 指定chrome位置
-        exe_path = "Debug/Chrome/chromedriver.exe"
+        driver_path = "Debug/Chrome/chromedriver.exe"
     elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/Debug")
         option.binary_location = "./Application/chrome.exe"  # 指定chrome位置
         # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
-        exe_path = "./Application/chromedriver.exe"
+        driver_path = "./Application/chromedriver.exe"
     else:
         options.binary_location = "chrome.exe"  # 指定chrome位置
 
@@ -709,7 +727,7 @@ if __name__ == '__main__':
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
     print(options)
     browser = webdriver.Chrome(
-        options=options, chrome_options=option, executable_path=exe_path)
+        options=options, chrome_options=option, executable_path=driver_path)
     wait = WebDriverWait(browser, 10)
     browser.get('about:blank')
     browser.set_page_load_timeout(10)  # 加载页面最大超时时间

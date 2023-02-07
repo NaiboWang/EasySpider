@@ -1,5 +1,4 @@
 node_modules/
-*.txt
 *.csv
 .idea/
 .ipynb_checkpoints

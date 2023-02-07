@@ -1,0 +1,41 @@
+{
+  "name": "easy-spider",
+  "productName": "EasySpider",
+  "version": "0.1.0",
+  "icon": "favicon.ico",
+  "description": "NoCode Visual Web Crawler",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "Naibo Wang",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^22.2.0"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "dependencies": {
+    "@electron-forge/cli": "^6.0.5",
+    "@jitsi/robotjs": "^0.6.11",
+    "selenium-webdriver": "^4.8.0",
+    "ws": "^8.12.0"
+  },
+  "config": {
+    "forge": {
+      "makers": [],
+      "packagerConfig": {
+        "icon": "favicon.ico"
+      },
+      "publishers": []
+    }
+  }
+}

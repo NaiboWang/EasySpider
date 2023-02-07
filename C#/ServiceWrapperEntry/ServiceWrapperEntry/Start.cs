@@ -180,7 +180,7 @@ namespace EasySpider
                 SetForegroundWindow(Start.chromeId); //打开流程图窗口后将chrome窗口显示到最前方
                 //MouseHelper.SetCursorPos(400, Convert.ToInt32(height * PublicVariable.ratio) - 110);
                 //MouseHelper.mouse_event(MouseHelper.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
-                //Thread.Sleep(50);
+                
                 //MouseHelper.mouse_event(MouseHelper.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
             }
             else if (msg.type == 2)
@@ -199,13 +199,20 @@ namespace EasySpider
             }
             else if (msg.type == 3)
             {
-                if (msg.from == 0)
-                {
-                    socket_flowchart.Send(msg.message.pipe); //直接把消息转接
+                try 
+                { //null reference error, see later
+                    if (msg.from == 0)
+                    {
+                        socket_flowchart.Send(msg.message.pipe); //直接把消息转接
+                    }
+                    else
+                    {
+                        socket_window.Send(msg.message.pipe);
+                    }
                 }
-                else
+                catch (Exception)
                 {
-                    socket_window.Send(msg.message.pipe);
+
                 }
             }
             else if (msg.type == 5)
@@ -231,7 +238,7 @@ namespace EasySpider
         {
             fr = new Flow(); //先创造流程图界面，暂时隐藏不显示
             fr.Show();
-            fr.Hide();
+            //fr.Hide();
             State.Text = "Loading...";
             ChromeOptions options = new ChromeOptions();
             options.AddExtension(Application.StartupPath + @"/EasySpider.crx");
