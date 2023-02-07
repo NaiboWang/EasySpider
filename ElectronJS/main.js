@@ -11,13 +11,13 @@ if (process.platform === 'win32' || process.platform === 'win64') {
   chromeBinaryPath = path.join(__dirname, "chrome_win32/chrome.exe");
   execute_path = path.join(__dirname, "chrome_win32/execute.bat");
 } else if (process.platform === 'darwin') {
-  driverPath = path.join(__dirname, "chrome_mac/chromedriver");
-  chromeBinaryPath = path.join(__dirname, "chrome_mac/Chromium.app/Contents/MacOS/Chromium");
-  execute_path = path.join(__dirname, "chrome_mac/execute.sh");
+  driverPath = path.join(__dirname, "chromedriver_mac64");
+  chromeBinaryPath = path.join(__dirname, "chrome_mac64.app/Contents/MacOS/Google Chrome");
+  execute_path = path.join(__dirname, "easyspider_executestage");
 } else if (process.platform === 'linux') {
-  driverPath = path.join(__dirname, "chrome_linux/chromedriver");
-  chromeBinaryPath = path.join(__dirname, "chrome_linux/chrome");
-  execute_path = path.join(__dirname, "chrome_linux/execute.sh");
+  driverPath = path.join(__dirname, "chrome_linux64/chromedriver_linux64");
+  chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
+  execute_path = path.join(__dirname, "chrome_linux64/easyspider_executestage");
 }
 
 let server_address = "https://servicewrapper.systems";
@@ -91,7 +91,9 @@ function beginInvoke(msg) {
 
     let spawn = require("child_process").spawn;
     let child_process = spawn(execute_path, parameters);
-
+    child_process.stdout.on('data', function (data) {
+      console.log(data.toString());
+    });
   }
 }
 

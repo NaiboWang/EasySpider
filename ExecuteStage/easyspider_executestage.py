@@ -683,8 +683,10 @@ if __name__ == '__main__':
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
         elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-            options.binary_location = "EasySpider/chrome_mac64/chrome"
-            driver_path = "EasySpider/chrome_mac64/chromedriver_mac64"
+            options.binary_location = "EasySpider/resources/app/chrome_mac64/chrome"
+            # MacOS需要用option而不是options！
+            option.binary_location = "EasySpider/resources/app/chrome_mac64/chrome"
+            driver_path = "EasySpider/resources/app/chrome_mac64/chromedriver_mac64"
         else:
             print("Unsupported platform")
             sys.exit()
@@ -693,12 +695,12 @@ if __name__ == '__main__':
     elif os.path.exists(os.getcwd()+"/Debug"):
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/Debug")
-        options.binary_location = "Debug/Chrome/chrome.exe"  # 指定chrome位置
+        option.binary_location = "Debug/Chrome/chrome.exe"  # 指定chrome位置
         driver_path = "Debug/Chrome/chromedriver.exe"
     elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/Debug")
-        option.binary_location = "./Application/chrome.exe"  # 指定chrome位置
+        options.binary_location = "./Application/chrome.exe"  # 指定chrome位置
         # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
         driver_path = "./Application/chromedriver.exe"
     else:
