@@ -10,6 +10,14 @@ if (process.platform === 'win32' || process.platform === 'win64') {
   driverPath = path.join(__dirname, "chrome_win32/chromedriver_win32.exe");
   chromeBinaryPath = path.join(__dirname, "chrome_win32/chrome.exe");
   execute_path = path.join(__dirname, "chrome_win32/execute.bat");
+} else if (process.platform === 'darwin') {
+  driverPath = path.join(__dirname, "chrome_mac/chromedriver");
+  chromeBinaryPath = path.join(__dirname, "chrome_mac/Chromium.app/Contents/MacOS/Chromium");
+  execute_path = path.join(__dirname, "chrome_mac/execute.sh");
+} else if (process.platform === 'linux') {
+  driverPath = path.join(__dirname, "chrome_linux/chromedriver");
+  chromeBinaryPath = path.join(__dirname, "chrome_linux/chrome");
+  execute_path = path.join(__dirname, "chrome_linux/execute.sh");
 }
 
 let server_address = "https://servicewrapper.systems";
@@ -146,7 +154,7 @@ function handleOpenBrowser(event) {
   const win = BrowserWindow.fromWebContents(webContents);
   runBrowser();
   flowchart_window = new BrowserWindow({
-    width: 1440,
+    width: 1600,
     height: 900,
     icon: iconPath,
   });

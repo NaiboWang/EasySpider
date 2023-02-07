@@ -680,8 +680,8 @@ if __name__ == '__main__':
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
-            options.binary_location = "EasySpider/chrome_linux64/chrome"
-            driver_path = "EasySpider/chrome_linux64/chromedriver_linux64"
+            options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
+            driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
         elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/chrome_mac64/chrome"
             driver_path = "EasySpider/chrome_mac64/chromedriver_mac64"
