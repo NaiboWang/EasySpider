@@ -8,10 +8,6 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 A visual code-free/no-code web crawler/spider.
 
-## For WWW demo paper reviewer
-
-If you encountered any questions when testing this software, please feel free to contact Naibo at: naibowang@u.nus.edu, I will help you at any time.
-
 ## Download EasySpider
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) of github to download the latest version of EasySpider.
@@ -24,9 +20,13 @@ Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUl
 
 Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
-## Copyright Declaration
+## Publications
 
-See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
+- This software has been accepted by [The Web Conference (WWW) 2023](https://www2023.thewebconf.org/). The paper will be available soon.
+
+- See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
+
+
 
 <!-- ## Ethics Discussion
 Various fields can benefit from web crawlers due to their open access nature.
