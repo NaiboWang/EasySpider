@@ -4,7 +4,7 @@ This tool/software has been granted a patent for invention by the State Intellec
 
 该工具/软件已获得中华人民共和国国家知识产权局授权发明专利证书，因此知识产权受中国法律保护。本着科研和开源社区的开放精神，经浙江大学和相关人员授权，该工具代码公开且可供科研人员和其他相关人员免费使用。但**如需商业使用**，请通过邮件联系作者或浙江大学相关负责人。
 
-![pic](patent.png)
+<!-- ![pic](patent.png) -->
 
 Main Inventor Information:
 
@@ -17,10 +17,6 @@ Wang: Ph.D. student at National University of Singapore, personal homepage: <htt
 Yin: Professor of College of Computer Science and Technology of Zhejiang University, deputy dean, personal page: < https://person.zju.edu.cn/0001038 >
 
 尹: 浙江大学计算机学院教授，副院长，个人主页：<https://person.zju.edu.cn/0001038>
-
-Wu: Computer Scientist, Academician of the Chinese Academy of Sciences. For more information, see: <https://en.wikipedia.org/wiki/Wu_Zhaohui>
-
-吴: 计算机科学家，中国科学院院士，其余信息详见：<https://baike.baidu.com/item/%E5%90%B4%E6%9C%9D%E6%99%96/41009>
 
  
 

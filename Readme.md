@@ -24,8 +24,8 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 
 - This software has been accepted by [The Web Conference (WWW) 2023](https://www2023.thewebconf.org/). The paper will be available soon.
 
-- See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
-
+<!-- - See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
+ -->
 
 
 <!-- ## Ethics Discussion
