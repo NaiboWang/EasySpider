@@ -43,10 +43,6 @@ function createWindow() {
  // 隐藏菜单栏
  const { Menu } = require('electron');
  Menu.setApplicationMenu(null);
- // hide menu for Mac 
- if (process.platform === 'darwin') {
-   app.dock.hide();
- }
   // mainWindow.webContents.openDevTools();
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
