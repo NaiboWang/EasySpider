@@ -36,11 +36,14 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 <!-- - See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
  -->
 
+## 中文目录
+
 - [EasySpider: Visual Code-Free Web Crawler/Spider](#easyspider-visual-code-free-web-crawlerspider)
   - [Download EasySpider/下载 EasySpider](#download-easyspider下载-easyspider)
   - [Video Tutorials/视频教程](#video-tutorials视频教程)
   - [Documentation/文档](#documentation文档)
   - [Publications/出版物](#publications出版物)
+  - [中文目录](#中文目录)
   - [中文界面截图](#中文界面截图)
       - [软件界面示例](#软件界面示例)
       - [块和子块及表单定义](#块和子块及表单定义)
