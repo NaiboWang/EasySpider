@@ -205,10 +205,10 @@ var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
-    var text = "确认要保存服务吗？";
-    if (type == 1) { //服务另存为
+    var text = "确认要保存任务吗？";
+    if (type == 1) { //任务另存为
         serviceId = -1;
-        text = "确认要另存为服务吗？";
+        text = "确认要另存为任务吗？";
     }
     if (confirm(text)) {
         let serviceName = $("#serviceName").val();
@@ -309,17 +309,17 @@ function saveService(type) {
     }
 }
 
-//点击保存服务按钮时的处理
+//点击保存任务按钮时的处理
 $("#saveButton").mousedown(function() {
     saveService(0);
 });
-//点击另存为服务按钮时的处理
+//点击另存为任务按钮时的处理
 $("#saveAsButton").mousedown(function() {
     saveService(1);
 });
 
 
-if (sId != null && sId != -1) //加载服务
+if (sId != null && sId != -1) //加载任务
 {
     $.get(backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         nodeList = result["graph"];
@@ -331,5 +331,5 @@ if (sId != null && sId != -1) //加载服务
         refresh();
     });
 } else {
-    refresh(); //新增服务
+    refresh(); //新增任务
 }

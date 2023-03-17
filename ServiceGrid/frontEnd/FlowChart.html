@@ -18,6 +18,17 @@
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> Hint: Save Successfully!
     </div>
+    <div id="navigator">
+        <nav aria-label="breadcrumb" v-if="type==1">
+            <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
+                <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
+                <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Modification~任务流程修改"
+                    | lang}}
+                </li>
+            </ol>
+        </nav>
+    </div>
     <div style="display:flex">
         <div style="width: 200px;float:left">
             <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
@@ -275,6 +286,35 @@
 </body>
 <script src="FlowChart.js"></script>
 <script src="logic.js"></script>
+<script src="global.js"></script>
 
+<script>
+    var navigator = new Vue({
+        el: '#navigator',
+        data: {
+            type: getUrlParam("type"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+        },
+        methods:{
+            gotoHome: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            }, gotoInfo: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            },
+        }
+    });
+</script>
 
 </html>

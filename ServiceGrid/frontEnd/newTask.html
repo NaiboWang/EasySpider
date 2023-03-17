@@ -7,28 +7,54 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
     <title>New Task</title>
 
 </head>
 
 <body>
-    <div class="row" style="margin-top: 40px;">
+    <div class="row" style="margin-top: 40px;" id="newTask">
         <div class="col-md-6" style="margin:0 auto" style="text-align: center;">
-            <h4 style="text-align: center;">New Task</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb" style="padding-left:0;background-color: white">
+                    <li class="breadcrumb-item" @click="gotoHome"><a href="#">{{"Home~首页" | lang}}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color: black">{{"New Task~新任务" | lang}}</li>
+                </ol>
+            </nav>
+            <h4 style="text-align: center;">{{"New Task~新任务" | lang}}</h4>
             <div class="form-group">
-                <label for="exampleInputEmail1">URL(http or https): </label>
-                <textarea class="form-control" id="links" placeholder="links" style="min-height: 200px;">https://www.ebay.com</textarea>
+                <label>{{"Please Input URL (http or https):~请输入网页URL（以http或https开头）：" | lang}}  </label>
+                <textarea class="form-control" id="links" placeholder="links" style="min-height: 200px;">{{"https://www.ebay.com~https://www.jd.com" | lang}}</textarea>
             </div>
 
-            <button type="submit" id="send" class="btn btn-primary">Start Design</button>
+            <button type="submit" id="send" class="btn btn-primary">{{"Start Design~开始设计" | lang}}</button>
         </div>
     </div>
 
 </body>
 
 </html>
+<script src="global.js"></script>
 <script>
+    var app = new Vue({
+        el: '#newTask',
+        data: {
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+        },
+        methods: {
+            gotoHome: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskList.html?lang=zh&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                } else {
+                    url = "taskList.html?lang=en&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            }
+        }
+    });
+
     ws = new WebSocket("ws://localhost:8084");
     ws.onopen = function() {
         // Web Socket 已连接上，使用 send() 方法发送数据
@@ -59,7 +85,11 @@
             }
         };
         if ($("#links").val().length <= 1) {
-            alert("Please input the correct URL, start with https:// or http://");
+            if(getUrlParam("lang") == "en"|| getUrlParam("lang")==""){
+                alert("Please input the correct URL, start with https:// or http://");
+            } else{
+                alert("请输入正确的URL，以https://或http://开头");
+            }
         } else {
             ws.send(JSON.stringify(message));
             message = {

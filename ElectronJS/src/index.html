@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="js/vue.global.js"></script>
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+  </link>
+  <title>EasySpider: NoCode Visual Web Crawler</title>
+</head>
+
+<body>
+<div id="app">
+
+  <div v-if="init"  style="padding: 10px; text-align: center;vertical-align: middle;">
+    <p style="margin-top: 20px">选择语言/Select Language</p>
+
+    <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;" @click="changeLang('zh')" class="btn btn-outline-primary btn-lg">中文版</a></p>
+
+    <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;" @click="changeLang('en')" class="btn btn-outline-primary btn-lg">English</a></p>
+  </div>
+
+  <div v-else style="padding: 10px; text-align: center;vertical-align: middle;">
+    <div v-if="lang=='en'">
+      <p style="margin-top: 20px">Hint: Click Button below to start.</p>
+
+      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startDesign('en')"
+            class="btn btn-primary btn-lg">Design Task</a></p>
+
+      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startInvoke('en')" @click
+            class="btn btn-primary btn-lg">View/Manage/Invoke Tasks</a></p>
+    </div>
+    <div v-else-if="lang=='zh'">
+      <p style="margin-top: 20px">提示：点击下方按钮开始使用。</p>
+
+      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startDesign('zh')"
+            class="btn btn-primary btn-lg">设计任务</a></p>
+
+      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startInvoke('zh')" @click
+            class="btn btn-primary btn-lg">查看/管理/执行任务</a></p>
+    </div>
+  </div>
+</div>
+
+  <!-- You can also require other files to run in this process -->
+  <script src="js/renderer.js"></script>
+<script>
+  const { createApp } = Vue;
+
+  createApp({
+    data() {
+      return {
+        init: true,
+        lang: 'zh',
+      }
+    },
+    methods: {
+      changeLang(lang='zh') {
+        this.init = false;
+        this.lang = lang;
+      },
+      startDesign(lang){
+        window.electronAPI.startDesign(lang);
+      },
+      startInvoke(lang){
+        window.electronAPI.startInvoke(lang);
+      }
+    }
+  }).mount('#app');
+
+</script>
+</body>
+
+</html>

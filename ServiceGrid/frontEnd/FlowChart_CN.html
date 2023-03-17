@@ -18,11 +18,22 @@
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存成功!
     </div>
+    <div id="navigator">
+        <nav aria-label="breadcrumb" v-if="type==1">
+            <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
+                <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
+                <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Modification~任务流程修改"
+                    | lang}}
+                </li>
+            </ol>
+        </nav>
+    </div>
     <div style="display:flex">
         <div style="width: 200px;float:left">
             <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
                 <div style="padding: 10px;border-radius:10px;font-size: 20px;">工具箱</div>
-                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">保存服务</button>
+                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">保存任务</button>
                 <!-- <button type="button" data=1 class="btn btn-outline-primary options">打开网页</button> -->
                 <button type="button" data=2 class="btn btn-outline-primary options">点击元素</button>
                 <button type="button" data=3 class="btn btn-outline-primary options">提取数据</button>
@@ -50,7 +61,7 @@
         </div>
         <div style="margin-top:20px;border: solid navy;height:850px;overflow: auto;margin-left:10px;width:30%;float:right;min-width:300px">
             <!-- <div style="display: inline-block;border-bottom:solid 2px;width:100%">
-                <input style="float:left;margin-left:10px;margin-top:10px;margin-bottom:10px" type="button" class="btn-primary" value="保存服务"></input>
+                <input style="float:left;margin-left:10px;margin-top:10px;margin-bottom:10px" type="button" class="btn-primary" value="保存任务"></input>
             </div> -->
             <div class="Modify" id="app">
                 <div>
@@ -249,15 +260,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">保存服务</h4>
+                    <h4 class="modal-title" id="myModalLabel">保存任务</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                    <label>服务名称:</label>
-                    <input onkeydown="inputDelete(event)" required name="serviceName" value="新web服务" id="serviceName" class="form-control"></input>
-                    <label>服务描述:</label>
+                    <label>任务名称:</label>
+                    <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
+                    <label>任务描述:</label>
                     <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="modal-footer">
@@ -272,6 +283,35 @@
 </body>
 <script src="FlowChart_CN.js"></script>
 <script src="logic_CN.js"></script>
+<script src="global.js"></script>
 
+<script>
+    var navigator = new Vue({
+        el: '#navigator',
+        data: {
+            type: getUrlParam("type"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+        },
+        methods:{
+            gotoHome: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            }, gotoInfo: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            },
+        }
+    });
+</script>
 
 </html>

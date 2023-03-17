@@ -143,7 +143,7 @@ Yin: Professor of College of Computer Science and Technology of Zhejiang Univers
 ### 服务展示部分
 * 服务列表：ServiceGrid/frontEnd/serviceList.html
 * 服务信息：ServiceGrid/frontEnd/serviceInfo.html
-* 新服务：ServiceGrid/frontEnd/newService.html
+* 新服务：ServiceGrid/frontEnd/newTask.html
 * 调用服务：ServiceGrid/frontEnd/invokeService.html
 
 ### C#部分

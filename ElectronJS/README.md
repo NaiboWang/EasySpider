@@ -9,11 +9,16 @@ npm install
 npm install @electron-forge/cli
 npm start
 ```
-
 ## Package Instruction
 
 ```
 
 npx electron-forge import
 npm run package
+```
+
+optional:
+
+```
+npm run make
 ```
