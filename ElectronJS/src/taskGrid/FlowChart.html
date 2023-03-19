@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="vue.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <link rel="stylesheet" href="FlowChart.css"></link>
+    <title>Workflow Manager</title>
+
+</head>
+
+<body>
+    <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> Hint: Save Successfully!
+    </div>
+    <div id="navigator">
+        <nav aria-label="breadcrumb" v-if="type==1">
+            <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
+                <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
+                <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Modification~任务流程修改"
+                    | lang}}
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div style="display:flex">
+        <div style="width: 200px;float:left">
+            <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
+                <div style="padding: 10px;border-radius:10px;font-size: 20px;">Toolkit</div>
+                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">Save Task</button>
+                <!-- <button type="button" data=1 class="btn btn-outline-primary options">打开网页</button> -->
+                <button type="button" data=2 class="btn btn-outline-primary options">Click Element</button>
+                <button type="button" data=3 class="btn btn-outline-primary options">Collect Data</button>
+                <button type="button" data=4 class="btn btn-outline-primary options">Input Text</button>
+                <!-- <button type="button" data=5 class="btn btn-outline-primary options">-</button> -->
+                <!-- <button type="button" data=6 style="font-size: 14px!important;" class="btn btn-outline-primary options">Change Option</button> -->
+                <!-- <button type="button" data=7 class="btn btn-outline-primary options">-</button> -->
+                <button type="button" data=8 class="btn btn-outline-primary options">Loop</button>
+                <button type="button" data=9 class="btn btn-outline-primary options">If Condition</button>
+                <div>-----------------</div>
+                <button type="button" data=13 class="btn btn-outline-primary options" title="Adjust the position of the next node/operation to be inserted">Set Anchor</button>
+                <button type="button" data=10 class="btn btn-outline-primary options">Cut Element</button>
+                <button type="button" data=11 class="btn btn-outline-primary options">Copy Element</button>
+                <button type="button" data=12 class="btn btn-outline-primary options">Del Element</button>
+                <button type="button" data=0 class="btn btn-outline-primary2 options">Cancel</button>
+                <div style="text-align: left;margin: 10px;font-size:15px!important"></div>
+            </div>
+        </div>
+        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right">
+            <div id="0" class="clk" data="0">
+            </div>
+            <div style="border-radius: 50%;width: 40px;height: 40px;border:solid black;margin: 5px auto;background-color:lightcyan">
+                <p style="font-size: 22px!important;text-align: center;margin-left: 1px;">■</p>
+            </div>
+        </div>
+        <div style="margin-top:20px;border: solid navy;height:850px;overflow: auto;margin-left:10px;width:30%;float:right;min-width:300px">
+            <!-- <div style="display: inline-block;border-bottom:solid 2px;width:100%">
+                <input style="float:left;margin-left:10px;margin-top:10px;margin-bottom:10px" type="button" class="btn-primary" value="保存服务"></input>
+            </div> -->
+            <div class="Modify" id="app">
+                <div>
+                    <label>Option Name:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
+                </div>
+                <!-- 下面是10种不同类型操作选项的不同的配置页面 -->
+                <div class="elements" v-if="nodeType==1">
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use link inside the Loop</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <label>url:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>
+                        <label>All links filled:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
+                    </div>
+                    <label>After executed, whether scroll down:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>No</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
+                      </select>
+                    <label>Scroll Times:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                </div>
+
+                <div class="elements" v-if="nodeType==2">
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the Loop</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <!-- <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label> -->
+                        <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                    </div>
+                    <label>After executed, whether scroll down:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>No</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
+                      </select>
+                    <label>Scroll Times:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+
+                </div>
+
+                <div class="elements" v-if="nodeType==3">
+                    <div class="toolkitcontain">
+                        <table class="toolkittb2" cellspacing="0">
+                            <tbody>
+                                <th>Field Name</th>
+                                <th style="width:200px">Example Value</th>
+                                <th>Operations</th>
+                            </tbody>
+                        </table>
+                        <table class="toolkittb4" cellspacing="0">
+                            <tbody>
+                                <tr v-for="i in paras.parameters.length">
+                                    <td style="padding-left:0px"><input onkeydown="inputDelete(event)" style='padding-left:2px;font-size:13px!important;height:100%' v-model='paras.parameters[i-1]["name"]'></input>
+                                    </td>
+                                    <td style="width:200px">{{paras.parameters[i-1]["exampleValues"][0]["value"]}}</td>
+                                    <td>
+                                        <a v-on:mousedown="modifyParas(i-1)">Modify</a>
+                                        <a v-on:mousedown="deleteParas(i-1)">Delete</a>
+                                        <a v-on:mousedown="upParas(i-1)">Up</a>
+                                        <a v-on:mousedown="downParas(i-1)">Down</a>
+                                    </td>
+                                </tr>
+                        </table>
+                    </div>
+                    <div style="font-size: 13px;" v-if="paraIndex<paras.parameters.length">
+                        <label>Current parameter name: <strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPATH</p>
+                        <label>XPATH: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
+                        <label>Extraction Type</label>
+                        <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
+                            <option :value = 0>Text (include child element)</option>
+                            <option :value = 1>Text (exclude child element)</option>
+                            <option :value = 2>innerHTML</option>
+                            <option :value = 3>outerHTML</option>
+                        </select>
+                        <label>Node Type</label>
+                        <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
+                            <option :value = 0>Ordinary Node</option>
+                            <option :value = 1>Link Text</option>
+                            <option :value = 2>Link Address</option>
+                            <option :value = 3>Form Value</option>
+                            <option :value = 4>Image Address</option>
+                        </select>
+                        <label>Parameter Description:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
+                        <label>Absent value when cannot find the element:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
+                    </div>
+
+                </div>
+
+
+                <div class="elements" v-if="nodeType==4">
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use text inside the Loop</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <label>Input Value:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
+                    </div>
+
+                    <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                </div>
+
+                <div class="elements" v-if="nodeType==5">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==6">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==7">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==8">
+                    <!-- 循环选项 -->
+                    <label>Loop Type:</label>
+                    <select v-model='loopType' class="form-control">
+                        <option value = 0>Single Element</option>
+                        <option value = 1>Unfixed Element List</option>
+                        <option value = 2>Fixed Element List</option>
+                        <option value = 3>Text List</option>
+                        <option value = 4>Weblink List</option>
+                      </select>
+                    <div v-if='parseInt(loopType) < 2'>
+                        <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                    </div>
+                    <div v-if='parseInt(loopType) == 2'>
+                        <label>XPath List:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["pathList"]'></textarea>
+                    </div>
+                    <div v-if='parseInt(loopType) > 2'>
+                        <label>Content List:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["textList"]'></textarea>
+                    </div>
+                    <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
+                    <label v-if='parseInt(loopType) == 0'>Max Loop time（0 means infinite）:</label>
+                    <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
+                    <label><b>History back</b> wait time:</label>
+                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+                    <label>After executed, whether scroll down:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>No</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
+                      </select>
+                    <label>Scroll Times:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+
+                </div>
+
+                <div class="elements" v-if="nodeType==9">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==10">
+                    <label>Condition Type:</label>
+                    <select v-model='TClass' class="form-control">
+                        <option value = 0>No Condition</option>
+                        <option value = 1>Text inside current page</option>
+                        <option value = 2>Element inside current page</option>
+                        <option v-if="nowNode['isInLoop']" value = 3>Text inside current loop</option>
+                        <option v-if="nowNode['isInLoop']" value = 4>Element inside current loop</option>
+                      </select>
+                    <label v-if='TClass'>Text/Xpath of Element: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <!-- <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath。" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea> -->
+                    <textarea onkeydown="inputDelete(event)" required placeholder="If it is the current loop that contains the element, enter the xpath of the relative element" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                    
+                </div>
+                <div style="margin-top:5px">
+                    <label>Seconds <b>after executed</b>:</label>
+                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
+                </div>
+                <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">Confirm</button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Save Task</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
+                    <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
+                    <label>Task Name:</label>
+                    <input onkeydown="inputDelete(event)" required name="serviceName" value="New Crawler Task" id="serviceName" class="form-control"></input>
+                    <label>Task Description:</label>
+                    <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="saveAsButton" class="btn btn-outline-primary">Save as</button>
+                    <button type="button" id="saveButton" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+</body>
+<script src="FlowChart.js"></script>
+<script src="logic.js"></script>
+<script src="global.js"></script>
+
+<script>
+    var navigator = new Vue({
+        el: '#navigator',
+        data: {
+            type: getUrlParam("type"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+        },
+        methods:{
+            gotoHome: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            }, gotoInfo: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            },
+        }
+    });
+</script>
+
+</html>

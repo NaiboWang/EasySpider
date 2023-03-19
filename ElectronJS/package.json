@@ -33,6 +33,7 @@
     "@jitsi/robotjs": "^0.6.11",
     "electron-squirrel-startup": "^1.0.0",
     "ffi-napi": "^4.0.3",
+    "http": "^0.0.1-security",
     "node-window-manager": "^2.2.4",
     "ref-napi": "^3.0.3",
     "selenium-webdriver": "^4.8.0",

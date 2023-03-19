@@ -160,9 +160,9 @@ function modifyParameters(t, para) {
         t["parameters"]["loopType"] = para["loopType"];
         t["parameters"]["xpath"] = para["xpath"];
         if (para["nextPage"]) { //循环点击下一页的情况下
-            t["title"] = "循环点击下一页"
+            t["title"] = "Loop click next page"
         } else {
-            t["title"] = "循环"
+            t["title"] = "Loop"
         }
         if (para["loopType"] == 2) //如果是固定元素列表
         {
@@ -205,10 +205,10 @@ var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
-    var text = "确认要保存任务吗？";
-    if (type == 1) { //任务另存为
+    var text = "Confirm to save this task?";
+    if (type == 1) { //服务另存为
         serviceId = -1;
-        text = "确认要另存为任务吗？";
+        text = "Confirm to save as another task in the system?";
     }
     if (confirm(text)) {
         let serviceName = $("#serviceName").val();
@@ -233,9 +233,10 @@ function saveService(type) {
                             nodeId: i, //记录操作位于的节点位置，重要！！！
                             nodeName: nodeList[i]["title"],
                             value: nodeList[i]["parameters"]["links"],
-                            desc: "要采集的网址列表,多行以\\n分开",
+                            // desc: "要采集的网址列表,多行以\\n分开",
+                            desc: "List of URLs to be collected, separated by \\n for multiple lines",
                             type: "string",
-                            exampleValue: "https://www.jd.com"
+                            exampleValue: nodeList[i]["parameters"]["links"]
                         });
                         links = nodeList[i]["parameters"]["links"];
                     }
@@ -248,7 +249,8 @@ function saveService(type) {
                             name: "inputText_" + inputIndex++,
                             nodeName: nodeList[i]["title"],
                             nodeId: i,
-                            desc: "要输入的文本，如京东搜索框输入：电脑",
+                            // desc: "要输入的文本，如京东搜索框输入：电脑",
+                            desc: "The text to be entered, such as 'computer' at eBay search box",
                             type: "string",
                             exampleValue: nodeList[i]["parameters"]["value"],
                             value: nodeList[i]["parameters"]["value"],
@@ -256,17 +258,32 @@ function saveService(type) {
                     }
                 } else if (nodeList[i]["option"] == 8) //循环操作
                 {
-                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) //循环中的循环输入文本或循环输入网址
+                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) {
                         inputParameters.push({
-                        id: inputIndex,
-                        name: "loopText_" + inputIndex++,
-                        nodeId: i,
-                        nodeName: nodeList[i]["title"],
-                        desc: "要输入的文本/网址,多行以\\n分开",
-                        type: "string",
-                        exampleValue: nodeList[i]["parameters"]["textList"],
-                        value: nodeList[i]["parameters"]["textList"],
-                    });
+                            id: inputIndex,
+                            name: "loopText_" + inputIndex++,
+                            nodeId: i,
+                            nodeName: nodeList[i]["title"],
+                            // desc: "要输入的文本/网址,多行以\\n分开",
+                            desc:"Text/URL to be entered, multiple lines should be separated by \\n",
+                            type: "string",
+                            exampleValue: nodeList[i]["parameters"]["textList"],
+                            value: nodeList[i]["parameters"]["textList"],
+                        });
+                    } //循环中的循环输入文本或循环输入网址
+                    else if (parseInt(nodeList[i]["parameters"]["loopType"]) == 0) {
+                        inputParameters.push({
+                            id: inputIndex,
+                            name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
+                            nodeId: i,
+                            nodeName: nodeList[i]["title"],
+                            // desc: "循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）",
+                            desc: "Number of loop executions, 0 means unlimited loops (until element not found)",
+                            type: "int",
+                            exampleValue: nodeList[i]["parameters"]["exitCount"],
+                            value: nodeList[i]["parameters"]["exitCount"],
+                        });
+                    }
                 } else if (nodeList[i]["option"] == 3) //提取数据操作
                 {
                     for (let j = 0; j < nodeList[i]["parameters"]["paras"].length; j++) {
@@ -298,7 +315,7 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post(backEndAddressServiceWrapper + "/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
@@ -309,19 +326,19 @@ function saveService(type) {
     }
 }
 
-//点击保存任务按钮时的处理
+//点击保存服务按钮时的处理
 $("#saveButton").mousedown(function() {
     saveService(0);
 });
-//点击另存为任务按钮时的处理
+//点击另存为服务按钮时的处理
 $("#saveAsButton").mousedown(function() {
     saveService(1);
 });
 
 
-if (sId != null && sId != -1) //加载任务
+if (sId != null && sId != -1) //加载服务
 {
-    $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function(result) {
+    $.get(backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
         $("#serviceName").val(result["name"]);
@@ -331,5 +348,5 @@ if (sId != null && sId != -1) //加载任务
         refresh();
     });
 } else {
-    refresh(); //新增任务
+    refresh(); //新增服务
 }

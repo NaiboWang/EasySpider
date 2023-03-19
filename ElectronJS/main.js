@@ -2,8 +2,18 @@
 const { app, BrowserWindow, dialog, ipcMain, screen } = require('electron');
 app.commandLine.appendSwitch("--disable-http-cache");
 const path = require('path');
+const fs = require('fs');
 const {exec} = require('child_process');
 const iconPath = path.join(__dirname, 'favicon.ico');
+const task_server = require(path.join(__dirname, 'server.js'));
+
+let config = fs.readFileSync(path.join(__dirname, `config.json`), 'utf8');
+config = JSON.parse(config);
+task_server.start(config.backend_port); //start local server
+let backend_address = `${config.backend_address}:${config.backend_port}`;
+let websocket_port = config.websocket_port;
+let user_browser_config_path = path.join(__dirname, "user_browser_config.json");
+console.log("backend_address: " + backend_address);
 let driverPath = "";
 let chromeBinaryPath = "";
 let execute_path = "";

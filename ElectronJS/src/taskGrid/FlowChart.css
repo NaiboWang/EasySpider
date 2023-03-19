@@ -1,0 +1,203 @@
+  * {
+      margin: 0;
+      padding: 0;
+      font-size: 17px!important;
+  }
+  
+  div.node {
+      height: 45px;
+      width: 120px;
+      border-radius: 7px;
+      border: skyblue solid;
+      background: rgb(73, 156, 189);
+      color: white;
+      text-align: center;
+      padding: 5px;
+      margin: 10px auto;
+  }
+  
+  .arrow {
+      margin: 10px auto;
+      text-align: center;
+      font-size: 23px!important;
+      color: black;
+  }
+  
+  .arrow:hover {
+      background-color: deepskyblue!important;
+      cursor: pointer;
+      color: white;
+  }
+  
+  .branchAdd {
+      margin: 10px auto;
+      text-align: center;
+      font-size: 18px!important;
+      color: black;
+  }
+  
+  .branchAdd:hover {
+      background-color: deepskyblue;
+      cursor: pointer;
+      color: white;
+  }
+  
+  div.node:hover {
+      cursor: pointer;
+      background: navy;
+  }
+  
+  .loop {
+      border: skyblue solid;
+      text-align: center;
+      padding: 5px;
+      width: 90%;
+      min-width: 150px;
+      overflow: auto;
+      margin: 10px auto;
+      border-radius: 7px;
+  }
+  
+  .options {
+      height: 35px;
+  }
+  
+  .judge {
+      /* display: flex; */
+      text-align: center;
+      padding: 5px;
+      width: 100%;
+      min-width: 150px;
+      margin: 10px auto;
+      justify-content: center;
+      border-radius: 7px;
+  }
+  
+  .branch {
+      display: inline-block;
+      margin: 5px;
+      border: skyblue solid;
+      text-align: center;
+      padding: 5px;
+      width: 200px;
+      min-width: 150px;
+      margin: 10px;
+      border-radius: 7px;
+  }
+  
+  .sequence {
+      display: block;
+  }
+  
+  .toolbox button {
+      margin-top: 5px;
+      margin-left: 3px;
+      margin-bottom: 5px;
+      width: 80%;
+      font-size: 15px!important;
+  }
+  
+  .Modify {
+      margin: 20px;
+  }
+  
+  .Modify input {
+      font-size: 17px!important;
+  }
+  
+  .elements {
+      font-size: 17px!important;
+      margin: 10px 0;
+  }
+  
+  .elements p {
+      margin: 5px 0;
+  }
+  
+  .elements input[type=checkbox] {
+      width: 20px;
+      height: 20px;
+      vertical-align: sub;
+      margin-right: 5px;
+  }
+  
+  .elements textarea {
+      min-height: 100px;
+  }
+  
+  .elements label {
+      font-size: 17px!important;
+      margin: 10px 0;
+  }
+  /* th,
+  td,
+  tr {
+      height: 30px;
+      width: 100px;
+      font-size: 13px!important;
+      overflow: hidden;
+      border: 1px solid rgb(78, 78, 78);
+      padding-left: 2px;
+  }
+  
+  table {
+      table-layout: fixed;
+      word-break: break-all;
+      word-wrap: break-word;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+  } */
+  
+  .toolkitcontain {
+      border: 1px solid #cdd!important;
+      width: 100%;
+      /* 上面的宽度设定很重要 */
+      height: 214px;
+      overflow: auto;
+      margin-top: 10px;
+      position: relative;
+  }
+  
+  .toolkitcontain table {
+      table-layout: fixed;
+      word-break: break-all;
+      word-wrap: break-word;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+  }
+  
+  .toolkitcontain th,
+  .toolkitcontain td,
+  .toolkitcontain tr {
+      border: 1px solid rgb(78, 78, 78);
+      height: 30px;
+      width: 100px;
+      text-align: center;
+      font-weight: normal!important;
+      overflow: hidden;
+      font-size: 13px!important;
+      padding-left: 1px;
+      -webkit-user-select: none;
+  }
+  
+  .toolkitcontain .toolkittb2 {
+      position: sticky;
+      top: 0px;
+      margin-bottom: 0px;
+      background-color: azure;
+      z-index: 1000;
+  }
+  
+  .toolkitcontain .toolkittb4 {
+      position: absolute;
+  }
+  
+  .toolkitcontain a {
+      font-size: 13px!important;
+      cursor: pointer;
+      color: blue;
+  }

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <script src="jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="vue.js"></script>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <link rel="stylesheet" href="FlowChart.css"></link>
+    <title>设计流程</title>
+
+</head>
+
+<body>
+    <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存成功!
+    </div>
+    <div id="navigator">
+        <nav aria-label="breadcrumb" v-if="type==1">
+            <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
+                <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
+                <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Modification~任务流程修改"
+                    | lang}}
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div style="display:flex">
+        <div style="width: 200px;float:left">
+            <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
+                <div style="padding: 10px;border-radius:10px;font-size: 20px;">工具箱</div>
+                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">保存任务</button>
+                <!-- <button type="button" data=1 class="btn btn-outline-primary options">打开网页</button> -->
+                <button type="button" data=2 class="btn btn-outline-primary options">点击元素</button>
+                <button type="button" data=3 class="btn btn-outline-primary options">提取数据</button>
+                <button type="button" data=4 class="btn btn-outline-primary options">输入文字</button>
+                <button type="button" data=5 class="btn btn-outline-primary options">识别验证码</button>
+                <button type="button" data=6 style="font-size: 14px!important;" class="btn btn-outline-primary options">切换下拉选项</button>
+                <button type="button" data=7 class="btn btn-outline-primary options">移动到元素</button>
+                <button type="button" data=8 class="btn btn-outline-primary options">循环</button>
+                <button type="button" data=9 class="btn btn-outline-primary options">判断条件</button>
+                <div>-----------------</div>
+                <button type="button" data=13 class="btn btn-outline-primary options" title="调整下一个要插入的节点的位置">调整锚点</button>
+                <button type="button" data=10 class="btn btn-outline-primary options">剪切元素</button>
+                <button type="button" data=11 class="btn btn-outline-primary options">复制元素</button>
+                <button type="button" data=12 class="btn btn-outline-primary options">删除元素</button>
+                <button type="button" data=0 class="btn btn-outline-primary2 options">取消操作</button>
+                <div style="text-align: left;margin: 10px;font-size:15px!important">提示：点击上方操作按钮后点击要放置元素的位置处的箭头，可按取消操作按钮取消。</div>
+            </div>
+        </div>
+        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right">
+            <div id="0" class="clk" data="0">
+            </div>
+            <div style="border-radius: 50%;width: 40px;height: 40px;border:solid black;margin: 5px auto;background-color:lightcyan">
+                <p style="font-size: 22px!important;text-align: center;margin-left: 1px;">■</p>
+            </div>
+        </div>
+        <div style="margin-top:20px;border: solid navy;height:850px;overflow: auto;margin-left:10px;width:30%;float:right;min-width:300px">
+            <!-- <div style="display: inline-block;border-bottom:solid 2px;width:100%">
+                <input style="float:left;margin-left:10px;margin-top:10px;margin-bottom:10px" type="button" class="btn-primary" value="保存任务"></input>
+            </div> -->
+            <div class="Modify" id="app">
+                <div>
+                    <label>选项名称:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
+                </div>
+                <!-- 下面是10种不同类型操作选项的不同的配置页面 -->
+                <div class="elements" v-if="nodeType==1">
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的链接</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <label>url:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>
+                        <label>填入的全部链接:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
+                    </div>
+                    <label>执行完是否向下滚动:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>不滚动</option>
+                        <option value = 1>向下滚动一屏</option>
+                        <option value = 2>滚动到底部</option>
+                      </select>
+                    <label>滚动次数:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                </div>
+
+                <div class="elements" v-if="nodeType==2">
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                    </div>
+                    <label>执行完是否向下滚动:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>不滚动</option>
+                        <option value = 1>向下滚动一屏</option>
+                        <option value = 2>滚动到底部</option>
+                      </select>
+                    <label>滚动次数:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+
+                </div>
+
+                <div class="elements" v-if="nodeType==3">
+                    <div class="toolkitcontain">
+                        <table class="toolkittb2" cellspacing="0">
+                            <tbody>
+                                <th>字段名</th>
+                                <th style="width:200px">示例值</th>
+                                <th>操作</th>
+                            </tbody>
+                        </table>
+                        <table class="toolkittb4" cellspacing="0">
+                            <tbody>
+                                <tr v-for="i in paras.parameters.length">
+                                    <td style="padding-left:0px"><input onkeydown="inputDelete(event)" style='padding-left:2px;font-size:13px!important;height:100%' v-model='paras.parameters[i-1]["name"]'></input>
+                                    </td>
+                                    <td style="width:200px">{{paras.parameters[i-1]["exampleValues"][0]["value"]}}</td>
+                                    <td>
+                                        <a v-on:mousedown="modifyParas(i-1)">修改</a>
+                                        <a v-on:mousedown="deleteParas(i-1)">删除</a>
+                                        <a v-on:mousedown="upParas(i-1)">上移</a>
+                                        <a v-on:mousedown="downParas(i-1)">下移</a>
+                                    </td>
+                                </tr>
+                        </table>
+                    </div>
+                    <div style="font-size: 13px;" v-if="paraIndex<paras.parameters.length">
+                        <label>当前编辑参数名: <strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
+                        <label>XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
+                        <label>采集内容类型</label>
+                        <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
+                            <option :value = 0>文本（包括子元素）</option>
+                            <option :value = 1>文本（不包括子元素）</option>
+                            <option :value = 2>innerHTML</option>
+                            <option :value = 3>outerHTML</option>
+                        </select>
+                        <label>节点类型</label>
+                        <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
+                            <option :value = 0>普通节点</option>
+                            <option :value = 1>链接文本</option>
+                            <option :value = 2>链接地址</option>
+                            <option :value = 3>表单值</option>
+                            <option :value = 4>图片地址</option>
+                        </select>
+                        <label>参数描述:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
+                        <label>元素找不到时的值:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
+                    </div>
+
+                </div>
+
+
+                <div class="elements" v-if="nodeType==4">
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <label>输入值:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
+                    </div>
+
+                    <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                </div>
+
+                <div class="elements" v-if="nodeType==5">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==6">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==7">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==8">
+                    <!-- 循环选项 -->
+                    <label>循环类型:</label>
+                    <select v-model='loopType' class="form-control">
+                        <option value = 0>单个元素</option>
+                        <option value = 1>不固定元素列表</option>
+                        <option value = 2>固定元素列表</option>
+                        <option value = 3>文本列表</option>
+                        <option value = 4>网址列表</option>
+                      </select>
+                    <div v-if='parseInt(loopType) < 2'>
+                        <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                    </div>
+                    <div v-if='parseInt(loopType) == 2'>
+                        <label>XPath列表:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["pathList"]'></textarea>
+                    </div>
+                    <div v-if='parseInt(loopType) > 2'>
+                        <label>内容列表:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["textList"]'></textarea>
+                    </div>
+                    <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
+                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表不设置）:</label>
+                    <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
+                    <label><b>历史记录回退后</b>等待秒数:</label>
+                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+                    <label>执行完是否向下滚动:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>不滚动</option>
+                        <option value = 1>向下滚动一屏</option>
+                        <option value = 2>滚动到底部</option>
+                    </select>
+                    <label>滚动次数:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+
+                </div>
+
+                <div class="elements" v-if="nodeType==9">
+
+                </div>
+
+                <div class="elements" v-if="nodeType==10">
+                    <label>条件类型:</label>
+                    <select v-model='TClass' class="form-control">
+                        <option value = 0>无条件</option>
+                        <option value = 1>当前页面包括文本</option>
+                        <option value = 2>当前页面包括元素</option>
+                        <option v-if="nowNode['isInLoop']" value = 3>当前循环项包括文本</option>
+                        <option v-if="nowNode['isInLoop']" value = 4>当前循环项包括元素</option>
+                      </select>
+                    <label v-if='TClass'>包含的文字/元素XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath。" v-if='TClass' class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                </div>
+                <div style="margin-top:5px">
+                    <label><b>执行后</b>等待秒数:</label>
+                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
+                </div>
+                <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">确定</button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">保存任务</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
+                    <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
+                    <label>任务名称:</label>
+                    <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
+                    <label>任务描述:</label>
+                    <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
+                    <button type="button" id="saveButton" class="btn btn-primary">保存</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal -->
+    </div>
+</body>
+<script src="FlowChart_CN.js"></script>
+<script src="logic_CN.js"></script>
+<script src="global.js"></script>
+
+<script>
+    var navigator = new Vue({
+        el: '#navigator',
+        data: {
+            type: getUrlParam("type"),
+            backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+        },
+        methods:{
+            gotoHome: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            }, gotoInfo: function () {
+                let url = "";
+                if (getUrlParam("lang") == "zh") {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                } else {
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                }
+                window.location.href = url;
+            },
+        }
+    });
+</script>
+
+</html>

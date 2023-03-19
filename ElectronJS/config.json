@@ -1,0 +1,6 @@
+{
+  "backend_port": 8074,
+  "websocket_port": 8084,
+  "backend_address": "http://localhost",
+  "user_browser_config_path":""
+}
