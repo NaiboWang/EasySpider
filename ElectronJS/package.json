@@ -26,7 +26,7 @@
     "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
-    "electron": "^20.0.0"
+    "electron": "^20.0.1"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "dependencies": {
