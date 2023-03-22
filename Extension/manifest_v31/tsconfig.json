@@ -1,0 +1,23 @@
+{
+  "defaultSeverity": "none",
+  "compilerOptions": {
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": false,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noImplicitAny": false,
+    "checkJs": false,
+    "lib": ["esnext", "dom"],
+    "types": [
+      "@types/chrome",
+      "@types/node",
+      "@types/fs-extra"
+    ]
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "scripts/firebase.ts", "scripts/firebase.ts"]
+}
