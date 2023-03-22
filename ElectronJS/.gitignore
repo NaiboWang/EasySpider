@@ -7,4 +7,4 @@ chrome_macos/
 user-data/
 user_data/
 Data/
-execution_instances/*.json
+execution_instances/*
