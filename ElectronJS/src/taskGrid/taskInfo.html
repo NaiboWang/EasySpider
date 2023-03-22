@@ -123,9 +123,9 @@
             gotoHome:function(){
               let url = "";
               if(getUrlParam("lang")=="zh"){
-                  url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
+                  url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
               } else{
-                  url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
+                  url = "taskList.html?lang=en&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
               }
               window.location.href= url;
             },
@@ -139,18 +139,18 @@
                 // ws.send(JSON.stringify(message));
                 // window.location.href = url; //跳转链接
                 if(getUrlParam("lang")=="zh"){
-                    window.location.href = "FlowChart_CN.html?type="+getUrlParam("type")+"&lang="+getUrlParam("lang")+"&id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
+                    window.location.href = "FlowChart_CN.html?type="+getUrlParam("type")+"&lang="+getUrlParam("lang")+"&id=" + id + "&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
                 } else{
-                    window.location.href = "FlowChart.html?type="+getUrlParam("type")+"&lang="+getUrlParam("lang")+"&id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
+                    window.location.href = "FlowChart.html?type="+getUrlParam("type")+"&lang="+getUrlParam("lang")+"&id=" + id + "&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper
                 }
 
             },
             invokeTask: function(id) {
-                window.location.href = "invokeTask.html?type="+getUrlParam("type")+"&lang="+getUrlParam("lang")+"&id=" + id + "&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
+                window.location.href = "invokeTask.html?type="+getUrlParam("type")+"&lang="+getUrlParam("lang")+"&id=" + id + "&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
             },
         }
     });
-    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
+    $.get(app.$data.backEndAddressServiceWrapper + "/queryTask?id=" + sId, function(result) {
         app.$data.task = result;
         app.$data.show = true;
     });

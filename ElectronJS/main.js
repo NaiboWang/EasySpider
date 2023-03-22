@@ -7,20 +7,24 @@ const {exec} = require('child_process');
 const iconPath = path.join(__dirname, 'favicon.ico');
 const task_server = require(path.join(__dirname, 'server.js'));
 
-let config = fs.readFileSync(path.join(__dirname, `config.json`), 'utf8');
+let config = fs.readFileSync(path.join(task_server.getDir(), `config.json`), 'utf8');
 config = JSON.parse(config);
-task_server.start(config.backend_port); //start local server
-let backend_address = `${config.backend_address}:${config.backend_port}`;
-let websocket_port = config.websocket_port;
-let user_browser_config_path = path.join(__dirname, "user_browser_config.json");
-console.log("backend_address: " + backend_address);
+task_server.start(config.webserver_port); //start local server
+let server_address = `${config.webserver_address}:${config.webserver_port}`;
+const websocket_port = 8084; //目前只支持8084端口，写死，因为扩展里面写死了
+console.log("server_address: " + server_address);
 let driverPath = "";
 let chromeBinaryPath = "";
 let execute_path = "";
-if (process.platform === 'win32' || process.platform === 'win64') {
+console.log(process.arch);
+if (process.platform === 'win32' && process.arch === 'ia32') {
   driverPath = path.join(__dirname, "chrome_win32/chromedriver_win32.exe");
   chromeBinaryPath = path.join(__dirname, "chrome_win32/chrome.exe");
   execute_path = path.join(__dirname, "chrome_win32/execute.bat");
+} else if(process.platform === 'win32' && process.arch === 'x64') {
+    driverPath = path.join(__dirname, "chrome_win64/chromedriver_win64.exe");
+    chromeBinaryPath = path.join(__dirname, "chrome_win64/chrome.exe");
+    execute_path = path.join(__dirname, "chrome_win64/execute.bat");
 } else if (process.platform === 'darwin') {
   driverPath = path.join(__dirname, "chromedriver_mac64");
   chromeBinaryPath = path.join(__dirname, "chrome_mac64.app/Contents/MacOS/Google Chrome");
@@ -30,8 +34,8 @@ if (process.platform === 'win32' || process.platform === 'win64') {
   chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
   execute_path = path.join(__dirname, "chrome_linux64/easyspider_executestage");
 }
+console.log(driverPath, chromeBinaryPath, execute_path);
 let language = "en";
-let server_address = "https://servicewrapper.systems";
 let driver = null;
 let mainWindow = null;
 let flowchart_window = null;
@@ -54,10 +58,10 @@ let flowchart_window = null;
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 500,
-    height: 300,
+    width: 520,
+    height: 750,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'src/js/preload.js')
     },
     icon: iconPath,
     // frame: false, //取消window自带的关闭最小化等
@@ -65,12 +69,16 @@ function createWindow() {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('src/index.html');
-
+  // mainWindow.loadFile('src/index.html');
+    mainWindow.loadURL(server_address + '/index.html?user_data_folder=' + config.user_data_folder);
  // 隐藏菜单栏
  const { Menu } = require('electron');
  Menu.setApplicationMenu(null);
-
+ mainWindow.on('close', function (e) {
+   if (process.platform !== 'darwin'){
+     app.quit();
+   }
+ });
   // mainWindow.webContents.openDevTools();
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -82,16 +90,14 @@ function beginInvoke(msg) {
     if (msg.message.id != -1) {
       let url = "";
       if (language == "zh"){
-        url = server_address + `/FlowChart_CN.html?id=${msg.message.id}&backEndAddressServiceWrapper=` + server_address;
+        url = server_address + `/taskGrid/FlowChart_CN.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
       } else if(language == "en"){
-        url =  server_address + `/FlowChart.html?id=${msg.message.id}&backEndAddressServiceWrapper=` + server_address;
+        url =  server_address + `/taskGrid/FlowChart.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
       }
       console.log(url);
       flowchart_window.loadURL(url);
     }
     mainWindow.hide();
-    flowchart_window.show();
-    const { windowManager } = require("node-window-manager");
     const window = windowManager.getActiveWindow();
   // Prints the currently focused window bounds.
     console.log(window.getBounds());
@@ -103,12 +109,14 @@ function beginInvoke(msg) {
     let width = parseInt(size.width)
     let height = parseInt(size.height * 0.6)
     window.setBounds({ x: 0, y: size.height * 0.4, height:height, width:width });
-
+    flowchart_window.show();
   } else if (msg.type == 2) {
     //keyboard
     const robot = require("@jitsi/robotjs");
     //TODO 实现全选并删除功能,目前没有
     keyInfo = msg.message.keyboardStr.split("BS}")[1];
+    robot.keyTap("a", "control");
+    robot.keyTap("backspace");
     robot.typeString(keyInfo);
     robot.keyTap("shift");
     robot.keyTap("shift");
@@ -125,8 +133,18 @@ function beginInvoke(msg) {
     }
   } else if (msg.type == 5){
     var child = require('child_process').execFile;
-    var parameters = [msg.message.id, server_address];
-  
+    // 参数顺序： 1. task id 2. server address 3. saved_file_name 4. "remote" or "local" 5. user_data_folder
+    // var parameters = [msg.message.id, server_address];
+    let parameters = [];
+    console.log(msg.message)
+    if(msg.message.user_data_folder == null || msg.message.user_data_folder == undefined || msg.message.user_data_folder == ""){
+        parameters = ["--id", msg.message.id, "--server_address", server_address];
+    } else {
+      let user_data_folder_path = __dirname.indexOf("resources")>=0 && __dirname.indexOf("app")>=0? path.join(__dirname, "../../..", msg.message.user_data_folder): path.join(__dirname, msg.message.user_data_folder);
+      parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data_folder", user_data_folder_path];
+      config.user_data_folder = msg.message.user_data_folder;
+      fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
+    }
     // child('Chrome/easyspider_executestage.exe', parameters, function(err,stdout, stderr) {
     //    console.log(stdout);
     // });
@@ -139,12 +157,11 @@ function beginInvoke(msg) {
   }
 }
 
-
 const WebSocket = require('ws');
 let socket_window = null;
 let socket_start = null;
 let socket_flowchart = null;
-var wss = new WebSocket.Server({ port: 8084 });
+var wss = new WebSocket.Server({ port: websocket_port });
 wss.on('connection', function (ws) {
   ws.on('message', function (message, isBinary) {
     let msg = JSON.parse(message.toString());
@@ -177,7 +194,7 @@ const {windowManager} = require("node-window-manager");
 
 console.log(process.platform);
 
-async function runBrowser(lang="en") {
+async function runBrowser(lang="en", user_data_folder='') {
   const serviceBuilder = new ServiceBuilder(driverPath);
   let options = new chrome.Options();
   language = lang;
@@ -187,22 +204,34 @@ async function runBrowser(lang="en") {
     options.addExtensions(path.join(__dirname, "EasySpider_zh.crx"));
   }
   options.setChromeBinaryPath(chromeBinaryPath);
+  if(user_data_folder != ""){
+    let dir = __dirname.indexOf("resources")>=0 && __dirname.indexOf("app")>=0? path.join(__dirname, "../../..", user_data_folder): path.join(__dirname, user_data_folder);
+    options.addArguments("--user-data-dir=" + dir);
+    config.user_data_folder = user_data_folder;
+    fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
+  }
   driver = new Builder()
     .forBrowser('chrome')
     .setChromeOptions(options)
     .setChromeService(serviceBuilder)
     .build();
+  const cdpConnection = await driver.createCDPConnection("page");
+  let stealth_path = path.join(__dirname, "stealth.min.js");
+  let stealth = fs.readFileSync(stealth_path, 'utf8');
+  await cdpConnection.execute('Page.addScriptToEvaluateOnNewDocument', {
+      source: stealth,
+    });
   try {
-    await driver.get(server_address + "/taskList.html?backEndAddressServiceWrapper=" + server_address + "&lang=" + lang);
+    await driver.get(server_address + "/taskGrid/taskList.html?wsport="+websocket_port+"&backEndAddressServiceWrapper=" + server_address + "&lang=" + lang);
   } finally {
     // await driver.quit(); // 退出浏览器
   }
 }
 
-function handleOpenBrowser(event, lang="en") {
+function handleOpenBrowser(event, lang="en", user_data_folder= "") {
   const webContents = event.sender;
   const win = BrowserWindow.fromWebContents(webContents);
-  runBrowser(lang);
+  runBrowser(lang, user_data_folder);
   let size = screen.getPrimaryDisplay().workAreaSize;
   let width = parseInt(size.width);
   let height = parseInt(size.height * 0.6);
@@ -216,15 +245,16 @@ function handleOpenBrowser(event, lang="en") {
   let url = "";
   let id = -1;
   if (lang == "en") {
-    url = server_address + `/FlowChart.html?id=${id}&backEndAddressServiceWrapper=` + server_address;
+    url = server_address + `/taskGrid/FlowChart.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
   }else if(lang == "zh") {
-    url = server_address + `/FlowChart_CN.html?id=${id}&backEndAddressServiceWrapper=` + server_address;
+    url = server_address + `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
   }
   // and load the index.html of the app.
   flowchart_window.loadURL(url);
   flowchart_window.hide();
   flowchart_window.on('close', function (event) {
     mainWindow.show();
+    driver.quit();
   });
 }
 
@@ -233,9 +263,9 @@ function handleOpenInvoke(event, lang="en"){
   let url = "";
   language = lang;
   if (lang == "en") {
-      url = server_address + `/taskList.html?type=1&backEndAddressServiceWrapper=` + server_address;
+      url = server_address + `/taskGrid/taskList.html?type=1&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
     }else if(lang == "zh") {
-        url = server_address + `/taskList.html?type=1&backEndAddressServiceWrapper=` + server_address + "&lang=zh";
+      url = server_address + `/taskGrid/taskList.html?type=1&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address + "&lang=zh";
   }
   // and load the index.html of the app.
   window.loadURL(url);

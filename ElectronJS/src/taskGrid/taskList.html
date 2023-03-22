@@ -57,7 +57,7 @@
         },
         methods: {
             newTask: function (){
-                window.location.href = "newTask.html?lang="+getUrlParam("lang")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;;
+                window.location.href = "newTask.html?lang="+getUrlParam("lang")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
             },
             modifyTask: function(id, url) {
                 let message = { //显示flowchart
@@ -70,7 +70,7 @@
                 window.location.href = url; //跳转链接
             },
             browseTask: function(id) {
-                window.location.href = "taskInfo.html?type="+getUrlParam("type")+"&id=" + id + "&lang="+getUrlParam("lang")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
+                window.location.href = "taskInfo.html?type="+getUrlParam("type")+"&id=" + id + "&lang="+getUrlParam("lang")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
             },
             deleteTask: function(id) {
                 let text = "Are you sure to remove the selected task?";
@@ -80,8 +80,8 @@
                     text = "确定要删除选中的任务吗？";
                 }
                 if (confirm(text)) {
-                    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/deleteService?id=" + id, function(res) {
-                        $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
+                    $.get(app.$data.backEndAddressServiceWrapper + "/deleteTask?id=" + id, function(res) {
+                        $.get(app.$data.backEndAddressServiceWrapper + "/queryTasks", function(re) {
                             result = re.sort(desc);
                             app.$data.list = result;
                         });
@@ -95,14 +95,14 @@
     var desc = function(x, y) {
         return (x["id"] < y["id"]) ? 1 : -1
     }
-    $.get(app.$data.backEndAddressServiceWrapper + "/backEnd/queryServices", function(re) {
-        result = re.sort(desc);
-        app.$data.list = result;
+    $.get(app.$data.backEndAddressServiceWrapper + "/queryTasks", function(re) {
+        // result = re.sort(desc);
+        app.$data.list = re;
         if (getUrlParam("type") == "1") {
             app.$data.type = 2;
         }
     });
-    ws = new WebSocket("ws://localhost:8084");
+    ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
     ws.onopen = function() {
         // Web Socket 已连接上，使用 send() 方法发送数据
         console.log("已连接");

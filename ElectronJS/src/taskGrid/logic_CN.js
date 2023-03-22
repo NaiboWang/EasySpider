@@ -8,7 +8,7 @@ exampleMsg = { //示例消息
     }
 }
 console.log(JSON.stringify(exampleMsg));
-ws = new WebSocket("ws://localhost:8084");
+ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
 ws.onopen = function() {
     // Web Socket 已连接上，使用 send() 方法发送数据
     console.log("已连接");
@@ -235,7 +235,7 @@ function saveService(type) {
                             value: nodeList[i]["parameters"]["links"],
                             desc: "要采集的网址列表,多行以\\n分开",
                             type: "string",
-                            exampleValue: "https://www.jd.com"
+                            exampleValue: nodeList[i]["parameters"]["links"]
                         });
                         links = nodeList[i]["parameters"]["links"];
                     }
@@ -256,17 +256,29 @@ function saveService(type) {
                     }
                 } else if (nodeList[i]["option"] == 8) //循环操作
                 {
-                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) //循环中的循环输入文本或循环输入网址
+                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) { //循环中的循环输入文本或循环输入网址
                         inputParameters.push({
-                        id: inputIndex,
-                        name: "loopText_" + inputIndex++,
-                        nodeId: i,
-                        nodeName: nodeList[i]["title"],
-                        desc: "要输入的文本/网址,多行以\\n分开",
-                        type: "string",
-                        exampleValue: nodeList[i]["parameters"]["textList"],
-                        value: nodeList[i]["parameters"]["textList"],
-                    });
+                            id: inputIndex,
+                            name: "loopText_" + inputIndex++,
+                            nodeId: i,
+                            nodeName: nodeList[i]["title"],
+                            desc: "要输入的文本/网址,多行以\\n分开",
+                            type: "string",
+                            exampleValue: nodeList[i]["parameters"]["textList"],
+                            value: nodeList[i]["parameters"]["textList"],
+                        });
+                    } else if (parseInt(nodeList[i]["parameters"]["loopType"]) == 0) {
+                        inputParameters.push({
+                            id: inputIndex,
+                            name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
+                            nodeId: i,
+                            nodeName: nodeList[i]["title"],
+                            desc: "循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）",
+                            type: "int",
+                            exampleValue: nodeList[i]["parameters"]["exitCount"],
+                            value: nodeList[i]["parameters"]["exitCount"],
+                        });
+                    }
                 } else if (nodeList[i]["option"] == 3) //提取数据操作
                 {
                     for (let j = 0; j < nodeList[i]["parameters"]["paras"].length; j++) {

@@ -1,5 +1,10 @@
 node_modules
 out/
 chrome_win32/
+chrome_win64/
 chrome_linux64/
 chrome_macos/
+user-data/
+user_data/
+Data/
+execution_instances/*.json

@@ -8,7 +8,7 @@ exampleMsg = { //示例消息
     }
 }
 console.log(JSON.stringify(exampleMsg));
-ws = new WebSocket("ws://localhost:8084");
+ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
 ws.onopen = function() {
     // Web Socket 已连接上，使用 send() 方法发送数据
     console.log("已连接");
@@ -206,7 +206,7 @@ var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 function saveService(type) {
     var serviceId = $("#serviceId").val();
     var text = "Confirm to save this task?";
-    if (type == 1) { //服务另存为
+    if (type == 1) { //任务另存为
         serviceId = -1;
         text = "Confirm to save as another task in the system?";
     }
@@ -315,7 +315,7 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post(backEndAddressServiceWrapper + "/backEnd/manageService", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
@@ -326,19 +326,19 @@ function saveService(type) {
     }
 }
 
-//点击保存服务按钮时的处理
+//点击保存任务按钮时的处理
 $("#saveButton").mousedown(function() {
     saveService(0);
 });
-//点击另存为服务按钮时的处理
+//点击另存为任务按钮时的处理
 $("#saveAsButton").mousedown(function() {
     saveService(1);
 });
 
 
-if (sId != null && sId != -1) //加载服务
+if (sId != null && sId != -1) //加载任务
 {
-    $.get(backEndAddressServiceWrapper + "/backEnd/queryService?id=" + sId, function(result) {
+    $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
         $("#serviceName").val(result["name"]);
@@ -348,5 +348,5 @@ if (sId != null && sId != -1) //加载服务
         refresh();
     });
 } else {
-    refresh(); //新增服务
+    refresh(); //新增任务
 }

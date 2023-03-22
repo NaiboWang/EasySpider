@@ -6,9 +6,9 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 # EasySpider: Visual Code-Free Web Crawler/Spider
 
-A visual code-free/no-code web crawler/spider. 
+A visual code-free/no-code web crawler/spider, supporting both Chinese and English. 
 
-一个可以无代码可视化设计和执行的爬虫软件。
+一个可以无代码可视化设计和执行的爬虫软件，支持中文和英文版本。
 
 ## Download EasySpider/下载 EasySpider
 
@@ -25,7 +25,7 @@ Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUl
 
 Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
-中文文档：请暂时翻译上面的英文文档，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第五章）。
+中文文档：请暂时翻译上面的[英文文档](https://github.com/NaiboWang/EasySpider/wiki)，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第五章）。
 
 ## Publications/出版物
 

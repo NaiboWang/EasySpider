@@ -13,39 +13,97 @@ function travel(dir,callback){
         }
     })
 }
+function compare(p){ //这是比较函数
+    return function(m,n){
+        var a = m[p];
+        var b = n[p];
+        return b - a; //降序
+    }
+}
+function getDir(){
+    if(__dirname.indexOf("app") >= 0 && __dirname.indexOf("resources") >= 0){
+        return path.join(__dirname,"../../..");
+    } else{
+        return __dirname;
+    }
+}
 
+exports.getDir = getDir;
+FileMimes = JSON.parse(fs.readFileSync(path.join(__dirname,'mime.json')).toString());
 exports.start = function(port = 8074) {
     http.createServer(function(req, res) {
         let body = "";
         res.setHeader("Access-Control-Allow-Origin", "*"); // 设置可访问的源
-        res.writeHead(200, { 'Content-Type': 'application/json' });
+        // 解析参数
+        const pathName = url.parse(req.url).pathname;
+        if(pathName.indexOf(".") < 0) { //如果没有后缀名, 则为后台请求
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+        }
+        // else if(pathName.indexOf("index.html") >= 0) {
+        //     fs.readFile(path.join(__dirname,"src", pathName), async (err, data) => {
+        //         if (err) {
+        //             res.writeHead(404, { 'Content-Type': 'text/html;charset="utf-8"' })
+        //             res.end(err.message)
+        //             return;
+        //         }
+        //         if (!err) {
+        //             // 3. 针对不同的文件返回不同的内容头
+        //             let extname = path.extname(pathName);
+        //             let mime = FileMimes[extname]
+        //             res.writeHead(200, { 'Content-Type': mime + ';charset="utf-8"' })
+        //             res.end(data);
+        //             return;
+        //         }
+        //     })
+        // }
+        else { //如果有后缀名, 则为前端请求
+            // console.log(path.join(__dirname,"src/taskGrid", pathName));
+            fs.readFile(path.join(__dirname,"src", pathName), async (err, data) => {
+                if (err) {
+                    res.writeHead(404, { 'Content-Type': 'text/html;charset="utf-8"' })
+                    res.end(err.message)
+                    return;
+                }
+                if (!err) {
+                    // 3. 针对不同的文件返回不同的内容头
+                    let extname = path.extname(pathName);
+                    let mime = FileMimes[extname]
+                    res.writeHead(200, { 'Content-Type': mime + ';charset="utf-8"' })
+                    res.end(data);
+                    return;
+                }
+            })
+        }
+
+
         req.on('data', function(chunk) {
             body += chunk;
         });
         req.on('end', function() {
-            // 解析参数
-            const pathName = url.parse(req.url).pathname;
             // 设置响应头部信息及编码
             if (pathName == "/queryTasks") { //查询所有服务信息，只包括id和服务名称
                 output = [];
-                travel(path.join(__dirname, "tasks"),function(pathname){
+                travel(path.join(getDir(), "tasks"),function(pathname){
                     const data = fs.readFileSync(pathname, 'utf8');
+                    let stat = fs.statSync(pathname, 'utf8');
                     // parse JSON string to JSON object
                     const task = JSON.parse(data);
                     let item = {
                         "id": task.id,
                         "name": task.name,
                         "url": task.url,
+                        "mtime": stat.mtime,
                     }
                     if(item.id!= -2) {
                         output.push(item);
                     }
                 });
+                output.sort(compare("mtime"));
                 res.write(JSON.stringify(output));
                 res.end();
             } else if (pathName == "/queryExecutionInstances") { //查询所有服务信息，只包括id和服务名称
                 output = [];
-                travel(path.join(__dirname, "execution_instances"),function(pathname){
+                travel(path.join(getDir(), "execution_instances"),function(pathname){
                     const data = fs.readFileSync(pathname, 'utf8');
                     // parse JSON string to JSON object
                     const task = JSON.parse(data);
@@ -64,7 +122,7 @@ exports.start = function(port = 8074) {
                 var params = url.parse(req.url, true).query;
                 try {
                     var tid = parseInt(params.id);
-                    const data = fs.readFileSync(path.join(__dirname, `tasks/${tid}.json`), 'utf8');
+                    const data = fs.readFileSync(path.join(getDir(), `tasks/${tid}.json`), 'utf8');
                     // parse JSON string to JSON object
                     res.write(data);
                     res.end();
@@ -76,7 +134,7 @@ exports.start = function(port = 8074) {
                 var params = url.parse(req.url, true).query;
                 try {
                     var tid = parseInt(params.id);
-                    const data = fs.readFileSync(path.join(__dirname, `execution_instances/${tid}.json`), 'utf8');
+                    const data = fs.readFileSync(path.join(getDir(), `execution_instances/${tid}.json`), 'utf8');
                     // parse JSON string to JSON object
                     res.write(data);
                     res.end();
@@ -91,12 +149,12 @@ exports.start = function(port = 8074) {
                 var params = url.parse(req.url, true).query;
                 try {
                     let tid = parseInt(params.id);
-                    let data = fs.readFileSync(path.join(__dirname, `tasks/${tid}.json`), 'utf8');
+                    let data = fs.readFileSync(path.join(getDir(), `tasks/${tid}.json`), 'utf8');
                     data = JSON.parse(data);
                     data.id = -2;
                     data = JSON.stringify(data);
                     // write JSON string to a file
-                    fs.writeFile(path.join(__dirname, `tasks/${tid}.json`), data, (err) => {
+                    fs.writeFile(path.join(getDir(), `tasks/${tid}.json`), data, (err) => {
                         if (err) {
                             throw err;
                         }
@@ -113,7 +171,7 @@ exports.start = function(port = 8074) {
                 let id = data["id"];
                 if (data["id"] == -1) {
                     file_names = [];
-                    fs.readdirSync(path.join(__dirname, "tasks")).forEach((file)=>{
+                    fs.readdirSync(path.join(getDir(), "tasks")).forEach((file)=>{
                         try{
                             file_names.push(parseInt(file.split(".")[0]));
                         } catch (error) {
@@ -130,14 +188,14 @@ exports.start = function(port = 8074) {
                 }
                 data = JSON.stringify(data);
                 // write JSON string to a file
-                fs.writeFile(path.join(__dirname, `tasks/${id}.json`), data, (err) => {});
+                fs.writeFile(path.join(getDir(), `tasks/${id}.json`), data, (err) => {});
                 res.write(id.toString(), 'utf8');
                 res.end();
             } else if(pathName == "/invokeTask"){
                 body = querystring.parse(body);
                 let data = JSON.parse(body.paras);
                 let id = body.id;
-                let task = fs.readFileSync(path.join(__dirname, `tasks/${id}.json`), 'utf8');
+                let task = fs.readFileSync(path.join(getDir(), `tasks/${id}.json`), 'utf8');
                 task = JSON.parse(task);
                 try{
                     task["links"] = data["urlList_0"];
@@ -163,7 +221,7 @@ exports.start = function(port = 8074) {
                     }
                 }
                 let file_names = [];
-                fs.readdirSync(path.join(__dirname, "execution_instances")).forEach((file)=>{
+                fs.readdirSync(path.join(getDir(), "execution_instances")).forEach((file)=>{
                     try{
                         file_names.push(parseInt(file.split(".")[0]));
                     } catch (error) {
@@ -176,8 +234,22 @@ exports.start = function(port = 8074) {
                 }
                 task["id"] = eid;
                 task = JSON.stringify(task);
-                fs.writeFile(path.join(__dirname, `execution_instances/${eid}.json`), task, (err) => {});
+                fs.writeFile(path.join(getDir(), `execution_instances/${eid}.json`), task, (err) => {});
                 res.write(eid.toString(), 'utf8');
+                res.end();
+            } else if(pathName == "/getConfig"){
+                let config = fs.readFileSync(path.join(getDir(), `config.json`), 'utf8');
+                config = JSON.parse(config);
+                res.write(JSON.stringify(config));
+                res.end();
+            } else if(pathName == "/setUserDataFolder"){
+                let config = fs.readFileSync(path.join(getDir(), `config.json`), 'utf8');
+                config = JSON.parse(config);
+                body = querystring.parse(body);
+                config["user_data_folder"] = body["user_data_folder"];
+                config = JSON.stringify(config);
+                fs.writeFile(path.join(getDir(), `config.json`), config, (err) => {});
+                res.write(JSON.stringify({ "success": "User data folder has been set successfully." }));
                 res.end();
             }
         });

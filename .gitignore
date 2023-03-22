@@ -3,7 +3,12 @@ node_modules/
 ServiceWrapper/
 Data/
 /GPUCache
+C#/
+ServiceGrid/
+Releases/
+old_code
 *.exe
 *.ini
 *.7z
 *.mp4
+

@@ -25,10 +25,14 @@
             <h4 style="text-align: center;">{{"New Task~新任务" | lang}}</h4>
             <div class="form-group">
                 <label>{{"Please Input URL (http or https):~请输入网页URL（以http或https开头）：" | lang}}  </label>
-                <textarea class="form-control" id="links" placeholder="links" style="min-height: 200px;">{{"https://www.ebay.com~https://www.jd.com" | lang}}</textarea>
+                <textarea class="form-control" id="links" placeholder="links" style="min-height: 100px;">{{"https://www.ebay.com~https://www.jd.com" | lang}}</textarea>
             </div>
-
             <button type="submit" id="send" class="btn btn-primary">{{"Start Design~开始设计" | lang}}</button>
+<!--            <div class="form-group" style="margin-top: 10px">-->
+<!--                <label>{{"User Data Folder (If you want to load the cookie data from your local browser, please set this folder path, and then cilck the 'Start Design with cookie data from local browser' button to start design the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息和cookie，请设置此目录，并点击下方“带本地数据开始设计”按钮开始设计任务）：" | lang}}</label>-->
+<!--                <textarea class="form-control" id="user-data-folder" style="min-height: 50px;">{{user_data_folder}}</textarea>-->
+<!--                <button type="submit" id="sendWithCookie" style="margin-top: 10px" class="btn btn-primary">{{"Start Design with cookie data from local browser~带本地数据开始设计" | lang}}</button>-->
+<!--            </div>-->
         </div>
     </div>
 
@@ -41,6 +45,7 @@
         el: '#newTask',
         data: {
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+            user_data_folder: "",
         },
         methods: {
             gotoHome: function () {
@@ -55,7 +60,7 @@
         }
     });
 
-    ws = new WebSocket("ws://localhost:8084");
+    ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
     ws.onopen = function() {
         // Web Socket 已连接上，使用 send() 方法发送数据
         console.log("已连接");
@@ -102,4 +107,5 @@
             window.location.href = $("#links").val().split("\n")[0]; //跳转链接
         }
     });
+
 </script>

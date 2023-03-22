@@ -2,75 +2,183 @@
 <html>
 
 <head>
-  <script src="js/jquery-3.4.1.min.js"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script src="js/vue.global.js"></script>
-  <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
-  </link>
-  <title>EasySpider: NoCode Visual Web Crawler</title>
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <script src="js/vue.global.js"></script>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    </link>
+    <title>EasySpider: NoCode Visual Web Crawler</title>
 </head>
 
 <body>
 <div id="app">
 
-  <div v-if="init"  style="padding: 10px; text-align: center;vertical-align: middle;">
-    <p style="margin-top: 20px">选择语言/Select Language</p>
+    <div style="padding: 10px; text-align: center;vertical-align: middle;" v-if="init">
+        <h5 style="margin-top: 20px">选择语言/Select Language</h5>
 
-    <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;" @click="changeLang('zh')" class="btn btn-outline-primary btn-lg">中文版</a></p>
+        <p><a @click="changeLang('zh')" class="btn btn-outline-primary btn-lg"
+              style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;">中文版</a></p>
 
-    <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;" @click="changeLang('en')" class="btn btn-outline-primary btn-lg">English</a></p>
-  </div>
-
-  <div v-else style="padding: 10px; text-align: center;vertical-align: middle;">
-    <div v-if="lang=='en'">
-      <p style="margin-top: 20px">Hint: Click Button below to start.</p>
-
-      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startDesign('en')"
-            class="btn btn-primary btn-lg">Design Task</a></p>
-
-      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startInvoke('en')" @click
-            class="btn btn-primary btn-lg">View/Manage/Invoke Tasks</a></p>
+        <p><a @click="changeLang('en')" class="btn btn-outline-primary btn-lg"
+              style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;">English</a></p>
     </div>
-    <div v-else-if="lang=='zh'">
-      <p style="margin-top: 20px">提示：点击下方按钮开始使用。</p>
 
-      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startDesign('zh')"
-            class="btn btn-primary btn-lg">设计任务</a></p>
+    <div style="padding: 10px; text-align: center;vertical-align: middle;" v-else>
+        <div v-if="lang=='en'">
+            <div v-if="step == 0">
+                <p style="margin-top: 20px">Hint: Click Button below to start.</p>
 
-      <p><a style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white" @click="startInvoke('zh')" @click
-            class="btn btn-primary btn-lg">查看/管理/执行任务</a></p>
+                <p><a @click="step = 1"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Design Task</a>
+                </p>
+
+                <p><a @click="startInvoke('en')"
+                      @click class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">View/Manage/Invoke
+                    Tasks</a></p>
+            </div>
+            <div v-else-if="step == 1">
+                <h4 style="margin-top: 20px">Please select design mode</h4>
+                <p style="margin-top: 20px; text-align: justify; width:310px; margin-left: 18%">
+                    Clean Mode: Start with a clean browser with no cookie/user data</p>
+                <p style="text-align: justify; width:310px; margin-left: 18%">
+                    Data Mode: Start with a browser that stores user data such as website login information and cookies.</p>
+                <p><a @click="startDesign('en')"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Clean Mode</a>
+                </p>
+
+                <p><a @click="step = 2" @click
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Data Mode</a>
+                </p>
+
+                <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">Go to Home Page</a>
+
+            </div>
+            <div v-else-if="step == 2">
+                <h4 style="margin-top: 20px">Specify user data folder</h4>
+                <div style="margin: 0 auto; width:90%">
+                    <p style="margin-top: 20px; text-align: justify">
+                        Please specify the directory of user data below. Once set, the browser will load cookies and other contents such as user login information from this directory. The browser will load data from this directory every time it is designed and executed, as long as the directory remains the same. </p>
+                    <p style="text-align: justify">For example, if the <b>./user_data</b> folder is set and you log in at <b>ebay.com</b> during the design process, then the previous login status will still be retained when you specify the <b>./user_data</b> folder again for the next design or task execution when you open <b>ebay.com</b>.</p>
+                    <p style="text-align: justify">If there are multiple configurations, different directories can be set for each configuration. Each directory will be treated as a separate configuration set, and if a directory does not exist, it will be created automatically.</p>
+                    <p><textarea class="form-control" style="min-height: 50px;"
+                                 v-model="user_data_folder"></textarea>
+                    </p>
+                </div>
+                <p><a @click="startDesign('en', true)"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Design</a></p>
+                <p>
+                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">Go to Home Page</a>
+                </p>
+            </div>
+        </div>
+        <div v-else-if="lang=='zh'">
+            <div v-if="step == 0">
+                <p style="margin-top: 20px">提示：点击下方按钮开始使用。</p>
+
+                <p><a @click="step = 1" class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">设计任务</a></p>
+
+                <p><a @click="startInvoke('zh')"
+                      @click class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">查看/管理/执行任务</a>
+                </p>
+            </div>
+            <div v-else-if="step == 1">
+                <h4 style="margin-top: 20px">请选择设计模式</h4>
+                <p style="margin-top: 20px; text-align: left; width:310px; margin-left: 18%">
+                    纯净版浏览器：无任何用户信息的浏览器。</p>
+                <p style="text-align: left; width:310px; margin-left: 18%">
+                    带用户信息的浏览器：保存有用户数据，如网站的登录信息，cookie的浏览器。</p>
+                <p><a @click="startDesign('zh')"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">使用纯净版浏览器设计</a>
+                </p>
+
+                <p><a @click="step = 2" class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">使用带用户信息浏览器设计</a>
+                </p>
+                <p>
+                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">返回首页</a>
+                </p>
+
+            </div>
+            <div v-else-if="step == 2">
+                <h4 style="margin-top: 20px">指定用户信息目录</h4>
+                <div style="margin: 0 auto; width:90%">
+                    <p style="margin-top: 20px; text-align: left">
+                        请在下方指定用户信息目录。设置后，浏览器将加载目录里的cookie，如用户的登录信息等内容，目录不变的情况下，每次设计和执行时浏览器都会加载此目录里的数据。</p>
+                    <p style="margin-top: 10px; text-align: left">例如：设置了./user_data文件夹，并在设计过程中登录了知乎网站，则下次再次设计或者执行任务时指定./user_data文件夹，打开知乎网站页面会仍然保留之前的登录状态。</p>
+                    <p style="margin-top: 10px; text-align: left">如果有多套配置，可以设置不同的目录，每个目录为一套，如果目录不存在将会被自动创建。</p>
+                    <p><textarea class="form-control" style="min-height: 50px;"
+                                 v-model="user_data_folder"></textarea>
+                    </p>
+                </div>
+                <p><a @click="startDesign('zh', true)"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">开始设计</a></p>
+                <p>
+                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">返回首页</a>
+                </p>
+            </div>
+
+        </div>
     </div>
-  </div>
 </div>
 
-  <!-- You can also require other files to run in this process -->
-  <script src="js/renderer.js"></script>
-<script>
-  const { createApp } = Vue;
 
-  createApp({
-    data() {
-      return {
-        init: true,
-        lang: 'zh',
-      }
-    },
-    methods: {
-      changeLang(lang='zh') {
-        this.init = false;
-        this.lang = lang;
-      },
-      startDesign(lang){
-        window.electronAPI.startDesign(lang);
-      },
-      startInvoke(lang){
-        window.electronAPI.startInvoke(lang);
-      }
+<script>
+    const {createApp} = Vue;
+
+    function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg); //匹配目标参数
+        if (r != null) return unescape(r[2]);
+        return "";
     }
-  }).mount('#app');
+
+    createApp({
+        data() {
+            return {
+                init: true,
+                lang: 'zh',
+                user_data_folder: getUrlParam("user_data_folder"),
+                step: 0,
+            }
+        },
+        methods: {
+            changeLang(lang = 'zh') {
+                this.init = false;
+                this.lang = lang;
+            },
+            startDesign(lang, with_data = false) {
+                if (with_data) {
+                    console.log(this.user_data_folder)
+                    if (this.user_data_folder == null || this.user_data_folder == "") {
+                        if (lang == 'zh') {
+                            alert("请指定用户信息目录");
+                        } else {
+                            alert("Please specify the user information directory");
+                        }
+                        return;
+                    }
+                    window.electronAPI.startDesign(lang, this.user_data_folder);
+                } else {
+                    window.electronAPI.startDesign(lang);
+                }
+            },
+            startInvoke(lang) {
+                window.electronAPI.startInvoke(lang);
+            }
+        }
+    }).mount('#app');
 
 </script>
 </body>

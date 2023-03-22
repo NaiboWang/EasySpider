@@ -299,17 +299,17 @@
             gotoHome: function () {
                 let url = "";
                 if (getUrlParam("lang") == "zh") {
-                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
                 } else {
-                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
                 }
                 window.location.href = url;
             }, gotoInfo: function () {
                 let url = "";
                 if (getUrlParam("lang") == "zh") {
-                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
                 } else {
-                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + this.backEndAddressServiceWrapper
                 }
                 window.location.href = url;
             },

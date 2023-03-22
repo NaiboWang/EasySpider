@@ -21,10 +21,11 @@ from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import random
-import numpy
+# import numpy
 import csv
 import os
 from selenium.webdriver.common.by import By
+from commandline_config import Config
 
 
 saveName, log, OUTPUT, browser, SAVED = None, "", "", None, False
@@ -109,6 +110,7 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
         recordLog("getData")
         getData(node["parameters"], loopValue, node["isInLoop"],
                 parentPath=clickPath, index=index)
+        saveData()
     elif node["option"] == 4:  # 输入文字
         inputInfo(node["parameters"], loopValue)
     elif node["option"] == 8:  # 循环
@@ -646,24 +648,38 @@ def isnull(s):
     return len(s) != 0
 
 
-@atexit.register
-def clean():
-    global saveName, log, OUTPUT, browser, SAVED
-    if not SAVED:
-        print('Clear Environment and save data')
-        with open("Data/"+saveName + '_log.txt', 'w', encoding='utf-8-sig') as file_obj:
+def saveData(exit=False):
+    global saveName, log, OUTPUT, browser
+    if exit == True or len(OUTPUT) > 100: # 每100条保存一次
+        with open("Data/"+saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
             file_obj.write(log)
             file_obj.close()
-        with open("Data/"+saveName + '.csv', 'w', encoding='utf-8-sig', newline="") as f:
+        with open("Data/"+saveName + '.csv', 'a', encoding='utf-8-sig', newline="") as f:
             f_csv = csv.writer(f)
             for line in OUTPUT:
                 f_csv.writerow(line)
             f.close()
-        browser.quit()
-        sys.exit(saveName + '.csv')
+        OUTPUT = []
+        log = ""
+
+@atexit.register
+def clean():
+    global saveName, log, OUTPUT, browser, SAVED
+    saveData(exit=True)
+    browser.quit()
+    sys.exit(saveName + '.csv')
 
 
 if __name__ == '__main__':
+    config = {
+        "id": 0,
+        "server_address": "http://localhost:8074",
+        "saved_file_name": "",
+        "read_type": "remote",
+        "user_data_folder": "",
+    }
+    c = Config(config)
+    print(c)
     options = Options()
     driver_path = "chromedriver.exe"
     import platform
@@ -671,14 +687,19 @@ if __name__ == '__main__':
     option = webdriver.ChromeOptions()
     if not os.path.exists(os.getcwd()+"/Data"):
         os.mkdir(os.getcwd()+"/Data")
-    if os.path.exists(os.getcwd()+"/EasySpider/resources"):
+    if os.path.exists(os.getcwd()+"/EasySpider/resources"): # 打包后的路径
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/EasySpider")
-        if sys.platform == "win32":
+        if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
+        elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
+            options.binary_location = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
+            driver_path = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
@@ -692,19 +713,26 @@ if __name__ == '__main__':
             sys.exit()
         print("Chrome location:", options.binary_location)
         print("Chromedriver location:", driver_path)
-    elif os.path.exists(os.getcwd()+"/Debug"):
-        print("Finding chromedriver in EasySpider",
-              os.getcwd()+"/Debug")
-        option.binary_location = "Debug/Chrome/chrome.exe"  # 指定chrome位置
-        driver_path = "Debug/Chrome/chromedriver.exe"
+    elif os.path.exists(os.getcwd()+"/../ElectronJS"): 
+        if os.getcwd().find("ElectronJS") >= 0:  # 软件dev用
+            print("Finding chromedriver in EasySpider",
+                os.getcwd())
+            option.binary_location = "chrome_win64/chrome.exe"
+            driver_path = "chrome_win64/chromedriver_win64.exe"
+        else: # 直接在executeStage文件夹内使用python easyspider_executestage.py时的路径
+            print("Finding chromedriver in EasySpider",
+                os.getcwd()+"/ElectronJS")
+            option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+            driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
     elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
-        print("Finding chromedriver in EasySpider",
-              os.getcwd()+"/Debug")
-        options.binary_location = "./Application/chrome.exe"  # 指定chrome位置
+        print("Finding chromedriver in ./Chrome",
+              os.getcwd()+"/Chrome")
+        options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
         # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
-        driver_path = "./Application/chromedriver.exe"
+        driver_path = "./Chrome/chromedriver.exe"
     else:
-        options.binary_location = "chrome.exe"  # 指定chrome位置
+        options.binary_location = "./chrome.exe"  # 指定chrome位置
+        driver_path = "./chromedriver.exe"
 
     option.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
@@ -719,57 +747,44 @@ if __name__ == '__main__':
     # 2. User Profile文件夹的路径是：C:\Users\用户名\AppData\Local\Google\Chrome\User Data不要加Default
     # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
     # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
-    if len(sys.argv) > 5:
-        userdataPath = sys.argv[5]
-        option.add_argument(f'--user-data-dir={userdataPath}')  # TMALL 反扒
+    if c.user_data_folder != "":
+        option.add_argument(f'--user-data-dir={c.user_data_folder}')  # TMALL 反扒
         option.add_argument("--profile-directory=Default")
     # options.add_argument(
     #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
     option.add_argument(
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
+    options.add_argument("--disable-blink-features=AutomationControlled")  # TMALL 反扒
     print(options)
     browser = webdriver.Chrome(
         options=options, chrome_options=option, executable_path=driver_path)
+    stealth_path = driver_path[:driver_path.find("chromedriver")] + "stealth.min.js"
+    with open(stealth_path, 'r') as f:
+        js = f.read()
+        print("Loading stealth.min.js")
+    browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': js}) # TMALL 反扒
+
     wait = WebDriverWait(browser, 10)
     browser.get('about:blank')
     browser.set_page_load_timeout(10)  # 加载页面最大超时时间
     browser.set_script_timeout(10)
-    if len(sys.argv) > 1:
-        id = int(sys.argv[1])  # taskId这里修改
-    else:
-        id = 7  # 设置默认值
-    print("id：", id)
-    if len(sys.argv) > 3:
-        saveName = "task_" + str(id) + "_" + sys.argv[3]  # 保存文件的名字
+    id = c.id;
+    print("id: ", id)
+    if c.saved_file_name != "":
+        saveName = "task_" + str(id) + "_" + c.saved_file_name  # 保存文件的名字
     else:
         saveName = "task_" + str(id) + "_" + \
             str(random.randint(0, 999999999))  # 保存文件的名字
-    print("saveName is:", saveName, sys.argv, len(sys.argv) > 2)
-    if len(sys.argv) > 2:
-        backEndAddress = sys.argv[2]
-    else:
-        backEndAddress = "https://servicewrapper.systems"
-
-    # TODO when transfer to electron, use commandline-config
-    config = {
-        "type": "remote",
-    }
-    from commandline_config import Config
-    c = Config(config)
-    co = c
-    co = {"type": "remote"}
-    if len(sys.argv) > 4:
-        co = sys.argv[4]
-    if co["type"] == "remote":
+    backEndAddress = c.server_address
+    if c.read_type == "remote":
         print("remote")
-        content = requests.get(
-            backEndAddress + "/backEnd/queryTask?id=" + str(id))
+        content = requests.get(backEndAddress + "/queryExecutionInstance?id=" + str(id))
     else:
         print("local")
         with open("tasks/" + str(id) + ".json", 'r', encoding='utf-8') as f:
             content = f.read()
     service = json.loads(content.text)  # 加载服务信息
-    print("name：", service["name"])
+    print("name: ", service["name"])
     procedure = service["graph"]  # 程序执行流程
     links = list(filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
     OUTPUT = []  # 采集的数据
@@ -792,13 +807,13 @@ if __name__ == '__main__':
     print("Done!")
     recordLog("Done!")
     # dataPath = os.path.abspath(os.path.join(os.getcwd(), "../Data"))
-    with open("Data/"+saveName + '_log.txt', 'w', encoding='utf-8-sig') as file_obj:
-        file_obj.write(log)
-        file_obj.close()
-    with open("Data/"+saveName + '.csv', 'w', encoding='utf-8-sig', newline="") as f:
-        f_csv = csv.writer(f)
-        for line in OUTPUT:
-            f_csv.writerow(line)
-        f.close()
-    SAVED = True
+    # with open("Data/"+saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
+    #     file_obj.write(log)
+    #     file_obj.close()
+    # with open("Data/"+saveName + '.csv', 'a', encoding='utf-8-sig', newline="") as f:
+    #     f_csv = csv.writer(f)
+    #     for line in OUTPUT:
+    #         f_csv.writerow(line)
+    #     f.close()
+    saveData()
     browser.quit()

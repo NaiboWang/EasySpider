@@ -73,9 +73,16 @@
                 </tr>
                 </tbody>
             </table>
+            <div class="form-group" style="margin-top: 10px">
+                <label>{{"User Data Folder (If you want to load the cookie data from your local browser, please set this folder path, and then cilck the 'Run with (Data Mode)' button to run the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息和cookie，请设置此目录，并点击下方“执行（带用户信息模式）”按钮开始执行任务）：" | lang}}</label>
+                <input type="text" class="form-control" v-model="user_data_folder"></input>
+            </div>
         </form>
 
-        <button class="btn btn-primary" v-on:click="localExecuteInstant">{{"Directly Run Locally~本地直接执行" |
+        <button class="btn btn-primary" v-on:click="localExecuteInstant(false)">{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" |
+            lang}}
+        </button>
+        <button class="btn btn-primary" v-on:click="localExecuteInstant(true)">{{"Directly Run Locally (Data Mode)~本地直接执行（带用户信息模式）" |
             lang}}
         </button>
         <!-- <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button> -->
@@ -85,9 +92,12 @@
             <p></p>
             <!-- <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p> -->
             <p>{{"Hint: Click the following button to get the Execution ID (EID) of current running task.~提示：点击下方按钮获得任务执行ID，然后根据此执行ID运行任务。" | lang}}</p>
-            <a class="btn btn-primary" href="javascript:void(0)" v-on:click="invokeTask">{{"Get Execution ID~获得任务执行ID" |
-                lang}}</a>
-            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute">{{"Run Locally~本地执行"
+            <button class="btn btn-primary" href="javascript:void(0)" v-on:click="invokeTask">{{"Get Execution ID~获得任务执行ID" |
+                lang}}</button>
+            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute(false)">{{"Run Locally (Clean Mode)~本地执行（纯净模式）"
+                | lang}}
+            </button>
+            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute(true)">{{"Run Locally (Data Mode)~本地执行（带用户信息模式）"
                 | lang}}
             </button>
             <!-- <button v-on:click="remoteExcute" style="margin-left: 8px;" class="btn btn-primary">Run remotely</button></div> -->
@@ -99,6 +109,12 @@
 </body>
 
 </html>
+
+<style>
+    button{
+        margin-top: 5px;
+    }
+</style>
 <script src="global.js"></script>
 <script>
     var sId = getUrlParam('id');
@@ -108,23 +124,29 @@
             task: {},
             show: false, //是否渲染
             ID: "",
+            user_data_folder:"",
+            with_user_data: true,
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
-        },
+        }, mounted() {
+        $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
+            app.$data.user_data_folder = result.user_data_folder;
+        });
+    },
         methods: {
             gotoHome: function () {
                 let url = "";
                 if (getUrlParam("lang") == "zh") {
-                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                    url = "taskList.html?lang=zh&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
                 } else {
-                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                    url = "taskList.html?lang=en&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
                 }
                 window.location.href = url;
             }, gotoInfo: function () {
                 let url = "";
                 if (getUrlParam("lang") == "zh") {
-                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=zh&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
                 } else {
-                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                    url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
                 }
                 window.location.href = url;
             }, invokeTask: function () {
@@ -148,7 +170,7 @@
                     });
                 }
             },
-            localExecute: function () {
+            localExecute: function (with_user_data=false) {
                 if (this.ID == "") {
                     if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
                         alert("Please get EID first!");
@@ -157,6 +179,7 @@
                     }
                     return;
                 }
+                this.with_user_data = with_user_data;
                 let text = "";
                 if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
                     text = "Are you sure to run this task locally?";
@@ -168,6 +191,7 @@
                         type: 5, //消息类型，调用执行程序
                         message: {
                             "id": app.$data.ID,
+                            "user_data_folder": app.$data.with_user_data ? app.$data.user_data_folder : "",
                         }
                     };
                     ws.send(JSON.stringify(message));
@@ -176,13 +200,14 @@
             remoteExecute: function () {
 
             },
-            localExecuteInstant: function () {
+            localExecuteInstant: function (with_user_data=false) {
                 let text = "";
                 if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
                     text = "Are you sure to run this task locally now?";
                 } else {
                     text = "确定要立即在本地运行此任务吗？";
                 }
+                this.with_user_data = with_user_data;
                 if (confirm(text)) {
                     var para = {};
                     var t = $('#form').serializeArray();
@@ -197,6 +222,7 @@
                             type: 5, //消息类型，调用执行程序
                             message: {
                                 "id": result,
+                                "user_data_folder": app.$data.with_user_data ? app.$data.user_data_folder : "",
                             }
                         };
                         ws.send(JSON.stringify(message));
@@ -211,7 +237,7 @@
         app.$data.task = result;
         app.$data.show = true;
     });
-    ws = new WebSocket("ws://localhost:8084");
+    ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
     ws.onopen = function () {
         // Web Socket 已连接上，使用 send() 方法发送数据
         console.log("Connected");
