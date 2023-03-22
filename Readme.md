@@ -1,33 +1,34 @@
-<!-- # 请您Star Please Star
+## 请您Star/Please Star
 
 如果你觉得此工具不错，请轻轻点击此页面右上角**Star**按钮增加项目曝光度，谢谢！
 
-If you think this tool is good, please gently click the **Star** button in the upper right corner at this page to increase the project exposure, thank you! -->
+If you think this tool is good, please gently click the **Star** button in the upper right corner at this page to increase the project exposure, thank you!
 
-# EasySpider: Visual Code-Free Web Crawler/Spider
-
-A visual code-free/no-code web crawler/spider, supporting both Chinese and English. 
+# EasySpider: Visual Code-Free Web Crawler
 
 一个可以无代码可视化设计和执行的爬虫软件，支持中文和英文版本。
 
-## Download EasySpider/下载 EasySpider
+A visual code-free/no-code web crawler/spider, supporting both Chinese and English.
 
-Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) of github to download the latest version of EasySpider.
+## 下载 EasySpider/Download EasySpider
 
 进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。
 
+Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
-## Video Tutorials/视频教程
+
+## 视频教程/Video Tutorials
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
-## Documentation/文档
+## 文档/Documentation
+
+中文文档：请暂时翻译[英文文档](https://github.com/NaiboWang/EasySpider/wiki)，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第五章）。
 
 Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
-中文文档：请暂时翻译上面的[英文文档](https://github.com/NaiboWang/EasySpider/wiki)，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第五章）。
 
-## Publications/出版物
+## 出版物/Publications
 
 - This software has been accepted by [The Web Conference (WWW) 2023](https://www2023.thewebconf.org/). The paper will be available soon.
 
@@ -36,7 +37,7 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 <!-- - See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
  -->
 
-## 中文目录
+## 目录
 
 - [EasySpider: Visual Code-Free Web Crawler/Spider](#easyspider-visual-code-free-web-crawlerspider)
   - [Download EasySpider/下载 EasySpider](#download-easyspider下载-easyspider)
