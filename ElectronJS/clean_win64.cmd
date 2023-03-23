@@ -6,5 +6,5 @@ rmdir/s /q out\EasySpider\resources\app\tasks
 rmdir/s /q out\EasySpider\resources\app\user_data
 rmdir /s /q out\EasySpider\resources\app\execution_instances
 rmdir /s /q ..\Releases\EasySpider_windows_amd64\EasySpider
-del out\EasySpider\resources\app\tasks\vs_BuildTools.exe
+del out\EasySpider\resources\app\vs_BuildTools.exe
 move out\EasySpider ..\Releases\EasySpider_windows_amd64\EasySpider

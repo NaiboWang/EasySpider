@@ -25,7 +25,7 @@ export function input(value) {
     };
     let msg = { "type": 3, msg: message };
     chrome.runtime.sendMessage(msg);
-    msg = { "type": 2, msg: value };
+    msg = { "type": 2, value: value, xpath: message.xpath };
     chrome.runtime.sendMessage(msg);
 }
 

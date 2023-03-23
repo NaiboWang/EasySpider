@@ -4028,9 +4028,9 @@
         if ((vm.$options.template && vm.$options.template.charAt(0) !== '#') ||
           vm.$options.el || el) {
           warn(
-            'You are using the runtime-only build of Vue where the template ' +
+            'You are using the runtime-only build.md of Vue where the template ' +
             'compiler is not available. Either pre-compile the templates into ' +
-            'render functions, or use the compiler-included build.',
+            'render functions, or use the compiler-included build.md.',
             vm
           );
         } else {
@@ -4309,7 +4309,7 @@
       id = watcher.id;
       has[id] = null;
       watcher.run();
-      // in dev build, check and stop circular updates.
+      // in dev build.md, check and stop circular updates.
       if (has[id] != null) {
         circular[id] = (circular[id] || 0) + 1;
         if (circular[id] > MAX_UPDATE_COUNT) {
@@ -4904,7 +4904,7 @@
 
   function stateMixin (Vue) {
     // flow somehow has problems with directly declared definition object
-    // when using Object.defineProperty, so we have to procedurally build up
+    // when using Object.defineProperty, so we have to procedurally build.md up
     // the object here.
     var dataDef = {};
     dataDef.get = function () { return this._data };
@@ -11673,7 +11673,7 @@
         } catch (e) {
           if (e.toString().match(/unsafe-eval|CSP/)) {
             warn$$1(
-              'It seems you are using the standalone build of Vue.js in an ' +
+              'It seems you are using the standalone build.md of Vue.js in an ' +
               'environment with Content Security Policy that prohibits unsafe-eval. ' +
               'The template compiler cannot work in this environment. Consider ' +
               'relaxing the policy to allow unsafe-eval or pre-compiling your ' +

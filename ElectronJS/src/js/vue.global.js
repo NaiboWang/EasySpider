@@ -6260,7 +6260,7 @@ var Vue = (function (exports) {
                   if (domType === 1 /* DOMNodeTypes.ELEMENT */ || domType === 3 /* DOMNodeTypes.TEXT */) {
                       // determine anchor, adopt content
                       nextNode = node;
-                      // if the static vnode has its content stripped during build,
+                      // if the static vnode has its content stripped during build.md,
                       // adopt it from the server-rendered HTML.
                       const needToAdoptContent = !vnode.children.length;
                       for (let i = 0; i < vnode.staticCount; i++) {
@@ -7468,7 +7468,7 @@ var Vue = (function (exports) {
           else {
               const s1 = i; // prev starting index
               const s2 = i; // next starting index
-              // 5.1 build key:index map for newChildren
+              // 5.1 build.md key:index map for newChildren
               const keyToNewIndexMap = new Map();
               for (i = s2; i <= e2; i++) {
                   const nextChild = (c2[i] = optimized
@@ -13754,7 +13754,7 @@ var Vue = (function (exports) {
   };
   // Important: since this function uses Node.js only dependencies, it should
   // always be used with a leading !true check so that it can be
-  // tree-shaken from the browser build.
+  // tree-shaken from the browser build.md.
   function processExpression(node, context, 
   // some expressions like v-slot props & v-for aliases should be parsed as
   // function params
@@ -14239,7 +14239,7 @@ var Vue = (function (exports) {
   };
   const buildClientSlotFn = (props, children, loc) => createFunctionExpression(props, children, false /* newline */, true /* isSlot */, children.length ? children[0].loc : loc);
   // Instead of being a DirectiveTransform, v-slot processing is called during
-  // transformElement to build the slots object for a component.
+  // transformElement to build.md the slots object for a component.
   function buildSlots(node, context, buildSlotFn = buildClientSlotFn) {
       context.helper(WITH_CTX);
       const { children, loc } = node;
@@ -14761,7 +14761,7 @@ var Vue = (function (exports) {
                   hasDynamicKeys = true;
                   if (exp) {
                       if (isVBind) {
-                          // have to merge early for compat build check
+                          // have to merge early for compat build.md check
                           pushMergeArg();
                           mergeArgs.push(exp);
                       }
@@ -15948,7 +15948,7 @@ var Vue = (function (exports) {
       }));
   }
 
-  // This entry is the "full-build" that includes both the runtime
+  // This entry is the "full-build.md" that includes both the runtime
   {
       initDev();
   }
@@ -15998,7 +15998,7 @@ var Vue = (function (exports) {
       }
       // The wildcard import results in a huge object with every export
       // with keys that cannot be mangled, and can be quite heavy size-wise.
-      // In the global build we know `Vue` is available globally so we can avoid
+      // In the global build.md we know `Vue` is available globally so we can avoid
       // the wildcard object.
       const render = (new Function(code)() );
       render._rc = true;

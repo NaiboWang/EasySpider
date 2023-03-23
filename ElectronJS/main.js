@@ -1,6 +1,13 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, dialog, ipcMain, screen } = require('electron');
 app.commandLine.appendSwitch("--disable-http-cache");
+
+const { Builder, By, Key, until } = require("selenium-webdriver");
+const chrome = require('selenium-webdriver/chrome');
+const { ServiceBuilder } = require('selenium-webdriver/chrome');
+const { rootCertificates } = require('tls');
+const { exit } = require('process');
+const {windowManager} = require("node-window-manager");
 const path = require('path');
 const fs = require('fs');
 const {exec} = require('child_process');
@@ -115,14 +122,14 @@ function beginInvoke(msg) {
     flowchart_window.show();
   } else if (msg.type == 2) {
     //keyboard
-    const robot = require("@jitsi/robotjs");
-    //TODO 实现全选并删除功能,目前没有
-    keyInfo = msg.message.keyboardStr.split("BS}")[1];
-    robot.keyTap("a", "control");
-    robot.keyTap("backspace");
-    robot.typeString(keyInfo);
-    robot.keyTap("shift");
-    robot.keyTap("shift");
+    // const robot = require("@jitsi/robotjs");
+    let keyInfo = msg.message.keyboardStr;
+    driver.findElement(By.xpath(msg.message.xpath)).sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
+    // robot.keyTap("a", "control");
+    // robot.keyTap("backspace");
+    // robot.typeString(keyInfo);
+    // robot.keyTap("shift");
+    // robot.keyTap("shift");
   } else if (msg.type == 3) {
     try {
       if (msg.from == 0) {
@@ -141,11 +148,12 @@ function beginInvoke(msg) {
     let parameters = [];
     console.log(msg.message)
     if(msg.message.user_data_folder == null || msg.message.user_data_folder == undefined || msg.message.user_data_folder == ""){
-        parameters = ["--id", msg.message.id, "--server_address", server_address];
+        parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data", 0];
     } else {
       let user_data_folder_path = __dirname.indexOf("resources")>=0 && __dirname.indexOf("app")>=0? path.join(__dirname, "../../..", msg.message.user_data_folder): path.join(__dirname, msg.message.user_data_folder);
-      parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data_folder", user_data_folder_path];
+      parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data", 1];
       config.user_data_folder = msg.message.user_data_folder;
+      config.absolute_user_data_folder = user_data_folder_path;
       fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
     }
     // child('Chrome/easyspider_executestage.exe', parameters, function(err,stdout, stderr) {
@@ -187,13 +195,6 @@ wss.on('connection', function (ws) {
     }
   });
 });
-
-const { Builder, By, Key, until } = require("selenium-webdriver");
-const chrome = require('selenium-webdriver/chrome');
-const { ServiceBuilder } = require('selenium-webdriver/chrome');
-const { rootCertificates } = require('tls');
-const { exit } = require('process');
-const {windowManager} = require("node-window-manager");
 
 console.log(process.platform);
 

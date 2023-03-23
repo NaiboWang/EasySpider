@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is used to build the package for Linux 64-bit.
+# This script is used to build.md the package for Linux 64-bit.
 rm -r out
 npm run package
 mv out/EasySpider-linux-x64 out/EasySpider

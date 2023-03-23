@@ -115,7 +115,8 @@
           <input id="WTextBox" v-model="text" autoFocus="autofocus" type="text"></input>
           <button style="margin-left:0px!important;" v-on:click="getInput">确定</button>
           <button style="margin-left:0px!important;" v-on:click="cancelInput">取消</button>
-          <div class="innercontent">
+          <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
+            如果点击“确定”按钮后文本框没有自动填充，且流程图中没有显示“输入文字”节点，重试即可。
           </div>
         </div>
       </div>
@@ -241,7 +242,8 @@
           <input id="WTextBox" v-model="text" autofocus="autofocus" type="text"></input>
           <button style="margin-left:0px!important;" v-on:click="getInput">Confirm</button>
           <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
-          <div class="innercontent">
+          <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
+            If the text box does not auto-populate after clicking the "Confirm" button, and the "Input Text" operation is not displayed in the workflow manager, please try again.
           </div>
         </div>
       </div>
@@ -403,11 +405,11 @@ export default {
     },
     getInput: function () { //得到输入的文字
       global.nodeList[0]["node"].focus(); //获得文字焦点
-      if (getOS() == "Mac") {
-        global.nodeList[0]["node"].setAttribute("value", this.text); // 设置输入 box内容
-      } else{
-        global.nodeList[0]["node"].setAttribute("value", ""); // 先设置为空，再设置输入 box内容
-      }
+      // if (getOS() == "Mac") {
+      //   global.nodeList[0]["node"].setAttribute("value", this.text); // 设置输入 box内容
+      // } else{
+      //   global.nodeList[0]["node"].setAttribute("value", ""); // 先设置为空，再设置输入 box内容
+      // }
       input(this.text); // 设置输入
       this.text = "";
       clearEl();

@@ -30,7 +30,6 @@
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "dependencies": {
-    "@jitsi/robotjs": "^0.6.11",
     "electron-squirrel-startup": "^1.0.0",
     "http": "^0.0.1-security",
     "node-window-manager": "^2.2.4",
@@ -44,10 +43,10 @@
         "icon": "favicon.ico",
         "appVersion": "0.1.0",
         "name": "EasySpider",
-        "appCopyright": "Naibo Wang(naibowang@foxmail.com)",
+        "appCopyright": "Naibo Wang (naibowang@foxmail.com)",
         "win32metadata": {
           "ProductName": "EasySpider",
-          "CompanyName": "王乃博 (浙江大学)",
+          "CompanyName": "王乃博 (浙江大学与新加坡国立大学)",
           "FileDescription": "EasySpider"
         }
       },

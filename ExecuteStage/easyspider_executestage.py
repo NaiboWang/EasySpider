@@ -676,7 +676,7 @@ if __name__ == '__main__':
         "server_address": "http://localhost:8074",
         "saved_file_name": "",
         "read_type": "remote",
-        "user_data_folder": "",
+        "user_data": False,
     }
     c = Config(config)
     print(c)
@@ -747,8 +747,12 @@ if __name__ == '__main__':
     # 2. User Profile文件夹的路径是：C:\Users\用户名\AppData\Local\Google\Chrome\User Data不要加Default
     # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
     # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
-    if c.user_data_folder != "":
-        option.add_argument(f'--user-data-dir={c.user_data_folder}')  # TMALL 反扒
+    if c.user_data:
+        with open("config.json","r") as f:
+            config = json.load(f)
+            absolute_user_data_folder = config["absolute_user_data_folder"]
+            print("\nAbsolute_user_data_folder:",absolute_user_data_folder,"\n")
+        option.add_argument(f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
         option.add_argument("--profile-directory=Default")
     # options.add_argument(
     #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒

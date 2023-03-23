@@ -25,7 +25,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     } else if (request.type == 2) {
         let message = {
             type: 2, //消息类型，2代表键盘输入
-            message: { "keyboardStr": "{}{BS}" + request.msg } // {}全选{BS}退格
+            message: { "keyboardStr": request.value, "xpath": request.xpath } // {}全选{BS}退格
         };
         ws.send(JSON.stringify(message));
     } else if (request.type == 3) {
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         let message = {
             type: 3, //消息类型，3代表元素增加事件
             from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
-            message: { "pipe": JSON.stringify(request.msg) } // {}全选{BS}退格
+            message: {"pipe": JSON.stringify(request.msg)}
         };
         console.log(message);
         ws.send(JSON.stringify(message));
