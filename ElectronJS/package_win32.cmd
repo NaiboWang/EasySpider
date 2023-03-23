@@ -13,6 +13,5 @@ if exist "%temp%\getadmin.vbs" ( del "%temp%\getadmin.vbs" )
 pushd "%CD%"
 CD /D "%~dp0"
 
-rmdir /s /q C:\Users\q9823\AppData\Local\Temp\electron-packager
 rmdir /s /q out
 npm run package
