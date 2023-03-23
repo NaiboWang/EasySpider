@@ -1,12 +1,10 @@
 .idea/
 node_modules/
 ServiceWrapper/
-Data/
 /GPUCache
 C#/
 ServiceGrid/
-old_code
-*.exe
+old_code/
 *.ini
 *.7z
 *.mp4
