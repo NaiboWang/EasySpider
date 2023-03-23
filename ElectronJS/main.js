@@ -32,7 +32,7 @@ if (process.platform === 'win32' && process.arch === 'ia32') {
 } else if (process.platform === 'linux') {
   driverPath = path.join(__dirname, "chrome_linux64/chromedriver_linux64");
   chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
-  execute_path = path.join(__dirname, "chrome_linux64/easyspider_executestage");
+  execute_path = path.join(__dirname, "chrome_linux64/execute.sh");
 }
 console.log(driverPath, chromeBinaryPath, execute_path);
 let language = "en";
@@ -100,15 +100,18 @@ function beginInvoke(msg) {
     mainWindow.hide();
     const window = windowManager.getActiveWindow();
   // Prints the currently focused window bounds.
-    console.log(window.getBounds());
+    console.log(window);
   // This method has to be called on macOS before changing the window's bounds, otherwise it will throw an error.
   // It will prompt an accessibility permission request dialog, if needed.
-    windowManager.requestAccessibility();
-  // Sets the active window's bounds.
-    let size = screen.getPrimaryDisplay().workAreaSize
-    let width = parseInt(size.width)
-    let height = parseInt(size.height * 0.6)
-    window.setBounds({ x: 0, y: size.height * 0.4, height:height, width:width });
+    if(window != undefined){
+      windowManager.requestAccessibility();
+      // Sets the active window's bounds.
+        let size = screen.getPrimaryDisplay().workAreaSize
+        let width = parseInt(size.width)
+        let height = parseInt(size.height * 0.6)
+        window.setBounds({ x: 0, y: size.height * 0.4, height:height, width:width });
+    }
+    
     flowchart_window.show();
   } else if (msg.type == 2) {
     //keyboard
