@@ -185,15 +185,10 @@ async function beginInvoke(msg) {
                 socket_flowchart.send(msg.message.pipe); //直接把消息转接
                 let message = JSON.parse(msg.message.pipe);
                 let type = message.type;
-                if(type.indexOf("Click")>=0){
-                    await new Promise(resolve => setTimeout(resolve, 2000)); //等两秒
-                    let handles = await driver.getAllWindowHandles();
-                    if(arrayDifference(handles, old_handles).length > 0){
-                        old_handles = handles;
-                        current_handle = handles[handles.length - 1];
-                        console.log("New tab opened, change current_handle to: ", current_handle);
-                    }
-                }
+                // if(type.indexOf("Click")>=0){
+                //     await new Promise(resolve => setTimeout(resolve, 2000)); //等两秒
+                //
+                // }
             } else {
                 socket_window.send(msg.message.pipe);
             }
@@ -246,8 +241,14 @@ wss.on('connection', function (ws) {
             } else if (msg.message.id == 2) {
                 socket_flowchart = ws;
                 console.log("set socket_flowchart");
-            } else{
+            } else { //其他的ID是用来标识不同的浏览器标签页的
                 await new Promise(resolve => setTimeout(resolve, 2300));
+                let handles = await driver.getAllWindowHandles();
+                if(arrayDifference(handles, old_handles).length > 0){
+                    old_handles = handles;
+                    current_handle = handles[handles.length - 1];
+                    console.log("New tab opened, change current_handle to: ", current_handle);
+                }
                 handle_pairs[msg.message.id] = current_handle;
                 console.log("Set handle_pair for id: ", msg.message.id, " to ", current_handle);
                 // console.log("handle_pairs: ", handle_pairs);
