@@ -385,10 +385,10 @@ export default {
     },
     loopClickSingleElement: function () { //循环点击单个元素
       sendLoopClickSingle(this.tname()); //识别下一页,循环点击单个元素和点击多个元素
-      if (this.tname() != "下一页元素") { //下一页元素不进行点击操作
+      // if (this.tname() != "下一页元素") { //下一页元素不进行点击操作
         global.nodeList[0]["node"].focus(); //获得元素焦点
         global.nodeList[0]["node"].click(); //点击元素
-      }
+      // }
       clearEl();
     },
     loopClickEveryElement: function () { //循环点击每个元素
