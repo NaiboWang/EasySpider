@@ -205,10 +205,10 @@ var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
-    var text = "Confirm to save this task?";
+    var text = "Confirm to save this task (If cannot click, can press Enter)? ";
     if (type == 1) { //任务另存为
         serviceId = -1;
-        text = "Confirm to save as another task in the system?";
+        text = "Confirm to save as another task in the system (If cannot click, can press Enter)?";
     }
     if (confirm(text)) {
         let serviceName = $("#serviceName").val();

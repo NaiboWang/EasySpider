@@ -205,10 +205,10 @@ var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
     var serviceId = $("#serviceId").val();
-    var text = "确认要保存任务吗？";
+    var text = "确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？";
     if (type == 1) { //任务另存为
         serviceId = -1;
-        text = "确认要另存为任务吗？";
+        text = "确认要另存为任务吗（不能用鼠标点击时，请按键盘回车键）？";
     }
     if (confirm(text)) {
         let serviceName = $("#serviceName").val();
