@@ -114,6 +114,17 @@ document.addEventListener("mousemove", function() {
 
 });
 
+window.addEventListener("beforeunload", function(event) {
+    event.preventDefault();
+    let message = {
+        type: 10,
+        message: {
+            id: global.id, //socket id
+        }
+    };
+    global.ws.send(JSON.stringify(message));
+});
+
 //点击没反应时候的替代方案
 document.onkeydown = function(event) {
     // console.log("keydown");
@@ -153,6 +164,41 @@ function generateToolkit() {
     if (difference > 0) {
         $(".tooldrag").css("cssText", "height:" + (26 + difference) + "px!important")
     }
+    //实现提示框拖拽功能
+    $('.tooldrag').mousedown(function(e) {
+        // e.pageX
+        var positionDiv = $(this).offset();
+        var distanceX = e.pageX - positionDiv.left;
+        var distanceY = e.pageY - positionDiv.top;
+        //alert(distanceX)
+        // alert(positionDiv.left);
+
+        $(document).mousemove(function(e) {
+            var x = e.clientX - distanceX;
+            var y = e.clientY - distanceY;
+
+            if (x < 0) {
+                x = 0;
+            } else if (x > window.innerWidth - $('.tooldrag').outerWidth(true)) {
+                x = window.innerWidth - $('.tooldrag').outerWidth(true);
+            }
+
+            if (y < 0) {
+                y = 0;
+            } else if (y > window.innerHeight - $('.tooldrag').outerHeight(true)) {
+                y = window.innerHeight - $('.tooldrag').outerHeight(true);
+            }
+
+            $('.tooltips').css({
+                'right': window.innerWidth - x - $('.tooltips').outerWidth(true) + 'px',
+                'bottom': window.innerHeight - y - $('.tooltips').outerHeight(true) + 'px',
+            });
+        });
+
+        $(document).mouseup(function() {
+            $(document).off('mousemove');
+        });
+    });
     timer = setInterval(function() { //时刻监测相应元素是否存在(防止出现如百度一样元素消失重写body的情况)，如果不存在，添加进来
         if (document.body != null && document.getElementById("wrapperToolkit") == null) {
             this.clearInterval(); //先取消原来的计时器，再设置新的计时器
@@ -166,38 +212,3 @@ function generateToolkit() {
 //Vue元素
 generateToolkit();
 
-//实现提示框拖拽功能
-$('.tooldrag').mousedown(function(e) {
-    // e.pageX
-    var positionDiv = $(this).offset();
-    var distanceX = e.pageX - positionDiv.left;
-    var distanceY = e.pageY - positionDiv.top;
-    //alert(distanceX)
-    // alert(positionDiv.left);
-
-    $(document).mousemove(function(e) {
-        var x = e.clientX - distanceX;
-        var y = e.clientY - distanceY;
-
-        if (x < 0) {
-            x = 0;
-        } else if (x > window.innerWidth - $('.tooldrag').outerWidth(true)) {
-            x = window.innerWidth - $('.tooldrag').outerWidth(true);
-        }
-
-        if (y < 0) {
-            y = 0;
-        } else if (y > window.innerHeight - $('.tooldrag').outerHeight(true)) {
-            y = window.innerHeight - $('.tooldrag').outerHeight(true);
-        }
-
-        $('.tooltips').css({
-            'right': window.innerWidth - x - $('.tooltips').outerWidth(true) + 'px',
-            'bottom': window.innerHeight - y - $('.tooltips').outerHeight(true) + 'px',
-        });
-    });
-
-    $(document).mouseup(function() {
-        $(document).off('mousemove');
-    });
-});

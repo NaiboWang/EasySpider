@@ -25,9 +25,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     } else if (request.type == 2) {
         let message = {
             type: 2, //消息类型，2代表键盘输入
-            message: { "keyboardStr": request.value, "xpath": request.xpath } // {}全选{BS}退格
+            message: { "keyboardStr": request.value, "xpath": request.xpath, "id": request.id } // {}全选{BS}退格
         };
         ws.send(JSON.stringify(message));
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            // 获取当前选项卡的 ID
+            const tabId = tabs[0].id;
+            const url = tabs[0].url;
+
+            // 停止当前页面的加载
+            chrome.tabs.executeScript(tabId, {code: 'window.stop();'});
+        });
     } else if (request.type == 3) {
         let tmsg = request.msg;
         tmsg.tabIndex = nowTabIndex; //赋值当前tab的id

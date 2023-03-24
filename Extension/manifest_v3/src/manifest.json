@@ -27,6 +27,7 @@
         "http://*/*",
         "https://*/*"
       ],
+      "css": ["style/toolkit.css"],
       "js": ["content-scripts/main.js"],
       "run_at": "document_end",
       "all_frames": false
@@ -42,6 +43,6 @@
     }
   ],
   "permissions": [
-    "identity", "storage", "tabs"
+    "identity", "storage", "tabs","scripting"
   ]
 }

@@ -17,8 +17,22 @@ export var global = {
     defaultbgColor: 'rgba(221,221,255,0.8)',
     boxShadowColor: "blue 0px 0px 5px",
     lang: config.language,
+    id: "C" + Math.floor(Math.random() * (99999999)).toString(),
+    ws: null,
 };
 
+global.ws = new WebSocket("ws://localhost:8084");
+global.ws.onopen = function() {
+    // Web Socket 已连接上，使用 send() 方法发送数据
+    console.log("已连接");
+    let message = {
+        type: 0, //消息类型，0代表连接操作
+        message: {
+            id: global.id, //socket id
+        }
+    };
+    this.send(JSON.stringify(message));
+};
 
 export function getOS () {
     if (navigator.userAgent.indexOf('Window') > 0) {

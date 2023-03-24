@@ -23,9 +23,10 @@ export function input(value) {
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "value": value,
     };
-    let msg = { "type": 3, msg: message };
+    let msg = { type: 3, msg: message };
+    window.stop();
     chrome.runtime.sendMessage(msg);
-    msg = { "type": 2, value: value, xpath: message.xpath };
+    msg = { type: 2, value: value, xpath: message.xpath, id: global.id};
     chrome.runtime.sendMessage(msg);
 }
 
