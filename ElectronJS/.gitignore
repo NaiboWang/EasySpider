@@ -3,7 +3,8 @@ out/
 chrome_win32/
 chrome_win64/
 chrome_linux64/
-chrome_macos/
+chrome_mac64.app/
+chromedriver_mac64
 user-data/
 user_data/
 Data/

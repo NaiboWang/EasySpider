@@ -7,7 +7,6 @@ const chrome = require('selenium-webdriver/chrome');
 const {ServiceBuilder} = require('selenium-webdriver/chrome');
 const {rootCertificates} = require('tls');
 const {exit} = require('process');
-const {windowManager} = require("node-window-manager");
 const path = require('path');
 const fs = require('fs');
 const {exec} = require('child_process');
@@ -35,7 +34,7 @@ if (process.platform === 'win32' && process.arch === 'ia32') {
 } else if (process.platform === 'darwin') {
     driverPath = path.join(__dirname, "chromedriver_mac64");
     chromeBinaryPath = path.join(__dirname, "chrome_mac64.app/Contents/MacOS/Google Chrome");
-    execute_path = path.join(__dirname, "easyspider_executestage");
+    execute_path = path.join(__dirname, "execute_macos.sh");
 } else if (process.platform === 'linux') {
     driverPath = path.join(__dirname, "chrome_linux64/chromedriver_linux64");
     chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
@@ -113,7 +112,8 @@ async function beginInvoke(msg) {
         console.log(window);
         // This method has to be called on macOS before changing the window's bounds, otherwise it will throw an error.
         // It will prompt an accessibility permission request dialog, if needed.
-        if (window != undefined) {
+        if(!process.platform == "linux" && !process.platform == "darwin"){
+            const {windowManager} = require("node-window-manager");
             windowManager.requestAccessibility();
             // Sets the active window's bounds.
             let size = screen.getPrimaryDisplay().workAreaSize
@@ -333,7 +333,9 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "") {
     }
     // and load the index.html of the app.
     flowchart_window.loadURL(url);
-    flowchart_window.hide();
+    if(process.platform != "darwin"){
+        flowchart_window.hide();
+    }
     flowchart_window.on('close', function (event) {
         mainWindow.show();
         driver.quit();
