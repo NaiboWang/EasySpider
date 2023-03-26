@@ -62,7 +62,7 @@
         "icon": "favicon.ico",
         "appVersion": "0.1.0",
         "name": "EasySpider",
-        "executableName": "easy-spider",
+        "executableName": "EasySpider",
         "appCopyright": "Naibo Wang (naibowang@foxmail.com)",
         "win32metadata": {
           "ProductName": "EasySpider",
