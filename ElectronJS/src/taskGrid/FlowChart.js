@@ -271,7 +271,7 @@ function addElement(op, para) {
     if (option == 1) { //打开网页选项
         title = "Open Page";
     } else {
-        title = $(".options")[option - 2].innerHTML; //获取新增操作名称
+        title = $(".options")[option - 1].innerHTML; //获取新增操作名称
     }
 
     toolBoxKernel(null, para);

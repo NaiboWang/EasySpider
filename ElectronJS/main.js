@@ -107,13 +107,13 @@ async function beginInvoke(msg) {
             flowchart_window.loadURL(url);
         }
         mainWindow.hide();
-        const window = windowManager.getActiveWindow();
         // Prints the currently focused window bounds.
-        console.log(window);
         // This method has to be called on macOS before changing the window's bounds, otherwise it will throw an error.
         // It will prompt an accessibility permission request dialog, if needed.
-        if(!process.platform == "linux" && !process.platform == "darwin"){
+        if(process.platform != "linux" && process.platform != "darwin"){
             const {windowManager} = require("node-window-manager");
+            const window = windowManager.getActiveWindow();
+            console.log(window);
             windowManager.requestAccessibility();
             // Sets the active window's bounds.
             let size = screen.getPrimaryDisplay().workAreaSize
