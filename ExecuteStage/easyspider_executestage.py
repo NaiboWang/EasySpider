@@ -394,8 +394,14 @@ def inputInfo(para, loopValue):
         recordLog("Cannot find input box element:" +
                   para["xpath"] + "Please try to set the wait time before executing this operation")
         exit()
-    textbox.send_keys(Keys.CONTROL, 'a')
-    textbox.send_keys(Keys.BACKSPACE)
+#     textbox.send_keys(Keys.CONTROL, 'a')
+#     textbox.send_keys(Keys.BACKSPACE)
+    # Send the HOME key
+    textbox.send_keys(Keys.HOME)
+    # Send the SHIFT + END key combination
+    textbox.send_keys(Keys.SHIFT, Keys.END)
+    # Send the DELETE key
+    textbox.send_keys(Keys.DELETE)
     if para["useLoop"]:
         textbox.send_keys(loopValue)
     else:
