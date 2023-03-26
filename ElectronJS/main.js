@@ -283,6 +283,7 @@ async function runBrowser(lang = "en", user_data_folder = '') {
     options.setChromeBinaryPath(chromeBinaryPath);
     if (user_data_folder != "") {
         let dir = __dirname.indexOf("resources") >= 0 && __dirname.indexOf("app") >= 0 ? path.join(__dirname, "../../..", user_data_folder) : path.join(__dirname, user_data_folder);
+        console.log(dir);
         options.addArguments("--user-data-dir=" + dir);
         config.user_data_folder = user_data_folder;
         fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));

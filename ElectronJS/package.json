@@ -28,7 +28,7 @@
     "@electron-forge/maker-zip": "^6.0.5",
     "electron": "^20.0.1"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/NaiboWang/EasySpider",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
     "http": "^0.0.1-security",
@@ -38,11 +38,31 @@
   },
   "config": {
     "forge": {
-      "makers": [],
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "EasySpider"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb"
+        },
+        {
+          "name": "@electron-forge/maker-rpm"
+        }
+      ],
       "packagerConfig": {
         "icon": "favicon.ico",
         "appVersion": "0.1.0",
         "name": "EasySpider",
+        "executableName":"easy-spider",
         "appCopyright": "Naibo Wang (naibowang@foxmail.com)",
         "win32metadata": {
           "ProductName": "EasySpider",
