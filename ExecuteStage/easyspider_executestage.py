@@ -693,7 +693,17 @@ if __name__ == '__main__':
     option = webdriver.ChromeOptions()
     if not os.path.exists(os.getcwd()+"/Data"):
         os.mkdir(os.getcwd()+"/Data")
-    if os.path.exists(os.getcwd()+"/EasySpider/resources"): # 打包后的路径
+    if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
+            options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
+            # MacOS需要用option而不是options！
+            option.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
+            driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
+            # options.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
+            # # MacOS需要用option而不是options！
+            # option.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
+            # driver_path = os.getcwd()+ "/chromedriver_mac64"
+            print(driver_path)
+    elif os.path.exists(os.getcwd()+"/EasySpider/resources"): # 打包后的路径
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/EasySpider")
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
@@ -709,11 +719,6 @@ if __name__ == '__main__':
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
-        elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-            options.binary_location = "EasySpider/resources/app/chrome_mac64/chrome"
-            # MacOS需要用option而不是options！
-            option.binary_location = "EasySpider/resources/app/chrome_mac64/chrome"
-            driver_path = "EasySpider/resources/app/chrome_mac64/chromedriver_mac64"
         else:
             print("Unsupported platform")
             sys.exit()

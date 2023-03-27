@@ -5,6 +5,10 @@ function getUrlParam(name) {
     return ""; //返回参数值,默认后台地址
 }
 
+function isMac() { 
+    return /macintosh|mac os x/i.test(navigator.userAgent); 
+};
+
 Vue.filter('lang', function (value) {
     if (getUrlParam("lang") == "zh") {
         return value.split("~")[1];

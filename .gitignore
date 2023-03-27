@@ -1,3 +1,5 @@
+.DS_Store/
+.DS_Store
 .idea/
 node_modules/
 ServiceWrapper/
@@ -9,3 +11,4 @@ old_code/
 *.7z
 *.mp4
 *.tar.xz
+*.zip

@@ -34,7 +34,7 @@ if (process.platform === 'win32' && process.arch === 'ia32') {
 } else if (process.platform === 'darwin') {
     driverPath = path.join(__dirname, "chromedriver_mac64");
     chromeBinaryPath = path.join(__dirname, "chrome_mac64.app/Contents/MacOS/Google Chrome");
-    execute_path = path.join(__dirname, "execute_macos.sh");
+    execute_path = path.join(__dirname, "");
 } else if (process.platform === 'linux') {
     driverPath = path.join(__dirname, "chrome_linux64/chromedriver_linux64");
     chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
@@ -204,7 +204,7 @@ async function beginInvoke(msg) {
         if (msg.message.user_data_folder == null || msg.message.user_data_folder == undefined || msg.message.user_data_folder == "") {
             parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data", 0];
         } else {
-            let user_data_folder_path = __dirname.indexOf("resources") >= 0 && __dirname.indexOf("app") >= 0 ? path.join(__dirname, "../../..", msg.message.user_data_folder) : path.join(__dirname, msg.message.user_data_folder);
+            let user_data_folder_path = path.join(task_server.getDir(), msg.message.user_data_folder);
             parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data", 1];
             config.user_data_folder = msg.message.user_data_folder;
             config.absolute_user_data_folder = user_data_folder_path;
@@ -215,10 +215,12 @@ async function beginInvoke(msg) {
         // });
 
         let spawn = require("child_process").spawn;
-        let child_process = spawn(execute_path, parameters);
-        child_process.stdout.on('data', function (data) {
-            console.log(data.toString());
-        });
+        if (process.platform != "darwin") {
+            let child_process = spawn(execute_path, parameters);
+            child_process.stdout.on('data', function (data) {
+                console.log(data.toString());
+            });
+        }
     }
 }
 
@@ -282,7 +284,7 @@ async function runBrowser(lang = "en", user_data_folder = '') {
     }
     options.setChromeBinaryPath(chromeBinaryPath);
     if (user_data_folder != "") {
-        let dir = __dirname.indexOf("resources") >= 0 && __dirname.indexOf("app") >= 0 ? path.join(__dirname, "../../..", user_data_folder) : path.join(__dirname, user_data_folder);
+        let dir = path.join(task_server.getDir(), user_data_folder);
         console.log(dir);
         options.addArguments("--user-data-dir=" + dir);
         config.user_data_folder = user_data_folder;

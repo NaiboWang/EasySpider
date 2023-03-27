@@ -20,9 +20,14 @@ function compare(p){ //这是比较函数
         return b - a; //降序
     }
 }
+
 function getDir(){
-    if(__dirname.indexOf("app") >= 0 && __dirname.indexOf("resources") >= 0){
-        return path.join(__dirname,"../../..");
+    if(__dirname.indexOf("app") >= 0 && __dirname.indexOf("sources") >= 0){
+        if(process.platform == "darwin"){
+            return path.join(__dirname,"../../../..");
+        } else {
+            return path.join(__dirname,"../../..");
+        }
     } else{
         return __dirname;
     }
@@ -223,7 +228,10 @@ exports.start = function(port = 8074) {
                 let file_names = [];
                 fs.readdirSync(path.join(getDir(), "execution_instances")).forEach((file)=>{
                     try{
-                        file_names.push(parseInt(file.split(".")[0]));
+                        if(file.split(".")[1] == "json"){
+                            file_names.push(parseInt(file.split(".")[0]));
+                        }
+                        console.log(file);
                     } catch (error) {
 
                     }
@@ -232,6 +240,7 @@ exports.start = function(port = 8074) {
                 if (file_names.length != 0) {
                     eid = Math.max(...file_names) + 1;
                 }
+                console.log(file_names);
                 task["id"] = eid;
                 task = JSON.stringify(task);
                 fs.writeFile(path.join(getDir(), `execution_instances/${eid}.json`), task, (err) => {});

@@ -8,6 +8,7 @@
           name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <script src="vue.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet"></link>
     <title>Task Invoke</title>
     <style>
@@ -34,8 +35,32 @@
 </head>
 
 <body>
+
 <div class="row" style="margin-top: 40px;">
+    
     <div class="col-md-6" id="taskInfo" style="margin:0 auto" v-if="show">
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">{{"Task Invocation Instruction~执行任务说明" | lang}}</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
+                        <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
+                        <label>{{"For MacOS, please open a terminal, go to EasySpider's folder, and then type the following command to run the task (EasySpider cannot quit when executing command):~对于MacOS系统，请在EasySpider目录下打开命令行工具Terminal，然后复制和运行以下命令以执行任务(执行命令时不能退出EasySpider)：" | lang}}</label>
+                        <textarea class="form-control">{{command}}</textarea>
+                    </div>
+                    <!-- <div class="modal-footer">
+                        <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
+                        <button type="button" id="saveButton" class="btn btn-primary">保存</button>
+                    </div> -->
+                </div>
+                <!-- /.modal-content -->
+            </div>
+        </div>
+        
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb" style="padding-left:0;background-color: white">
                 <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
@@ -74,7 +99,7 @@
                 </tbody>
             </table>
             <div class="form-group" style="margin-top: 10px">
-                <label>{{"User Data Folder (If you want to load the cookie data from your local browser, please set this folder path, and then cilck the 'Run with (Data Mode)' button to run the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息和cookie，请设置此目录，并点击下方“执行（带用户信息模式）”按钮开始执行任务）：" | lang}}</label>
+                <label>{{"User Data Folder (If you want to load the cookie, data and extension(s) from your local browser, please set this folder path, and then cilck the 'Run with (Data Mode)' button to run the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息，插件和cookie，请设置此目录，并点击下方“执行（带用户信息模式）”按钮开始执行任务）：" | lang}}</label>
                 <input type="text" class="form-control" v-model="user_data_folder"></input>
             </div>
         </form>
@@ -127,10 +152,12 @@
             user_data_folder:"",
             with_user_data: true,
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+            command: "./easyspider_executestage "
         }, mounted() {
         $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
             app.$data.user_data_folder = result.user_data_folder;
         });
+        //TODO 翻译  写清楚readme有关浏览器版本的问题  logo更换 提示看文档来运行
     },
         methods: {
             gotoHome: function () {
@@ -195,6 +222,10 @@
                         }
                     };
                     ws.send(JSON.stringify(message));
+                    if(isMac()){
+                        app.$data.command = "./easyspider_executestage --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                        $('#myModal').modal('show');
+                    }
                 }
             },
             remoteExecute: function () {
@@ -207,6 +238,7 @@
                 } else {
                     text = "确定要立即在本地运行此任务吗？";
                 }
+                
                 this.with_user_data = with_user_data;
                 if (confirm(text)) {
                     var para = {};
@@ -226,6 +258,10 @@
                             }
                         };
                         ws.send(JSON.stringify(message));
+                        if(isMac()){
+                            app.$data.command = "./easyspider_executestage --id " + result.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                                $('#myModal').modal('show');
+                        }
                     });
                 }
             },
@@ -233,10 +269,12 @@
             },
         }
     });
+    
     $.get(app.$data.backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {
         app.$data.task = result;
         app.$data.show = true;
     });
+    
     ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
     ws.onopen = function () {
         // Web Socket 已连接上，使用 send() 方法发送数据
