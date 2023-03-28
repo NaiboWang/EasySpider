@@ -178,7 +178,9 @@ exports.start = function(port = 8074) {
                     file_names = [];
                     fs.readdirSync(path.join(getDir(), "tasks")).forEach((file)=>{
                         try{
-                            file_names.push(parseInt(file.split(".")[0]));
+                            if(file.split(".")[1] == "json"){
+                                file_names.push(parseInt(file.split(".")[0]));
+                            }
                         } catch (error) {
 
                         }
@@ -240,7 +242,6 @@ exports.start = function(port = 8074) {
                 if (file_names.length != 0) {
                     eid = Math.max(...file_names) + 1;
                 }
-                console.log(file_names);
                 task["id"] = eid;
                 task = JSON.stringify(task);
                 fs.writeFile(path.join(getDir(), `execution_instances/${eid}.json`), task, (err) => {});
