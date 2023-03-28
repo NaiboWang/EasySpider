@@ -3,6 +3,7 @@ const querystring = require('querystring');
 const url = require('url');
 const fs = require('fs');
 const path=require('path');
+const {app, dialog} = require('electron');
 function travel(dir,callback){
     fs.readdirSync(dir).forEach((file)=>{
         const pathname=path.join(dir,file)
@@ -24,13 +25,22 @@ function compare(p){ //这是比较函数
 function getDir(){
     if(__dirname.indexOf("app") >= 0 && __dirname.indexOf("sources") >= 0){
         if(process.platform == "darwin"){
-            return __dirname;
+            return app.getPath("userData");
         } else {
             return path.join(__dirname,"../../..");
         }
     } else{
         return __dirname;
     }
+}
+if(!fs.existsSync(path.join(getDir(), "tasks"))){
+    fs.mkdirSync(path.join(getDir(), "tasks"));
+}
+if(!fs.existsSync(path.join(getDir(), "execution_instances"))){
+    fs.mkdirSync(path.join(getDir(), "execution_instances"));
+}
+if(!fs.existsSync(path.join(getDir(), "config.json"))){
+    fs.writeFileSync(path.join(getDir(), "config.json"), JSON.stringify({"webserver_address":"http://localhost","webserver_port":8074,"user_data_folder":"./user_data","absolute_user_data_folder":""}));
 }
 
 exports.getDir = getDir;

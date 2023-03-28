@@ -683,6 +683,7 @@ if __name__ == '__main__':
         "saved_file_name": "",
         "read_type": "remote",
         "user_data": False,
+        "config_folder": ""
     }
     c = Config(config)
     print(c)
@@ -759,7 +760,7 @@ if __name__ == '__main__':
     # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
     # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
     if c.user_data:
-        with open("config.json","r") as f:
+        with open(c.config_folder + "config.json","r") as f:
             config = json.load(f)
             absolute_user_data_folder = config["absolute_user_data_folder"]
             print("\nAbsolute_user_data_folder:",absolute_user_data_folder,"\n")

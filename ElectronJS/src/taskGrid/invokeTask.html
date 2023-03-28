@@ -50,7 +50,7 @@
                         <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                         <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
                         <label>{{"For MacOS, please open a terminal, go to EasySpider's folder, and then type the following command to run the task (EasySpider cannot quit when executing command):~对于MacOS系统，请在EasySpider目录下打开命令行工具Terminal，然后复制和运行以下命令以执行任务(执行命令时不能退出EasySpider)：" | lang}}</label>
-                        <textarea class="form-control">{{command}}</textarea>
+                        <textarea class="form-control" style="height:150px">{{command}} --config_folder "{{config_folder}}"</textarea>
                     </div>
                     <!-- <div class="modal-footer">
                         <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
@@ -152,7 +152,8 @@
             user_data_folder:"",
             with_user_data: true,
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
-            command: "./easyspider_executestage "
+            command: "./easyspider_executestage ",
+            config_folder: "",
         }, mounted() {
         $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
             app.$data.user_data_folder = result.user_data_folder;
@@ -287,6 +288,9 @@
         };
         this.send(JSON.stringify(message));
     };
+    ws.onmessage = function(message){
+        app.$data.config_folder = message.data;
+    }
     ws.onclose = function () {
         // 关闭 websocket
         console.log("连接已关闭...");

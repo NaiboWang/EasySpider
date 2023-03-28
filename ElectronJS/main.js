@@ -94,7 +94,7 @@ function createWindow() {
 }
 
 
-async function beginInvoke(msg) {
+async function beginInvoke(msg, ws) {
     if (msg.type == 1) {
         if (msg.message.id != -1) {
             let url = "";
@@ -220,6 +220,8 @@ async function beginInvoke(msg) {
             child_process.stdout.on('data', function (data) {
                 console.log(data.toString());
             });
+        } else {
+            ws.send(task_server.getDir() + "/");
         }
     }
 }
@@ -265,7 +267,7 @@ wss.on('connection', function (ws) {
             }
         }
         else {
-            await beginInvoke(msg);
+            await beginInvoke(msg, ws);
         }
     });
 });
