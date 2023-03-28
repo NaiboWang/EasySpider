@@ -24,7 +24,7 @@ function compare(p){ //这是比较函数
 function getDir(){
     if(__dirname.indexOf("app") >= 0 && __dirname.indexOf("sources") >= 0){
         if(process.platform == "darwin"){
-            return path.join(__dirname,"../../../..");
+            return __dirname;
         } else {
             return path.join(__dirname,"../../..");
         }
