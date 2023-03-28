@@ -10,11 +10,15 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 A visual code-free/no-code web crawler/spider, supporting both Chinese and English.
 
+![animation_zh](media/animation_zh.gif)
+
+![animation_en](media/animation_en.gif)
+
 ## 下载 EasySpider/Download EasySpider
 
-进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。
+进入 [Releases Page](releases) 下载最新版本。
 
-Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
+Refer to the [Releases Page](releases) to download the latest version of EasySpider.
 
 
 ## 视频教程/Video Tutorials
@@ -36,38 +40,6 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 
 <!-- - See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
  -->
-
-## 目录
-
-- [EasySpider: Visual Code-Free Web Crawler/Spider](#easyspider-visual-code-free-web-crawlerspider)
-  - [Download EasySpider/下载 EasySpider](#download-easyspider下载-easyspider)
-  - [Video Tutorials/视频教程](#video-tutorials视频教程)
-  - [Documentation/文档](#documentation文档)
-  - [Publications/出版物](#publications出版物)
-  - [中文目录](#中文目录)
-  - [中文界面截图](#中文界面截图)
-      - [软件界面示例](#软件界面示例)
-      - [块和子块及表单定义](#块和子块及表单定义)
-      - [已选中和待选择示例](#已选中和待选择示例)
-      - [京东商品块选择示例：](#京东商品块选择示例)
-      - [京东商品标题自动匹配选择示例](#京东商品标题自动匹配选择示例)
-      - [分块选择所有子元素示例](#分块选择所有子元素示例)
-      - [同类型元素自动和手动匹配示例](#同类型元素自动和手动匹配示例)
-      - [四种选择方式示例](#四种选择方式示例)
-      - [输入文字示例](#输入文字示例)
-      - [循环点击58同城房屋标题以进入详情页采集示例](#循环点击58同城房屋标题以进入详情页采集示例)
-      - [采集元素文本示例](#采集元素文本示例)
-      - [流程图界面介绍](#流程图界面介绍)
-      - [循环选项示例](#循环选项示例)
-      - [循环点击下一页示例](#循环点击下一页示例)
-      - [条件分支示例](#条件分支示例)
-      - [完整采集流程图示例](#完整采集流程图示例)
-      - [完整采集流程图转换为常规流程图示例](#完整采集流程图转换为常规流程图示例)
-      - [服务信息示例](#服务信息示例)
-      - [服务调用示例](#服务调用示例)
-      - [58 同城房源信息采集服务部分采集结果展示](#58-同城房源信息采集服务部分采集结果展示)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## 中文界面截图
 
