@@ -16,9 +16,9 @@ A visual code-free/no-code web crawler/spider, supporting both Chinese and Engli
 
 ## 下载 EasySpider/Download EasySpider
 
-进入 [Releases Page](releases) 下载最新版本。
+进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。
 
-Refer to the [Releases Page](releases) to download the latest version of EasySpider.
+Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
 
 ## 视频教程/Video Tutorials
