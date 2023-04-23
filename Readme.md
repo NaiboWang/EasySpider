@@ -34,7 +34,7 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 
 ## 出版物/Publications
 
-- This software has been accepted by [The Web Conference (WWW) 2023](https://www2023.thewebconf.org/). The paper will be available soon.
+- This software has been accepted by [The Web Conference (WWW) 2023](https://www2023.thewebconf.org/program/accepted-posters/). The paper will be available soon.
 
 - [浙江大学硕士论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)，2020年6月。
 
