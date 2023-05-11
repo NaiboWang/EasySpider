@@ -23,6 +23,8 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 ## 视频教程/Video Tutorials
 
+Bilibili/B站视频教程: https://www.bilibili.com/video/BV1Fk4y1L7xX/
+
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
 ## 文档/Documentation
