@@ -25,6 +25,16 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 Bilibili/B站视频教程: https://www.bilibili.com/video/BV1Fk4y1L7xX/
 
+[EasySpider介绍：中国地震台网采集案例](https://www.bilibili.com/video/BV1Fk4y1L7xX/)
+
+[如何无代码可视化的爬取需要登录才能爬的网站](https://www.bilibili.com/video/BV1HV4y1r7v8)
+
+[如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV18c411K7FH)
+
+[流程图执行逻辑解析 - 58同城房源描述采集案例](https://www.bilibili.com/video/BV1YL411z7uW)
+
+[MacOS系统设计和执行eBay网站爬虫任务教程](https://www.bilibili.com/video/BV1WL411h71r)
+
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
 ## 文档/Documentation
