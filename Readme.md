@@ -6,9 +6,9 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 # EasySpider: Visual Code-Free Web Crawler
 
-一个可视化爬虫，可以使用图形化界面，无代码可视化的设计和执行爬虫任务，支持中文和英文版本。
+一个可视化爬虫软件，可以使用图形化界面，无代码可视化的设计和执行爬虫任务。只需要在网页上选择自己想要爬的内容并根据提示框操作即可完成爬虫设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
 
-A visual code-free/no-code web crawler/spider, supporting both Chinese and English.
+A visual code-free/no-code web crawler/spider, just select the content you want to crawl on the web page and operate according to the prompt box to complete the design and execution of the crawler. At the same time, the software can be executed by command line alone, so it can be easily embedded into other systems.
 
 ![animation_zh](media/animation_zh.gif)
 

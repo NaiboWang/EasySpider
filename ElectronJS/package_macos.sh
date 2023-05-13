@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script is used to build.md the package for Linux 64-bit.
+# This script is used to build.md the package for MacOS.
 rm -rf out
 rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app
 npm run make
