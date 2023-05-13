@@ -23,7 +23,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 ## 视频教程/Video Tutorials
 
-Bilibili/B站视频教程: https://www.bilibili.com/video/BV1Fk4y1L7xX/
+Bilibili/B站视频教程:
 
 [EasySpider介绍：中国地震台网采集案例](https://www.bilibili.com/video/BV1Fk4y1L7xX/)
 
