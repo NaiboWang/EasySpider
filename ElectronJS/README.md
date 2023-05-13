@@ -31,7 +31,7 @@ Finally, copy the `stealth.min.js` file in this folder to all of these `chrome` 
 
 On Windows, you need to install `VS Build Tools 2017` (double click the vs_BuildTools.exe in this folder, then select and install the `Visual Studio Build Tools 2017` component) first for node-gyp to install `node-windows-manager`.
 
-```bash
+
 
 ```
 npm install
