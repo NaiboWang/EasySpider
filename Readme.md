@@ -33,6 +33,8 @@ Bilibili/B站视频教程:
 
 [如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV18c411K7FH)
 
+[如何切换IP池和使用隧道IP - 打开详情页采集案](https://www.bilibili.com/video/BV1KT411t79n)
+
 [流程图执行逻辑解析 - 58同城房源描述采集案例](https://www.bilibili.com/video/BV1YL411z7uW)
 
 [MacOS系统设计和执行eBay网站爬虫任务教程](https://www.bilibili.com/video/BV1WL411h71r)

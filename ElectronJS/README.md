@@ -38,7 +38,15 @@ npm install
 npm install @electron-forge/cli
 ```
 
+Then run the software in developing mode:
+
+```
+npm run start_direct
+```
+
 ## Package Instruction
+
+After finish developing, package software by the following command:
 
 ```
 npx electron-forge import
@@ -51,7 +59,7 @@ optional:
 npm run make
 ```
 
-## For windows x64
+### For windows x64
 
 依次执行下面两个cmd即可打包
 
@@ -60,7 +68,7 @@ package_win64.cmd
 clean_win64.cmd
 ```
 
-## For Windows x86
+### For Windows x86
 依次执行下面两个cmd即可打包
 
 ```

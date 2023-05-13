@@ -784,7 +784,7 @@ if __name__ == '__main__':
     browser.get('about:blank')
     browser.set_page_load_timeout(10)  # 加载页面最大超时时间
     browser.set_script_timeout(10)
-    id = c.id;
+    id = c.id
     print("id: ", id)
     if c.saved_file_name != "":
         saveName = "task_" + str(id) + "_" + c.saved_file_name  # 保存文件的名字
@@ -797,7 +797,7 @@ if __name__ == '__main__':
         content = requests.get(backEndAddress + "/queryExecutionInstance?id=" + str(id))
     else:
         print("local")
-        with open("tasks/" + str(id) + ".json", 'r', encoding='utf-8') as f:
+        with open("execution_instances/" + str(id) + ".json", 'r', encoding='utf-8') as f:
             content = f.read()
     service = json.loads(content.text)  # 加载服务信息
     print("name: ", service["name"])
