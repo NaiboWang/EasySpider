@@ -41,7 +41,7 @@ Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUl
 
 ## 文档/Documentation
 
-中文文档：请暂时翻译[英文文档](https://github.com/NaiboWang/EasySpider/wiki)，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
+请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
 
 Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
@@ -51,6 +51,7 @@ Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasyS
 - This software has been accepted by The Web Conference (WWW) 2023: [EasySpider: A No-Code Visual System for Crawling the Web](https://dl.acm.org/doi/abs/10.1145/3543873.3587345), March 2023.
 
 - 中国国家知识产权局发明专利，[一种自定义提取流程的服务封装系统](media/patent.png)， 2022年5月。
+
 - [浙江大学硕士论文](https://d.wanfangdata.com.cn/thesis/Y3691829)，[面向WEB应用的智能化服务封装系统设计与实现](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)，2020年6月。
 <!-- - See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
  -->
