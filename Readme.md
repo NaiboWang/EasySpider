@@ -16,7 +16,7 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 ## 下载 EasySpider/Download EasySpider
 
-进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑从以下页面进入中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0/Download_Link_Address_in_China_Mainland.txt)
+进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑从以下页面进入中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0/Download_Link_Address_in_China_Mainland.txt)。
 
 加QQ群从群文件下载也是一种方式，但使用软件的过程中发生了问题求助还是请从github提issue，因为群主不怎么看群，群号：**682921940**。
 
@@ -24,13 +24,17 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 ## 声明/Declaration
 
-本软件仅供学习交流使用，**严禁使用软件进行任何违法违规的操作，如爬取不允许爬取的政府军事机关网站等**。使用本软件所造成的一切后果由使用者自负，作者不负任何责任。同时，软件受到专利权保护，如要用于商业用途，请联系**浙江大学天道专利事务所**进行付费等操作。
+本软件仅供学习交流使用，**严禁使用软件进行任何违法违规的操作，如爬取不允许爬取的政府军事机关网站等**。使用本软件所造成的**一切后果由使用者自负，作者不负任何责任**。
 
-This software is for learning and communication only. **It is strictly forbidden to use the software for any illegal operations, such as crawling government military websites that are not allowed to be crawled.** All consequences caused by the use of this software are at the user's own risk, and the author is not responsible for any consequences. At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact **Zhejiang University Tiandao Patent Office** for payment and other operations.
+This software is for learning and communication only. **It is strictly forbidden to use the software for any illegal operations, such as crawling government military websites that are not allowed to be crawled.** All consequences caused by the use of this software are at the user's own risk, and the author is not responsible for any consequences. 
 
 对于政府和军事机关等网站的爬虫操作，**作者将不会进行任何答疑**，以免触碰国家相关法律法规和政策。
 
 For crawler operations on government and military websites, the author will not answer any questions to avoid touching relevant national laws, regulations and policies.
+
+同时，软件受到专利权保护，如要用于商业用途，请联系[浙江大学天道专利事务所](media/patent.png)进行付费等操作。
+
+At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact [Zhejiang University Tiandao Patent Office](media/patent.png) for payment and other operations.
 
 ## 文档/Documentation
 

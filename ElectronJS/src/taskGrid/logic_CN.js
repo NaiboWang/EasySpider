@@ -36,6 +36,16 @@ ws.onmessage = function(evt) {
 
 };
 
+function changeGetDataParameters(msg, i) {
+    msg["parameters"][i]["default"] = ""; //找不到元素时候的默认值
+    msg["parameters"][i]["beforeJS"] = ""; //执行前执行的js
+    msg["parameters"][i]["beforeJSWaitTime"] = 0; //执行前js等待时间
+    msg["parameters"][i]["JS"] = ""; //如果是JS，需要执行的js
+    msg["parameters"][i]["JSWaitTime"] = 0; //JS等待时间
+    msg["parameters"][i]["afterJS"] = ""; //执行后执行的js
+    msg["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
+}
+
 function handleAddElement(msg) {
     if (msg["type"] == "openPage") {
         addElement(1, msg);
@@ -51,8 +61,9 @@ function handleAddElement(msg) {
         addElement(8, msg);
         addElement(2, msg);
     } else if (msg["type"] == "singleCollect" || msg["type"] == "multiCollectNoPattern") {
-        if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果当前点击的动作就是提取数据
+        if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果现在节点就是提取数据节点，直接在此节点添加参数，而不是生成一个新的提取数据节点
             for (let i = 0; i < msg["parameters"].length; i++) {
+                changeGetDataParameters(msg, i);
                 app._data["nowNode"]["parameters"]["paras"].push(msg["parameters"][i]);
             }
             app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
@@ -194,13 +205,7 @@ function modifyParameters(t, para) {
         }
     } else if (t.option == 3) { //采集数据
         for (let i = 0; i < para["parameters"].length; i++) {
-            para["parameters"][i]["default"] = ""; //找不到元素时候的默认值
-            para["parameters"][i]["beforeJS"] = ""; //执行前执行的js
-            para["parameters"][i]["beforeJSWaitTime"] = 0; //执行前js等待时间
-            para["parameters"][i]["JS"] = ""; //如果是JS，需要执行的js
-            para["parameters"][i]["JSWaitTime"] = 0; //JS等待时间
-            para["parameters"][i]["afterJS"] = ""; //执行后执行的js
-            para["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
+            changeGetDataParameters(para, i);
         }
         t["parameters"]["paras"] = para["parameters"];
     }

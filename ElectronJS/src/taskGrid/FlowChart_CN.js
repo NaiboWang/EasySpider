@@ -89,13 +89,14 @@ var app = new Vue({
     methods: {
         changeXPaths: function (XPaths){
             let result = "";
-            for (var i = 0; i < XPaths.length; i++) {
+            for (let i = 0; i < XPaths.length; i++) {
                 result += XPaths[i] + "\n";
             }
             this.XPaths = result;
         },
         modifyParas: function(i) { //修改第i个参数
             this.paraIndex = i;
+            console.log(this.paras);
         },
         deleteParas: function(i) { //删除第i个参数
             this.nowNode["parameters"]["paras"].splice(i, 1);
