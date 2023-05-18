@@ -52,7 +52,7 @@
                         <label>{{`Please open a terminal, go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider cannot quit when executing command, unless --read_type is set to "local"):~请在EasySpider目录下打开命令行工具Terminal，然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时不能退出EasySpider，除非将--read_type设置为local）：` | lang}}</label>
                         <label><a href="https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction" target="_blank">{{`Click Here~点击这里` | lang}}</a> {{`Here to see argument instruction.~这里查看参数配置说明。` | lang}}</label>
                         <textarea class="form-control" style="height:150px">cd {{easyspider_location}}
-{{command}} --config_folder "{{config_folder}}" --headless 0 --read_type remote --config_name config.json --saved_file_name </textarea>
+{{command}} --config_folder "{{config_folder}}" --headless 0 --read_type remote --config_file_name config.json --saved_file_name </textarea>
                     </div>
                     <!-- <div class="modal-footer">
                         <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
@@ -202,7 +202,7 @@
                 }
             },
             localExecute: function (with_user_data=false) {
-                if (this.ID == "") {
+                if (this.ID === "") {
                     if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
                         alert("Please get EID first!");
                     } else {

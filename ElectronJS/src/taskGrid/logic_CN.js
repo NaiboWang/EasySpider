@@ -239,13 +239,13 @@ var sId = getUrlParam('id');
 var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 
 function saveService(type) {
-    var serviceId = $("#serviceId").val();
-    var text = "确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？";
+    let serviceId = $("#serviceId").val();
+    let text = "确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？";
     if (type == 1) { //任务另存为
         serviceId = -1;
         text = "确认要另存为任务吗（不能用鼠标点击时，请按键盘回车键）？";
     }
-    if (confirm(text)) {
+    // if (confirm(text)) {
         let serviceName = $("#serviceName").val();
         let url = $("#url").val();
         let serviceDescription = $("#serviceDescription").val();
@@ -330,7 +330,7 @@ function saveService(type) {
                     }
                 } else if (nodeList[i]["option"] == 5) //自定义操作
                 {
-                    if (nodeList[i]["parameters"]["recordASField"]) {
+                    if (nodeList[i]["parameters"]["recordASField"] == 1) {
                         let id = outputIndex++;
                         let title = nodeList[i]["title"];
                         if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
@@ -361,21 +361,23 @@ function saveService(type) {
             "name": serviceName,
             "url": url,
             "links": links,
+            "create_time": new Date().toLocaleString(),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
-        $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) }, function(result) { $("#serviceId").val(parseInt(result)) });
+        $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) },
+            function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
         $("#tip").slideDown(); //提示框
-        fadeout = setTimeout(function() {
+        let fadeout = setTimeout(function() {
             $("#tip").slideUp();
         }, 2000);
 
-    }
+    // }
 }
 
 //点击保存任务按钮时的处理

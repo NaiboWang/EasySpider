@@ -125,6 +125,7 @@ def execute_code(codeMode, code, max_wait_time, element=None):
             output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8")
             # 输出命令返回值
             output = output.stdout
+            print(output)
         except subprocess.TimeoutExpired:
             # 命令执行时间超过5秒，抛出异常
             recordLog("Command timed out")
@@ -140,7 +141,7 @@ def customOperation(node, loopValue):
     code = paras["code"]
     max_wait_time = int(paras["waitTime"])
     output = execute_code(codeMode, code, max_wait_time)
-    recordASField = paras["recordASField"]
+    recordASField = int(paras["recordASField"])
     if recordASField:
         global OUTPUT, outputParameters
         outputParameters[node["title"]] = output
@@ -644,6 +645,8 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                 else:
                     element = browser.find_element(By.XPATH, p["relativeXPath"])
                 rt.end()
+        else:
+            element = browser.find_element(By.XPATH, "//body")
         try:
             execute_code(2, p["beforeJS"], p["beforeJSWaitTime"], element) # 执行前置js
             if p["contentType"] == 2:
@@ -874,7 +877,7 @@ if __name__ == '__main__':
         "read_type": "remote",
         "user_data": False,
         "config_folder": "",
-        "config_name": "config.json",
+        "config_file_name": "config.json",
         "headless": False,
     }
     c = Config(config)
@@ -952,7 +955,7 @@ if __name__ == '__main__':
     # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
     # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
     if c.user_data:
-        with open(c.config_folder + c.config_name,"r", encoding='utf-8') as f:
+        with open(c.config_folder + c.config_file_name,"r", encoding='utf-8') as f:
             config = json.load(f)
             absolute_user_data_folder = config["absolute_user_data_folder"]
             print("\nAbsolute_user_data_folder:",absolute_user_data_folder,"\n")

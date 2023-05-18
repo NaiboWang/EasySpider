@@ -41,11 +41,11 @@
                 <button type="button" data=2 class="btn btn-outline-primary options">点击元素</button>
                 <button type="button" data=3 class="btn btn-outline-primary options">提取数据</button>
                 <button type="button" data=4 class="btn btn-outline-primary options">输入文字</button>
-                <button type="button" data=5 class="btn btn-outline-primary options">自定义操作</button>
+                <button type="button" data=5 class="btn btn-outline-primary options" style="font-weight: bold">自定义操作</button>
                 <button type="button" data=6 style="font-size: 14px!important;" class="btn btn-outline-primary options">切换下拉选项</button>
                 <button type="button" data=7 class="btn btn-outline-primary options">移动到元素</button>
-                <button type="button" data=8 class="btn btn-outline-primary options">循环</button>
-                <button type="button" data=9 class="btn btn-outline-primary options">判断条件</button>
+                <button type="button" data=8 class="btn btn-outline-primary options" style="font-weight: bold">循环</button>
+                <button type="button" data=9 class="btn btn-outline-primary options" style="font-weight: bold">判断条件</button>
                 <div>-----------------</div>
                 <button type="button" data=13 class="btn btn-outline-primary options" title="调整下一个要插入的节点的位置">调整锚点</button>
                 <button type="button" data=10 class="btn btn-outline-primary options">剪切元素</button>
@@ -141,7 +141,7 @@
                         <div>
                             <label>点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本: </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
                             <label>最长等待脚本执行时间（0代表无限等待）: </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
                             <label>点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本: </label>
@@ -195,7 +195,7 @@
                             <div>
                                 <label>提取该元素数据<strong>前</strong>针对该元素执行一段JavaScript脚本: </label>
                                 <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='paras.parameters[paraIndex]["beforeJS"]'></textarea>
+                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='paras.parameters[paraIndex]["beforeJS"]'></textarea>
                                 <label>最长等待脚本执行时间（0代表无限等待）: </label>
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["beforeJSWaitTime"]'></input>
                                 <label>提取该元素数据<strong>后</strong>针对该元素执行一段JavaScript脚本: </label>
@@ -269,7 +269,7 @@
                         <div>
                             <label>对该元素输入文字<strong>前</strong>针对该元素执行一段JavaScript脚本: </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
                             <label>最长等待脚本执行时间（0代表无限等待）: </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
                             <label>对该元素输入文字<strong>后</strong>针对该元素执行一段JavaScript脚本: </label>
@@ -289,8 +289,12 @@
 
                     <div>
                         <label>代码/脚本内容: </label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.click() 或 python D:/test.py，分别为JS命令和系统命令示例。"></textarea>
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["recordASField"]'></input>将执行后的输出/返回值作为字段记录</p>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。"></textarea>
+                        <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
+                        <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
+                            <option value = 0>否</option>
+                            <option value = 1>是</option>
+                        </select></p>
                         <label>最长等待脚本执行时间（0代表无限等待）: </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>

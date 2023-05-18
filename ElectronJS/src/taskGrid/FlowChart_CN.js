@@ -552,12 +552,12 @@ document.onkeydown = function(e) {
             deleteElement();
         }
     } else { //ctrl+s保存服务
-        var currKey = 0,
+        let currKey = 0,
             e = e || event || window.event;
         currKey = e.keyCode || e.which || e.charCode;
         if (currKey == 83 && (e.ctrlKey || e.metaKey)) {
             $('#save').click();
-            return false;
+            return true;
         }
 
     }
