@@ -1,6 +1,6 @@
 //实现与后台和流程图部分的交互
 
-import {global, readXPath} from "./global.js";
+import {getElementXPaths, global, readXPath} from "./global.js";
 
 var startMsg = { "type": 0, msg: ""};
 
@@ -21,6 +21,7 @@ export function input(value) {
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
+        "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
         "value": value,
     };
     let msg = { type: 3, msg: message };
@@ -38,6 +39,7 @@ export function sendSingleClick() {
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
         "xpath": readXPath(global.nodeList[0]["node"], 0),
+        "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
     let msg = { "type": 3, msg: message };
     chrome.runtime.sendMessage(msg);
@@ -76,6 +78,7 @@ export function collectMultiWithPattern() {
         "tabIndex": -1,
         "loopType": 1,
         "xpath": "", //默认值设置为空
+        "allXPaths": "",
         "isDescendents": global.app._data.selectedDescendents, //标记是否采集的是子元素
         "parameters": global.outputParameters,
     };
@@ -85,6 +88,7 @@ export function collectMultiWithPattern() {
     }
     if (message.loopType == 1) {
         message["xpath"] = global.app._data.nowPath;
+        message["allXPaths"] = global.app._data.nowAllPaths;
     } else { //固定元素列表
         message["pathList"] = [];
         for (let i = 0; i < global.nodeList.length; i++) {
@@ -103,6 +107,7 @@ export function sendLoopClickSingle(name) {
         "tabIndex": -1,
         "useLoop": true, //是否使用循环内元素
         "xpath": readXPath(global.nodeList[0]["node"], 0),
+        "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
         "loopType": 0, //循环类型，0为单个元素
         "nextPage": false, //是否循环点击下一页
     };
@@ -120,6 +125,7 @@ export function sendLoopClickEvery() {
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "xpath": "", //默认值设置为空
+        "allXPaths": "",
         "useLoop": true, //是否使用循环内元素
         "loopType": 1, //循环类型，1为不固定元素列表
     };

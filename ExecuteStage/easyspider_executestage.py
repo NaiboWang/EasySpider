@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-import atexit  # 遇到错误退出时应执行的代码
+import atexit
+import io  # 遇到错误退出时应执行的代码
 import json
 from lib2to3.pgen2 import driver
 import re
+import subprocess
 import sys
 from urllib import parse
 import base64
@@ -26,6 +28,8 @@ import csv
 import os
 from selenium.webdriver.common.by import By
 from commandline_config import Config
+import pytesseract
+from PIL import Image
 
 
 saveName, log, OUTPUT, browser, SAVED = None, "", "", None, False
@@ -88,9 +92,69 @@ def scrollDown(para, rt=""):
         if rt != "":
             rt.end()
 
+def execute_code(codeMode, code, max_wait_time, element=None):
+    output = ""
+    if code == "":
+        return ""
+    if max_wait_time == 0:
+        max_wait_time = 999999
+    # print(codeMode, code)
+    if int(codeMode) == 0:
+        recordLog("Execute JavaScript:" + code)
+        recordLog("执行JavaScript:" + code)
+        browser.set_script_timeout(max_wait_time)
+        try:
+            output = browser.execute_script(code)
+        except:
+            output = ""
+            recordLog("JavaScript execution failed")
+    elif int(codeMode) == 2:
+        recordLog("Execute JavaScript for element:" + code)
+        recordLog("对元素执行JavaScript:" + code)
+        browser.set_script_timeout(max_wait_time)
+        try:
+            output = browser.execute_script(code, element)
+        except:
+            output = ""
+            recordLog("JavaScript execution failed")
+    elif int(codeMode) == 1:
+        recordLog("Execute System Call:" + code)
+        recordLog("执行系统命令:" + code)
+        # 执行系统命令，超时时间为5秒
+        try:
+            output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8")
+            # 输出命令返回值
+            output = output.stdout
+        except subprocess.TimeoutExpired:
+            # 命令执行时间超过5秒，抛出异常
+            recordLog("Command timed out")
+            recordLog("命令执行超时")
+        except:
+            recordLog("Command execution failed")
+            recordLog("命令执行失败")
+    return str(output)
+
+def customOperation(node, loopValue):
+    paras = node["parameters"]
+    codeMode = paras["codeMode"]
+    code = paras["code"]
+    max_wait_time = int(paras["waitTime"])
+    output = execute_code(codeMode, code, max_wait_time)
+    recordASField = paras["recordASField"]
+    if recordASField:
+        global OUTPUT, outputParameters
+        outputParameters[node["title"]] = output
+        line = []
+        for value in outputParameters.values():
+            line.append(value)
+            print(value[:15], " ", end="")
+        print("")
+        OUTPUT.append(line)
+
+
 
 # 执行节点关键函数部分
-def excuteNode(nodeId, loopValue="", clickPath="", index=0):
+def executeNode(nodeId, loopValue="", clickPath="", index=0):
     node = procedure[nodeId]
     WebDriverWait(browser, 10).until
     # 等待元素出现才进行操作，10秒内未出现则报错
@@ -99,7 +163,7 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
     # 根据不同选项执行不同操作
     if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
         for i in node["sequence"]:  # 从根节点开始向下读取
-            excuteNode(i, loopValue, clickPath, index)
+            executeNode(i, loopValue, clickPath, index)
     elif node["option"] == 1:  # 打开网页操作
         recordLog("openPage")
         openPage(node["parameters"], loopValue)
@@ -113,6 +177,8 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
         saveData()
     elif node["option"] == 4:  # 输入文字
         inputInfo(node["parameters"], loopValue)
+    elif node["option"] == 5:  # 自定义操作
+        customOperation(node, loopValue)
     elif node["option"] == 8:  # 循环
         recordLog("loop")
         loopExcute(node, loopValue, clickPath, index)  # 执行循环
@@ -133,43 +199,61 @@ def excuteNode(nodeId, loopValue="", clickPath="", index=0):
 def judgeExcute(node, loopElement, clickPath="", index=0):
     rt = Time("IF Condition")
     global bodyText  # 引入bodyText
-    excuteBranchId = 0  # 要执行的BranchId
+    executeBranchId = 0  # 要执行的BranchId
     for i in node["sequence"]:
         cnode = procedure[i]  # 获得条件分支
         tType = int(cnode["parameters"]["class"])  # 获得判断条件类型
         if tType == 0:  # 什么条件都没有
-            excuteBranchId = i
+            executeBranchId = i
             break
         elif tType == 1:  # 当前页面包含文本
             try:
                 if bodyText.find(cnode["parameters"]["value"]) >= 0:
-                    excuteBranchId = i
+                    executeBranchId = i
                     break
             except:  # 找不到元素下一个条件
                 continue
         elif tType == 2:  # 当前页面包含元素
             try:
                 if browser.find_element(By.XPATH, cnode["parameters"]["value"]):
-                    excuteBranchId = i
+                    executeBranchId = i
                     break
             except:  # 找不到元素或者xpath写错了，下一个条件
                 continue
         elif tType == 3:  # 当前循环元素包括文本
             try:
                 if loopElement.text.find(cnode["parameters"]["value"]) >= 0:
-                    excuteBranchId = i
+                    executeBranchId = i
                     break
             except:  # 找不到元素或者xpath写错了，下一个条件
                 continue
         elif tType == 4:  # 当前循环元素包括元素
             try:
                 if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:]):
-                    excuteBranchId = i
+                    executeBranchId = i
                     break
             except:  # 找不到元素或者xpath写错了，下一个条件
                 continue
+        elif tType <= 7:  # JS命令返回值
+            if tType == 5:  # JS命令返回值等于
+                output = execute_code(0, cnode["parameters"]["code"], cnode["parameters"]["waitTime"])
+            elif tType == 6:  # System
+                output = execute_code(1, cnode["parameters"]["code"], cnode["parameters"]["waitTime"])
+            elif tType == 7:  # 针对当前循环项的JS命令返回值
+                output = execute_code(2, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement)
+            try:
+                if output.find("rue") != -1: # 如果返回值中包含true
+                    code = 1
+                else:
+                    code = int(output)
+            except:
+                code = 0
+            if code > 0:
+                executeBranchId = i
+                break
     rt.end()
-    excuteNode(excuteBranchId, loopElement, clickPath, index)
+    if executeBranchId != 0:
+        executeNode(executeBranchId, loopElement, clickPath, index)
 
 
 # 对循环的处理
@@ -193,7 +277,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                 element = browser.find_element(
                     By.XPATH, node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 挨个执行操作
-                    excuteNode(i, element, node["parameters"]["xpath"], 0)
+                    executeNode(i, element, node["parameters"]["xpath"], 0)
                 finished = True
                 Log("click: ", node["parameters"]["xpath"])
                 recordLog("click:" + node["parameters"]["xpath"])
@@ -204,7 +288,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                 recordLog("clickNotFound:" + node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                     if node["option"] != 2:
-                        excuteNode(i, None, node["parameters"]["xpath"], 0)
+                        executeNode(i, None, node["parameters"]["xpath"], 0)
                 finished = True
                 break  # 如果找不到元素，退出循环
             finally:
@@ -215,7 +299,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                     recordLog("clickNotFound:" + node["parameters"]["xpath"])
                     for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                         if node["option"] != 2:
-                            excuteNode(i, None, node["parameters"]["xpath"], 0)
+                            executeNode(i, None, node["parameters"]["xpath"], 0)
                     break  # 如果找不到元素，退出循环
 
             count = count + 1
@@ -230,7 +314,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                                              node["parameters"]["xpath"])
             for index in range(len(elements)):
                 for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
-                    excuteNode(i, elements[index],
+                    executeNode(i, elements[index],
                                node["parameters"]["xpath"], index)
                 if browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
                     while True:  # 一直关闭窗口直到当前标签页
@@ -263,7 +347,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
             try:
                 element = browser.find_element(By.XPATH, path)
                 for i in node["sequence"]:  # 挨个执行操作
-                    excuteNode(i, element, path, 0)
+                    executeNode(i, element, path, 0)
                 if browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
                     while True:  # 一直关闭窗口直到当前标签页
                         browser.close()  # 关闭使用完的标签页
@@ -294,7 +378,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
         for text in textList:
             recordLog("input: " + text)
             for i in node["sequence"]:  # 挨个执行操作
-                excuteNode(i, text, "", 0)
+                executeNode(i, text, "", 0)
     elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
         # tempList = node["parameters"]["textList"].split("\r\n")
         urlList = list(
@@ -306,7 +390,24 @@ def loopExcute(node, loopValue, clickPath="", index=0):
         for url in urlList:
             recordLog("input: " + url)
             for i in node["sequence"]:
-                excuteNode(i, url, "", 0)
+                executeNode(i, url, "", 0)
+    elif int(node["parameters"]["loopType"]) <= 6:  # 命令返回值
+        while True:  # do while循环
+            if int(node["parameters"]["loopType"]) == 5:  # JS
+                output = execute_code(0, node["parameters"]["code"], node["parameters"]["waitTime"])
+            elif int(node["parameters"]["loopType"]) == 6:  # System
+                output = execute_code(1, node["parameters"]["code"], node["parameters"]["waitTime"])
+            try:
+                if output.find("rue") != -1: # 如果返回值中包含true
+                    code = 1
+                else:
+                    code = int(output)
+            except:
+                code = 0
+            if code <= 0:
+                break
+            for i in node["sequence"]:  # 挨个执行操作
+                executeNode(i, code, node["parameters"]["xpath"], 0)
     history["index"] = thisHistoryLength
     history["handle"] = browser.current_window_handle
     scrollDown(node["parameters"])
@@ -393,9 +494,9 @@ def inputInfo(para, loopValue):
             para["xpath"] + "Please try to set the wait time before executing this operation")
         recordLog("Cannot find input box element:" +
                   para["xpath"] + "Please try to set the wait time before executing this operation")
-        exit()
 #     textbox.send_keys(Keys.CONTROL, 'a')
 #     textbox.send_keys(Keys.BACKSPACE)
+    execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], textbox) # 执行前置JS
     # Send the HOME key
     textbox.send_keys(Keys.HOME)
     # Send the SHIFT + END key combination
@@ -406,6 +507,7 @@ def inputInfo(para, loopValue):
         textbox.send_keys(loopValue)
     else:
         textbox.send_keys(para["value"])
+    execute_code(2, para["afterJS"], para["afterJSWaitTime"], textbox) # 执行后置js
     global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
     bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
     rt.end()
@@ -421,6 +523,16 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         path = clickPath
     else:
         path = para["xpath"]  # 不然使用元素定义的xpath
+    # 点击前对该元素执行一段JavaScript代码
+    try:
+        if para["beforeJS"] != "":
+            element = browser.find_element(By.XPATH, path)
+            execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], element)
+    except:
+        Log("Cannot find element:" +
+            path + "Please try to set the wait time before executing this operation")
+        recordLog("Cannot find element:" +
+                  path + "Please try to set the wait time before executing this operation")
     tempHandleNum = len(browser.window_handles)  # 记录之前的窗口位置
     try:
         script = 'var result = document.evaluate(`' + path + \
@@ -437,7 +549,17 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         recordLog(str(e))
     time.sleep(0.5)  # 点击之后等半秒
     Log("Wait 0.5 second after clicking element")
-    time.sleep(random.uniform(1, 10))  # 生成一个a到b的小数等待时间
+    time.sleep(random.uniform(1, 3))  # 生成一个a到b的小数等待时间
+    # 点击前对该元素执行一段JavaScript代码
+    try:
+        if para["afterJS"] != "":
+            element = browser.find_element(By.XPATH, path)
+            execute_code(2, para["afterJS"], para["afterJSWaitTime"], element)
+    except:
+        Log("Cannot find element:" +
+            path + "Please try to set the wait time before executing this operation")
+        recordLog("Cannot find element:" +
+                  path + "Please try to set the wait time before executing this operation")
     if tempHandleNum != len(browser.window_handles):  # 如果有新标签页的行为发生
         browser.switch_to.window(browser.window_handles[-1])  # 跳转到新的标签页
         history["handle"] = browser.current_window_handle
@@ -483,49 +605,83 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
     rt = Time("Extract Data")
     for p in para["paras"]:
         content = ""
-        try:
-            if p["relative"]:  # 是否相对xpath
-                if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
-                    element = loopElement
+        if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
+            try:
+                if p["relative"]:  # 是否相对xpath
+                    if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                        element = loopElement
+                    else:
+                        if p["relativeXPath"].find("//") >= 0:  # 如果字串里有//即子孙查找，则不动语句
+                            full_path = "(" + parentPath + \
+                                p["relativeXPath"] + ")" + \
+                                "[" + str(index + 1) + "]"
+                            element = browser.find_element(By.XPATH, full_path)
+                        else:
+                            element = loopElement.find_element(By.XPATH,
+                                                               p["relativeXPath"][1:])
                 else:
-                    if p["relativeXpath"].find("//") >= 0:  # 如果字串里有//即子孙查找，则不动语句
-                        full_path = "(" + parentPath + \
-                            p["relativeXpath"] + ")" + \
-                            "[" + str(index + 1) + "]"
-                        element = browser.find_element(By.XPATH, full_path)
+                    element = browser.find_element(By.XPATH, p["relativeXPath"])
+            except NoSuchElementException:  # 找不到元素的时候，使用默认值
+                # print(p)
+                try:
+                    content = p["default"]
+                except Exception as e:
+                    content = ""
+                outputParameters[p["name"]] = content
+                Log('Element %s not found, use default' % p["relativeXPath"])
+                recordLog('Element %s not found, use default' % p["relativeXPath"])
+                continue
+            except TimeoutException:  # 超时的时候设置超时值
+                Log('time out after 10 seconds when getting data')
+                recordLog('time out after 10 seconds when getting data')
+                browser.execute_script('window.stop()')
+                if p["relative"]:  # 是否相对xpath
+                    if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                        element = loopElement
                     else:
                         element = loopElement.find_element(By.XPATH,
-                                                           p["relativeXpath"][1:])
-            else:
-                element = browser.find_element(By.XPATH, p["relativeXpath"])
-        except NoSuchElementException:  # 找不到元素的时候，使用默认值
-            # print(p)
-            try:
-                content = p["default"]
-            except Exception as e:
-                content = ""
-            outputParameters[p["name"]] = content
-            Log('Element %s not found,use default' % p["relativeXpath"])
-            recordLog('Element %s not found, use default' % p["relativeXpath"])
-            continue
-        except TimeoutException:  # 超时的时候设置超时值
-            Log('time out after 10 seconds when getting data')
-            recordLog('time out after 10 seconds when getting data')
-            browser.execute_script('window.stop()')
-            if p["relative"]:  # 是否相对xpath
-                if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
-                    element = loopElement
+                                                           p["relativeXPath"][1:])
                 else:
-                    element = loopElement.find_element(By.XPATH,
-                                                       p["relativeXpath"][1:])
-            else:
-                element = browser.find_element(By.XPATH, p["relativeXpath"])
-            rt.end()
+                    element = browser.find_element(By.XPATH, p["relativeXPath"])
+                rt.end()
         try:
+            execute_code(2, p["beforeJS"], p["beforeJSWaitTime"], element) # 执行前置js
             if p["contentType"] == 2:
                 content = element.get_attribute('innerHTML')
             elif p["contentType"] == 3:
                 content = element.get_attribute('outerHTML')
+            elif p["contentType"] == 4:
+                # 获取元素的背景图片地址
+                bg_url = element.value_of_css_property('background-image')
+                # 清除背景图片地址中的多余字符
+                bg_url = bg_url.replace('url("', '').replace('")', '')
+                content = bg_url
+            elif p["contentType"] == 5:
+                content = browser.current_url
+            elif p["contentType"] == 6:
+                content = browser.title
+            elif p["contentType"] == 7:
+                # 获取整个网页的高度和宽度
+                height = browser.execute_script("return document.body.scrollHeight");
+                width = browser.execute_script("return document.body.scrollWidth");
+                # 调整浏览器窗口的大小
+                browser.set_window_size(width, height)
+                element.screenshot("Data/" +saveName + "/"+ str(time.time()) + ".png")
+            elif p["contentType"] == 8:
+                try:
+                    screenshot = element.screenshot_as_png
+                    screenshot_stream = io.BytesIO(screenshot)
+                    # 使用Pillow库打开截图，并转换为灰度图像
+                    image = Image.open(screenshot_stream).convert('L')
+                    # 使用Tesseract OCR引擎识别图像中的文本
+                    text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
+                    content = text
+                except Exception as e:
+                    content = "OCR失败"
+                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH: https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                    print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
+            elif p["contentType"] == 9:
+                content = execute_code(2, p["JS"], p["JSWaitTime"], element)
             elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
                 command = 'var arr = [];\
                 var content = arguments[0];\
@@ -571,26 +727,58 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                     else:
                         content = ""
         except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
-            recordLog('StaleElementReferenceException：'+p["relativeXpath"])
+            recordLog('StaleElementReferenceException：'+p["relativeXPath"])
             time.sleep(3)
             try:
                 if p["relative"]:  # 是否相对xpath
-                    if p["relativeXpath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                    if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                         element = loopElement
                         recordLog('StaleElementReferenceException：loopElement')
                     else:
                         element = loopElement.find_element(By.XPATH,
-                                                           p["relativeXpath"][1:])
+                                                           p["relativeXPath"][1:])
                         recordLog(
                             'StaleElementReferenceException：loopElement+relativeXPath')
                 else:
                     element = browser.find_element(
-                        By.XPATH, p["relativeXpath"])
-                    recordLog('StaleElementReferenceException：relativeXpath')
+                        By.XPATH, p["relativeXPath"])
+                    recordLog('StaleElementReferenceException：relativeXPath')
                 if p["contentType"] == 2:
                     content = element.get_attribute('innerHTML')
                 elif p["contentType"] == 3:
                     content = element.get_attribute('outerHTML')
+                elif p["contentType"] == 4:
+                    # 获取元素的背景图片地址
+                    bg_url = element.value_of_css_property('background-image')
+                    # 清除背景图片地址中的多余字符
+                    bg_url = bg_url.replace('url("', '').replace('")', '')
+                    content = bg_url
+                elif p["contentType"] == 5:
+                    content = browser.current_url
+                elif p["contentType"] == 6:
+                    content = browser.title
+                elif p["contentType"] == 7:
+                    # 获取整个网页的高度和宽度
+                    height = browser.execute_script("return document.body.scrollHeight");
+                    width = browser.execute_script("return document.body.scrollWidth");
+                    # 调整浏览器窗口的大小
+                    browser.set_window_size(width, height)
+                    element.screenshot("Data/" +saveName + "/"+ str(time.time()) + ".png")
+                elif p["contentType"] == 8:
+                    try:
+                        screenshot = element.screenshot_as_png
+                        screenshot_stream = io.BytesIO(screenshot)
+                        # 使用Pillow库打开截图，并转换为灰度图像
+                        image = Image.open(screenshot_stream).convert('L')
+                        # 使用Tesseract OCR引擎识别图像中的文本
+                        text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
+                        content = text
+                    except Exception as e:
+                        content = "OCR失败"
+                        print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable path: https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                        print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量path中：")
+                elif p["contentType"] == 9:
+                    content = execute_code(2, p["JS"], p["JSWaitTime"], element)
                 elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
                     command = 'var arr = [];\
                     var content = arguments[0];\
@@ -636,9 +824,10 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                         else:
                             content = ""
             except StaleElementReferenceException:
-                recordLog('StaleElementReferenceException：'+p["relativeXpath"])
+                recordLog('StaleElementReferenceException：'+p["relativeXPath"])
                 continue  # 再出现类似问题直接跳过
         outputParameters[p["name"]] = content
+        execute_code(2, p["afterJS"], p["afterJSWaitTime"], element) # 执行后置JS
     global OUTPUT
     line = []
     for value in outputParameters.values():
@@ -667,6 +856,7 @@ def saveData(exit=False):
             f.close()
         OUTPUT = []
         log = ""
+        
 
 @atexit.register
 def clean():
@@ -683,7 +873,9 @@ if __name__ == '__main__':
         "saved_file_name": "",
         "read_type": "remote",
         "user_data": False,
-        "config_folder": ""
+        "config_folder": "",
+        "config_name": "config.json",
+        "headless": False,
     }
     c = Config(config)
     print(c)
@@ -760,12 +952,18 @@ if __name__ == '__main__':
     # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
     # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
     if c.user_data:
-        with open(c.config_folder + "config.json","r") as f:
+        with open(c.config_folder + c.config_name,"r", encoding='utf-8') as f:
             config = json.load(f)
             absolute_user_data_folder = config["absolute_user_data_folder"]
             print("\nAbsolute_user_data_folder:",absolute_user_data_folder,"\n")
         option.add_argument(f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
         option.add_argument("--profile-directory=Default")
+    if c.headless:
+        print("Headless mode")
+        print("无头模式")
+        option.add_argument("--headless")
+        options.add_argument("--headless")
+
     # options.add_argument(
     #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
     option.add_argument(
@@ -791,15 +989,18 @@ if __name__ == '__main__':
     else:
         saveName = "task_" + str(id) + "_" + \
             str(random.randint(0, 999999999))  # 保存文件的名字
+    print("saveName: ", saveName)
+    os.mkdir("Data/" + saveName)  # 创建保存文件夹用来保存截图
     backEndAddress = c.server_address
     if c.read_type == "remote":
         print("remote")
         content = requests.get(backEndAddress + "/queryExecutionInstance?id=" + str(id))
+        service = json.loads(content.text)  # 加载服务信息
     else:
         print("local")
         with open("execution_instances/" + str(id) + ".json", 'r', encoding='utf-8') as f:
             content = f.read()
-    service = json.loads(content.text)  # 加载服务信息
+            service = json.loads(content)  # 加载服务信息
     print("name: ", service["name"])
     procedure = service["graph"]  # 程序执行流程
     links = list(filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
@@ -818,9 +1019,17 @@ if __name__ == '__main__':
     # 挨个执行程序
     urlId = 0  # 全局记录变量
     for i in range(len(links)):
-        excuteNode(0)
+        executeNode(0)
         urlId = urlId + 1
+
+    files = os.listdir("Data/" + saveName)
+
+    # 如果目录为空，则删除该目录
+    if not files:
+        os.rmdir("Data/" + saveName)
+
     print("Done!")
+    print("执行完成！")
     recordLog("Done!")
     # dataPath = os.path.abspath(os.path.join(os.getcwd(), "../Data"))
     # with open("Data/"+saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:

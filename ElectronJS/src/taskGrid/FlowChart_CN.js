@@ -40,6 +40,7 @@ var app = new Vue({
         paras: { "parameters": [] }, //提取数据的参数列表
         TClass: -1, //条件分支的条件类别
         paraIndex: 0, //当前参数的index
+        XPaths: "", //xpath列表
     },
     watch: {
         nowArrow: { //变量发生变化的时候进行一些操作
@@ -86,6 +87,13 @@ var app = new Vue({
         },
     },
     methods: {
+        changeXPaths: function (XPaths){
+            let result = "";
+            for (var i = 0; i < XPaths.length; i++) {
+                result += XPaths[i] + "\n";
+            }
+            this.XPaths = result;
+        },
         modifyParas: function(i) { //修改第i个参数
             this.paraIndex = i;
         },

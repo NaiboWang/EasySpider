@@ -17,7 +17,7 @@ export var global = {
     defaultbgColor: 'rgba(221,221,255,0.8)',
     boxShadowColor: "blue 0px 0px 5px",
     lang: config.language,
-    id: "C" + Math.floor(Math.random() * (99999999)).toString(),
+    id: "C" + Math.floor(Math.random() * (99999999)).toString(), //处理不同标签页的handles，生成的id
     ws: null,
 };
 
@@ -45,6 +45,27 @@ export function getOS () {
         return 'NULL'
     }
 }
+
+export function getElementXPaths(element, parentElement = document.body) {
+    const paths = [];
+    paths.push(readXPath(element,1, parentElement));
+    paths.push("//" + element.tagName.toLowerCase() + "[contains(., '" + element.textContent.slice(0, 10).trim() + "')]");
+    if (element.id) {
+        paths.push(`id("${element.id}")`);
+    }
+    if (element.className) {
+        paths.push("//" + element.tagName + "[@class='" + element.className + "']");
+    }
+    if (element.name) {
+        paths.push("//" + element.tagName + "[@name='" + element.name + "']");
+    }
+    if (element.alt) {
+        paths.push("//" + element.tagName + "[@alt='" + element.alt + "']");
+    }
+    console.log("ALL PATHS: " + paths);
+    return paths;
+}
+
 
 //返回element相对node节点的xpath，默认的node节点是: /
 export function readXPath(element, type = 1, node = document.body) {
@@ -129,7 +150,7 @@ export function addEl() {
         } else //不然只添加一个元素
         {
             clearReady(); //readylist清零重新算
-            global.nodeList.push({ node: global.NowNode, "step": global.step, bgColor: global.style, "boxShadow": global.NowNode.style.boxShadow == "" || global.boxShadowColor ? "none" : global.NowNode.style.boxShadow, xpath: readXPath(global.NowNode, 1) });
+            global.nodeList.push({ node: global.NowNode, "step": global.step, bgColor: global.style, "boxShadow": global.NowNode.style.boxShadow == "" || global.boxShadowColor ? "none" : global.NowNode.style.boxShadow, xpath: readXPath(global.NowNode, 1), "allXPaths": getElementXPaths(global.NowNode) });
             global.NowNode.style.backgroundColor = global.selectedColor;
         }
         handleElement(); //处理新状态
@@ -235,6 +256,12 @@ function parameterName(value){
             case "参数": return "para";
             case "_图片": return "_image";
             case "_图片地址": return "_image_address";
+            case "背景图片地址": return "background_image_address";
+            case "_背景图片": return "_background_image";
+            case "页面URL": return "page_url";
+            case "页面标题": return "page_title";
+            case "_页面URL": return "_page_url";
+            case "_页面标题": return "_page_title";
             default: return "";
         }
     }
@@ -242,13 +269,12 @@ function parameterName(value){
 
 //根据nodelist列表内的元素生成参数列表
 //适合：nodelist中的元素为同类型元素
-//type:0为全部文本 1为节点内直接的文字 2为innerhtml 3为outerhtml
+//type:0为全部文本 1为节点内直接的文字 2为innerhtml 3为outerhtml 4为backgroundImg 5为当前页面URL 6为当前页面标题 7为元素截图 8为OCR识别
 //nodetype:0,对应全type0123
 //nodetype:1 链接，对应type0123
 //nodetype:2 链接地址 对应type0
 //nodetype:3 按钮和输入文本框 对应type
 //nodetype:4 按钮和输入文本框 对应type
-
 export function generateParameters(type, linktext = true, linkhref = true) {
     clearParameters(false);
     let n = 1;
@@ -256,9 +282,11 @@ export function generateParameters(type, linktext = true, linkhref = true) {
         let at = parseInt(new Date().getTime());
         n = items.parameterNum;
         let ndPath = "";
+        let ndAllXPaths = [];
         for (let num = 0; num < global.nodeList.length; num++) {
             let nd = global.nodeList[num]["node"];
             ndPath = global.nodeList[num]["xpath"];
+            ndAllXPaths = global.nodeList[num]["allXPaths"];
             global.outputParameterNodes.push({ "node": nd, "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow });
             nd.style.boxShadow = global.boxShadowColor;
             let pname = parameterName("文本");
@@ -298,6 +326,15 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                 // ndText = $(nd).prop("outerHTML");
                 ndText = nd.outerHTML;
                 pname = "outerHTML";
+            } else if(type == 4){
+                ndText = nd.style.backgroundImage.replace(/url\((['"])?(.*?)\1\)/gi, '$2').split(',')[0];
+                pname = parameterName("背景图片地址");
+            } else if(type == 5){
+                ndText = window.location.href;
+                pname = parameterName("页面URL");
+            } else if(type == 6){
+                ndText = document.title;
+                pname = parameterName("页面标题");
             }
             if (num == 0) { //第一个节点新建，后面的增加即可
                 if (nd.tagName == "IMG") { //如果元素是图片
@@ -307,7 +344,9 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                         "name": parameterName("参数") + (n++) + parameterName("_图片") + pname,
                         "desc": "", //参数描述
-                        "relativeXpath": global.nodeList.length > 1 ? "" : ndPath,
+                        "extractType": 0, //提取方式 0 普通 1 OCR
+                        "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
+                        "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                         "exampleValues": [{ "num": num, "value": ndText }]
                     });
                 } else if (nd.tagName == "A") { //如果元素是超链接
@@ -318,7 +357,9 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                             "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                             "name": parameterName("参数") + (n++) + parameterName("_链接") + pname,
                             "desc": "", //参数描述
-                            "relativeXpath": global.nodeList.length > 1 ? "" : ndPath,
+                            "extractType": 0, //提取方式 0 普通 1 OCR
+                            "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
+                            "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                             "exampleValues": [{ "num": num, "value": ndText }]
                         });
                     }
@@ -329,7 +370,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                             "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                             "name": parameterName("参数") + (n++) + parameterName("_链接地址"),
                             "desc": "", //参数描述
-                            "relativeXpath": global.nodeList.length > 1 ? "" : ndPath,
+                            "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
+                            "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                             "exampleValues": [{ "num": num, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }]
                         });
                     }
@@ -340,7 +382,9 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                         "name": parameterName("参数") + (n++) + "_" + pname,
                         "desc": "", //参数描述
-                        "relativeXpath": global.nodeList.length > 1 ? "" : ndPath,
+                        "extractType": 0, //提取方式 0 普通 1 OCR
+                        "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
+                        "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                         "exampleValues": [{ "num": num, "value": ndText }]
                     });
                 } else { //其他所有情况
@@ -350,7 +394,9 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                         "name": parameterName("参数") + (n++) + "_" + pname,
                         "desc": "", //参数描述
-                        "relativeXpath": global.nodeList.length > 1 ? "" : ndPath,
+                        "extractType": 0, //提取方式 0 普通 1 OCR
+                        "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
+                        "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                         "exampleValues": [{ "num": num, "value": ndText }]
                     });
                 }
@@ -384,10 +430,11 @@ export function generateMultiParameters() {
     chrome.storage.local.get({ parameterNum: 1 }, function(items) {
         let at = parseInt(new Date().getTime());
         n = items.parameterNum;
-        let nd, ndText, ndPath, pname;
+        let nd, ndText, ndPath, pname, ndAllXPaths;
         for (let num = 0; num < global.nodeList.length; num++) {
             let nd = global.nodeList[num]["node"];
             ndPath = global.nodeList[num]["xpath"];
+            ndAllXPaths = global.nodeList[num]["allXPaths"];
             global.outputParameterNodes.push({ "node": nd, "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow });
             nd.style.boxShadow = global.boxShadowColor;
             // ndText = $(nd).text();
@@ -399,7 +446,8 @@ export function generateMultiParameters() {
                     "relative": false, //是否为相对xpath路径
                     "name": parameterName("参数") + (n++) + parameterName("_图片地址"),
                     "desc": "", //参数描述
-                    "relativeXpath": ndPath,
+                    "relativeXPath": ndPath,
+                    "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src") }]
                 });
             } else if (nd.tagName == "A") { //如果元素是超链接
@@ -409,7 +457,8 @@ export function generateMultiParameters() {
                     "relative": false, //是否为相对xpath路径
                     "name": parameterName("参数") + (n++) + parameterName("_链接文本"),
                     "desc": "", //参数描述
-                    "relativeXpath": ndPath,
+                    "relativeXPath": ndPath,
+                    "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": ndText }]
                 });
                 global.outputParameters.push({
@@ -418,7 +467,8 @@ export function generateMultiParameters() {
                     "relative": false, //是否为相对xpath路径
                     "name": parameterName("参数") + (n++) + parameterName("_链接地址"),
                     "desc": "", //参数描述
-                    "relativeXpath": ndPath,
+                    "relativeXPath": ndPath,
+                    "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }]
                 });
             } else if (nd.tagName == "INPUT") { //如果元素是输入项
@@ -428,7 +478,8 @@ export function generateMultiParameters() {
                     "relative": false, //是否为相对xpath路径
                     "name": parameterName("参数") + (n++) + parameterName("_文本"),
                     "desc": "", //参数描述
-                    "relativeXpath": ndPath,
+                    "relativeXPath": ndPath,
+                    "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value") }]
                 });
             } else { //其他所有情况
@@ -438,7 +489,8 @@ export function generateMultiParameters() {
                     "relative": false, //是否为相对xpath路径
                     "name": parameterName("参数") + (n++) + parameterName("_文本"),
                     "desc": "", //参数描述
-                    "relativeXpath": ndPath,
+                    "relativeXPath": ndPath,
+                    "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": ndText }]
                 });
             }
@@ -459,7 +511,7 @@ export function handleDescendents() {
         n = items.parameterNum;
         clearParameters(); //清除原来的参数列表
         global.app._data.selectedDescendents = true;
-        let nd, ndText, ndPath, pname;
+        let nd, ndText, ndPath, pname, ndAllPaths;
         for (let num = 0; num < global.nodeList.length; num++) {
             let tnode = global.nodeList[num]["node"];
             let stack = new Array(); //深度优先搜索遍历元素
@@ -470,9 +522,10 @@ export function handleDescendents() {
                     continue; //对A标签内的SPAN元素不进行处理,剪枝，此时子元素根本不加入stack，即实现了此功能
                 }
                 ndPath = readXPath(nd, 1, tnode);
+                ndAllPaths = getElementXPaths(nd, tnode);
                 let index = -1;
                 for (let i = 0; i < global.outputParameters.length; i++) {
-                    if (global.outputParameters[i]["relativeXpath"] == ndPath) {
+                    if (global.outputParameters[i]["relativeXPath"] == ndPath) {
                         index = i;
                         break;
                     }
@@ -503,7 +556,8 @@ export function handleDescendents() {
                                 "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径,注意当只选择了子元素没有选中全部的时候，需要判断
                                 "name": parameterName("参数") + (n++) + parameterName("_图片地址"),
                                 "desc": "", //参数描述
-                                "relativeXpath": global.nodeList.length > 1 ? ndPath : readXPath(nd), //同理需要判断
+                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd), //同理需要判断
+                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                 "exampleValues": [{
                                     "num": num,
                                     "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
@@ -516,7 +570,8 @@ export function handleDescendents() {
                                 "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                                 "name": parameterName("参数") + (n++) + parameterName("_链接文本"),
                                 "desc": "", //参数描述
-                                "relativeXpath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                 "exampleValues": [{ "num": num, "value": nd.textContent }] //注意这里的ndtext是整个a的文字！！！
                             });
                             global.outputParameters.push({
@@ -525,7 +580,8 @@ export function handleDescendents() {
                                 "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                                 "name": parameterName("参数") + (n++) + parameterName("_链接地址"),
                                 "desc": "", //参数描述
-                                "relativeXpath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                 "exampleValues": [{
                                     "num": num,
                                     "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
@@ -538,7 +594,8 @@ export function handleDescendents() {
                                 "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                                 "name": parameterName("参数") + (n++) + parameterName("_文本"),
                                 "desc": "", //参数描述
-                                "relativeXpath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                 "exampleValues": [{
                                     "num": num,
                                     "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
@@ -551,7 +608,8 @@ export function handleDescendents() {
                                 "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
                                 "name": parameterName("参数") + (n++) + parameterName("_文本"),
                                 "desc": "", //参数描述
-                                "relativeXpath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                 "exampleValues": [{ "num": num, "value": ndText }]
                             });
                         }
@@ -630,7 +688,7 @@ export function findRelated() {
             nodeIndexList.push(-1);
         }
     }
-    var tempPath = "";
+    let tempPath = "";
     for (let i = nodeIndexList.length - 1; i >= 0; i--) {
         if (nodeIndexList[i] == -1) { //没有索引值直接跳过
             continue;
@@ -638,10 +696,13 @@ export function findRelated() {
         let tempIndexList = [...nodeIndexList]; //复刻一个index数组
         tempIndexList[i] = -1; //删除索引值
         tempPath = combineXpath(nodeNameList, tempIndexList); //生成新的xpath
-        var result = document.evaluate(tempPath, document, null, XPathResult.ANY_TYPE, null);
+        let result = document.evaluate(tempPath, document, null, XPathResult.ANY_TYPE, null);
         result.iterateNext(); //枚举第一个元素
         if (result.iterateNext() != null) { //如果能枚举到第二个元素，说明存在同类元素,选中同类元素，结束循环
             global.app.$data.nowPath = tempPath; //标记此元素xpath
+            let element = document.evaluate(tempPath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
+            console.log("tempPath:", tempPath, "element:", element);
+            global.app.$data.nowAllPaths = getElementXPaths(element); //标记此元素xpath
             pushToReadyList(tempPath);
             break;
         }
@@ -674,7 +735,7 @@ export function pushToReadyList(path) {
 //将readyList中的元素放入选中节点中
 export function readyToList(step, dealparameters = true) {
     for (let o of global.readyList) {
-        global.nodeList.push({ node: o["node"], "step": global.step, bgColor: o["bgColor"], "boxShadow": o["boxShadow"], xpath: readXPath(o["node"], 1) });
+        global.nodeList.push({ node: o["node"], "step": global.step, bgColor: o["bgColor"], "boxShadow": o["boxShadow"], xpath: readXPath(o["node"], 1), "allXPaths": getElementXPaths(o["node"]) });
         o["node"].style.backgroundColor = global.selectedColor;
     }
     clearReady();
@@ -738,7 +799,10 @@ export function relatedTest() {
             }
         }
     }
-    var finalPath = combineXpath(testpath, indexList);
+    let finalPath = combineXpath(testpath, indexList);
+    let element = document.evaluate(finalPath, document, null, XPathResult.ANY_TYPE, null).iterateNext();
+    global.app.$data.nowAllPaths = getElementXPaths(element); //标记此元素xpath
+    console.log("finalPath:", finalPath, "element:", element);
     global.app.$data.nowPath = finalPath; //标记此元素xpath
     pushToReadyList(finalPath);
     let at2 = parseInt(new Date().getTime());

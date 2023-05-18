@@ -30,7 +30,7 @@
       "css": ["style/toolkit.css"],
       "js": ["content-scripts/main.js"],
       "run_at": "document_end",
-      "all_frames": false
+      "all_frames": true
     }
   ],
    "web_accessible_resources": [

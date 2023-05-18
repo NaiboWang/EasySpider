@@ -4,22 +4,27 @@
       <div class="tooldrag">✍操作提示框（可点此拖动）</div>
       <div class="realcontent">
         <div v-if="page==0">
-          <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
-                 v-on:mousedown="specialSelect"/>
-          <p style="margin-bottom:10px;display:inline-block">特殊点选模式</p>
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
+            <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
+                   v-on:mousedown="specialSelect"/>
+            <p style="margin-bottom:10px;display:inline-block">特殊点选模式</p>
+            <div class="innercontent" v-if = "list.nl.length==0">
+              <div><a v-on:mousedown="getCurrentTitle">采集当前页面的标题</a><span title="">☺</span></div>
+              <div><a v-on:mousedown="getCurrentURL">采集当前页面的URL地址</a><span title="">☺</span></div>
+            </div>
             <p style="color:black; margin-top: 10px">● 鼠标移动到元素上后，请<strong>右键</strong>点击或者按<strong>F7</strong>键选中页面元素。
             </p>
-            <p style="color:black; margin-top: 10px">● 通过鼠标左键进行点击时，页面也会有反应，但此点击操作不会被记录在任务流程中。
+            <p style="color:black; margin-top: 10px">● 操作完成后，如点击”确认采集“后任务流程图内没有”提取数据“操作被添加，<strong>重试一次</strong>即可。</p>
+            <p style="color:black; margin-top: 10px">● 通过鼠标左键进行点击时，页面也会有反应，但左键点击发生的操作不会被记录在任务流程中；同理，如果想输入文本框但并不想将动作记录，可以鼠标移动到文本框，并按键盘的<strong>F9</strong>进行输入。
             </p>
-            <p style="color:black; margin-top: 10px">● 同理，如果想输入文本框但并不想将动作记录（如想要在数据模式输入密码，仅此一次的操作，下次加载页面已经是已登录状态），可以鼠标移动到文本框，并按键盘的<strong>F9</strong>进行输入。</p>
             <p style="color:black; margin-top: 10px">● 如果不小心左键点选了元素导致页面跳转，直接后退或者切换回标签页即可。</p>
+
             {{ initial() }}
           </div>
           <div v-if="list.nl.length==1">
             <div v-if="tname()!='null'">
               ● 已选中{{ numOfList() }}个{{ tname() }}，<span
-                v-if="numOfReady()>0&&tname()!='下一页元素'">同时发现{{ numOfReady() }}个同类元素，</span>您可以:
+                v-if="numOfReady()>0&&tname()!='下一页元素'">同时发现{{ numOfReady() }}个同类元素（如果不全或不准请继续手动选择其余您认为的同类元素），</span>您可以:
               <div class="innercontent">
                 <div v-if="numOfReady()>0 && !selectStatus"><a v-on:mousedown="selectAll">选中全部</a> <span
                     title="">☺</span></div>
@@ -37,13 +42,15 @@
                       v-on:mousedown="clickElement">点击该{{ tname() }}</a><span title="">☺</span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
                       v-on:mousedown="loopClickSingleElement">循环点击该{{ tname() }}</a><span title="">☺</span></div>
+                  <div><a v-on:mousedown="getBackgroundPic">采集该{{ tname() }}的背景图片地址</a><span title="">☺</span></div>
                   <div v-if="tname()=='链接'||tname()=='元素'"><a v-on:mousedown="getInnerHtml">采集该{{
                       tname()
                     }}的Inner
                     Html</a><span title="">☺</span></div>
                   <div><a v-on:mousedown="getOuterHtml">采集该{{ tname() }}的Outer Html</a><span title="">☺</span></div>
-                  <div><a href="#">鼠标移动到该{{ tname() }}上</a><span title="">☺</span></div>
-                  <div v-if="tname()=='文本框'"><a>识别验证码</a><span title="">☺</span></div>
+
+<!--                  <div><a href="#">鼠标移动到该{{ tname() }}上</a><span title="">☺</span></div>-->
+<!--                  <div v-if="tname()=='文本框'"><a>识别验证码</a><span title="">☺</span></div>-->
                 </div>
                 <div v-if="selectedDescendents" id="Single">
                   <div><a v-on:mousedown="confirmCollectSingle">采集数据</a><span title="">☺</span></div>
@@ -67,7 +74,7 @@
 
             <div v-if="option!=100">
               ● 已选择了{{ numOfList() }}个同类元素，<span
-                v-if="numOfReady()>0">另外发现{{ numOfReady() }}个同类元素，</span>您可以：
+                v-if="numOfReady()>0">另外发现{{ numOfReady() }}个同类元素（如果不全或不准请继续手动选择其余您认为的同类元素），</span>您可以：
               <div class="innercontent">
                 <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">选中全部</a><span title="">☺</span></div>
                 <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
@@ -125,21 +132,25 @@
       <div class="tooldrag">✍Operation Toolbox (Can drag)</div>
       <div class="realcontent">
         <div v-if="page==0">
-          <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
-                 v-on:mousedown="specialSelect"> </input>
-          <p style="margin-bottom:10px;display:inline-block">Special click mode</p>
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
+            <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
+                   v-on:mousedown="specialSelect"> </input>
+            <p style="margin-bottom:10px;display:inline-block">Special click mode</p>
+            <div class="innercontent" v-if = "list.nl.length==0">
+              <div><a v-on:mousedown="getCurrentTitle">Collect Title of current page</a><span title="">☺</span></div>
+              <div><a v-on:mousedown="getCurrentURL">Collect URL of current page</a><span title="">☺</span></div>
+            </div>
             <p style="color:black">● When your mouse moves to the element, please <strong>right-click</strong> your
               mouse button or press <strong>F7</strong> on the keyboard to select it.</p>
-            <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also respond, but this click operation will not be recorded in the task flow.</p>
-            <p style="color:black; margin-top: 10px">● Similarly, if you want to input in a text box but do not want the action to be recorded (such as wanting to input a password in data mode, this operation is only performed once, and the next time the page is loaded, it is already logged in), you can move the mouse to the text box and press <strong>F9</strong> on the keyboard to input.</p>
+            <p style="color:black; margin-top: 10px">● After the operation is completed, such as if no "Collect Data" operation is added in the task flowchart after clicking "Confirm Collect", just <strong> retry </strong> again.</p>
+            <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also respond, but this click operation will not be recorded in the task flow. Similarly, if you want to input in a text box but do not want the action to be recorded , you can move the mouse to the text box and press <strong>F9</strong> on the keyboard to input.</p>
             <p style="color:black; margin-top: 10px">● If you accidentally left-click on an element and cause the page to jump, simply go back or switch back to the tab.</p>
             {{ initial() }}
           </div>
           <div v-if="list.nl.length==1">
             <div v-if="tname()!='null'">
               ● Already selected {{ numOfList() }} {{ tname() | toEng }}, <span
-                v-if="numOfReady()>0&&tname()!='下一页元素'"> meanwhile we find {{ numOfReady() }} element with the same type, </span>you
+                v-if="numOfReady()>0&&tname()!='下一页元素'"> meanwhile we find {{ numOfReady() }} element with the same type (If unsatisfied with auto-detected similar elements, you can continue to manually select the rest of the elements that you think are similar), </span>you
               can:
               <div class="innercontent">
                 <div v-if="numOfReady()>0 && !selectStatus"><a v-on:mousedown="selectAll">Select All</a><span
@@ -162,10 +173,12 @@
                       v-on:mousedown="loopClickSingleElement">Loop-click this {{ tname() | toEng }}</a><span
                       title="">☺</span>
                   </div>
+                  <div><a v-on:mousedown="getBackgroundPic">Collect background image URL</a><span title="">☺</span></div>
                   <div v-if="tname()=='链接'||tname()=='元素'"><a v-on:mousedown="getInnerHtml">Collect Inner Html of
                     this {{ tname() | toEng }}</a><span title="">☺</span></div>
                   <div><a v-on:mousedown="getOuterHtml">Collect Outer Html of this element</a><span title="">☺</span>
                   </div>
+
                   <!-- <div> <a href="#">鼠标移动到该元素上----{{tname()}}-</a><span title="">☺</span></div> -->
                   <!-- <div v-if="tname()=='text box'"> <a>识别验证码</a><span title="">☺</span></div> -->
                 </div>
@@ -191,7 +204,7 @@
 
             <div v-if="option!=100">
               ● Already selected {{ numOfList() }} similar elements, <span
-                v-if="numOfReady()>0">and we find other{{ numOfReady() }} similar elements, </span>you can:
+                v-if="numOfReady()>0">and we find other{{ numOfReady() }} similar elements (If unsatisfied with auto-detected similar elements, you can continue to manually select the rest of the elements that you think are similar), </span>you can:
               <div class="innercontent">
                 <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">Select All</a><span title="">☺</span></div>
                 <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
@@ -271,7 +284,7 @@ import {
   pushToReadyList,
   readyToList,
   combineXpath,
-  relatedTest
+  relatedTest, getElementXPaths
 } from "./global.js";
 import {
   input,
@@ -299,6 +312,7 @@ export default {
     text: "", // 记录输入的文字
     tNodeName: "", // 记录临时节点列表
     nowPath: "", //现在元素的xpath
+    nowAllPaths: [], //现在元素的所有xpath
     winHeight: window.outerHeight,
   },
   mounted(){
@@ -421,6 +435,21 @@ export default {
       $(".tooltips").css("width", width);
       return "";
     },
+    getCurrentURL: function () { //获取当前页面的URL
+      addEl(); // 添加当前选择元素，只是为了占位
+      generateParameters(5, true, false);
+      this.selectStatus = true;
+      clearReady();
+    },
+    getCurrentTitle: function () { //获取当前页面的Title
+      // 获取文档中所有元素
+      // const elements = document.querySelectorAll('*');
+      // global.nodeList.push(elements[0]); //将页面第一个元素放入列表中
+      addEl(); // 添加当前选择元素，只是为了占位
+      generateParameters(6, true, false);
+      this.selectStatus = true;
+      clearReady();
+    },
     getText: function () { //采集文字
       generateParameters(0, true, false);
       this.selectStatus = true;
@@ -438,6 +467,11 @@ export default {
     },
     getInnerHtml: function () { //采集InnerHtml
       generateParameters(2, true, false);
+      this.selectStatus = true;
+      clearReady();
+    },
+    getBackgroundPic: function () { //采集背景图片
+      generateParameters(4, true, false);
       this.selectStatus = true;
       clearReady();
     },
@@ -520,6 +554,7 @@ export default {
         global.nodeList[global.nodeList.length - 1]["node"] = tNode;
         global.nodeList[global.nodeList.length - 1]["bgColor"] = sty;
         global.nodeList[global.nodeList.length - 1]["xpath"] = readXPath(tNode, 1);
+        global.nodeList[global.nodeList.length - 1]["allXPaths"] = getElementXPaths(tNode);
         //显示框
         var pos = tNode.getBoundingClientRect();
         global.div.style.display = "block";

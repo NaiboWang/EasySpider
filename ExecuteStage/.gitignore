@@ -10,3 +10,5 @@ Chrome/
 Data/
 tasks/
 Application/
+.history
+execution_instances/

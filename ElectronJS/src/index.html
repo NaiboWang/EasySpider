@@ -24,6 +24,10 @@
 
         <p><a @click="changeLang('en')" class="btn btn-outline-primary btn-lg"
               style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;">English</a></p>
+        <p><a href="https://github.com/NaiboWang/EasySpider/Releases" target="_blank">Github</a>最新版本/Newest Version：{{newest_version}}</p>
+<!--        <p>如发现新版本更新，可从以下Github仓库下载最新版本使用/If a new version is found, you can download the latest version from the following Github repository:</p>-->
+<!--        <p></p>-->
+
     </div>
 
     <div style="padding: 10px; text-align: center;vertical-align: middle;" v-else>
@@ -144,14 +148,32 @@
         return "";
     }
 
-    createApp({
+    var global = createApp({
         data() {
             return {
                 init: true,
                 lang: 'zh',
                 user_data_folder: getUrlParam("user_data_folder"),
                 step: 0,
+                newest_version: '-', // 最新版本号
             }
+        },
+        mounted() {
+            // 发送GET请求获取GitHub的Release API响应
+            const request = new XMLHttpRequest();
+            request.open('GET', `https://api.github.com/repos/NaiboWang/EasySpider/releases/latest`);
+            request.setRequestHeader('User-Agent', 'JavaScript');
+            request.onload = function() {
+                // 解析响应JSON并输出最新版本号
+                const release = JSON.parse(request.responseText);
+                const latestVersion = release.tag_name;
+                global.$data.newest_version = latestVersion;
+                // alert(`Latest version is ${latestVersion}`);
+            };
+            request.onerror = function() {
+                console.error('Error: failed to get latest version.');
+            };
+            request.send();
         },
         methods: {
             changeLang(lang = 'zh') {

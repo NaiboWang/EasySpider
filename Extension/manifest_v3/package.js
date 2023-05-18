@@ -11,7 +11,12 @@ let config = fs.readFileSync(path.join(__dirname, `src/content-scripts/config.js
 config = JSON.parse(config);
 
 // 生成英文插件
-removeDir(path.join(__dirname, `EasySpider_en`));
+try{
+    removeDir(path.join(__dirname, `EasySpider_en`));
+} catch (e) {
+
+}
+
 config.language = "en";
 let data = JSON.stringify(config);
 // write JSON string to a file
@@ -47,7 +52,12 @@ fs.copyFileSync(path.join(__dirname, './EasySpider_en.crx'), path.join(__dirname
 
 
 // 生成中文插件
-removeDir(path.join(__dirname, `EasySpider_zh`));
+try{
+    removeDir(path.join(__dirname, `EasySpider_zh`));
+} catch (e) {
+
+}
+
 config.language = "zh";
 data = JSON.stringify(config);
 // write JSON string to a file

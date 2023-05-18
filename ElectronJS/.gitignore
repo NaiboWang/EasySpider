@@ -8,4 +8,5 @@ chromedriver_mac64
 user-data/
 user_data/
 Data/
+Chrome/
 execution_instances/*

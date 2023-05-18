@@ -2,7 +2,15 @@ import $ from "jquery";
 import Vue from "vue";
 import {global, getOS, readXPath, addEl, clearEl, clearReady, handleElement, clearParameters, generateParameters, generateMultiParameters, handleDescendents, generateValTable, findRelated, pushToReadyList, readyToList, combineXpath, relatedTest} from "./global.js";
 import ToolKit from "./toolkit.vue";
+import iframe from "./iframe.vue";
 
+function isInIframe() {
+    try {
+        return window.self !== window.parent;
+    } catch (e) {
+        return true;
+    }
+}
 
 //表现逻辑层的处理
 
@@ -32,10 +40,15 @@ global.tdiv.style.pointerEvents = "none";
 
 var mousemovebind = false; //如果出现元素默认绑定了mousemove事件导致匹配不到元素的时候，开启第二种模式获得元素
 
-var toolkit = document.createElement("div")
-// @ts-ignore
+var toolkit = document.createElement("div");
 toolkit.classList = "tooltips"; //添加样式
-toolkit.setAttribute("id", "wrapperToolkit");
+// @ts-ignore
+if(isInIframe()){
+    toolkit.setAttribute("id", "wrapperToolkitIframe");
+} else {
+    toolkit.setAttribute("id", "wrapperToolkit");
+}
+
 
 var tooltips = false; //标记鼠标是否在提示框上
 
@@ -114,15 +127,31 @@ document.addEventListener("mousemove", function() {
 
 });
 
-window.addEventListener("beforeunload", function(event) {
-    event.preventDefault();
-    let message = {
-        type: 10,
-        message: {
-            id: global.id, //socket id
-        }
-    };
-    global.ws.send(JSON.stringify(message));
+// window.addEventListener("beforeunload", function(event) {
+//     event.preventDefault();
+//     let message = {
+//         type: 10,
+//         message: {
+//             id: global.id, //socket id
+//         }
+//     };
+//     global.ws.send(JSON.stringify(message));
+//     // Remove the confirmation message
+//     event.returnValue = '';
+// });
+
+window.addEventListener('DOMContentLoaded', () => {
+    // Remove any existing beforeunload events
+    window.onbeforeunload = null;
+
+    // Override the beforeunload event with a custom function
+    window.addEventListener('beforeunload', (event) => {
+        // Prevent the event's default action
+        event.preventDefault();
+
+        // Remove the confirmation message
+        event.returnValue = '';
+    });
 });
 
 //点击没反应时候的替代方案
@@ -153,12 +182,18 @@ document.body.append(toolkit);
 var timer;
 
 
+
 //生成Toolkit
 function generateToolkit() {
     $(".tooltips").html(`
     <div id="realcontent"></div>
 `);
-    global.app = new Vue(ToolKit);
+    if(isInIframe()){
+        global.app = new Vue(iframe);
+    } else{
+        global.app = new Vue(ToolKit);
+    }
+
     let h = $(".tooldrag").height();
     let difference = 26 - h; //获得高度值差
     if (difference > 0) {
@@ -200,7 +235,7 @@ function generateToolkit() {
         });
     });
     timer = setInterval(function() { //时刻监测相应元素是否存在(防止出现如百度一样元素消失重写body的情况)，如果不存在，添加进来
-        if (document.body != null && document.getElementById("wrapperToolkit") == null) {
+        if (document.body != null && document.getElementsByClassName("tooltips").length == 0) {
             this.clearInterval(); //先取消原来的计时器，再设置新的计时器
             document.body.append(global.div); //默认如果toolkit不存在则div和tdiv也不存在
             document.body.append(global.tdiv);

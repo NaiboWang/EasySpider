@@ -40,7 +40,7 @@
     
     <div class="col-md-6" id="taskInfo" style="margin:0 auto" v-if="show">
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title" id="myModalLabel">{{"Task Invocation Instruction~执行任务说明" | lang}}</h4>
@@ -49,8 +49,10 @@
                     <div class="modal-body">
                         <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                         <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                        <label>{{"For MacOS, please open a terminal, go to EasySpider's folder, and then copy (command + c) the following command to run the task (EasySpider cannot quit when executing command):~对于MacOS系统，请在EasySpider目录下打开命令行工具Terminal，然后复制（command + c）和运行以下命令以执行任务(执行命令时不能退出EasySpider)：" | lang}}</label>
-                        <textarea class="form-control" style="height:150px">{{command}} --config_folder "{{config_folder}}"</textarea>
+                        <label>{{`Please open a terminal, go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider cannot quit when executing command, unless --read_type is set to "local"):~请在EasySpider目录下打开命令行工具Terminal，然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时不能退出EasySpider，除非将--read_type设置为local）：` | lang}}</label>
+                        <label><a href="https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction" target="_blank">{{`Click Here~点击这里` | lang}}</a> {{`Here to see argument instruction.~这里查看参数配置说明。` | lang}}</label>
+                        <textarea class="form-control" style="height:150px">cd {{easyspider_location}}
+{{command}} --config_folder "{{config_folder}}" --headless 0 --read_type remote --config_name config.json --saved_file_name </textarea>
                     </div>
                     <!-- <div class="modal-footer">
                         <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
@@ -116,13 +118,13 @@
             <input class="form-control" v-model="ID"></input>
             <p></p>
             <!-- <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p> -->
-            <p>{{"Hint: Click the following button to get the Execution ID (EID) of current running task.~提示：点击下方按钮获得任务执行ID，然后根据此执行ID运行任务。" | lang}}</p>
+            <p>{{"Hint: Click the \"Get Execution ID\" button at the bottom to get the task ID, and click the \"Execute task by commandline\" button at the back to get the prompt command on how to run this task using the command line.~提示：点击下方“获得任务执行ID”按钮得到任务ID，点击后面的“使用命令行执行任务”按钮获得如何使用命令行运行任务的提示命令。" | lang}}</p>
             <button class="btn btn-primary" href="javascript:void(0)" v-on:click="invokeTask">{{"Get Execution ID~获得任务执行ID" |
                 lang}}</button>
-            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute(false)">{{"Run Locally (Clean Mode)~本地执行（纯净模式）"
+            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute(false)">{{"Execute task by commandline (Clean Mode)~使用命令行执行任务（纯净模式）"
                 | lang}}
             </button>
-            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute(true)">{{"Run Locally (Data Mode)~本地执行（带用户信息模式）"
+            <button class="btn btn-primary" style="margin-left: 8px;" v-on:click="localExecute(true)">{{"Execute task by commandline (Data Mode)~使用命令行执行任务（带用户信息模式）"
                 | lang}}
             </button>
             <!-- <button v-on:click="remoteExcute" style="margin-left: 8px;" class="btn btn-primary">Run remotely</button></div> -->
@@ -154,6 +156,7 @@
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
             command: "./easyspider_executestage ",
             config_folder: "",
+            easyspider_location: "",
         }, mounted() {
         $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
             app.$data.user_data_folder = result.user_data_folder;
@@ -182,7 +185,7 @@
                 if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
                     text = "Are you sure to get the Execution ID (EID) of current running task?";
                 } else {
-                    text = "确定要获得当前运行任务的执行号吗？";
+                    text = "确定要获得当前运行任务的执行ID吗？";
                 }
                 if (confirm(text)) {
                     var para = {};
@@ -203,31 +206,30 @@
                     if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
                         alert("Please get EID first!");
                     } else {
-                        alert("请先获得执行号！");
+                        alert("请先获得执行ID！");
                     }
                     return;
                 }
                 this.with_user_data = with_user_data;
                 let text = "";
-                if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
-                    text = "Are you sure to run this task locally?";
-                } else {
-                    text = "确定要在本地运行此任务吗？";
-                }
-                if (confirm(text)) {
+                // if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
+                //     text = "Are you sure to run this task locally?";
+                // } else {
+                //     text = "确定要在本地运行此任务吗？";
+                // }
+                // if (confirm(text)) {
                     let message = { //显示flowchart
                         type: 5, //消息类型，调用执行程序
                         message: {
                             "id": app.$data.ID,
                             "user_data_folder": app.$data.with_user_data ? app.$data.user_data_folder : "",
+                            "execute_type": 0,
                         }
                     };
                     ws.send(JSON.stringify(message));
-                    if(isMac()){
-                        app.$data.command = "./easyspider_executestage --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-                        $('#myModal').modal('show');
-                    }
-                }
+                    changeCommand();
+                $('#myModal').modal('show');
+                // }
             },
             remoteExecute: function () {
 
@@ -256,21 +258,35 @@
                             message: {
                                 "id": result,
                                 "user_data_folder": app.$data.with_user_data ? app.$data.user_data_folder : "",
+                                "execute_type": 1,
                             }
                         };
                         ws.send(JSON.stringify(message));
-                        if(isMac()){
-                            app.$data.command = "./easyspider_executestage --id " + result.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                        if(getOperatingSystemInfo().version == 'macOS'){
+                            // app.$data.command = "./easyspider_executestage --id " + result.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                            changeCommand();
                                 $('#myModal').modal('show');
                         }
                     });
                 }
             },
-            remoteExcuteInstant: function () {
+            remoteExecuteInstant: function () {
             },
         }
     });
-    
+    function changeCommand() {
+        let OSInfo = getOperatingSystemInfo();
+        if(OSInfo.version == 'win' && OSInfo.bit == 64){
+            app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+        } else if(OSInfo.version == 'win' && OSInfo.bit == 32){
+            app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+        } else if(OSInfo.version == 'linux'){
+            app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+        } else if(OSInfo.version == 'mac'){
+            app.$data.command = "./easyspider_executestage --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+        }
+    }
+
     $.get(app.$data.backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {
         app.$data.task = result;
         app.$data.show = true;
@@ -289,7 +305,9 @@
         this.send(JSON.stringify(message));
     };
     ws.onmessage = function(message){
-        app.$data.config_folder = message.data;
+        message = JSON.parse(message.data);
+        app.$data.config_folder = message.config_folder;
+        app.$data.easyspider_location = message.easyspider_location;
     }
     ws.onclose = function () {
         // 关闭 websocket

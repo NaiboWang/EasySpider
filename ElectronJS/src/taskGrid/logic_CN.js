@@ -110,6 +110,10 @@ function addParameters(t) {
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
         wait: 0, //执行后等待
+        beforeJS: "", //执行前执行的js
+        beforeJSWaitTime: 0, //执行前js等待时间
+        afterJS: "", //执行后执行的js
+        afterJSWaitTime: 0, //执行后js等待时间
     }; //公共参数处理
     if (t.option == 1) {
         t["parameters"]["url"] = "about:blank";
@@ -120,10 +124,23 @@ function addParameters(t) {
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 0; //滚动次数
         t["parameters"]["paras"] = []; //默认参数列表
+        t["parameters"]["beforeJS"] = ""; //执行前执行的js
+        t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
+        t["parameters"]["afterJS"] = ""; //执行后执行的js
+        t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
     } else if (t.option == 3) { //提取数据
         t["parameters"]["paras"] = []; //默认参数列表
     } else if (t.option == 4) { //输入文字
         t["parameters"]["value"] = "";
+        t["parameters"]["beforeJS"] = ""; //执行前执行的js
+        t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
+        t["parameters"]["afterJS"] = ""; //执行后执行的js
+        t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
+    } else if(t.option == 5) { //自定义操作
+        t["parameters"]["codeMode"] = 0; //代码模式，0代表JS, 2代表系统级别
+        t["parameters"]["code"] = "";
+        t["parameters"]["waitTime"] = 0; //最长等待时间
+        t["parameters"]["recordASField"] = 0; //是否记录脚本输出
     } else if (t.option == 8) { //循环
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 0; //滚动次数
@@ -131,6 +148,8 @@ function addParameters(t) {
         t["parameters"]["xpath"] = "";
         t["parameters"]["pathList"] = "";
         t["parameters"]["textList"] = "";
+        t["parameters"]["code"] = ""; //执行的代码
+        t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["exitCount"] = 0; //执行多少次后退出循环，0代表不设置此条件
         t["parameters"]["historyWait"] = 2; //历史记录回退时间，用于循环点击每个链接的情况下点击链接后不打开新标签页的情况
     } else if (t.option == 9) { //条件
@@ -138,6 +157,8 @@ function addParameters(t) {
     } else if (t.option == 10) { //条件分支
         t["parameters"]["class"] = 0; //0代表什么条件都没有，1代表当前页面包括文本，2代表当前页面包括元素，3代表当前循环包括文本，4代表当前循环包括元素
         t["parameters"]["value"] = ""; //相关值
+        t["parameters"]["code"] = ""; //code
+        t["parameters"]["waitTime"] = 0; //最长等待时间
     }
 }
 
@@ -153,12 +174,15 @@ function modifyParameters(t, para) {
     } else if (t.option == 4) { //输入文字事件
         t["parameters"]["value"] = para["value"];
         t["parameters"]["xpath"] = para["xpath"];
+        t["parameters"]["allXPaths"] = para["allXPaths"];
     } else if (t.option == 2) { //鼠标点击事件
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["useLoop"] = para["useLoop"];
+        t["parameters"]["allXPaths"] = para["allXPaths"];
     } else if (t.option == 8) { //循环事件
         t["parameters"]["loopType"] = para["loopType"];
         t["parameters"]["xpath"] = para["xpath"];
+        t["parameters"]["allXPaths"] = para["allXPaths"];
         if (para["nextPage"]) { //循环点击下一页的情况下
             t["title"] = "循环点击下一页"
         } else {
@@ -171,6 +195,12 @@ function modifyParameters(t, para) {
     } else if (t.option == 3) { //采集数据
         for (let i = 0; i < para["parameters"].length; i++) {
             para["parameters"][i]["default"] = ""; //找不到元素时候的默认值
+            para["parameters"][i]["beforeJS"] = ""; //执行前执行的js
+            para["parameters"][i]["beforeJSWaitTime"] = 0; //执行前js等待时间
+            para["parameters"][i]["JS"] = ""; //如果是JS，需要执行的js
+            para["parameters"][i]["JSWaitTime"] = 0; //JS等待时间
+            para["parameters"][i]["afterJS"] = ""; //执行后执行的js
+            para["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
         }
         t["parameters"]["paras"] = para["parameters"];
     }
@@ -233,7 +263,7 @@ function saveService(type) {
                             nodeId: i, //记录操作位于的节点位置，重要！！！
                             nodeName: nodeList[i]["title"],
                             value: nodeList[i]["parameters"]["links"],
-                            desc: "要采集的网址列表,多行以\\n分开",
+                            desc: "要采集的网址列表，多行以\\n分开",
                             type: "string",
                             exampleValue: nodeList[i]["parameters"]["links"]
                         });
@@ -256,7 +286,7 @@ function saveService(type) {
                     }
                 } else if (nodeList[i]["option"] == 8) //循环操作
                 {
-                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2) { //循环中的循环输入文本或循环输入网址
+                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2 && parseInt(nodeList[i]["parameters"]["loopType"]) < 5) { //循环中的循环输入文本或循环输入网址
                         inputParameters.push({
                             id: inputIndex,
                             name: "loopText_" + inputIndex++,
@@ -292,6 +322,28 @@ function saveService(type) {
                                 exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
                             });
                         }
+                    }
+                } else if (nodeList[i]["option"] == 5) //自定义操作
+                {
+                    if (nodeList[i]["parameters"]["recordASField"]) {
+                        let id = outputIndex++;
+                        let title = nodeList[i]["title"];
+                        if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
+                            $('#myModal').modal('hide');
+                            $("#tip2").slideDown(); //提示框
+                            fadeout = setTimeout(function() {
+                                $("#tip2").slideUp();
+                            }, 5000);
+                            return;
+                        }
+                        outputNames.push(title);
+                        outputParameters.push({
+                            id: id,
+                            name: title,
+                            desc: "自定义操作返回的数据",
+                            type: "string",
+                            exampleValue: "",
+                        });
                     }
                 } else if (nodeList[i]["option"] == 9) //条件判断
                 {

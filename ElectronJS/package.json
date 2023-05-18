@@ -1,7 +1,7 @@
 {
   "name": "easy-spider",
   "productName": "EasySpider",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "icon": "./favicon",
   "description": "NoCode Visual Web Crawler",
   "main": "main.js",
@@ -60,7 +60,7 @@
       ],
       "packagerConfig": {
         "icon": "./favicon",
-        "appVersion": "0.2.0",
+        "appVersion": "0.3.0",
         "name": "EasySpider",
         "executableName": "EasySpider",
         "appCopyright": "Naibo Wang (naibowang@foxmail.com)",

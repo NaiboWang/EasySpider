@@ -139,7 +139,7 @@
                         <label>Current parameter name: <strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPATH</p>
                         <label>XPATH: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXpath"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]'></textarea>
                         <label>Extraction Type</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>Text (include child element)</option>

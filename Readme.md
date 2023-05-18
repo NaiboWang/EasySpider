@@ -22,6 +22,22 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
+## 声明/Declaration
+
+本软件仅供学习交流使用，**严禁使用软件进行任何违法违规的操作，如爬取不允许爬取的政府军事机关网站等**。使用本软件所造成的一切后果由使用者自负，作者不负任何责任。同时，软件受到专利权保护，如要用于商业用途，请联系**浙江大学天道专利事务所**进行付费等操作。
+
+This software is for learning and communication only. **It is strictly forbidden to use the software for any illegal operations, such as crawling government military websites that are not allowed to be crawled.** All consequences caused by the use of this software are at the user's own risk, and the author is not responsible for any consequences. At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact **Zhejiang University Tiandao Patent Office** for payment and other operations.
+
+对于政府和军事机关等网站的爬虫操作，**作者将不会进行任何答疑**，以免触碰国家相关法律法规和政策。
+
+For crawler operations on government and military websites, the author will not answer any questions to avoid touching relevant national laws, regulations and policies.
+
+## 文档/Documentation
+
+请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
+
+Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
+
 
 ## 视频教程/Video Tutorials
 
@@ -41,16 +57,9 @@ Bilibili/B站视频教程:
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
-## 文档/Documentation
-
-请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
-
-Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
-
-
 ## 出版物/Publications
 
-- This software has been accepted by The Web Conference (WWW) 2023: [EasySpider: A No-Code Visual System for Crawling the Web](https://dl.acm.org/doi/abs/10.1145/3543873.3587345), March 2023.
+- This software has been accepted by The Web Conference (WWW) 2023 (中国计算机学会顶级会议 CCF A): [EasySpider: A No-Code Visual System for Crawling the Web](https://dl.acm.org/doi/abs/10.1145/3543873.3587345), March 2023.
 
 - 中国国家知识产权局发明专利，[一种自定义提取流程的服务封装系统](media/patent.png)， 2022年5月。
 

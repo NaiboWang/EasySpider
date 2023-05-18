@@ -1,0 +1,278 @@
+{
+    "id": 47,
+    "name": "新web采集任务",
+    "url": "https://www.jd.com",
+    "links": "https://www.jd.com",
+    "containJudge": false,
+    "desc": "https://www.jd.com",
+    "inputParameters": [
+        {
+            "id": 0,
+            "name": "urlList_0",
+            "nodeId": 1,
+            "nodeName": "打开网页",
+            "value": "https://www.jd.com",
+            "desc": "要采集的网址列表，多行以\\n分开",
+            "type": "string",
+            "exampleValue": "https://www.jd.com"
+        },
+        {
+            "id": 1,
+            "name": "inputText_1",
+            "nodeName": "输入文字",
+            "nodeId": 3,
+            "desc": "要输入的文本，如京东搜索框输入：电脑",
+            "type": "string",
+            "exampleValue": "123",
+            "value": "123"
+        }
+    ],
+    "outputParameters": [
+        {
+            "id": 0,
+            "name": "参数1_文本",
+            "desc": "",
+            "type": "string",
+            "exampleValue": "/手机/数码"
+        }
+    ],
+    "graph": [
+        {
+            "index": 0,
+            "id": 0,
+            "parentId": 0,
+            "type": -1,
+            "option": 0,
+            "title": "root",
+            "sequence": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "parameters": {
+                "history": 1,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0
+            },
+            "isInLoop": false
+        },
+        {
+            "id": 1,
+            "index": 1,
+            "parentId": 0,
+            "type": 0,
+            "option": 1,
+            "title": "打开网页",
+            "sequence": [],
+            "isInLoop": false,
+            "position": 0,
+            "parameters": {
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "url": "https://www.jd.com",
+                "links": "https://www.jd.com",
+                "scrollType": 0,
+                "scrollCount": 0
+            }
+        },
+        {
+            "id": 2,
+            "index": 2,
+            "parentId": 0,
+            "type": 0,
+            "option": 2,
+            "title": "点击元素",
+            "sequence": [],
+            "isInLoop": false,
+            "position": 1,
+            "parameters": {
+                "history": 4,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "//*[contains(@class, \"LeftSide_menu_list__qXCeM\")]/div[1]",
+                "wait": 0,
+                "beforeJS": "4",
+                "beforeJSWaitTime": 0,
+                "afterJS": "3",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 0,
+                "paras": [],
+                "allXPaths": [
+                    "/html/body/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]",
+                    "//div[contains(., '/手机/数码')]",
+                    "//DIV[@class='LeftSide_menu_item__SBMWC LeftSide_text_space__2UhbG ']"
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "index": 3,
+            "parentId": 0,
+            "type": 0,
+            "option": 4,
+            "title": "输入文字",
+            "sequence": [],
+            "isInLoop": false,
+            "position": 2,
+            "parameters": {
+                "history": 4,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "//*[@id=\"key\"]",
+                "wait": 0,
+                "beforeJS": "1",
+                "beforeJSWaitTime": 0,
+                "afterJS": "2",
+                "afterJSWaitTime": 0,
+                "value": "123",
+                "allXPaths": [
+                    "/html/body/div[4]/div[1]/div[2]/div[1]/input[1]",
+                    "//input[contains(., '')]",
+                    "id(\"key\")",
+                    "//INPUT[@class='text defcolor']"
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "index": 4,
+            "parentId": 0,
+            "type": 1,
+            "option": 8,
+            "title": "循环",
+            "sequence": [
+                5
+            ],
+            "isInLoop": false,
+            "position": 3,
+            "parameters": {
+                "history": 4,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "/html/body/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 0,
+                "loopType": 1,
+                "pathList": "",
+                "textList": "",
+                "exitCount": 0,
+                "historyWait": 2,
+                "allXPaths": [
+                    "/html/body/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]",
+                    "//div[contains(., '/手机/数码')]",
+                    "//DIV[@class='LeftSide_menu_item__SBMWC LeftSide_text_space__2UhbG ']"
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "index": 5,
+            "parentId": 4,
+            "type": 0,
+            "option": 3,
+            "title": "提取数据",
+            "sequence": [],
+            "isInLoop": true,
+            "position": 0,
+            "parameters": {
+                "history": 4,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "paras": [
+                    {
+                        "nodeType": 0,
+                        "contentType": 9,
+                        "relative": true,
+                        "name": "参数1_文本",
+                        "desc": "",
+                        "extractType": 0,
+                        "relativeXPath": "",
+                        "allXPaths": "",
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "/手机/数码"
+                            },
+                            {
+                                "num": 1,
+                                "value": "/家用电器"
+                            },
+                            {
+                                "num": 2,
+                                "value": "/电脑/办公"
+                            },
+                            {
+                                "num": 3,
+                                "value": "/家纺/家居/厨具"
+                            },
+                            {
+                                "num": 4,
+                                "value": "/家具/家装/灯具/工业品"
+                            },
+                            {
+                                "num": 5,
+                                "value": "/内衣/男装/女装/童装"
+                            },
+                            {
+                                "num": 6,
+                                "value": "/箱包/钟表/珠宝/女鞋"
+                            },
+                            {
+                                "num": 7,
+                                "value": "/运动/户外/男鞋"
+                            },
+                            {
+                                "num": 8,
+                                "value": "/汽车用品/车载电器"
+                            },
+                            {
+                                "num": 9,
+                                "value": "/母婴/洗护喂养"
+                            },
+                            {
+                                "num": 10,
+                                "value": "/玩具乐器/宠物生活"
+                            },
+                            {
+                                "num": 11,
+                                "value": "/家庭清洁/个人护理/计生情趣"
+                            },
+                            {
+                                "num": 12,
+                                "value": "/图书/童书/文学"
+                            }
+                        ],
+                        "default": "",
+                        "beforeJS": "5",
+                        "beforeJSWaitTime": 0,
+                        "JS": "7",
+                        "JSWaitTime": 0,
+                        "afterJS": "6",
+                        "afterJSWaitTime": 0
+                    }
+                ],
+                "loopType": 1
+            }
+        }
+    ]
+}

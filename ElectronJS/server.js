@@ -29,7 +29,18 @@ function getDir(){
         } else {
             return path.join(__dirname,"../../..");
         }
-    } else{
+    } else {
+        return __dirname;
+    }
+}
+function getEasySpiderLocation(){
+    if(__dirname.indexOf("app") >= 0 && __dirname.indexOf("sources") >= 0){
+        if(process.platform == "darwin"){
+            return path.join(__dirname,"../../../");
+        } else {
+            return path.join(__dirname,"../../../");
+        }
+    } else {
         return __dirname;
     }
 }
@@ -44,6 +55,7 @@ if(!fs.existsSync(path.join(getDir(), "config.json"))){
 }
 
 exports.getDir = getDir;
+exports.getEasySpiderLocation = getEasySpiderLocation;
 FileMimes = JSON.parse(fs.readFileSync(path.join(__dirname,'mime.json')).toString());
 exports.start = function(port = 8074) {
     http.createServer(function(req, res) {

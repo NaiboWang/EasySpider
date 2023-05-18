@@ -1,7 +1,6 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, dialog, ipcMain, screen} = require('electron');
 app.commandLine.appendSwitch("--disable-http-cache");
-
 const {Builder, By, Key, until} = require("selenium-webdriver");
 const chrome = require('selenium-webdriver/chrome');
 const {ServiceBuilder} = require('selenium-webdriver/chrome');
@@ -123,6 +122,7 @@ async function beginInvoke(msg, ws) {
         }
 
         flowchart_window.show();
+        // flowchart_window.openDevTools();
     } else if (msg.type == 2) {
         //keyboard
         // const robot = require("@jitsi/robotjs");
@@ -215,13 +215,13 @@ async function beginInvoke(msg, ws) {
         // });
 
         let spawn = require("child_process").spawn;
-        if (process.platform != "darwin") {
+        if (process.platform != "darwin" && msg.message.execute_type == 1) {
             let child_process = spawn(execute_path, parameters);
             child_process.stdout.on('data', function (data) {
                 console.log(data.toString());
             });
         } else {
-            ws.send(task_server.getDir() + "/");
+            ws.send(JSON.stringify({"config_folder": task_server.getDir() + "/", "easyspider_location": task_server.getEasySpiderLocation()}));
         }
     }
 }
@@ -284,6 +284,7 @@ async function runBrowser(lang = "en", user_data_folder = '') {
     } else if (lang == "zh") {
         options.addExtensions(path.join(__dirname, "EasySpider_zh.crx"));
     }
+    options.addExtensions(path.join(__dirname, "XPathHelper.crx"));
     options.setChromeBinaryPath(chromeBinaryPath);
     if (user_data_folder != "") {
         let dir = path.join(task_server.getDir(), user_data_folder);
