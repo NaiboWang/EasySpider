@@ -566,5 +566,6 @@ document.onkeydown = function(e) {
 function inputDelete(e) {
     if (e.keyCode == 46) {
         e.stopPropagation(); //输入框按delete应该正常运行
+        //Electron中如果有alert或者confirm，执行后会卡死输入框，所以最好不要用
     }
 }
