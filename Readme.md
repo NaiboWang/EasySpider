@@ -16,7 +16,7 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 ## 下载 EasySpider/Download EasySpider
 
-进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑从以下页面进入中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0/Download_Link_Address_in_China_Mainland.txt)。
+进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.3.0/Download_Link_Address_in_China_Mainland.txt)。
 
 加QQ群从群文件下载也是一种方式，但使用软件的过程中发生了问题求助还是请从github提issue，因为群主不怎么看群，群号：**682921940**。
 
@@ -57,6 +57,7 @@ Bilibili/B站视频教程:
 
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
+
 
 ## 声明/Declaration
 
