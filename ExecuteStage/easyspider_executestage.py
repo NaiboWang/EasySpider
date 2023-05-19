@@ -691,7 +691,7 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                     text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
                     content = text
                 except Exception as e:
-                    content = "OCR失败"
+                    content = "OCR Error"
                     print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH: https://tesseract-ocr.github.io/tessdoc/Installation.html")
                     print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
             elif p["contentType"] == 9:
