@@ -103,6 +103,8 @@
                         <label>链接（每行一个链接，有多少行链接整个任务流程就会被执行多少次）:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
                     </div>
+                    <label>页面加载最长等待时间（秒）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
                     <label>执行完是否向下滚动:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
@@ -123,7 +125,8 @@
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     </div>
-
+                    <label>点击后页面加载最长等待时间（秒）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
                     <label>执行完是否向下滚动:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>

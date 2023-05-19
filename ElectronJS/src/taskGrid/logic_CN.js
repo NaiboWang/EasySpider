@@ -129,11 +129,13 @@ function addParameters(t) {
     if (t.option == 1) {
         t["parameters"]["url"] = "about:blank";
         t["parameters"]["links"] = "about:blank";
+        t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 0; //滚动次数
     } else if (t.option == 2) { //点击元素
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 0; //滚动次数
+        t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["paras"] = []; //默认参数列表
         t["parameters"]["beforeJS"] = ""; //执行前执行的js
         t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间

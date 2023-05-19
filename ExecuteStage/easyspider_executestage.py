@@ -418,7 +418,6 @@ def loopExcute(node, loopValue, clickPath="", index=0):
 def openPage(para, loopValue):
     rt = Time("打开网页")
     time.sleep(2)  # 打开网页后强行等待至少2秒
-    time.sleep(random.uniform(1, 10))  # 生成一个a到b的小数等待时间
     global links
     global urlId
     global history
@@ -442,12 +441,18 @@ def openPage(para, loopValue):
     else:
         url = links[urlId]
     try:
+        maxWaitTime = int(para["maxWaitTime"])
+    except:
+        maxWaitTime = 10 # 默认最大等待时间为10秒
+    try:
+        browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
+        browser.set_script_timeout(maxWaitTime)
         browser.get(url)
         Log('Loading page: ' + url)
         recordLog('Loading page: ' + url)
     except TimeoutException:
-        Log('time out after 10 seconds when loading page: ' + url)
-        recordLog('time out after 10 seconds when loading page: ' + url)
+        Log('time out after set seconds when loading page: ' + url)
+        recordLog('time out after set seconds when loading page: ' + url)
         browser.execute_script('window.stop()')
         rt.end()
     try:
@@ -464,8 +469,8 @@ def openPage(para, loopValue):
             Log('URL Page: ' + url)
             recordLog('URL Page: ' + url)
         except TimeoutException:
-            Log('time out after 10 seconds when getting body text: ' + url)
-            recordLog('time out after 10 seconds when getting body text:: ' + url)
+            Log('time out after set seconds when getting body text: ' + url)
+            recordLog('time out after set seconds when getting body text:: ' + url)
             browser.execute_script('window.stop()')
             time.sleep(1)
             Log("Need to wait 1 second to get body text")
@@ -519,11 +524,17 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
     global history
     time.sleep(0.1)  # 点击之前等待1秒
     rt = Time("Click Element")
-    Log("Wait 1 second before clicking element")
+    Log("Wait 0.1 second before clicking element")
     if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
         path = clickPath
     else:
         path = para["xpath"]  # 不然使用元素定义的xpath
+    try:
+        maxWaitTime = int(para["maxWaitTime"])
+    except:
+        maxWaitTime = 10
+    browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
+    browser.set_script_timeout(maxWaitTime)
     # 点击前对该元素执行一段JavaScript代码
     try:
         if para["beforeJS"] != "":
@@ -541,8 +552,8 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         browser.execute_script(script, str(index))  # 用js的点击方法
 
     except TimeoutException:
-        Log('time out after 10 seconds when loading clicked page')
-        recordLog('time out after 10 seconds when loading clicked page')
+        Log('time out after set seconds when loading clicked page')
+        recordLog('time out after set seconds when loading clicked page')
         browser.execute_script('window.stop()')
         rt.end()
     except Exception as e:
@@ -983,8 +994,6 @@ if __name__ == '__main__':
 
     wait = WebDriverWait(browser, 10)
     browser.get('about:blank')
-    browser.set_page_load_timeout(10)  # 加载页面最大超时时间
-    browser.set_script_timeout(10)
     id = c.id
     print("id: ", id)
     if c.saved_file_name != "":

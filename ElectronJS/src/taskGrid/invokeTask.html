@@ -49,7 +49,7 @@
                     <div class="modal-body">
                         <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                         <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                        <label>{{`Please open a terminal, go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider cannot quit when executing command, unless --read_type is set to "local"):~请在EasySpider目录下打开命令行工具Terminal，然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时不能退出EasySpider，除非将--read_type设置为local）：` | lang}}</label>
+                        <label>{{`Please open a terminal (For Windows, please use PowerShell instead of CMD), go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider cannot quit when executing command, unless --read_type is set to "local"):~请在EasySpider目录下打开命令行工具Terminal （Windows请使用PowerShell而不是CMD），然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时不能退出EasySpider，除非将--read_type设置为local）：` | lang}}</label>
                         <label><a href="https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction" target="_blank">{{`Click Here~点击这里` | lang}}</a> {{`Here to see argument instruction.~这里查看参数配置说明。` | lang}}</label>
                         <textarea class="form-control" style="height:150px">cd {{easyspider_location}}
 {{command}} --config_folder "{{config_folder}}" --headless 0 --read_type remote --config_file_name config.json --saved_file_name </textarea>

@@ -1,8 +1,8 @@
 ## 请您Star/Please Star
 
-如果您觉得此工具不错，请轻轻点击此页面右上角**Star**按钮增加项目曝光度，谢谢！
+如果您觉得此工具不错，请轻轻点击此页面右上角**Star**按钮增加项目曝光度，谢谢！软件完全免费，只求大家Star和宣传给其他需要的朋友，谢谢！
 
-If you think this tool is good, please gently click the **Star** button in the upper right corner at this page to increase the project exposure, thank you!
+If you think this tool is good, please gently click the **Star** button in the upper right corner at this page to increase the project exposure, thank you! The software is completely free, only ask everyone to Star and promote it to other friends in need, thank you!
 
 # EasySpider: Visual Code-Free Web Crawler
 
@@ -37,13 +37,24 @@ Bilibili/B站视频教程:
 
 [如何无代码可视化的爬取需要登录才能爬的网站 - 知乎网站案例](https://www.bilibili.com/video/BV1HV4y1r7v8)
 
-[如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV18c411K7FH)
-
-[如何切换IP池和使用隧道IP - 打开详情页采集案](https://www.bilibili.com/video/BV1KT411t79n)
+[【重要】自定义条件判断之使用循环项内的JS命令返回值 - 第二弹](https://www.bilibili.com/video/BV1mu411x7Nn/)
 
 [流程图执行逻辑解析 - 58同城房源描述采集案例](https://www.bilibili.com/video/BV1YL411z7uW)
 
 [MacOS系统设计和执行eBay网站爬虫任务教程](https://www.bilibili.com/video/BV1WL411h71r)
+
+[如何执行自己写的JS代码和系统代码 （自定义操作）](https://www.bilibili.com/video/BV1qs4y1z7Hc/)
+
+[如何自定义循环和判断条件 - 第一弹](https://www.bilibili.com/video/BV1Ys4y1z777/)
+
+[如何对元素和网页截图及命令行执行指南](https://www.bilibili.com/video/BV1dV4y1z764/)
+
+[OCR识别元素内容功能](https://www.bilibili.com/video/BV1xz4y1b72D/)
+
+[如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV18c411K7FH)
+
+[如何切换IP池和使用隧道IP - 打开详情页采集案](https://www.bilibili.com/video/BV1KT411t79n)
+
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
