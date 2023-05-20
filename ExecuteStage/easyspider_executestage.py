@@ -30,7 +30,7 @@ from selenium.webdriver.common.by import By
 from commandline_config import Config
 import pytesseract
 from PIL import Image
-
+import uuid
 
 saveName, log, OUTPUT, browser, SAVED = None, "", "", None, False
 
@@ -63,6 +63,38 @@ def Log(text, text2=""):
         print(text, text2)
 
 # 屏幕滚动函数
+
+
+
+def download_image(url, save_directory):
+    # 定义浏览器头信息
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    # 发送 GET 请求获取图片数据
+    response = requests.get(url, headers=headers)
+
+    # 检查响应状态码是否为成功状态
+    if response.status_code == requests.codes.ok:
+        # 提取文件名
+        file_name = url.split('/')[-1]
+        
+        # 生成唯一的新文件名
+        new_file_name = str(uuid.uuid4()) + '_' + file_name
+        
+        # 构建保存路径
+        save_path = os.path.join(save_directory, new_file_name)
+        
+        # 保存图片到本地
+        with open(save_path, 'wb') as file:
+            file.write(response.content)
+        
+        print("图片已成功下载到:", save_path)
+        print("The image has been successfully downloaded to:", save_path)
+    else:
+        print("下载图片失败，请检查此图片链接是否有效:", url)
+        print("Failed to download image, please check if this image link is valid:", url)
 
 
 def scrollDown(para, rt=""):
@@ -180,6 +212,7 @@ def executeNode(nodeId, loopValue="", clickPath="", index=0):
         inputInfo(node["parameters"], loopValue)
     elif node["option"] == 5:  # 自定义操作
         customOperation(node, loopValue)
+        saveData()
     elif node["option"] == 8:  # 循环
         recordLog("loop")
         loopExcute(node, loopValue, clickPath, index)  # 执行循环
@@ -644,8 +677,8 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                 recordLog('Element %s not found, use default' % p["relativeXPath"])
                 continue
             except TimeoutException:  # 超时的时候设置超时值
-                Log('time out after 10 seconds when getting data')
-                recordLog('time out after 10 seconds when getting data')
+                Log('time out after set seconds when getting data')
+                recordLog('time out after set seconds when getting data')
                 browser.execute_script('window.stop()')
                 if p["relative"]:  # 是否相对xpath
                     if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
@@ -660,104 +693,44 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
             element = browser.find_element(By.XPATH, "//body")
         try:
             execute_code(2, p["beforeJS"], p["beforeJSWaitTime"], element) # 执行前置js
-            if p["contentType"] == 2:
-                content = element.get_attribute('innerHTML')
-            elif p["contentType"] == 3:
-                content = element.get_attribute('outerHTML')
-            elif p["contentType"] == 4:
-                # 获取元素的背景图片地址
-                bg_url = element.value_of_css_property('background-image')
-                # 清除背景图片地址中的多余字符
-                bg_url = bg_url.replace('url("', '').replace('")', '')
-                content = bg_url
-            elif p["contentType"] == 5:
-                content = browser.current_url
-            elif p["contentType"] == 6:
-                content = browser.title
-            elif p["contentType"] == 7:
-                # 获取整个网页的高度和宽度
-                height = browser.execute_script("return document.body.scrollHeight");
-                width = browser.execute_script("return document.body.scrollWidth");
-                # 调整浏览器窗口的大小
-                browser.set_window_size(width, height)
-                element.screenshot("Data/" +saveName + "/"+ str(time.time()) + ".png")
-            elif p["contentType"] == 8:
-                try:
-                    screenshot = element.screenshot_as_png
-                    screenshot_stream = io.BytesIO(screenshot)
-                    # 使用Pillow库打开截图，并转换为灰度图像
-                    image = Image.open(screenshot_stream).convert('L')
-                    # 使用Tesseract OCR引擎识别图像中的文本
-                    text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
-                    content = text
-                except Exception as e:
-                    content = "OCR Error"
-                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH: https://tesseract-ocr.github.io/tessdoc/Installation.html")
-                    print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
-            elif p["contentType"] == 9:
-                content = execute_code(2, p["JS"], p["JSWaitTime"], element)
-            elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
-                command = 'var arr = [];\
-                var content = arguments[0];\
-                for(var i = 0, len = content.childNodes.length; i < len; i++) {\
-                    if(content.childNodes[i].nodeType === 3){  \
-                        arr.push(content.childNodes[i].nodeValue);\
-                    }\
-                }\
-                var str = arr.join(" "); \
-                return str;'
-                content = browser.execute_script(command, element).replace(
-                    "\n", "").replace("\\s+", " ")
-                if p["nodeType"] == 2:
-                    if element.get_attribute("href") != None:
-                        content = element.get_attribute("href")
-                    else:
-                        content = ""
-                elif p["nodeType"] == 3:
-                    if element.get_attribute("value") != None:
-                        content = element.get_attribute("value")
-                    else:
-                        content = ""
-                elif p["nodeType"] == 4:  # 图片
-                    if element.get_attribute("src") != None:
-                        content = element.get_attribute("src")
-                    else:
-                        content = ""
-            elif p["contentType"] == 0:
-                content = element.text
-                if p["nodeType"] == 2:
-                    if element.get_attribute("href") != None:
-                        content = element.get_attribute("href")
-                    else:
-                        content = ""
-                elif p["nodeType"] == 3:
-                    if element.get_attribute("value") != None:
-                        content = element.get_attribute("value")
-                    else:
-                        content = ""
-                elif p["nodeType"] == 4:  # 图片
-                    if element.get_attribute("src") != None:
-                        content = element.get_attribute("src")
-                    else:
-                        content = ""
-        except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
-            recordLog('StaleElementReferenceException：'+p["relativeXPath"])
-            time.sleep(3)
-            try:
-                if p["relative"]:  # 是否相对xpath
-                    if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
-                        element = loopElement
-                        recordLog('StaleElementReferenceException：loopElement')
-                    else:
-                        element = loopElement.find_element(By.XPATH,
-                                                           p["relativeXPath"][1:])
-                        recordLog(
-                            'StaleElementReferenceException：loopElement+relativeXPath')
+            # 先处理特殊节点类型
+            if p["nodeType"] == 2:
+                if element.get_attribute("href") != None:
+                    content = element.get_attribute("href")
                 else:
-                    element = browser.find_element(
-                        By.XPATH, p["relativeXPath"])
-                    recordLog('StaleElementReferenceException：relativeXPath')
-                if p["contentType"] == 2:
+                    content = ""
+            elif p["nodeType"] == 3:
+                if element.get_attribute("value") != None:
+                    content = element.get_attribute("value")
+                else:
+                    content = ""
+            elif p["nodeType"] == 4:  # 图片
+                if element.get_attribute("src") != None:
+                    content = element.get_attribute("src")
+                else:
+                    content = ""
+                try:
+                    downloadPic = p["downloadPic"]
+                except:
+                    downloadPic = 0
+                if downloadPic == 1:
+                    download_image(content, "Data/" +saveName + "/")
+            else: # 普通节点
+                if p["contentType"] == 0:
+                    content = element.text
+                elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
+                    command = 'var arr = [];\
+                    var content = arguments[0];\
+                    for(var i = 0, len = content.childNodes.length; i < len; i++) {\
+                        if(content.childNodes[i].nodeType === 3){  \
+                            arr.push(content.childNodes[i].nodeValue);\
+                        }\
+                    }\
+                    var str = arr.join(" "); \
+                    return str;'
+                    content = browser.execute_script(command, element).replace(
+                        "\n", "").replace("\\s+", " ")
+                elif p["contentType"] == 2:
                     content = element.get_attribute('innerHTML')
                 elif p["contentType"] == 3:
                     content = element.get_attribute('outerHTML')
@@ -788,55 +761,101 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                         text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
                         content = text
                     except Exception as e:
-                        content = "OCR失败"
-                        print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable path: https://tesseract-ocr.github.io/tessdoc/Installation.html")
-                        print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量path中：")
+                        content = "OCR Error"
+                        print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH: https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                        print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
                 elif p["contentType"] == 9:
                     content = execute_code(2, p["JS"], p["JSWaitTime"], element)
-                elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
-                    command = 'var arr = [];\
-                    var content = arguments[0];\
-                    for(var i = 0, len = content.childNodes.length; i < len; i++) {\
-                        if(content.childNodes[i].nodeType === 3){  \
-                            arr.push(content.childNodes[i].nodeValue);\
+        except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
+            recordLog('StaleElementReferenceException：'+p["relativeXPath"])
+            time.sleep(3)
+            try:
+                if p["relative"]:  # 是否相对xpath
+                    if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                        element = loopElement
+                        recordLog('StaleElementReferenceException：loopElement')
+                    else:
+                        element = loopElement.find_element(By.XPATH,
+                                                           p["relativeXPath"][1:])
+                        recordLog(
+                            'StaleElementReferenceException：loopElement+relativeXPath')
+                else:
+                    element = browser.find_element(
+                        By.XPATH, p["relativeXPath"])
+                    recordLog('StaleElementReferenceException：relativeXPath')
+                # 先处理特殊节点类型
+                if p["nodeType"] == 2:
+                    if element.get_attribute("href") != None:
+                        content = element.get_attribute("href")
+                    else:
+                        content = ""
+                elif p["nodeType"] == 3:
+                    if element.get_attribute("value") != None:
+                        content = element.get_attribute("value")
+                    else:
+                        content = ""
+                elif p["nodeType"] == 4:  # 图片
+                    if element.get_attribute("src") != None:
+                        content = element.get_attribute("src")
+                    else:
+                        content = ""
+                    try:
+                        downloadPic = p["downloadPic"]
+                    except:
+                        downloadPic = 0
+                    if downloadPic == 1:
+                        download_image(content, "Data/" +saveName + "/")
+                else: # 普通节点
+                    if p["contentType"] == 0:
+                        content = element.text
+                    elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
+                        command = 'var arr = [];\
+                        var content = arguments[0];\
+                        for(var i = 0, len = content.childNodes.length; i < len; i++) {\
+                            if(content.childNodes[i].nodeType === 3){  \
+                                arr.push(content.childNodes[i].nodeValue);\
+                            }\
                         }\
-                    }\
-                    var str = arr.join(" "); \
-                    return str;'
-                    content = browser.execute_script(command, element).replace(
-                        "\n", "").replace("\\s+", " ")
-                    if p["nodeType"] == 2:
-                        if element.get_attribute("href") != None:
-                            content = element.get_attribute("href")
-                        else:
-                            content = ""
-                    elif p["nodeType"] == 3:
-                        if element.get_attribute("value") != None:
-                            content = element.get_attribute("value")
-                        else:
-                            content = ""
-                    elif p["nodeType"] == 4:  # 图片
-                        if element.get_attribute("src") != None:
-                            content = element.get_attribute("src")
-                        else:
-                            content = ""
-                elif p["contentType"] == 0:
-                    content = element.text
-                    if p["nodeType"] == 2:
-                        if element.get_attribute("href") != None:
-                            content = element.get_attribute("href")
-                        else:
-                            content = ""
-                    elif p["nodeType"] == 3:
-                        if element.get_attribute("value") != None:
-                            content = element.get_attribute("value")
-                        else:
-                            content = ""
-                    elif p["nodeType"] == 4:  # 图片
-                        if element.get_attribute("src") != None:
-                            content = element.get_attribute("src")
-                        else:
-                            content = ""
+                        var str = arr.join(" "); \
+                        return str;'
+                        content = browser.execute_script(command, element).replace(
+                            "\n", "").replace("\\s+", " ")
+                    elif p["contentType"] == 2:
+                        content = element.get_attribute('innerHTML')
+                    elif p["contentType"] == 3:
+                        content = element.get_attribute('outerHTML')
+                    elif p["contentType"] == 4:
+                        # 获取元素的背景图片地址
+                        bg_url = element.value_of_css_property('background-image')
+                        # 清除背景图片地址中的多余字符
+                        bg_url = bg_url.replace('url("', '').replace('")', '')
+                        content = bg_url
+                    elif p["contentType"] == 5:
+                        content = browser.current_url
+                    elif p["contentType"] == 6:
+                        content = browser.title
+                    elif p["contentType"] == 7:
+                        # 获取整个网页的高度和宽度
+                        height = browser.execute_script("return document.body.scrollHeight");
+                        width = browser.execute_script("return document.body.scrollWidth");
+                        # 调整浏览器窗口的大小
+                        browser.set_window_size(width, height)
+                        element.screenshot("Data/" +saveName + "/"+ str(time.time()) + ".png")
+                    elif p["contentType"] == 8:
+                        try:
+                            screenshot = element.screenshot_as_png
+                            screenshot_stream = io.BytesIO(screenshot)
+                            # 使用Pillow库打开截图，并转换为灰度图像
+                            image = Image.open(screenshot_stream).convert('L')
+                            # 使用Tesseract OCR引擎识别图像中的文本
+                            text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
+                            content = text
+                        except Exception as e:
+                            content = "OCR Error"
+                            print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH: https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                            print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
+                    elif p["contentType"] == 9:
+                        content = execute_code(2, p["JS"], p["JSWaitTime"], element)
             except StaleElementReferenceException:
                 recordLog('StaleElementReferenceException：'+p["relativeXPath"])
                 continue  # 再出现类似问题直接跳过
@@ -859,7 +878,7 @@ def isnull(s):
 
 def saveData(exit=False):
     global saveName, log, OUTPUT, browser
-    if exit == True or len(OUTPUT) > 100: # 每100条保存一次
+    if exit == True or len(OUTPUT) >= 100: # 每100条保存一次
         with open("Data/"+saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
             file_obj.write(log)
             file_obj.close()
@@ -890,6 +909,7 @@ if __name__ == '__main__':
         "config_folder": "",
         "config_file_name": "config.json",
         "headless": False,
+        "version": "0.3.0",
     }
     c = Config(config)
     print(c)

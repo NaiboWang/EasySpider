@@ -10,3 +10,7 @@ user_data/
 Data/
 Chrome/
 execution_instances/*
+EasySpider_en.crx
+EasySpider_zh.crx
+.DS_Store
+npminstall-debug.log

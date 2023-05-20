@@ -44,6 +44,7 @@ function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["JSWaitTime"] = 0; //JS等待时间
     msg["parameters"][i]["afterJS"] = ""; //执行后执行的js
     msg["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
+    msg["parameters"][i]["downloadPic"] = 0; //是否下载图片
 }
 
 function handleAddElement(msg) {

@@ -235,6 +235,13 @@
                             <option :value = 3>表单值</option>
                             <option :value = 4>图片地址</option>
                         </select>
+                        <div v-if='paras.parameters[paraIndex]["nodeType"] == 4'>
+                            <label>提取图片地址后是否同时下载图片</label>
+                            <select v-model='paras.parameters[paraIndex]["downloadPic"]' class="form-control">
+                                <option :value = 0>否</option>
+                                <option :value = 1>是</option>
+                            </select>
+                        </div>
 <!--                        <label>提取方式</label>-->
 <!--                        <select v-model='paras.parameters[paraIndex]["extractType"]' class="form-control">-->
 <!--                            <option :value = 0>普通提取</option>-->
@@ -390,8 +397,8 @@
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <div v-else-if='TClass == 7'>
-                        <label>代码/脚本内容: </label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="输入针对该循环项的JS命令，该循环项用arguments[0]表示，返回值大于0或为真则执行此分支内操作，否则不执行。如：return arguments[0].innerText.indexOf('123') >=0 即判断当前循环项的文本是否包含123，注意要配合循环类型为元素相关（如不固定元素列表）使用。"></textarea>
+                        <label>代码/脚本内容（<a href="https://github.com/NaiboWang/EasySpider/wiki/Example-of-JavaScript-instruction-for-the-current-iteration-in-a-conditional-statement" target="_blank">点击此处</a>查看更多示例）: </label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="输入针对该循环项的JS命令，该循环项用arguments[0]表示，返回值大于0或为真则执行此分支内操作，否则不执行。如：return arguments[0].innerText.length >=5 即判断当前循环项的文本长度是否大于5，注意要配合循环类型为元素相关（如不固定元素列表）使用。"></textarea>
                         <label>最长等待脚本执行时间（0代表无限等待）: </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
