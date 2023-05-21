@@ -18,7 +18,7 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.3.0/Download_Link_Address_in_China_Mainland.txt)。
 
-加QQ群从群文件下载也是一种方式，但使用软件的过程中发生了问题求助还是请从github提issue，因为群主不怎么看群，群号：**682921940**。
+加QQ群从群文件下载也是一种方式，但使用软件的过程中发生了问题求助还是请从GitHub提issue，因为群主不怎么看群，群号：**682921940**。
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
@@ -26,7 +26,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
 
-Documentation can be found from [Github Wiki](https://github.com/NaiboWang/EasySpider/wiki).
+Documentation can be found from [GitHub Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
 
 ## 视频教程/Video Tutorials
