@@ -105,7 +105,7 @@
                     </div>
                     <label>页面加载最长等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>执行完是否向下滚动:</label>
+                    <label>打开网页后是否向下滚动:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
@@ -127,7 +127,7 @@
                     </div>
                     <label>点击后页面加载最长等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>执行完是否向下滚动:</label>
+                    <label>点击后是否向下滚动页面:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
