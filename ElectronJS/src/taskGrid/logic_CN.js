@@ -47,6 +47,16 @@ function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["downloadPic"] = 0; //是否下载图片
 }
 
+
+function extractTitle(html) {
+    var match = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+    if (match && match[1]) {
+        return "采集" + match[1];
+    } else {
+        return "采集新Web页面";
+    }
+}
+
 function handleAddElement(msg) {
     if (msg["type"] == "openPage") {
         addElement(1, msg);
@@ -166,6 +176,9 @@ function addParameters(t) {
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["exitCount"] = 0; //执行多少次后退出循环，0代表不设置此条件
         t["parameters"]["historyWait"] = 2; //历史记录回退时间，用于循环点击每个链接的情况下点击链接后不打开新标签页的情况
+        t["parameters"]["breakMode"] = 0; //break类型，0代表JS，2代表系统命令
+        t["parameters"]["breakCode"] = ""; //break条件
+        t["parameters"]["breakCodeWaitTime"] = 0; //break条件等待时间
     } else if (t.option == 9) { //条件
 
     } else if (t.option == 10) { //条件分支
@@ -365,6 +378,7 @@ function saveService(type) {
             "url": url,
             "links": links,
             "create_time": new Date().toLocaleString(),
+            "version": "0.3.0",
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

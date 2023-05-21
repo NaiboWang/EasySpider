@@ -552,8 +552,7 @@ document.onkeydown = function(e) {
             deleteElement();
         }
     } else { //ctrl+s保存服务
-        let currKey = 0,
-            e = e || event || window.event;
+        let currKey = 0;
         currKey = e.keyCode || e.which || e.charCode;
         if (currKey == 83 && (e.ctrlKey || e.metaKey)) {
             $('#save').click();

@@ -289,6 +289,15 @@ def judgeExcute(node, loopElement, clickPath="", index=0):
     if executeBranchId != 0:
         executeNode(executeBranchId, loopElement, clickPath, index)
 
+def get_output_code(output):
+    try:
+        if output.find("rue") != -1: # 如果返回值中包含true
+            code = 1
+        else:
+            code = int(output)
+    except:
+        code = 0
+    return code
 
 # 对循环的处理
 def loopExcute(node, loopValue, clickPath="", index=0):
@@ -335,13 +344,17 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                         if node["option"] != 2:
                             executeNode(i, None, node["parameters"]["xpath"], 0)
                     break  # 如果找不到元素，退出循环
-
             count = count + 1
             Log("Page: ", count)
             recordLog("Page:" + str(count))
             # print(node["parameters"]["exitCount"], "-------")
             if node["parameters"]["exitCount"] == count:  # 如果达到设置的退出循环条件的话
                 break
+            if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
+                output = execute_code(int(node["parameters"]["breakMode"]) -1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                code = get_output_code(output)
+                if code <= 0:
+                    break
     elif int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
         try:
             elements = browser.find_elements(By.XPATH,
@@ -370,6 +383,11 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                     Log("Change history back time or:",
                         node["parameters"]["historyWait"])
                     browser.execute_script('window.stop()')
+                if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
+                    output = execute_code(int(node["parameters"]["breakMode"]) -1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                    code = get_output_code(output)
+                    if code <= 0:
+                        break
         except NoSuchElementException:
             Log("pathNotFound: ", node["parameters"]["xpath"])
             recordLog("pathNotFound: " + node["parameters"]["xpath"])
@@ -407,12 +425,22 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                 continue  # 循环中找不到元素就略过操作
             except Exception as e:
                 raise
+            if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
+                output = execute_code(int(node["parameters"]["breakMode"]) -1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                code = get_output_code(output)
+                if code <= 0:
+                    break
     elif int(node["parameters"]["loopType"]) == 3:  # 固定文本列表
         textList = node["parameters"]["textList"].split("\n")
         for text in textList:
             recordLog("input: " + text)
             for i in node["sequence"]:  # 挨个执行操作
                 executeNode(i, text, "", 0)
+            if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
+                output = execute_code(int(node["parameters"]["breakMode"]) -1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                code = get_output_code(output)
+                if code <= 0:
+                    break
     elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
         # tempList = node["parameters"]["textList"].split("\r\n")
         urlList = list(
@@ -425,19 +453,18 @@ def loopExcute(node, loopValue, clickPath="", index=0):
             recordLog("input: " + url)
             for i in node["sequence"]:
                 executeNode(i, url, "", 0)
+            if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
+                output = execute_code(int(node["parameters"]["breakMode"]) -1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                code = get_output_code(output)
+                if code <= 0:
+                    break
     elif int(node["parameters"]["loopType"]) <= 6:  # 命令返回值
         while True:  # do while循环
             if int(node["parameters"]["loopType"]) == 5:  # JS
                 output = execute_code(0, node["parameters"]["code"], node["parameters"]["waitTime"])
             elif int(node["parameters"]["loopType"]) == 6:  # System
                 output = execute_code(1, node["parameters"]["code"], node["parameters"]["waitTime"])
-            try:
-                if output.find("rue") != -1: # 如果返回值中包含true
-                    code = 1
-                else:
-                    code = int(output)
-            except:
-                code = 0
+            code = get_output_code(output)
             if code <= 0:
                 break
             for i in node["sequence"]:  # 挨个执行操作

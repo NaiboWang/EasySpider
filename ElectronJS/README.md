@@ -25,7 +25,7 @@ chromedriver_mac64 # for mac x64
 For example, if you want to build this software on Windows x64 platform, then you should first download a chrome for windows x64, then copy the whole `chrome` folder to this `ElectronJS` folder and rename the folder to `chrome_win64`, assume the chrome version you downloaded is 110; then, download a `chromedriver.exe` with version 110 for windows x64, and put it into the `chrome_win64` folder, then rename it to `chromedriver_win64.exe`.
 
 
-Finally, copy the `stealth.min.js` and `execute.bat` (for windows) file in this folder to these `chrome` folders.
+Finally, copy the `stealth.min.js` and `execute.bat` (for windows x64) file in this folder to these `chrome` folders.
 
 ## Run Instruction
 

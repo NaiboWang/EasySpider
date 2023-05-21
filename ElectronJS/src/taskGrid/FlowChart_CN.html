@@ -357,6 +357,8 @@
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
                     <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素为止）:</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
+
+
                     <label><b>历史记录回退后</b>等待秒数:</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
                     <label>执行完是否向下滚动:</label>
@@ -367,7 +369,22 @@
                     </select>
                     <label>滚动次数:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
-
+                    <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
+                        <div>
+                            <p><label>（高级操作）使用代码/脚本定义循环退出条件: </label></p>
+                            <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
+                                <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
+                                <option value = 1>JavaScript脚本</option>
+                                <option value = 2>操作系统级别命令</option>
+                            </select>
+                            <div>
+                                <textarea style="margin-top: 10px" onkeydown="inputDelete(event)" class="form-control" rows="2"
+                                          placeholder='命令返回值小于等于0或为假时则直接退出循环，不管其他条件如何。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。' v-model='nowNode["parameters"]["breakCode"]'></textarea>
+                                <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                                <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["breakCodeWaitTime"]'></input>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="elements" v-if="nodeType==9">

@@ -8,6 +8,7 @@
     "crx": "crx3",
     "package": "node package.js"
   },
+  "license": "GPL-3.0",
   "dependencies": {
     "crx": "^5.0.1",
     "crx3": "^1.1.3",
