@@ -19,7 +19,7 @@
     "demo"
   ],
   "author": "Naibo Wang",
-  "license": "CC0-1.0",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@electron-forge/cli": "^6.0.5",
     "@electron-forge/maker-deb": "^6.0.5",

@@ -25,17 +25,17 @@ chromedriver_mac64 # for mac x64
 For example, if you want to build this software on Windows x64 platform, then you should first download a chrome for windows x64, then copy the whole `chrome` folder to this `ElectronJS` folder and rename the folder to `chrome_win64`, assume the chrome version you downloaded is 110; then, download a `chromedriver.exe` with version 110 for windows x64, and put it into the `chrome_win64` folder, then rename it to `chromedriver_win64.exe`.
 
 
-Finally, copy the `stealth.min.js` file in this folder to all of these `chrome` folders.
+Finally, copy the `stealth.min.js` and `execute.bat` (for windows) file in this folder to these `chrome` folders.
 
 ## Run Instruction
 
-On Windows, you need to install `VS Build Tools 2017` (double click the vs_BuildTools.exe in this folder, then select and install the `Visual Studio Build Tools 2017` component) first for node-gyp to install `node-windows-manager`.
+On Windows, you need to install `VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe, select and install the `Visual Studio Build Tools 2017` component) first for node-gyp to install `node-windows-manager`.
 
 
 
 ```
 npm install
-npm install @electron-forge/cli
+npm install @electron-forge/cli -g
 ```
 
 Then run the software in developing mode:
