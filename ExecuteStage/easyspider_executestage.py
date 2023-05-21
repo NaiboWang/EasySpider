@@ -996,6 +996,17 @@ if __name__ == '__main__':
             service = json.loads(content)  # 加载服务信息
     print("name: ", service["name"])
     procedure = service["graph"]  # 程序执行流程
+    try:
+        if service["version"] != c.version:
+            print("版本不一致，请使用" + service["version"] + "版本的EasySpider运行该任务")
+            print("Version not match, please use EasySpider " + service["version"] + " to run this task")
+            browser.quit()
+            sys.exit()
+    except:
+        print("版本不一致，请使用v0.2.0版本的EasySpider运行该任务")
+        print("Version not match, please use EasySpider v0.2.0 to run this task")
+        browser.quit()
+        sys.exit()
     links = list(filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
     OUTPUT = []  # 采集的数据
     OUTPUT.append([])  # 添加表头
