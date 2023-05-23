@@ -35,10 +35,18 @@
 </head>
 
 <body>
+<div style="position: absolute; margin-top: -10px">
+<div id="tip" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none; z-index: 1000">
+    提示：请先获得任务ID!</div>
+<div id="tipEN" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none; z-index: 1000">
+    Hint: Please get EID first!</div>
+</div>
 
 <div class="row" style="margin-top: 40px;">
     
-    <div class="col-md-6" id="taskInfo" style="margin:0 auto" v-if="show">
+    <div class="col-md-7" id="taskInfo" style="margin:0 auto" v-if="show">
+
+
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -75,7 +83,7 @@
         <h4 style="text-align: center;">{{"Task Invocation~任务调用" | lang}}</h4>
         <p>{{"Task Name:~任务名称：" | lang}} {{task["name"]}}</p>
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Task Description:~任务描述：" | lang}} {{task["desc"]}}</p>
-        <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"URL:~URL：" |
+        <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"API URL (POST):~API 调用网址（POST）：" |
             lang}} {{backEndAddressServiceWrapper}}/invokeTask?id={{task["id"]}}</p>
         <p>{{"Please Input Parameters:~请输入参数值：" | lang}} </p>
         <form id="form">
@@ -182,31 +190,37 @@
                 window.location.href = url;
             }, invokeTask: function () {
                 let text = "";
-                if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
-                    text = "Are you sure to get the Execution ID (EID) of current running task?";
-                } else {
-                    text = "确定要获得当前运行任务的执行ID吗？";
-                }
-                if (confirm(text)) {
-                    var para = {};
-                    var t = $('#form').serializeArray();
-                    t.forEach(function (item, index) {
-                        para[item.name] = item.value;
-                    });
-                    $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask?id=" + sId, {
-                        id: this.task.id,
-                        paras: JSON.stringify(para)
-                    }, function (result) {
-                        app.$data.ID = result; //得到返回的ID
-                    });
-                }
+                // if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
+                //     text = "Are you sure to get the Execution ID (EID) of current running task?";
+                // } else {
+                //     text = "确定要获得当前运行任务的执行ID吗？";
+                // }
+                // if (confirm(text)) {
+                let para = {};
+                let t = $('#form').serializeArray();
+                t.forEach(function (item, index) {
+                    para[item.name] = item.value;
+                });
+                $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask?id=" + sId, {
+                    id: this.task.id,
+                    paras: JSON.stringify(para)
+                }, function (result) {
+                    app.$data.ID = result; //得到返回的ID
+                });
+                // }
             },
             localExecute: function (with_user_data=false) {
                 if (this.ID === "") {
                     if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
-                        alert("Please get EID first!");
+                        $("#tipEN").slideDown(); //提示框
+                        setTimeout(function() {
+                            $("#tipEN").slideUp();
+                        }, 3000);
                     } else {
-                        alert("请先获得执行ID！");
+                        $("#tip").slideDown(); //提示框
+                        setTimeout(function() {
+                            $("#tip").slideUp();
+                        }, 3000);
                     }
                     return;
                 }

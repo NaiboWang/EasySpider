@@ -21,19 +21,6 @@ export var global = {
     ws: null,
 };
 
-global.ws = new WebSocket("ws://localhost:8084");
-global.ws.onopen = function() {
-    // Web Socket 已连接上，使用 send() 方法发送数据
-    console.log("已连接");
-    let message = {
-        type: 0, //消息类型，0代表连接操作
-        message: {
-            id: global.id, //socket id
-        }
-    };
-    this.send(JSON.stringify(message));
-};
-
 export function getOS () {
     if (navigator.userAgent.indexOf('Window') > 0) {
         return 'Windows'
@@ -259,9 +246,13 @@ function parameterName(value){
             case "背景图片地址": return "background_image_address";
             case "_背景图片": return "_background_image";
             case "页面URL": return "page_url";
-            case "页面标题": return "page_title";
             case "_页面URL": return "_page_url";
+            case "页面标题": return "page_title";
             case "_页面标题": return "_page_title";
+            case "选择的选项文本": return "selected_option_text";
+            case "_选择的选项文本": return "_selected_option_text";
+            case "选择的选项值": return "selected_option_value";
+            case "_选择的选项值": return "_selected_option_value";
             default: return "";
         }
     }
@@ -269,7 +260,7 @@ function parameterName(value){
 
 //根据nodelist列表内的元素生成参数列表
 //适合：nodelist中的元素为同类型元素
-//type:0为全部文本 1为节点内直接的文字 2为innerhtml 3为outerhtml 4为backgroundImg 5为当前页面URL 6为当前页面标题 7为元素截图 8为OCR识别
+//type:0为全部文本 1为节点内直接的文字 2为innerhtml 3为outerhtml 4为backgroundImg 5为当前页面URL 6为当前页面标题 7为元素截图 8为OCR识别 9为JavaScript返回值 10为选择框选择的值 11为选择框选择的文本
 //nodetype:0,对应全type0123
 //nodetype:1 链接，对应type0123
 //nodetype:2 链接地址 对应type0
@@ -335,6 +326,12 @@ export function generateParameters(type, linktext = true, linkhref = true) {
             } else if(type == 6){
                 ndText = document.title;
                 pname = parameterName("页面标题");
+            } else if(type == 10){
+                ndText = nd.value;
+                pname = parameterName("选择的选项值");
+            } else if(type == 11){
+                ndText = nd.options[nd.selectedIndex].text;
+                pname = parameterName("选择的选项文本");
             }
             if (num == 0) { //第一个节点新建，后面的增加即可
                 if (nd.tagName == "IMG") { //如果元素是图片

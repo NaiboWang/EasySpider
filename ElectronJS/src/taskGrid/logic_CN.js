@@ -24,12 +24,15 @@ ws.onclose = function() {
     // 关闭 websocket
     console.log("连接已关闭...");
 };
-var ttt;
+let old_title = "";
 ws.onmessage = function(evt) {
     evt = JSON.parse(evt.data);
     console.log(evt);
-    if (evt["type"] == "special") { //如果不是特殊处理的话，默认全部是增加元素操作
-
+    if (evt["type"] == "title") { //如果不是特殊处理的话，默认全部是增加元素操作
+        if (old_title == "New Task") { //只记录第一次的title
+            $("#serviceName").val(evt.data.title);
+        }
+        old_title = evt.data.title;
     } else {
         handleAddElement(evt); //处理增加元素操作
     }
@@ -60,10 +63,14 @@ function extractTitle(html) {
 function handleAddElement(msg) {
     if (msg["type"] == "openPage") {
         addElement(1, msg);
-    } else if (msg["type"] == "InputText") {
-        addElement(4, msg);
     } else if (msg["type"] == "singleClick") {
         addElement(2, msg);
+    } else if (msg["type"] == "InputText") {
+        addElement(4, msg);
+    } else if (msg["type"] == "changeOption"){
+        addElement(6, msg);
+    } else if (msg["type"] == "mouseMove") {
+        addElement(7, msg);
     } else if (msg["type"] == "loopClickSingle") {
         addElement(8, msg);
         addElement(2, msg);
@@ -142,10 +149,12 @@ function addParameters(t) {
         t["parameters"]["links"] = "about:blank";
         t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
-        t["parameters"]["scrollCount"] = 0; //滚动次数
+        t["parameters"]["scrollCount"] = 1; //滚动次数
+        t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
     } else if (t.option == 2) { //点击元素
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
-        t["parameters"]["scrollCount"] = 0; //滚动次数
+        t["parameters"]["scrollCount"] = 1; //滚动次数
+        t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
         t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["paras"] = []; //默认参数列表
         t["parameters"]["beforeJS"] = ""; //执行前执行的js
@@ -167,7 +176,8 @@ function addParameters(t) {
         t["parameters"]["recordASField"] = 0; //是否记录脚本输出
     } else if (t.option == 8) { //循环
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
-        t["parameters"]["scrollCount"] = 0; //滚动次数
+        t["parameters"]["scrollCount"] = 1; //滚动次数
+        t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
         t["parameters"]["loopType"] = 0; //默认循环类型
         t["parameters"]["xpath"] = "";
         t["parameters"]["pathList"] = "";
@@ -189,7 +199,7 @@ function addParameters(t) {
     }
 }
 
-//修改元素参数
+//修改元素参数，注意所有socket传过来的参数都需要在这里赋值给操作
 function modifyParameters(t, para) {
     t["parameters"]["history"] = para["history"];
     t["parameters"]["tabIndex"] = para["tabIndex"];
@@ -198,13 +208,21 @@ function modifyParameters(t, para) {
         t["parameters"]["links"] = para["links"];
         $("#serviceDescription").val(para["url"]);
         $("#url").val(para["url"]);
+    } else if (t.option == 2) { //鼠标点击事件
+        t["parameters"]["xpath"] = para["xpath"];
+        t["parameters"]["useLoop"] = para["useLoop"];
+        t["parameters"]["allXPaths"] = para["allXPaths"];
     } else if (t.option == 4) { //输入文字事件
         t["parameters"]["value"] = para["value"];
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
-    } else if (t.option == 2) { //鼠标点击事件
+    } else if(t.option == 6){
         t["parameters"]["xpath"] = para["xpath"];
-        t["parameters"]["useLoop"] = para["useLoop"];
+        t["parameters"]["allXPaths"] = para["allXPaths"];
+        t["parameters"]["optionMode"] = para["optionMode"];
+        t["parameters"]["optionValue"] = para["optionValue"];
+    } else if(t.option == 7){
+        t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
     } else if (t.option == 8) { //循环事件
         t["parameters"]["loopType"] = para["loopType"];
@@ -378,7 +396,7 @@ function saveService(type) {
             "url": url,
             "links": links,
             "create_time": new Date().toLocaleString(),
-            "version": "0.3.0",
+            "version": "0.3.1",
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

@@ -15,6 +15,20 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
+global.ws = new WebSocket("ws://localhost:8084");
+global.ws.onopen = function() {
+    // Web Socket 已连接上，使用 send() 方法发送数据
+    console.log("已连接");
+    let message = {
+        type: 0, //消息类型，0代表连接操作
+        message: {
+            id: global.id, //socket id
+            title: document.title, //网页标题
+        }
+    };
+    this.send(JSON.stringify(message));
+};
+
 export function input(value) {
     let message = {
         "type": "InputText",
@@ -35,6 +49,34 @@ export function input(value) {
 export function sendSingleClick() {
     let message = {
         "type": "singleClick",
+        "history": history.length, //记录history的长度
+        "tabIndex": -1,
+        "useLoop": false, //是否使用循环内元素
+        "xpath": readXPath(global.nodeList[0]["node"], 0),
+        "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
+    };
+    let msg = { "type": 3, msg: message };
+    chrome.runtime.sendMessage(msg);
+}
+
+export function sendChangeOption(optionMode, optionValue){
+    let message = {
+        "type": "changeOption",
+        "optionMode": optionMode,
+        "optionValue": optionValue,
+        "history": history.length, //记录history的长度
+        "tabIndex": -1,
+        "useLoop": false, //是否使用循环内元素
+        "xpath": readXPath(global.nodeList[0]["node"], 0),
+        "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
+    };
+    let msg = { "type": 3, msg: message };
+    chrome.runtime.sendMessage(msg);
+}
+
+export function sendMouseMove(){
+    let message = {
+        "type": "mouseMove",
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素

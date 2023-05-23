@@ -22,6 +22,8 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver import ActionChains
 import random
 # import numpy
 import csv
@@ -98,29 +100,30 @@ def download_image(url, save_directory):
 
 
 def scrollDown(para, rt=""):
+    scrollType = int(para["scrollType"])
     try:
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+        if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
             for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("Wait for 1 second after screen scrolling")
+                Log("Wait for set second after screen scrolling")
                 body = browser.find_element(By.CSS_SELECTOR, "body")
-                if para["scrollType"] == 1:
-                    body.send_keys(Keys.PGDN)
-                else:
+                if scrollType == 1:
+                    body.send_keys(Keys.PAGE_DOWN)
+                elif scrollType == 2:
                     body.send_keys(Keys.END)
+                time.sleep(para["scrollWaitTime"])  # 下拉完等待
     except TimeoutException:
-        Log('time out after 10 seconds when scrolling. ')
-        recordLog('time out after 10 seconds when scrolling')
+        Log('time out after set seconds when scrolling. ')
+        recordLog('time out after set seconds when scrolling')
         browser.execute_script('window.stop()')
-        if para["scrollType"] != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+        if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
             for i in range(para["scrollCount"]):
-                time.sleep(1)  # 下拉完等1秒
-                Log("Wait for 1 second after screen scrolling")
+                Log("Wait for set second after screen scrolling")
                 body = browser.find_element(By.CSS_SELECTOR, "body")
-                if para["scrollType"] == 1:
+                if scrollType == 1:
                     body.send_keys(Keys.PGDN)
-                else:
+                elif scrollType == 2:
                     body.send_keys(Keys.END)
+                time.sleep(para["scrollWaitTime"])  # 下拉完等待
         if rt != "":
             rt.end()
 
@@ -184,6 +187,44 @@ def customOperation(node, loopValue):
         print("")
         OUTPUT.append(line)
 
+def switchSelect(para, loopValue):
+    optionMode = int(para["optionMode"])
+    optionValue = para["optionValue"]
+    try:
+        dropdown = Select(browser.find_element(By.XPATH, para["xpath"]))
+        try:
+            if optionMode == 0:
+                # 获取当前选中的选项索引
+                current_index = dropdown.options.index(dropdown.first_selected_option)
+                # 计算下一个选项的索引
+                next_index = (current_index + 1) % len(dropdown.options)
+                # 选择下一个选项
+                dropdown.select_by_index(next_index)
+            elif optionMode == 1:
+                dropdown.select_by_index(int(optionValue))
+            elif optionMode == 2:
+                dropdown.select_by_value(optionValue)
+            elif optionMode == 3:
+                dropdown.select_by_visible_text(optionValue)
+        except:
+            print("切换下拉框选项失败:", para["xpath"], para["optionMode"], para["optionValue"])
+            print("Failed to change drop-down box option:", para["xpath"], para["optionMode"], para["optionValue"])
+    except:
+        print("找不到下拉框元素:", para["xpath"])
+        print("Cannot find drop-down box element:", para["xpath"])
+
+
+def moveToElement(para, loopValue):
+    try:
+        element = browser.find_element(By.XPATH, para["xpath"])
+        try:
+            ActionChains(browser).move_to_element(element).perform()
+        except:
+            print("移动鼠标到元素失败:", para["xpath"])
+            print("Failed to move mouse to element:", para["xpath"])
+    except:
+        print("找不到元素:", para["xpath"])
+        print("Cannot find element:", para["xpath"])
 
 
 # 执行节点关键函数部分
@@ -213,6 +254,10 @@ def executeNode(nodeId, loopValue="", clickPath="", index=0):
     elif node["option"] == 5:  # 自定义操作
         customOperation(node, loopValue)
         saveData()
+    elif node["option"] == 6:  # 切换下拉框
+        switchSelect(node["parameters"], loopValue)
+    elif node["option"] == 7:  # 鼠标移动到元素上
+        moveToElement(node["parameters"], loopValue)
     elif node["option"] == 8:  # 循环
         recordLog("loop")
         loopExcute(node, loopValue, clickPath, index)  # 执行循环
@@ -326,8 +371,8 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                 recordLog("click:" + node["parameters"]["xpath"])
             except NoSuchElementException:
                 # except:
-                print("\n\n-------Get Element Error-------\n\n")
-                Log("clickNotFound: ", node["parameters"]["xpath"])
+                print("Single element not found: ", node["parameters"]["xpath"])
+                print("找不到单个元素: ", node["parameters"]["xpath"])
                 recordLog("clickNotFound:" + node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                     if node["option"] != 2:
@@ -389,7 +434,8 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                     if code <= 0:
                         break
         except NoSuchElementException:
-            Log("pathNotFound: ", node["parameters"]["xpath"])
+            print("Loop element not found: ", node["parameters"]["xpath"])
+            print("找不到循环元素: ", node["parameters"]["xpath"])
             recordLog("pathNotFound: " + node["parameters"]["xpath"])
             pass  # 循环中找不到元素就略过操作
         except Exception as e:
@@ -420,7 +466,8 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                         node["parameters"]["historyWait"])
                     browser.execute_script('window.stop()')
             except NoSuchElementException:
-                Log("pathNotFound: ", path)
+                print("Loop element not found: ", path)
+                print("找不到循环元素: ", path)
                 recordLog("pathNotFound: " + path)
                 continue  # 循环中找不到元素就略过操作
             except Exception as e:
@@ -529,8 +576,8 @@ def openPage(para, loopValue):
             Log('URL Page: ' + url)
             recordLog('URL Page: ' + url)
         except TimeoutException:
-            Log('time out after set seconds when getting body text: ' + url)
-            recordLog('time out after set seconds when getting body text:: ' + url)
+            Log('Time out after set seconds when getting body text: ' + url)
+            recordLog('Time out after set seconds when getting body text:: ' + url)
             browser.execute_script('window.stop()')
             time.sleep(1)
             Log("Need to wait 1 second to get body text")
@@ -556,8 +603,9 @@ def inputInfo(para, loopValue):
     try:
         textbox = browser.find_element(By.XPATH, para["xpath"])
     except:
-        Log("Cannot find input box element:" +
+        print("Cannot find input box element:" +
             para["xpath"] + "Please try to set the wait time before executing this operation")
+        print("找不到输入框元素:" + para["xpath"] + "请尝试在执行此操作前设置等待时间")
         recordLog("Cannot find input box element:" +
                   para["xpath"] + "Please try to set the wait time before executing this operation")
 #     textbox.send_keys(Keys.CONTROL, 'a')
@@ -601,8 +649,9 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             element = browser.find_element(By.XPATH, path)
             execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], element)
     except:
-        Log("Cannot find element:" +
+        print("Cannot find element:" +
             path + "Please try to set the wait time before executing this operation")
+        print("找不到要点击的元素:" + path + "请尝试在执行此操作前设置等待时间")
         recordLog("Cannot find element:" +
                   path + "Please try to set the wait time before executing this operation")
     tempHandleNum = len(browser.window_handles)  # 记录之前的窗口位置
@@ -610,7 +659,6 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         script = 'var result = document.evaluate(`' + path + \
             '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
         browser.execute_script(script, str(index))  # 用js的点击方法
-
     except TimeoutException:
         Log('time out after set seconds when loading clicked page')
         recordLog('time out after set seconds when loading clicked page')
@@ -628,8 +676,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             element = browser.find_element(By.XPATH, path)
             execute_code(2, para["afterJS"], para["afterJSWaitTime"], element)
     except:
-        Log("Cannot find element:" +
-            path + "Please try to set the wait time before executing this operation")
+        print("Cannot find element:" + path)
         recordLog("Cannot find element:" +
                   path + "Please try to set the wait time before executing this operation")
     if tempHandleNum != len(browser.window_handles):  # 如果有新标签页的行为发生
@@ -744,6 +791,18 @@ def get_content(p, element):
                 print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
         elif p["contentType"] == 9:
             content = execute_code(2, p["JS"], p["JSWaitTime"], element)
+        elif p["contentType"] == 10: # 下拉框选中的值
+            try:
+                select_element = Select(element)
+                content = select_element.first_selected_option.get_attribute("value")
+            except:
+                content = ""
+        elif p["contentType"] == 11: # 下拉框选中的文本
+            try:
+                select_element = Select(element)
+                content = select_element.first_selected_option.text
+            except:
+                content = ""
     return content
 
 
@@ -778,7 +837,8 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                 except Exception as e:
                     content = ""
                 outputParameters[p["name"]] = content
-                Log('Element %s not found, use default' % p["relativeXPath"])
+                print('Element %s not found when extracting data, use default' % p["relativeXPath"])
+                print("提取数据操作时，元素 %s 未找到，使用默认值" % p["relativeXPath"])
                 recordLog('Element %s not found, use default' % p["relativeXPath"])
                 continue
             except TimeoutException:  # 超时的时候设置超时值
@@ -870,7 +930,7 @@ if __name__ == '__main__':
         "config_folder": "",
         "config_file_name": "config.json",
         "headless": False,
-        "version": "0.3.0",
+        "version": "0.3.1",
     }
     c = Config(config)
     print(c)

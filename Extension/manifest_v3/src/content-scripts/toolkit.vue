@@ -31,11 +31,12 @@
                 <div v-if="existDescendents()&& !selectStatus &&(tname()=='元素' || tname()=='链接')"><a
                     v-on:mousedown="selectDescendents">选中子元素</a> <span title="">☺</span></div>
                 <div v-if="!selectedDescendents && !selectStatus" id="Single">
-                  <div v-if="tname()=='选择框'"><a>循环切换下拉选项</a><span title="">☺</span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">切换下拉选项</a><span title="">☺</span></div>
                   <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">输入文字</a><span title="">☺</span></div>
                   <div v-if="tname()!='图片'"><a v-on:mousedown="getText">采集该{{ tname() }}的文本</a><span
                       title="采集文本">☺</span></div>
-                  <div v-if="tname()=='选择框'"><a>采集选中项的文本</a><span title="">☺</span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">采集当前选中项的值</a><span title="">☺</span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">采集当前选中项的文本</a><span title="">☺</span></div>
                   <div v-if="tname()=='链接'||tname()=='图片'"><a
                       v-on:mousedown="getLink">采集该{{ tname() }}的地址</a><span title="">☺</span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
@@ -49,7 +50,7 @@
                     Html</a><span title="">☺</span></div>
                   <div><a v-on:mousedown="getOuterHtml">采集该{{ tname() }}的Outer Html</a><span title="">☺</span></div>
 
-<!--                  <div><a href="#">鼠标移动到该{{ tname() }}上</a><span title="">☺</span></div>-->
+                  <div><a href="#" v-on:mousedown="mouseMove">鼠标移动到该{{ tname() }}上</a><span title="">☺</span></div>
 <!--                  <div v-if="tname()=='文本框'"><a>识别验证码</a><span title="">☺</span></div>-->
                 </div>
                 <div v-if="selectedDescendents" id="Single">
@@ -126,6 +127,23 @@
             如果点击“确定”按钮后文本框没有自动填充，且流程图中没有显示“输入文字”节点，重试即可。
           </div>
         </div>
+        <div v-if="page==2">
+          <span style="font-size: 15px"> ● 切换模式 </span>
+          <select v-model="optionMode" @change="handleSelectChange">
+            <option value=0>切换到下一个选项</option>
+            <option value=1>按索引值切换选项</option>
+            <option value=2>按选项值切换选项</option>
+            <option value=3>按选项文本切换选项</option>
+          </select>
+          <span style="font-size: 15px" v-if="optionMode == 3"> ● 选项文本</span>
+          <span style="font-size: 15px" v-if="optionMode == 1"> ● 索引值</span>
+          <span style="font-size: 15px" v-if="optionMode == 2"> ● 选项值</span>
+          <input id="selectValue" v-if="optionMode != 0" v-model="optionValue" autoFocus="autofocus" type="text"></input>
+          <div>
+            <button style="margin-left:0px!important;" v-on:click="sendChangeSelect">确定</button>
+            <button style="margin-left:0px!important;" v-on:click="cancelInput">取消</button>
+          </div>
+        </div>
       </div>
     </div>
     <div v-else-if="lang=='en'">
@@ -159,12 +177,14 @@
                     v-on:mousedown="selectDescendents">Select child elements</a> <span title="">☺</span></div>
                 <div v-if="!selectedDescendents && !selectStatus" id="Single">
                   <!-- <div v-if="tname()=='selection box'"> <a>循环切换该下拉项</a><span title="">☺</span></div> -->
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">Change selection option</a><span title="">☺</span></div>
                   <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">Input Text</a><span title="">☺</span>
                   </div>
                   <div v-if="tname()!='图片'"><a v-on:mousedown="getText">Extract {{ tname() | toEng }}'s text</a><span
                       title="collect text">☺</span></div>
-                  <div v-if="tname()=='选择框'"><a>Collect text from this element</a><span title="">☺</span>
-                  </div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">Collect selected option value</a><span title="">☺</span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">Collect selected option text</a><span title="">☺</span></div>
+
                   <div v-if="tname()=='链接'||tname()=='图片'"><a v-on:mousedown="getLink">Collect address of this
                     {{ tname() | toEng }}</a><span title="">☺</span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a v-on:mousedown="clickElement">Click
@@ -179,7 +199,7 @@
                   <div><a v-on:mousedown="getOuterHtml">Collect Outer Html of this element</a><span title="">☺</span>
                   </div>
 
-                  <!-- <div> <a href="#">鼠标移动到该元素上----{{tname()}}-</a><span title="">☺</span></div> -->
+                   <div><a href="#" v-on:mousedown="mouseMove">Move mouse to this element</a><span title="">☺</span></div>
                   <!-- <div v-if="tname()=='text box'"> <a>识别验证码</a><span title="">☺</span></div> -->
                 </div>
                 <div v-if="selectedDescendents" id="Single">
@@ -235,6 +255,7 @@
                       v-on:mousedown="deleteSingleLine">×
                   </td>
                 </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -257,6 +278,23 @@
           <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
           <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
             If the text box does not auto-populate after clicking the "Confirm" button, and the "Input Text" operation is not displayed in the workflow manager, please try again.
+          </div>
+        </div>
+        <div v-if="page==2">
+          <span style="font-size: 15px"> ● Change Mode </span>
+          <select v-model="optionMode" @change="handleSelectChange">
+            <option value=0>Change to next option</option>
+            <option value=1>Change option by index</option>
+            <option value=2>Change option by value</option>
+            <option value=3>Change option by text</option>
+          </select>
+          <span style="font-size: 15px" v-if="optionMode == 3"> ● Option Text</span>
+          <span style="font-size: 15px" v-if="optionMode == 1"> ● Option Index</span>
+          <span style="font-size: 15px" v-if="optionMode == 2"> ● Option Value</span>
+          <input id="selectValue" v-if="optionMode != 0" v-model="optionValue" autoFocus="autofocus" type="text"></input>
+          <div>
+            <button style="margin-left:0px!important;" v-on:click="sendChangeSelect">Confirm</button>
+            <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
           </div>
         </div>
       </div>
@@ -294,7 +332,7 @@ import {
   collectMultiWithPattern,
   sendLoopClickSingle,
   sendLoopClickEvery,
-  detectAllSelected
+  detectAllSelected, sendChangeOption,sendMouseMove
 } from "./messageInteraction.js";
 import $ from "jquery";
 
@@ -314,6 +352,8 @@ export default {
     nowPath: "", //现在元素的xpath
     nowAllPaths: [], //现在元素的所有xpath
     winHeight: window.outerHeight,
+    optionMode: 0,
+    optionValue: "",
   },
   mounted(){
     this.$nextTick(() => {
@@ -397,6 +437,57 @@ export default {
       global.nodeList[0]["node"].click(); //点击元素
       clearEl();
     },
+    changeSelect: function(){
+      this.page = 2;
+      this.optionMode = 0;
+      this.optionValue = global.nodeList[0]["node"].options[global.nodeList[0]["node"].selectedIndex + 1].text;
+    },
+    sendChangeSelect: function (){
+      sendChangeOption(this.optionMode, this.optionValue);
+      //先发送数据
+      try{
+        if(this.optionMode == 0){
+          global.nodeList[0]["node"].options[global.nodeList[0]["node"].selectedIndex + 1].selected = true;
+        } else if(this.optionMode == 1){
+          global.nodeList[0]["node"].selectedIndex = this.optionValue;
+        } else if(this.optionMode == 2){
+          global.nodeList[0]["node"].value = this.optionValue;
+        } else if(this.optionMode == 3){
+          global.nodeList[0]["node"].options[global.nodeList[0]["node"].selectedIndex].selected = true;
+          for (let i = 0; i < global.nodeList[0]["node"].options.length; i++) {
+            const option = global.nodeList[0]["node"].options[i];
+            if (option.text === this.optionValue) {
+              global.nodeList[0]["node"].value = option.value; // 将目标选项的值设置为<select>元素的值
+              break; // 找到目标选项后跳出循环
+            }
+          }
+        }
+      } catch (e) {
+        if(this.lang == "zh"){
+          alert("切换失败，实际执行时可能失败，请注意。");
+        } else {
+          alert("Switch failed, may fail when actually executed, please note.");
+        }
+      }
+
+      clearEl();
+    },
+    handleSelectChange: function(){
+      console.log(this.optionMode, this.optionValue);
+      if(this.optionMode == 0){
+        this.optionValue = global.nodeList[0]["node"].options[global.nodeList[0]["node"].selectedIndex + 1].text;
+      } else if(this.optionMode == 1){
+        this.optionValue = global.nodeList[0]["node"].selectedIndex;
+      } else if(this.optionMode == 2){
+        this.optionValue = global.nodeList[0]["node"].value;
+      } else if(this.optionMode == 3){
+        this.optionValue = global.nodeList[0]["node"].options[global.nodeList[0]["node"].selectedIndex].text;
+      }
+    },
+    mouseMove: function(){
+      sendMouseMove();
+      clearEl();
+    },
     loopClickSingleElement: function () { //循环点击单个元素
       sendLoopClickSingle(this.tname()); //识别下一页,循环点击单个元素和点击多个元素
       // if (this.tname() != "下一页元素") { //下一页元素不进行点击操作
@@ -452,6 +543,16 @@ export default {
     },
     getText: function () { //采集文字
       generateParameters(0, true, false);
+      this.selectStatus = true;
+      clearReady();
+    },
+    getSelectedValue: function () { //采集选中文字
+      generateParameters(10, true, false);
+      this.selectStatus = true;
+      clearReady();
+    },
+    getSelectedText: function () { //采集选中文字
+      generateParameters(11, true, false);
       this.selectStatus = true;
       clearReady();
     },

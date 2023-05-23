@@ -83,6 +83,18 @@
     height: 30px;
 }
 
+.tooltips select {
+    display: block;
+    margin-top: 7px !important;
+    padding-left: 5px !important;
+    margin-bottom: 7px !important;
+    font-size: 15px;
+    border-radius: 5px;
+    border: solid 2px navy;
+    width: 204px;
+    height: 30px;
+}
+
 .tooltips button:hover {
     color: blue;
 }

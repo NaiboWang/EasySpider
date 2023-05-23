@@ -223,6 +223,12 @@ async function beginInvoke(msg, ws) {
         } else {
             ws.send(JSON.stringify({"config_folder": task_server.getDir() + "/", "easyspider_location": task_server.getEasySpiderLocation()}));
         }
+    } else if (msg.type == 6) {
+        try{
+            flowchart_window.openDevTools();
+        } catch {
+
+        }
     }
 }
 
@@ -254,7 +260,8 @@ wss.on('connection', function (ws) {
                     console.log("New tab opened, change current_handle to: ", current_handle);
                 }
                 handle_pairs[msg.message.id] = current_handle;
-                console.log("Set handle_pair for id: ", msg.message.id, " to ", current_handle);
+                console.log("Set handle_pair for id: ", msg.message.id, " to ", current_handle, ", title is: ", msg.message.title);
+                socket_flowchart.send(JSON.stringify({"type": "title", "data": {"title":msg.message.title}}));
                 // console.log("handle_pairs: ", handle_pairs);
             }
         } else if (msg.type == 10) {

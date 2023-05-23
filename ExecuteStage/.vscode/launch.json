@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             // "args": ["--id", "38", "--read_type", "local", "--headless", "1"]
-            "args": ["--id", "26", "--headless", "0"]
+            "args": ["--id", "9", "--headless", "0"]
         }
     ]
 }

@@ -11,30 +11,35 @@
     <title>Start</title>
 
 </head>
-
+<style>
+    th,td{
+        text-align: left;
+        vertical-align: middle!important;
+    }
+</style>
 <body>
     <div class="row" style="margin-top: 40px;">
-        <div style="margin:0 auto;width: 60%;min-width: 500px;" id="taskList">
+        <div style="margin:0 auto;min-width: 70%;" id="taskList">
             <h4 style="text-align: center;">{{"Task List~任务列表" | lang}}</h4>
             <p><a v-if="type==3" href="javascript:void(0)" v-on:click="newTask" class="btn btn-primary">{{"New Task~创建新任务" | lang}}</a></p>
-            <div style="max-height: 700px;overflow: auto;margin-bottom: 10px">
-                <table style="table-layout: fixed;" class="table table-hover">
+            <div style="margin-bottom: 10px">
+                <table style="table-layout: auto;" class="table table-hover">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>{{"Task Name~任务名称" | lang}}</th>
-                            <th>URL</th>
-                            <th v-bind:colspan="type">{{"Operations~操作" | lang}}</th>
+                            <th style="text-align: left">No.</th>
+                            <th style="text-align: center">{{"Task Name~任务名称" | lang}}</th>
+                            <th>网址</th>
+                            <th v-bind:colspan="type" style="min-width: 300px">{{"Operations~操作" | lang}}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="i in list.length">
-                            <td>{{i}}</td>
-                            <td style="overflow: hidden;">{{list[i-1]["name"]}}</td>
-                            <td style="height: 30px;white-space: nowrap;overflow: hidden;">{{list[i-1]["url"]}}</td>
-                            <td><a href="javascript:void(0)" v-on:click="browseTask(list[i-1]['id'])">{{"Task Information~任务信息" | lang}}</a></td>
-                            <td v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyTask(list[i-1]['id'],list[i-1]['url'])">{{"Modify Task~修改任务" | lang}}</a></td>
-                            <td><a disabled href="javascript:void(0)" v-on:click="deleteTask(list[i-1]['id'])">{{"Delete Task~删除任务" | lang}}</a></td>
+                            <td style="text-align: left">{{i}}</td>
+                            <td style="overflow: hidden;; max-width: 200px;text-align: center">{{list[i-1]["name"]}}</td>
+                            <td style="height: 30px;overflow: hidden; max-width: 200px">{{list[i-1]["url"]}}</td>
+                            <td style="text-align: left"><a href="javascript:void(0)" v-on:click="browseTask(list[i-1]['id'])">{{"Task Information~任务信息" | lang}}</a></td>
+                            <td style="text-align: left" v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyTask(list[i-1]['id'],list[i-1]['url'])">{{"Modify Task~修改任务" | lang}}</a></td>
+                            <td style="text-align: left"><a disabled href="javascript:void(0)" v-on:click="deleteTask(list[i-1]['id'])">{{"Delete Task~删除任务" | lang}}</a></td>
                         </tr>
                     </tbody>
                 </table>

@@ -62,7 +62,7 @@
                 <p style="font-size: 22px!important;text-align: center;margin-left: 1px;">■</p>
             </div>
         </div>
-        <div style="margin-top:20px;border: solid navy;height:850px;overflow: auto;margin-left:10px;width:30%;float:right;min-width:300px">
+        <div style="margin-top:20px;border: solid navy;height:850px;overflow: auto;margin-left:10px;margin-right:10px;width:30%;float:right;min-width:300px">
             <!-- <div style="display: inline-block;border-bottom:solid 2px;width:100%">
                 <input style="float:left;margin-left:10px;margin-top:10px;margin-bottom:10px" type="button" class="btn-primary" value="保存任务"></input>
             </div> -->
@@ -111,8 +111,10 @@
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
                       </select>
-                    <label>滚动次数:</label>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                    <label>滚动后等待时间（秒）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                 </div>
 
                 <div class="elements" v-if="nodeType==2">
@@ -133,8 +135,10 @@
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
                       </select>
-                    <label>滚动次数:</label>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                    <label>滚动后等待时间（秒）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <p style="margin-top: 10px">
                         <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                             点此展开/折叠高级操作
@@ -219,6 +223,8 @@
                             <option :value = 7>元素截图</option>
                             <option :value = 8>OCR识别文字</option>
                             <option :value = 9>针对该元素的JavaScript代码返回值</option>
+                            <option :value = 10>当前选择框选中的选项值</option>
+                            <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
                         <div v-if='paras.parameters[paraIndex]["contentType"] == 9'>
                             <label>JavaScript代码: </label>
@@ -316,11 +322,26 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==6">
+                    <label>XPath: </label>
+                    <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
 
+                    <p>切换模式</p>
+
+                    <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
+                        <option value=0>切换到下一个选项</option>
+                        <option value=1>按索引值切换选项</option>
+                        <option value=2>按选项值切换选项</option>
+                        <option value=3>按选项文本切换选项</option>
+                    </select>
+                    <p>设定值（不适用于切换到下一个选项模式）</p>
+                    <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
                 </div>
 
                 <div class="elements" v-if="nodeType==7">
-
+                    <label>XPath: </label>
+                    <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                 </div>
 
                 <div class="elements" v-if="nodeType==8">
@@ -359,16 +380,18 @@
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
 
-                    <label><b>历史记录回退后</b>等待秒数:</label>
+                    <label><b>历史记录回退后</b>等待秒数：</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
-                    <label>执行完是否向下滚动:</label>
+                    <label>执行完是否向下滚动：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
                     </select>
-                    <label>滚动次数:</label>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                    <label>滚动后等待时间（秒）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
                             <p><label>（高级操作）使用代码/脚本定义循环退出条件: </label></p>
@@ -421,7 +444,7 @@
                     </div>
                 </div>
                 <div style="margin-top:5px">
-                    <label><b>执行后</b>等待秒数:</label>
+                    <label><b>执行后</b>等待秒数：</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
                 </div>
                 <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">确定</button>
