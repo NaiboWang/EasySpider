@@ -87,6 +87,33 @@ export function sendMouseMove(){
     chrome.runtime.sendMessage(msg);
 }
 
+export function sendLoopMouseMove(){
+    let message = {
+        "type": "loopMouseMove",
+        "history": history.length, //记录history的长度
+        "tabIndex": -1,
+        "xpath": "", //默认值设置为空
+        "allXPaths": "",
+        "useLoop": true, //是否使用循环内元素
+        "loopType": 1, //循环类型，1为不固定元素列表
+    };
+    if (!detectAllSelected()) //如果不是全部选中的话
+    {
+        message.loopType = 2; //固定元素列表
+    }
+    if (message.loopType == 1) {
+        message["xpath"] = global.app._data.nowPath;
+    } else { //固定元素列表
+        //有的网站像淘宝，每个元素都有一个独一无二的ID号，这时候就不适用用id进行xpath定位了，这个问题暂时搁置
+        message["pathList"] = [];
+        for (let i = 0; i < global.nodeList.length; i++) {
+            message["pathList"].push(readXPath(global.nodeList[i]["node"], 0));
+        }
+    }
+    let msg = { "type": 3, msg: message };
+    chrome.runtime.sendMessage(msg);
+}
+
 //采集单个元素
 export function collectSingle() {
     let message = {

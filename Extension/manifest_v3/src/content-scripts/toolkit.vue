@@ -83,6 +83,8 @@
                 <div><a v-on:mousedown="confirmCollectMultiAndDescendents">采集数据</a><span title="">☺</span></div>
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
                     v-on:mousedown="loopClickEveryElement">循环点击每个{{ tname() }}</a><span title="">☺</span></div>
+                <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
+                    v-on:mousedown="loopMouseMove">循环移动到每个{{ tname() }}</a><span title="">☺</span></div>
                 <div><a v-on:mousedown="revoke">撤销本次选择</a><span title="">☺</span></div>
               </div>
             </div>
@@ -233,6 +235,8 @@
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
                     v-on:mousedown="loopClickEveryElement">Loop-click every {{ tname() | toEng}}</a><span title="">☺</span>
                 </div>
+                <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
+                    v-on:mousedown="loopMouseMove">Loop-move-to every {{ tname() }}</a><span title="">☺</span></div>
                 <div><a v-on:mousedown="revoke">Revoke selection</a><span title="">☺</span></div>
               </div>
             </div>
@@ -332,7 +336,7 @@ import {
   collectMultiWithPattern,
   sendLoopClickSingle,
   sendLoopClickEvery,
-  detectAllSelected, sendChangeOption,sendMouseMove
+  detectAllSelected, sendChangeOption, sendMouseMove, sendLoopMouseMove
 } from "./messageInteraction.js";
 import $ from "jquery";
 
@@ -486,6 +490,10 @@ export default {
     },
     mouseMove: function(){
       sendMouseMove();
+      clearEl();
+    },
+    loopMouseMove: function(){
+      sendLoopMouseMove();
       clearEl();
     },
     loopClickSingleElement: function () { //循环点击单个元素

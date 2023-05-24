@@ -301,11 +301,12 @@
                     <select v-model='nowNode["parameters"]["codeMode"]' class="form-control">
                         <option value = 0>执行一段JavaScript脚本</option>
                         <option value = 1>执行一段操作系统级别命令</option>
+                        <option v-if="nowNode['isInLoop']" value = 2>针对当前循环项的JavaScript脚本</option>
                     </select>
 
                     <div>
                         <label>代码/脚本内容: </label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。"></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
                             <option value = 0>否</option>
@@ -339,9 +340,17 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==7">
-                    <label>XPath: </label>
-                    <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
-                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
+                    </div>
+                    <div v-if='!useLoop'>
+                        <label>XPath: </label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+                    </div>
+
+
                 </div>
 
                 <div class="elements" v-if="nodeType==8">

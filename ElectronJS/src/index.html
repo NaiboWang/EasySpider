@@ -13,7 +13,22 @@
     </link>
     <title>EasySpider: NoCode Visual Web Crawler</title>
 </head>
+<style>
+    .img-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+    }
 
+    .img-container img {
+        /*max-width: 50%;*/
+        height: 75px;
+        margin-top: 10px;
+        margin-bottom: 10px; /* 可根据需要调整图片之间的间距 */
+    }
+</style>
 <body>
 <div id="app">
 
@@ -25,9 +40,15 @@
 
         <p><a @click="changeLang('en')" class="btn btn-outline-primary btn-lg"
               style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;">English</a></p>
-        <p><a href="https://github.com/NaiboWang/EasySpider/releases" target="_blank">Github</a>最新版本/Newest Version：{{newest_version}}</p>
+        <p style="font-size: 17px"><a href="https://github.com/NaiboWang/EasySpider/releases" target="_blank">Github</a>最新版本/Newest Version：<b>{{newest_version}}</b></p>
 <!--        <p>如发现新版本更新，可从以下Github仓库下载最新版本使用/If a new version is found, you can download the latest version from the following Github repository:</p>-->
 <!--        <p></p>-->
+        <div class="img-container">
+            <h6>出品方/Producer</h6>
+            <a href="https://www.zju.edu.cn" target="_blank"><img src="img/zju.png"></a>
+            <a href="https://www.nus.edu.sg" target="_blank"><img src="img/nuslogo.png"></a>
+            <a href="https://www.xidian.edu.cn" target="_blank"><img src="img/xidian.png"></a>
+        </div>
 
     </div>
 

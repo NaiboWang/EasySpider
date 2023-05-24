@@ -71,6 +71,9 @@ function handleAddElement(msg) {
         addElement(6, msg);
     } else if (msg["type"] == "mouseMove") {
         addElement(7, msg);
+    } else if (msg["type"] == "loopMouseMove") {
+        addElement(8, msg);
+        addElement(7, msg);
     } else if (msg["type"] == "loopClickSingle") {
         addElement(8, msg);
         addElement(2, msg);
@@ -223,6 +226,7 @@ function modifyParameters(t, para) {
         t["parameters"]["optionValue"] = para["optionValue"];
     } else if(t.option == 7){
         t["parameters"]["xpath"] = para["xpath"];
+        t["parameters"]["useLoop"] = para["useLoop"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
     } else if (t.option == 8) { //循环事件
         t["parameters"]["loopType"] = para["loopType"];

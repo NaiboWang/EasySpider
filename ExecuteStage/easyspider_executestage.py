@@ -170,12 +170,21 @@ def execute_code(codeMode, code, max_wait_time, element=None):
             recordLog("命令执行失败")
     return str(output)
 
-def customOperation(node, loopValue):
+def customOperation(node, loopValue, loopPath, index):
     paras = node["parameters"]
-    codeMode = paras["codeMode"]
+    codeMode = int(paras["codeMode"])
     code = paras["code"]
     max_wait_time = int(paras["waitTime"])
-    output = execute_code(codeMode, code, max_wait_time)
+    if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+        try:
+            elements = browser.find_elements(By.XPATH, loopPath)
+            element = elements[index]
+            output = execute_code(codeMode, code, max_wait_time, element)
+        except:
+            output = ""
+            recordLog("JavaScript execution failed")
+    else:
+        output = execute_code(codeMode, code, max_wait_time)
     recordASField = int(paras["recordASField"])
     if recordASField:
         global OUTPUT, outputParameters
@@ -214,9 +223,16 @@ def switchSelect(para, loopValue):
         print("Cannot find drop-down box element:", para["xpath"])
 
 
-def moveToElement(para, loopValue):
+def moveToElement(para, loopElement=None, loopPath="", index=0):
+    time.sleep(0.1)  # 移动之前等待0.1秒
+    if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+        path = loopPath
+    else:
+        index = 0
+        path = para["xpath"]  # 不然使用元素定义的xpath
     try:
-        element = browser.find_element(By.XPATH, para["xpath"])
+        elements = browser.find_elements(By.XPATH, path)
+        element = elements[index]
         try:
             ActionChains(browser).move_to_element(element).perform()
         except:
@@ -228,7 +244,7 @@ def moveToElement(para, loopValue):
 
 
 # 执行节点关键函数部分
-def executeNode(nodeId, loopValue="", clickPath="", index=0):
+def executeNode(nodeId, loopValue="", loopPath="", index=0):
     node = procedure[nodeId]
     WebDriverWait(browser, 10).until
     # 等待元素出现才进行操作，10秒内未出现则报错
@@ -237,33 +253,33 @@ def executeNode(nodeId, loopValue="", clickPath="", index=0):
     # 根据不同选项执行不同操作
     if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
         for i in node["sequence"]:  # 从根节点开始向下读取
-            executeNode(i, loopValue, clickPath, index)
+            executeNode(i, loopValue, loopPath, index)
     elif node["option"] == 1:  # 打开网页操作
         recordLog("openPage")
         openPage(node["parameters"], loopValue)
     elif node["option"] == 2:  # 点击元素
         recordLog("Click")
-        clickElement(node["parameters"], loopValue, clickPath, index)
+        clickElement(node["parameters"], loopValue, loopPath, index)
     elif node["option"] == 3:  # 提取数据
         recordLog("getData")
         getData(node["parameters"], loopValue, node["isInLoop"],
-                parentPath=clickPath, index=index)
+                parentPath=loopPath, index=index)
         saveData()
     elif node["option"] == 4:  # 输入文字
         inputInfo(node["parameters"], loopValue)
     elif node["option"] == 5:  # 自定义操作
-        customOperation(node, loopValue)
+        customOperation(node, loopValue, loopPath, index)
         saveData()
     elif node["option"] == 6:  # 切换下拉框
         switchSelect(node["parameters"], loopValue)
     elif node["option"] == 7:  # 鼠标移动到元素上
-        moveToElement(node["parameters"], loopValue)
+        moveToElement(node["parameters"], loopValue, loopPath, index)
     elif node["option"] == 8:  # 循环
         recordLog("loop")
-        loopExcute(node, loopValue, clickPath, index)  # 执行循环
+        loopExcute(node, loopValue, loopPath, index)  # 执行循环
     elif node["option"] == 9:  # 条件分支
         recordLog("judge")
-        judgeExcute(node, loopValue, clickPath, index)
+        judgeExcute(node, loopValue, loopPath, index)
 
     # 执行完之后进行等待
     if node["option"] != 0:
@@ -630,7 +646,7 @@ def inputInfo(para, loopValue):
 # 点击元素事件
 def clickElement(para, loopElement=None, clickPath="", index=0):
     global history
-    time.sleep(0.1)  # 点击之前等待1秒
+    time.sleep(0.1)  # 点击之前等待0.1秒
     rt = Time("Click Element")
     Log("Wait 0.1 second before clicking element")
     if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
@@ -669,7 +685,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         recordLog(str(e))
     time.sleep(0.5)  # 点击之后等半秒
     Log("Wait 0.5 second after clicking element")
-    time.sleep(random.uniform(1, 3))  # 生成一个a到b的小数等待时间
+    time.sleep(random.uniform(1, 2))  # 生成一个a到b的小数等待时间
     # 点击前对该元素执行一段JavaScript代码
     try:
         if para["afterJS"] != "":
