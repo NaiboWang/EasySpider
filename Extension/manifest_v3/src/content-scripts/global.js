@@ -245,8 +245,8 @@ function parameterName(value){
             case "_图片地址": return "_image_address";
             case "背景图片地址": return "background_image_address";
             case "_背景图片": return "_background_image";
-            case "页面URL": return "page_url";
-            case "_页面URL": return "_page_url";
+            case "页面网址": return "page_url";
+            case "_页面网址": return "_page_url";
             case "页面标题": return "page_title";
             case "_页面标题": return "_page_title";
             case "选择的选项文本": return "selected_option_text";
@@ -260,7 +260,7 @@ function parameterName(value){
 
 //根据nodelist列表内的元素生成参数列表
 //适合：nodelist中的元素为同类型元素
-//type:0为全部文本 1为节点内直接的文字 2为innerhtml 3为outerhtml 4为backgroundImg 5为当前页面URL 6为当前页面标题 7为元素截图 8为OCR识别 9为JavaScript返回值 10为选择框选择的值 11为选择框选择的文本
+//type:0为全部文本 1为节点内直接的文字 2为innerhtml 3为outerhtml 4为backgroundImg 5为当前页面网址 6为当前页面标题 7为元素截图 8为OCR识别 9为JavaScript返回值 10为选择框选择的值 11为选择框选择的文本
 //nodetype:0,对应全type0123
 //nodetype:1 链接，对应type0123
 //nodetype:2 链接地址 对应type0
@@ -322,7 +322,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                 pname = parameterName("背景图片地址");
             } else if(type == 5){
                 ndText = window.location.href;
-                pname = parameterName("页面URL");
+                pname = parameterName("页面网址");
             } else if(type == 6){
                 ndText = document.title;
                 pname = parameterName("页面标题");

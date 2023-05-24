@@ -76,7 +76,7 @@
                             </div>
                             <div class="modal-body">
                                 <label>以下提供除默认生成的XPath外其余等价的XPath，都能定位到同一个元素（但不完全准确，可能可以定位到除该元素外的其他元素，因此只是提供在这里作为参考）。 </label>
-                                <label>每行一个XPath（可使用预装的XPath Helper扩展调试）:</label>
+                                <label>每行一个XPath（可使用预装的XPath Helper扩展调试）：</label>
                                 <textarea id="otherXPaths" onkeydown="inputDelete(event)" class="form-control" rows="4">{{XPaths}}</textarea>
                                 <div>
                                     <img src="../img/XPather_helper.png" style="width:50%;height:50%; margin: 10px auto"></div>
@@ -100,12 +100,12 @@
                     <div v-if='!useLoop'>
 <!--                        <label>url:</label>-->
 <!--                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>-->
-                        <label>链接（每行一个链接，有多少行链接整个任务流程就会被执行多少次）:</label>
+                        <label>链接（每行一个链接，有多少行链接整个任务流程就会被执行多少次）：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
                     </div>
                     <label>页面加载最长等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>打开网页后是否向下滚动:</label>
+                    <label>打开网页后是否向下滚动：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
@@ -123,13 +123,13 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     </div>
                     <label>点击后页面加载最长等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>点击后是否向下滚动页面:</label>
+                    <label>点击后是否向下滚动页面：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
@@ -146,14 +146,14 @@
                     </p>
                     <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
                         <div>
-                            <label>点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本: </label>
+                            <label>点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
-                            <label>点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本: </label>
+                            <label>点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
                         </div>
                     </div>
@@ -187,10 +187,10 @@
                         </table>
                     </div>
                     <div style="font-size: 13px;" v-if="paraIndex<paras.parameters.length">
-                        <p>当前编辑字段参数名（点击字段的“修改”选项切换参数）: </p>
+                        <p>当前编辑字段参数名（点击字段的“修改”选项切换参数）： </p>
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
-                        <p>XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
+                        <p>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                         <p style="margin-top: 10px">
@@ -200,14 +200,14 @@
                         </p>
                         <div :class="{collapse: true, 'show': paras.parameters[paraIndex]['beforeJS'].length!=0 || paras.parameters[paraIndex]['afterJS'].length!=0}" id="elementAdvanced">
                             <div>
-                                <label>提取该元素数据<strong>前</strong>针对该元素执行一段JavaScript脚本: </label>
+                                <label>提取该元素数据<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
                                 <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='paras.parameters[paraIndex]["beforeJS"]'></textarea>
-                                <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='paras.parameters[paraIndex]["beforeJS"]'></textarea>
+                                <label>最长等待脚本执行时间（0代表无限等待）： </label>
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["beforeJSWaitTime"]'></input>
-                                <label>提取该元素数据<strong>后</strong>针对该元素执行一段JavaScript脚本: </label>
+                                <label>提取该元素数据<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
                                 <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='paras.parameters[paraIndex]["afterJS"]'></textarea>
-                                <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                                <label>最长等待脚本执行时间（0代表无限等待）： </label>
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["afterJSWaitTime"]'></input>
                             </div>
                         </div>
@@ -218,7 +218,7 @@
                             <option :value = 2>innerHTML</option>
                             <option :value = 3>outerHTML</option>
                             <option :value = 4>背景图片地址</option>
-                            <option :value = 5>页面URL</option>
+                            <option :value = 5>页面网址</option>
                             <option :value = 6>页面标题</option>
                             <option :value = 7>元素截图</option>
                             <option :value = 8>OCR识别文字</option>
@@ -227,10 +227,10 @@
                             <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
                         <div v-if='paras.parameters[paraIndex]["contentType"] == 9'>
-                            <label>JavaScript代码: </label>
+                            <label>JavaScript代码：</label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
                                       placeholder='该元素用arguments[0]来表示，示例：return arguments[0].innerText + "美元"，即实现了提取该元素innerText并后面加“美元”的功能。' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["JSWaitTime"]'></input>
                         </div>
                         <label>节点类型</label>
@@ -242,7 +242,7 @@
                             <option :value = 4>图片地址</option>
                         </select>
                         <div v-if='paras.parameters[paraIndex]["nodeType"] == 4'>
-                            <label>提取图片地址后是否同时下载图片</label>
+                            <label>提取图片地址后是否同时<b>下载图片</b></label>
                             <select v-model='paras.parameters[paraIndex]["downloadPic"]' class="form-control">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
@@ -253,9 +253,9 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
-                        <label>参数描述:</label>
+                        <label>参数描述：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
-                        <label>元素找不到时的值:</label>
+                        <label>元素找不到时的值：</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
 
                     </div>
@@ -269,11 +269,11 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在循环内设置的文本）</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>输入值:</label>
+                        <label>输入值：</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
                     </div>
 
-                    <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                    <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     <p style="margin-top: 10px">
@@ -283,14 +283,14 @@
                     </p>
                     <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="inputAdvanced">
                         <div>
-                            <label>对该元素输入文字<strong>前</strong>针对该元素执行一段JavaScript脚本: </label>
+                            <label>对该元素输入文字<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中所有的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
-                            <label>对该元素输入文字<strong>后</strong>针对该元素执行一段JavaScript脚本: </label>
+                            <label>对该元素输入文字<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
                         </div>
                     </div>
@@ -305,14 +305,14 @@
                     </select>
 
                     <div>
-                        <label>代码/脚本内容: </label>
+                        <label>代码/脚本内容： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
                             <option value = 0>否</option>
                             <option value = 1>是</option>
                         </select></p>
-                        <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
 
@@ -323,7 +323,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==6">
-                    <label>XPath: </label>
+                    <label>XPath： </label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
 
@@ -345,7 +345,7 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>XPath: </label>
+                        <label>XPath： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     </div>
@@ -355,7 +355,7 @@
 
                 <div class="elements" v-if="nodeType==8">
                     <!-- 循环选项 -->
-                    <label>循环类型:</label>
+                    <label>循环类型：</label>
                     <select v-model='loopType' class="form-control">
                         <option value = 0>单个元素（多用于循环点击下一页）</option>
                         <option value = 1>不固定元素列表</option>
@@ -366,26 +366,26 @@
                         <option value = 6>系统命令返回值</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
-                        <label>XPath: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">（测试功能）点此查看其他可能的XPath写法</button></p>
                     </div>
                     <div v-else-if='parseInt(loopType) == 2'>
-                        <label>XPath列表:</label>
+                        <label>XPath列表：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个XPath"  v-model='nowNode["parameters"]["pathList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 5'>
-                        <label>内容列表:</label>
+                        <label>内容列表：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个文本/网址" v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 7'>
-                        <label>代码/脚本内容: </label>
+                        <label>代码/脚本内容： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则继续循环，否则停止循环。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
-                        <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
-                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素为止）:</label>
+                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素为止）：</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
 
@@ -403,7 +403,7 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
-                            <p><label>（高级操作）使用代码/脚本定义循环退出条件: </label></p>
+                            <p><label>（高级操作）使用代码/脚本定义循环退出条件： </label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
                                 <option value = 1>JavaScript脚本</option>
@@ -412,7 +412,7 @@
                             <div>
                                 <textarea style="margin-top: 10px" onkeydown="inputDelete(event)" class="form-control" rows="2"
                                           placeholder='命令返回值小于等于0或为假时则直接退出循环，不管其他条件如何。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。' v-model='nowNode["parameters"]["breakCode"]'></textarea>
-                                <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                                <label>最长等待脚本执行时间（0代表无限等待）：</label>
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["breakCodeWaitTime"]'></input>
                             </div>
                         </div>
@@ -424,7 +424,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
-                    <label>条件类型:</label>
+                    <label>条件类型：</label>
                     <select v-model='TClass' class="form-control">
                         <option value = 0>无条件</option>
                         <option value = 1>当前页面包括文本</option>
@@ -436,19 +436,19 @@
                         <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值</option>
                       </select>
                     <div v-if='TClass>0 && TClass <5'>
-                        <label>包含的文字/元素XPATH: <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
                     <div v-else-if='TClass > 0 && TClass < 7'>
-                        <label>代码/脚本内容: </label>
+                        <label>代码/脚本内容： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则执行此分支内操作，否则不执行。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
-                        <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <div v-else-if='TClass == 7'>
-                        <label>代码/脚本内容（<a href="https://github.com/NaiboWang/EasySpider/wiki/Example-of-JavaScript-instruction-for-the-current-iteration-in-a-conditional-statement" target="_blank">点击此处</a>查看更多示例）: </label>
+                        <label>代码/脚本内容（<a href="https://github.com/NaiboWang/EasySpider/wiki/Example-of-JavaScript-instruction-for-the-current-iteration-in-a-conditional-statement" target="_blank">点击此处</a>查看更多示例）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="输入针对该循环项的JS命令，该循环项用arguments[0]表示，返回值大于0或为真则执行此分支内操作，否则不执行。如：return arguments[0].innerText.length >=5 即判断当前循环项的文本长度是否大于5，注意要配合循环类型为元素相关（如不固定元素列表）使用。"></textarea>
-                        <label>最长等待脚本执行时间（0代表无限等待）: </label>
+                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                 </div>
@@ -475,9 +475,9 @@
                 <div class="modal-body">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                    <label>任务名称:</label>
+                    <label>任务名称：</label>
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
-                    <label>任务描述:</label>
+                    <label>任务描述：</label>
                     <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
                 </div>
                 <div class="modal-footer">

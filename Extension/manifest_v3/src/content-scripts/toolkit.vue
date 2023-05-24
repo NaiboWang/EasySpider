@@ -10,7 +10,7 @@
             <p style="margin-bottom:10px;display:inline-block">特殊点选模式</p>
             <div class="innercontent" v-if = "list.nl.length==0">
               <div><a v-on:mousedown="getCurrentTitle">采集当前页面的标题</a><span title="">☺</span></div>
-              <div><a v-on:mousedown="getCurrentURL">采集当前页面的URL地址</a><span title="">☺</span></div>
+              <div><a v-on:mousedown="getCurrentURL">采集当前页面的网址</a><span title="">☺</span></div>
             </div>
             <p style="color:black; margin-top: 10px">● 鼠标移动到元素上后，请<strong>右键</strong>点击或者按<strong>F7</strong>键选中页面元素。
             </p>
@@ -236,7 +236,7 @@
                     v-on:mousedown="loopClickEveryElement">Loop-click every {{ tname() | toEng}}</a><span title="">☺</span>
                 </div>
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                    v-on:mousedown="loopMouseMove">Loop-move-to every {{ tname() }}</a><span title="">☺</span></div>
+                    v-on:mousedown="loopMouseMove">Loop-mouse-move to every {{ tname() | toEng}}</a><span title="">☺</span></div>
                 <div><a v-on:mousedown="revoke">Revoke selection</a><span title="">☺</span></div>
               </div>
             </div>

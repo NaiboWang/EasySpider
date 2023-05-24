@@ -40,6 +40,7 @@ var app = new Vue({
         paras: { "parameters": [] }, //提取数据的参数列表
         TClass: -1, //条件分支的条件类别
         paraIndex: 0, //当前参数的index
+        XPaths: "",
     },
     watch: {
         nowArrow: { //变量发生变化的时候进行一些操作
@@ -86,6 +87,13 @@ var app = new Vue({
         },
     },
     methods: {
+        changeXPaths: function (XPaths){
+            let result = "";
+            for (let i = 0; i < XPaths.length; i++) {
+                result += XPaths[i] + "\n";
+            }
+            this.XPaths = result;
+        },
         modifyParas: function(i) { //修改第i个参数
             this.paraIndex = i;
         },
@@ -539,18 +547,27 @@ document.oncontextmenu = function() {
     //删除元素
 document.onkeydown = function(e) {
     if (nowNode != null && e.keyCode == 46) {
-        if (confirm("Do you really want to delete the selected operation?")) {
+        // if (confirm("Do you really want to delete the selected operation?")) {
             deleteElement();
-        }
+        // }
     } else { //ctrl+s保存服务
-        var currKey = 0,
-            e = e || event || window.event;
+        let currKey = 0;
         currKey = e.keyCode || e.which || e.charCode;
         if (currKey == 83 && (e.ctrlKey || e.metaKey)) {
             $('#save').click();
-            return false;
+            return true;
+        } else if (currKey == 116) {
+            location.reload();
+        } else if (currKey == 123) {
+            console.log("打开devtools")
+            let command = new WebSocket("ws://localhost:8084")
+            command.onopen = function() {
+                let message = {
+                    type: 6, //消息类型，0代表连接操作
+                };
+                this.send(JSON.stringify(message));
+            };
         }
-
     }
 }
 

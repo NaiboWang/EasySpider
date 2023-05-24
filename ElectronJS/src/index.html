@@ -19,7 +19,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: 20px;
+        margin-top: 40px;
     }
 
     .img-container img {
@@ -44,7 +44,7 @@
 <!--        <p>如发现新版本更新，可从以下Github仓库下载最新版本使用/If a new version is found, you can download the latest version from the following Github repository:</p>-->
 <!--        <p></p>-->
         <div class="img-container">
-            <h6>出品方/Producer</h6>
+            <h5>出品方/Producer</h5>
             <a href="https://www.zju.edu.cn" target="_blank"><img src="img/zju.png"></a>
             <a href="https://www.nus.edu.sg" target="_blank"><img src="img/nuslogo.png"></a>
             <a href="https://www.xidian.edu.cn" target="_blank"><img src="img/xidian.png"></a>
@@ -70,7 +70,7 @@
             <div v-else-if="step == 1">
                 <h4 style="margin-top: 20px">Please select design mode</h4>
                 <p style="margin-top: 20px; text-align: justify; width:310px; margin-left: 18%">
-                    Clean Mode: Start with a clean browser with no cookie/user data</p>
+                    Clean Mode: Start with a clean browser with no cookie/user data.</p>
                 <p style="text-align: justify; width:310px; margin-left: 18%">
                     Data Mode: Start with a browser that stores user data such as website login information and cookies.</p>
                 <p><a @click="startDesign('en')"

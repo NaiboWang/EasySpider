@@ -182,7 +182,7 @@ def customOperation(node, loopValue, loopPath, index):
             output = execute_code(codeMode, code, max_wait_time, element)
         except:
             output = ""
-            recordLog("JavaScript execution failed")
+            print("JavaScript execution failed")
     else:
         output = execute_code(codeMode, code, max_wait_time)
     recordASField = int(paras["recordASField"])
