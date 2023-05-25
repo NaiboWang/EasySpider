@@ -94,6 +94,33 @@ var app = new Vue({
             }
             this.XPaths = result;
         },
+        addPara: function() { //添加参数
+            this.nowNode["parameters"]["paras"].push({
+                "nodeType": 0,
+                "contentType": 0,
+                "relative": false,
+                "name": "Custom_Field_" + this.nowNode["parameters"]["paras"].length.toString(),
+                "desc": "",
+                "extractType": 0,
+                "relativeXPath": "",
+                "allXPaths": [],
+                "exampleValues": [
+                    {
+                        "num": 0,
+                        "value": "Custom_Value_0"
+                    }
+                ],
+                "default": "",
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "JS": "",
+                "JSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "downloadPic": 0
+            });
+            this.paraIndex = this.nowNode["parameters"]["paras"].length - 1;
+        },
         modifyParas: function(i) { //修改第i个参数
             this.paraIndex = i;
         },

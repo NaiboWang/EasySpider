@@ -38,7 +38,7 @@
                             <td style="overflow: hidden;; max-width: 200px;text-align: center">{{list[i-1]["name"]}}</td>
                             <td style="height: 30px;overflow: hidden; max-width: 200px">{{list[i-1]["url"]}}</td>
                             <td style="text-align: left"><a href="javascript:void(0)" v-on:click="browseTask(list[i-1]['id'])">{{"Task Information~任务信息" | lang}}</a></td>
-                            <td style="text-align: left" v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyTask(list[i-1]['id'],list[i-1]['url'])">{{"Modify Task~修改任务" | lang}}</a></td>
+                            <td style="text-align: left;font-weight: bold" v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyTask(list[i-1]['id'],list[i-1]['url'])">{{"Modify Task~修改任务" | lang}}</a></td>
                             <td style="text-align: left"><a disabled href="javascript:void(0)" v-on:click="deleteTask(list[i-1]['id'])">{{"Delete Task~删除任务" | lang}}</a></td>
                         </tr>
                     </tbody>
