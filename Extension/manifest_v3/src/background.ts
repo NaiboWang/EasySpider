@@ -1,5 +1,5 @@
-// //此变量用于监听是否加载了新的页面（包括新窗口打开），如果是，增加变量值，用于传回后台。
-//
+//此变量用于监听是否加载了新的页面（包括新窗口打开），如果是，增加变量值，用于传回后台。
+
 // var tabList = []; //用来记录打开的新的tab的id
 // var nowTabId = null;
 // var nowTabIndex = 0; //重要变量！！
@@ -49,36 +49,27 @@
 //         ws.send(JSON.stringify(message));
 //     }
 // });
-// let testValue = Math.floor(Math.random() * (99999999)).toString();
-// // 打开一个 web socket
-// let ws = new WebSocket("ws://localhost:8084");
-// ws.onopen = function() {
-//     // Web Socket 已连接上，使用 send() 方法发送数据
-//     console.log("已连接");
-//     let message = {
-//         type: 0, //消息类型，0代表链接操作
-//         message: {
-//             id: 0, //socket id
-//             testValue: testValue,
-//         }
-//     };
-//     this.send(JSON.stringify(message));
-// };
-// ws.onmessage = function(evt) {
-//     evt = JSON.parse(evt.data);
-//     if (evt["type"] == "0") { //0代表更新参数添加索引值
-//         chrome.storage.local.set({ "parameterNum": parseInt(evt["value"]) }); //修改值
-//     }
-// };
-// ws.onclose = function() {
-//     // 关闭 websocket
-//     console.log("连接已关闭...");
-//     let message = {
-//         type: 500, //消息类型，0代表链接操作
-//         message: {
-//             id: 0, //socket id
-//             testValue: testValue,
-//         }
-//     };
-//     this.send(JSON.stringify(message));
-// };
+
+// 打开一个 web socket
+let ws = new WebSocket("ws://localhost:8084");
+ws.onopen = function() {
+    // Web Socket 已连接上，使用 send() 方法发送数据
+    console.log("已连接");
+    let message = {
+        type: 0, //消息类型，0代表链接操作
+        message: {
+            id: 0, //socket id
+        }
+    };
+    this.send(JSON.stringify(message));
+};
+ws.onmessage = function(evt) {
+    evt = JSON.parse(evt.data);
+    if (evt["type"] == "0") { //0代表更新参数添加索引值
+        chrome.storage.local.set({ "parameterNum": parseInt(evt["value"]) }); //修改值
+    }
+};
+ws.onclose = function() {
+    // 关闭 websocket
+    console.log("连接已关闭...");
+};

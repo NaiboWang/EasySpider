@@ -194,20 +194,20 @@ async function beginInvoke(msg, ws) {
                 socket_window.send(msg.message.pipe);
                 console.log("FROM Flowchart: ", JSON.parse(msg.message.pipe));
             }
-        } catch {
-            dialog.showErrorBox("Error", "Please open the flowchart window first");
+        } catch (e) {
+            console.log(e);
         }
     } else if (msg.type == 5) {
-        var child = require('child_process').execFile;
+        let child = require('child_process').execFile;
         // 参数顺序： 1. task id 2. server address 3. saved_file_name 4. "remote" or "local" 5. user_data_folder
         // var parameters = [msg.message.id, server_address];
         let parameters = [];
         console.log(msg.message)
         if (msg.message.user_data_folder == null || msg.message.user_data_folder == undefined || msg.message.user_data_folder == "") {
-            parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data", 0];
+            parameters = ["--id", "[" + msg.message.id + "]", "--server_address", server_address, "--user_data", 0];
         } else {
             let user_data_folder_path = path.join(task_server.getDir(), msg.message.user_data_folder);
-            parameters = ["--id", msg.message.id, "--server_address", server_address, "--user_data", 1];
+            parameters = ["--id", "[" + msg.message.id + "]", "--server_address", server_address, "--user_data", 1];
             config.user_data_folder = msg.message.user_data_folder;
             config.absolute_user_data_folder = user_data_folder_path;
             fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));

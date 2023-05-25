@@ -279,7 +279,7 @@
                         if(getOperatingSystemInfo().version == 'macOS'){
                             // app.$data.command = "./easyspider_executestage --id " + result.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
                             changeCommand();
-                                $('#myModal').modal('show');
+                            $('#myModal').modal('show');
                         }
                     });
                 // }
@@ -291,13 +291,13 @@
     function changeCommand() {
         let OSInfo = getOperatingSystemInfo();
         if(OSInfo.version == 'win' && OSInfo.bit == 64){
-            app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
         } else if(OSInfo.version == 'win' && OSInfo.bit == 32){
-            app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
         } else if(OSInfo.version == 'linux'){
-            app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
         } else if(OSInfo.version == 'mac'){
-            app.$data.command = "./easyspider_executestage --id " + app.$data.ID.toString() + " --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            app.$data.command = "./easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
         }
     }
 

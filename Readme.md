@@ -55,6 +55,8 @@ Bilibili/B站视频教程:
 
 [如何切换IP池和使用隧道IP - 打开详情页采集案例](https://www.bilibili.com/video/BV1KT411t79n)
 
+[如何同时执行多个任务（并行多开）](https://www.bilibili.com/video/BV13c411G7LE/)
+
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 

@@ -1,3 +1,6 @@
+视频教程：https://www.bilibili.com/video/BV1Fk4y1L7xX/
+Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
+
 这个软件绝对不是特洛伊木马/病毒！如果被像 Windows Defender 这样的杀毒软件误认为是病毒，请进行恢复，或者打开“EasySpider.bat”来运行我们的软件。
 
 The software is totally not trojan/virus! If mistaken by antivirus software such as windows defender as a virus, please recover it, or open "EasySpider.bat" to run our software instead.
