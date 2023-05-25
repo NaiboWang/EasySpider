@@ -225,7 +225,7 @@
                             <option :value = 6>页面标题</option>
                             <option :value = 7>元素截图</option>
                             <option :value = 8>OCR识别文字</option>
-                            <option :value = 9>针对该元素的JavaScript代码返回值</option>
+                            <option :value = 9>针对该元素的JavaScript代码返回值（需以return 开头）</option>
                             <option :value = 10>当前选择框选中的选项值</option>
                             <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
@@ -313,7 +313,7 @@
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
                             <option value = 0>否</option>
-                            <option value = 1>是</option>
+                            <option value = 1>是（JavaScript脚本需要以return 开头）</option>
                         </select></p>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
@@ -365,7 +365,7 @@
                         <option value = 2>固定元素列表</option>
                         <option value = 3>文本列表（多用于循环在文本框输入文本）</option>
                         <option value = 4>网址列表（多用于循环打开网页）</option>
-                        <option value = 5>JavaScript命令返回值</option>
+                        <option value = 5>JavaScript命令返回值（需以return 开头）</option>
                         <option value = 6>系统命令返回值</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
@@ -409,7 +409,7 @@
                             <p><label>（高级操作）使用代码/脚本定义循环退出条件： </label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
-                                <option value = 1>JavaScript脚本</option>
+                                <option value = 1>JavaScript脚本返回值（需以return 开头）</option>
                                 <option value = 2>操作系统级别命令</option>
                             </select>
                             <div>
@@ -423,7 +423,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
-
+                    <label>判断条件是从左往右判断的，即如果最左边的判断分支的条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。</label>
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
@@ -434,9 +434,9 @@
                         <option value = 2>当前页面包括元素</option>
                         <option v-if="nowNode['isInLoop']" value = 3>当前循环项包括文本</option>
                         <option v-if="nowNode['isInLoop']" value = 4>当前循环项包括元素</option>
-                        <option value = 5>JavaScript命令返回值</option>
+                        <option value = 5>JavaScript命令返回值（需以return 开头）</option>
                         <option value = 6>系统命令返回值</option>
-                        <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值</option>
+                        <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值（需以return 开头）</option>
                       </select>
                     <div v-if='TClass>0 && TClass <5'>
                         <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>

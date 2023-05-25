@@ -225,14 +225,14 @@
                             <option :value = 6>Webpage Title</option>
                             <option :value = 7>Element Screenshot</option>
                             <option :value = 8>OCR Results</option>
-                            <option :value = 9>The return value after executing JavaScript script on this element</option>
+                            <option :value = 9>The return value after executing JavaScript script on this element  (start with 'return ')</option>
                             <option :value = 10>Selected value of the current select box</option>
                             <option :value = 11>Selected text of the current select box</option>
                         </select>
                         <div v-if='paras.parameters[paraIndex]["contentType"] == 9'>
                             <label>JavaScript Code: </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='The element can be represented by arguments[0]. Here is an example: return arguments[0].innerText + "US Dollar". This code extracts the innerText of the element and appends "US Dollar"  to it.' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
+                                      placeholder='The element should be represented by arguments[0]. Here is an example: return arguments[0].innerText + "US Dollar". This code extracts the innerText of the element and appends "US Dollar"  to it.' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
                             <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["JSWaitTime"]'></input>
                         </div>
@@ -304,7 +304,7 @@
                     <select v-model='nowNode["parameters"]["codeMode"]' class="form-control">
                         <option value = 0>Execute JavaScript script</option>
                         <option value = 1>Execute operating system-level command</option>
-                        <option v-if="nowNode['isInLoop']" value = 2>Execute JavaScript script for the current element inside the loop.</option>
+                        <option v-if="nowNode['isInLoop']" value = 2>Execute JavaScript script for the current element inside the loop</option>
                     </select>
 
                     <div>
@@ -365,7 +365,7 @@
                         <option value = 2>Fixed Element List</option>
                         <option value = 3>Text List</option>
                         <option value = 4>Weblink List</option>
-                        <option value = 5>Return value of JavaScript command</option>
+                        <option value = 5>Return value of JavaScript command (start with 'return ')</option>
                         <option value = 6>Return value of system command</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
@@ -409,7 +409,7 @@
                             <p><label>(Advanced Operation) Define loop exit condition using code/script:</label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value=0>Do not set script (even if a script is written below, it will not be executed)</option>
-                                <option value=1>JavaScript script</option>
+                                <option value=1>JavaScript script (start with 'return ')</option>
                                 <option value=2>Operating system-level command</option>
                             </select>
                             <div>
@@ -423,7 +423,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
-
+                    <label>The conditions are evaluated from left to right, which means if the condition in the leftmost branch is satisfied, the operations within that branch are executed. Otherwise, the condition in the next branch from left to right is evaluated, and so on.</label>
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
@@ -434,7 +434,7 @@
                         <option value = 2>Element inside current page</option>
                         <option v-if="nowNode['isInLoop']" value = 3>Text inside current loop</option>
                         <option v-if="nowNode['isInLoop']" value = 4>Element inside current loop</option>
-                        <option value = 5>Return value of JavaScript command</option>
+                        <option value = 5>Return value of JavaScript command (start with 'return ')</option>
                         <option value = 6>Return value of system command</option>
                         <option v-if="nowNode['isInLoop']" value = 7>Return value of JavaScript command for the current loop item</option>
                       </select>

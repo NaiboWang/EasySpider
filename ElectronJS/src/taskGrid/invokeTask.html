@@ -250,16 +250,16 @@
             },
             localExecuteInstant: function (with_user_data=false) {
                 let text = "";
-                if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
-                    text = "Are you sure to run this task locally now?";
-                } else {
-                    text = "确定要立即在本地运行此任务吗？";
-                }
+                // if (getUrlParam("lang") == "en" || getUrlParam("lang") == "") {
+                //     text = "Are you sure to run this task locally now?";
+                // } else {
+                //     text = "确定要立即在本地运行此任务吗？";
+                // }
                 
                 this.with_user_data = with_user_data;
-                if (confirm(text)) {
-                    var para = {};
-                    var t = $('#form').serializeArray();
+                // if (confirm(text)) {
+                    let para = {};
+                    let t = $('#form').serializeArray();
                     t.forEach(function (item, index) {
                         para[item.name] = item.value;
                     });
@@ -282,7 +282,7 @@
                                 $('#myModal').modal('show');
                         }
                     });
-                }
+                // }
             },
             remoteExecuteInstant: function () {
             },

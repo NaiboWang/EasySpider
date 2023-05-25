@@ -22,13 +22,17 @@
         <div style="margin:0 auto;min-width: 70%;" id="taskList">
             <h4 style="text-align: center;">{{"Task List~任务列表" | lang}}</h4>
             <p><a v-if="type==3" href="javascript:void(0)" v-on:click="newTask" class="btn btn-primary">{{"New Task~创建新任务" | lang}}</a></p>
+            <div v-if="type != 3" style="margin-bottom: 20px">
+                <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/issues/22" target="_blank">{{"How to run task by schedule~定时执行任务教程" | lang}}</a>
+                <a class="btn btn-primary" href="" target="_blank">{{"How to run task by schedule~定时执行任务教程" | lang}}</a>
+            </div>
             <div style="margin-bottom: 10px">
                 <table style="table-layout: auto;" class="table table-hover">
                     <thead>
                         <tr>
                             <th style="text-align: left">No.</th>
                             <th style="text-align: center">{{"Task Name~任务名称" | lang}}</th>
-                            <th>网址</th>
+                            <th>{{"URL~网址" | lang}}</th>
                             <th v-bind:colspan="type" style="min-width: 300px">{{"Operations~操作" | lang}}</th>
                         </tr>
                     </thead>

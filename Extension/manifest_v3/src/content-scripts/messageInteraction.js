@@ -2,18 +2,18 @@
 
 import {getElementXPaths, global, readXPath} from "./global.js";
 
-var startMsg = { "type": 0, msg: ""};
-
-chrome.runtime.sendMessage(startMsg, function(response) {
-    console.log(response.msg);
-}); //每次打开新页面的时候需要告诉后台
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if (request["type"] == 1){
-            sendResponse("回答处理结果");
-        }
-    }
-);
+// var startMsg = { "type": 0, msg: ""};
+//
+// chrome.runtime.sendMessage(startMsg, function(response) {
+//     console.log(response.msg);
+// }); //每次打开新页面的时候需要告诉后台
+// chrome.runtime.onMessage.addListener(
+//     function(request, sender, sendResponse) {
+//         if (request["type"] == 1){
+//             sendResponse("回答处理结果");
+//         }
+//     }
+// );
 
 global.ws = new WebSocket("ws://localhost:8084");
 global.ws.onopen = function() {
@@ -38,11 +38,19 @@ export function input(value) {
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
         "value": value,
     };
-    let msg = { type: 3, msg: message };
     window.stop();
-    chrome.runtime.sendMessage(msg);
-    msg = { type: 2, value: value, xpath: message.xpath, id: global.id};
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
+    // msg = { type: 2, value: value, xpath: message.xpath, id: global.id};
+    let message_keyboard = {
+        type: 2, //消息类型，2代表键盘输入
+        message: { "keyboardStr": value, "xpath": message.xpath, "id": global.id } // {}全选{BS}退格
+    };
+    global.ws.send(JSON.stringify(message_keyboard));
 }
 
 //点击元素操作
@@ -55,8 +63,12 @@ export function sendSingleClick() {
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 export function sendChangeOption(optionMode, optionValue){
@@ -70,8 +82,12 @@ export function sendChangeOption(optionMode, optionValue){
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 export function sendMouseMove(){
@@ -83,8 +99,12 @@ export function sendMouseMove(){
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 export function sendLoopMouseMove(){
@@ -110,8 +130,12 @@ export function sendLoopMouseMove(){
             message["pathList"].push(readXPath(global.nodeList[i]["node"], 0));
         }
     }
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 //采集单个元素
@@ -122,8 +146,12 @@ export function collectSingle() {
         "tabIndex": -1,
         "parameters": global.outputParameters,
     };
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 //采集无规律多元素
@@ -134,8 +162,12 @@ export function collectMultiNoPattern() {
         "tabIndex": -1,
         "parameters": global.outputParameters,
     };
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 //采集有规律多元素
@@ -164,8 +196,12 @@ export function collectMultiWithPattern() {
             message["pathList"].push(readXPath(global.nodeList[i]["node"], 0));
         }
     }
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 //循环点击单个元素
@@ -183,8 +219,12 @@ export function sendLoopClickSingle(name) {
     if (name == "下一页元素") {
         message.nextPage = true;
     }
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 //循环点击每个元素
@@ -211,8 +251,12 @@ export function sendLoopClickEvery() {
             message["pathList"].push(readXPath(global.nodeList[i]["node"], 0));
         }
     }
-    let msg = { "type": 3, msg: message };
-    chrome.runtime.sendMessage(msg);
+    let message_action = {
+        type: 3, //消息类型，3代表元素增加事件
+        from: 0, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: {"pipe": JSON.stringify(message)}
+    };
+    global.ws.send(JSON.stringify(message_action));
 }
 
 //检测是否xpath对应的元素被全选了，个数判断即可

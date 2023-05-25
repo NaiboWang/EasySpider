@@ -20,7 +20,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, InvalidSelectorException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
@@ -292,7 +292,7 @@ def executeNode(nodeId, loopValue="", loopPath="", index=0):
 
 # 对判断条件的处理
 def judgeExcute(node, loopElement, clickPath="", index=0):
-    rt = Time("IF Condition")
+    # rt = Time("IF Condition")
     global bodyText  # 引入bodyText
     executeBranchId = 0  # 要执行的BranchId
     for i in node["sequence"]:
@@ -346,7 +346,7 @@ def judgeExcute(node, loopElement, clickPath="", index=0):
             if code > 0:
                 executeBranchId = i
                 break
-    rt.end()
+    # rt.end()
     if executeBranchId != 0:
         executeNode(executeBranchId, loopElement, clickPath, index)
 
@@ -387,9 +387,9 @@ def loopExcute(node, loopValue, clickPath="", index=0):
                 recordLog("click:" + node["parameters"]["xpath"])
             except NoSuchElementException:
                 # except:
-                print("Single element not found: ", node["parameters"]["xpath"])
-                print("找不到单个元素: ", node["parameters"]["xpath"])
-                recordLog("clickNotFound:" + node["parameters"]["xpath"])
+                print("Single loop element not found: ", node["parameters"]["xpath"])
+                print("找不到要循环的单个元素: ", node["parameters"]["xpath"])
+                recordLog("Single loop element not found: " + node["parameters"]["xpath"])
                 for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                     if node["option"] != 2:
                         executeNode(i, None, node["parameters"]["xpath"], 0)
@@ -420,6 +420,10 @@ def loopExcute(node, loopValue, clickPath="", index=0):
         try:
             elements = browser.find_elements(By.XPATH,
                                              node["parameters"]["xpath"])
+            if len(elements) == 0:
+                print("Loop element not found: ", node["parameters"]["xpath"])
+                print("找不到循环元素: ", node["parameters"]["xpath"])
+                recordLog("pathNotFound: " + node["parameters"]["xpath"])
             for index in range(len(elements)):
                 for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
                     executeNode(i, elements[index],
@@ -453,7 +457,6 @@ def loopExcute(node, loopValue, clickPath="", index=0):
             print("Loop element not found: ", node["parameters"]["xpath"])
             print("找不到循环元素: ", node["parameters"]["xpath"])
             recordLog("pathNotFound: " + node["parameters"]["xpath"])
-            pass  # 循环中找不到元素就略过操作
         except Exception as e:
             raise
     elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
@@ -539,7 +542,7 @@ def loopExcute(node, loopValue, clickPath="", index=0):
 
 # 打开网页事件
 def openPage(para, loopValue):
-    rt = Time("打开网页")
+    # rt = Time("打开网页")
     time.sleep(2)  # 打开网页后强行等待至少2秒
     global links
     global urlId
@@ -577,14 +580,14 @@ def openPage(para, loopValue):
         Log('time out after set seconds when loading page: ' + url)
         recordLog('time out after set seconds when loading page: ' + url)
         browser.execute_script('window.stop()')
-        rt.end()
+        # rt.end()
     try:
         history["index"] = browser.execute_script("return history.length")
     except TimeoutException:
         browser.execute_script('window.stop()')
         history["index"] = browser.execute_script("return history.length")
-        rt.end()
-    scrollDown(para, rt)  # 控制屏幕向下滚动
+        # rt.end()
+    scrollDown(para)  # 控制屏幕向下滚动
     if containJudge:
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -599,7 +602,7 @@ def openPage(para, loopValue):
             Log("Need to wait 1 second to get body text")
             # 再执行一遍
             bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
-            rt.end()
+            # rt.end()
         except Exception as e:
             Log(e)
             recordLog(str(e))
@@ -608,46 +611,44 @@ def openPage(para, loopValue):
     for key in outputParameters:
         outputParameters[key] = ""
 
-    rt.end()
+    # rt.end()
 
 
 # 键盘输入事件
 def inputInfo(para, loopValue):
-    time.sleep(1)  # 输入之前等待1秒
+    time.sleep(0.1)  # 输入之前等待0.1秒
     Log("Wait 1 second before input")
-    rt = Time("Input Text")
     try:
         textbox = browser.find_element(By.XPATH, para["xpath"])
+        #     textbox.send_keys(Keys.CONTROL, 'a')
+        #     textbox.send_keys(Keys.BACKSPACE)
+        execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], textbox) # 执行前置JS
+        # Send the HOME key
+        textbox.send_keys(Keys.HOME)
+        # Send the SHIFT + END key combination
+        textbox.send_keys(Keys.SHIFT, Keys.END)
+        # Send the DELETE key
+        textbox.send_keys(Keys.DELETE)
+        if para["useLoop"]:
+            textbox.send_keys(loopValue)
+        else:
+            textbox.send_keys(para["value"])
+        execute_code(2, para["afterJS"], para["afterJSWaitTime"], textbox) # 执行后置js
+        global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
+        bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
     except:
         print("Cannot find input box element:" +
-            para["xpath"] + "Please try to set the wait time before executing this operation")
-        print("找不到输入框元素:" + para["xpath"] + "请尝试在执行此操作前设置等待时间")
+            para["xpath"] + ", please try to set the wait time before executing this operation")
+        print("找不到输入框元素:" + para["xpath"] + "，请尝试在执行此操作前设置等待时间")
         recordLog("Cannot find input box element:" +
                   para["xpath"] + "Please try to set the wait time before executing this operation")
-#     textbox.send_keys(Keys.CONTROL, 'a')
-#     textbox.send_keys(Keys.BACKSPACE)
-    execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], textbox) # 执行前置JS
-    # Send the HOME key
-    textbox.send_keys(Keys.HOME)
-    # Send the SHIFT + END key combination
-    textbox.send_keys(Keys.SHIFT, Keys.END)
-    # Send the DELETE key
-    textbox.send_keys(Keys.DELETE)
-    if para["useLoop"]:
-        textbox.send_keys(loopValue)
-    else:
-        textbox.send_keys(para["value"])
-    execute_code(2, para["afterJS"], para["afterJSWaitTime"], textbox) # 执行后置js
-    global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
-    bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
-    rt.end()
 
 
 # 点击元素事件
 def clickElement(para, loopElement=None, clickPath="", index=0):
     global history
     time.sleep(0.1)  # 点击之前等待0.1秒
-    rt = Time("Click Element")
+    # rt = Time("Click Element")
     Log("Wait 0.1 second before clicking element")
     if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
         path = clickPath
@@ -661,15 +662,15 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
     browser.set_script_timeout(maxWaitTime)
     # 点击前对该元素执行一段JavaScript代码
     try:
-        if para["beforeJS"] != "":
             element = browser.find_element(By.XPATH, path)
-            execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], element)
+            if para["beforeJS"] != "":
+                execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], element)
     except:
         print("Cannot find element:" +
-            path + "Please try to set the wait time before executing this operation")
-        print("找不到要点击的元素:" + path + "请尝试在执行此操作前设置等待时间")
+            path + ", please try to set the wait time before executing this operation")
+        print("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
         recordLog("Cannot find element:" +
-                  path + "Please try to set the wait time before executing this operation")
+                  path + ", please try to set the wait time before executing this operation")
     tempHandleNum = len(browser.window_handles)  # 记录之前的窗口位置
     try:
         script = 'var result = document.evaluate(`' + path + \
@@ -679,7 +680,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         Log('time out after set seconds when loading clicked page')
         recordLog('time out after set seconds when loading clicked page')
         browser.execute_script('window.stop()')
-        rt.end()
+        # rt.end()
     except Exception as e:
         Log(e)
         recordLog(str(e))
@@ -694,7 +695,8 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
     except:
         print("Cannot find element:" + path)
         recordLog("Cannot find element:" +
-                  path + "Please try to set the wait time before executing this operation")
+                  path + ", please try to set the wait time before executing this operation")
+        print("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
     if tempHandleNum != len(browser.window_handles):  # 如果有新标签页的行为发生
         browser.switch_to.window(browser.window_handles[-1])  # 跳转到新的标签页
         history["handle"] = browser.current_window_handle
@@ -703,16 +705,16 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
         except TimeoutException:
             browser.execute_script('window.stop()')
             history["index"] = browser.execute_script("return history.length")
-            rt.end()
+            # rt.end()
     else:
         try:
             history["index"] = browser.execute_script("return history.length")
         except TimeoutException:
             browser.execute_script('window.stop()')
             history["index"] = browser.execute_script("return history.length")
-            rt.end()
+            # rt.end()
         # 如果打开了新窗口，切换到新窗口
-    scrollDown(para, rt)  # 根据参数配置向下滚动
+    scrollDown(para)  # 根据参数配置向下滚动
     if containJudge:  # 有判断语句才执行以下操作
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -725,11 +727,11 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             Log("wait one second after get body text")
             # 再执行一遍
             bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
-            rt.end()
+            # rt.end()
         except Exception as e:
             Log(e)
             recordLog(str(e))
-    rt.end()
+    # rt.end()
 
 def get_content(p, element):
     global saveName
@@ -827,7 +829,7 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
     if not isInLoop and para["wait"] == 0:
         time.sleep(1)  # 如果提取数据字段不在循环内而且设置的等待时间为0，默认等待1秒
         Log("Wait 1 second before extracting data")
-    rt = Time("Extract Data")
+    # rt = Time("Extract Data")
     for p in para["paras"]:
         content = ""
         if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
@@ -846,16 +848,21 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                                                                p["relativeXPath"][1:])
                 else:
                     element = browser.find_element(By.XPATH, p["relativeXPath"])
-            except NoSuchElementException:  # 找不到元素的时候，使用默认值
+            except (NoSuchElementException, InvalidSelectorException):  # 找不到元素的时候，使用默认值
                 # print(p)
                 try:
                     content = p["default"]
                 except Exception as e:
                     content = ""
                 outputParameters[p["name"]] = content
-                print('Element %s not found when extracting data, use default' % p["relativeXPath"])
-                print("提取数据操作时，元素 %s 未找到，使用默认值" % p["relativeXPath"])
-                recordLog('Element %s not found, use default' % p["relativeXPath"])
+                try:
+                    if not dataNotFoundKeys[p["name"]]:
+                        print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (p["relativeXPath"], p["name"]))
+                        print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (p["name"], p["relativeXPath"]))
+                        dataNotFoundKeys[p["name"]] = True
+                        recordLog('Element %s not found, use default' % p["relativeXPath"])
+                except:
+                    pass
                 continue
             except TimeoutException:  # 超时的时候设置超时值
                 Log('time out after set seconds when getting data')
@@ -869,7 +876,7 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
                                                            p["relativeXPath"][1:])
                 else:
                     element = browser.find_element(By.XPATH, p["relativeXPath"])
-                rt.end()
+                # rt.end()
         else:
             element = browser.find_element(By.XPATH, "//body")
         try:
@@ -905,7 +912,7 @@ def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
         print(value[:15], " ", end="")
     print("")
     OUTPUT.append(line)
-    rt.end()
+    # rt.end()
 
 
 # 判断字段是否为空
@@ -933,7 +940,7 @@ def clean():
     global saveName, log, OUTPUT, browser, SAVED
     saveData(exit=True)
     browser.quit()
-    sys.exit(saveName + '.csv')
+    sys.exit(0)
 
 
 if __name__ == '__main__':
@@ -1090,11 +1097,13 @@ if __name__ == '__main__':
     bodyText = ""  # 记录bodyText
     tOut = service["outputParameters"]  # 生成输出参数对象
     outputParameters = {}
+    dataNotFoundKeys = {}  # 记录没有找到数据的key
     log = ""  # 记下现在总共开了多少个标签页
     history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
     SAVED = False  # 记录是否已经存储了
     for para in tOut:
         outputParameters[para["name"]] = ""
+        dataNotFoundKeys[para["name"]] = False
         OUTPUT[0].append(para["name"])
     # 挨个执行程序
     urlId = 0  # 全局记录变量

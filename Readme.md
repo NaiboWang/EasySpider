@@ -69,9 +69,9 @@ This software is for learning and communication only. **It is strictly forbidden
 
 For the crawler operations of government and military websites, **the author will not answer any questions** in order to avoid violating relevant national laws, regulations and policies.
 
-同时，软件受到专利权保护，如要用于商业用途，请联系[浙江大学天道专利事务所](media/patent.png)进行付费等操作。
+同时，软件受到专利权保护，如要用于商业用途，请联系[浙江大学天道专利事务所](media/patent.png)进行专利授权等付费操作。
 
-At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact [Zhejiang University Tiandao Patent Office](media/patent.png) for payment and other operations.
+At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact [Zhejiang University Tiandao Patent Agency](media/patent.png) for patent authorization and other paid operations.
 
 
 ## 出版物/Publications

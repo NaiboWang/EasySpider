@@ -185,12 +185,14 @@ async function beginInvoke(msg, ws) {
                 socket_flowchart.send(msg.message.pipe); //直接把消息转接
                 let message = JSON.parse(msg.message.pipe);
                 let type = message.type;
+                console.log("FROM Browser: ", message);
                 // if(type.indexOf("Click")>=0){
                 //     await new Promise(resolve => setTimeout(resolve, 2000)); //等两秒
                 //
                 // }
             } else {
                 socket_window.send(msg.message.pipe);
+                console.log("FROM Flowchart: ", JSON.parse(msg.message.pipe));
             }
         } catch {
             dialog.showErrorBox("Error", "Please open the flowchart window first");
@@ -240,6 +242,7 @@ let wss = new WebSocket.Server({port: websocket_port});
 wss.on('connection', function (ws) {
     ws.on('message', async function (message, isBinary) {
         let msg = JSON.parse(message.toString());
+        console.log("\n\nGET A MESSAGE: ", msg);
         // console.log(msg, msg.type, msg.message);
         if (msg.type == 0) {
             if (msg.message.id == 0) {
