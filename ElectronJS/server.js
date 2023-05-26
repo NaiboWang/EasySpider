@@ -128,7 +128,11 @@ exports.start = function(port = 8074) {
                 output.sort(compare("mtime"));
                 res.write(JSON.stringify(output));
                 res.end();
-            } else if (pathName == "/queryExecutionInstances") { //查询所有服务信息，只包括id和服务名称
+            } else if(pathName == "/queryOSVersion") {
+                res.write(JSON.stringify({"version":process.platform, "bit":process.arch}));
+                res.end();
+            }
+            else if (pathName == "/queryExecutionInstances") { //查询所有服务信息，只包括id和服务名称
                 output = [];
                 travel(path.join(getDir(), "execution_instances"),function(pathname){
                     const data = fs.readFileSync(pathname, 'utf8');

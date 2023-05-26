@@ -288,17 +288,19 @@
             },
         }
     });
+    
     function changeCommand() {
-        let OSInfo = getOperatingSystemInfo();
-        if(OSInfo.version == 'win' && OSInfo.bit == 64){
-            app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-        } else if(OSInfo.version == 'win' && OSInfo.bit == 32){
-            app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-        } else if(OSInfo.version == 'linux'){
-            app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-        } else if(OSInfo.version == 'mac'){
-            app.$data.command = "./easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-        }
+        $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
+            if(OSInfo.version == 'win32' && OSInfo.bit == 'x64'){
+                app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            } else if(OSInfo.version == 'win32' && OSInfo.bit == 'ia32'){
+                app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            } else if(OSInfo.version == 'linux'){
+                app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            } else if(OSInfo.version == 'darwin'){
+                app.$data.command = "./easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+            }
+        });
     }
 
     $.get(app.$data.backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {
