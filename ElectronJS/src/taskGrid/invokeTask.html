@@ -201,7 +201,7 @@
                 t.forEach(function (item, index) {
                     para[item.name] = item.value;
                 });
-                $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask?id=" + sId, {
+                $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask", {
                     id: this.task.id,
                     paras: JSON.stringify(para)
                 }, function (result) {
@@ -263,7 +263,7 @@
                     t.forEach(function (item, index) {
                         para[item.name] = item.value;
                     });
-                    $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask?id=" + sId, {
+                    $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask", {
                         id: this.task.id,
                         paras: JSON.stringify(para)
                     }, function (result) {

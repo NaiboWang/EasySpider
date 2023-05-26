@@ -59,19 +59,20 @@ optional:
 npm run make
 ```
 
-### For windows x64
+#### For windows x64
 
-依次执行下面两个cmd即可打包
+依次执行下面两个cmd即可打包并发布，无需执行上面的npm命令
 
 ```
 package_win64.cmd
-clean_win64.cmd
+clean_and_release_win64.cmd
 ```
 
-### For Windows x86
-依次执行下面两个cmd即可打包
+#### For Windows x86
+
+依次执行下面两个cmd即可打包并发布，无需执行上面的npm命令
 
 ```
 package_win32.cmd
-clean_win32.cmd
+clean_and_release_win32.cmd
 ```

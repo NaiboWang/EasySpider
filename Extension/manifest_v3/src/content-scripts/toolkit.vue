@@ -14,11 +14,10 @@
             </div>
             <p style="color:black; margin-top: 10px">● 鼠标移动到元素上后，请<strong>右键</strong>点击或者按<strong>F7</strong>键选中页面元素。
             </p>
-            <p style="color:black; margin-top: 10px">● 操作完成后，如点击”确认采集“后任务流程图内没有”提取数据“操作被添加，<strong>重试一次</strong>即可。</p>
             <p style="color:black; margin-top: 10px">● 通过鼠标左键进行点击时，页面也会有反应，但左键点击发生的操作不会被记录在任务流程中；同理，如果想输入文本框但并不想将动作记录，可以鼠标移动到文本框，并按键盘的<strong>F9</strong>进行输入。
             </p>
             <p style="color:black; margin-top: 10px">● 如果不小心左键点选了元素导致页面跳转，直接后退或者切换回标签页即可。</p>
-
+            <p style="color:black; margin-top: 10px">● 操作完成后，如点击”确认采集“后任务流程图内没有”提取数据“操作被添加，<strong>重试一次</strong>即可。</p>
             {{ initial() }}
           </div>
           <div v-if="list.nl.length==1">
@@ -162,9 +161,9 @@
             </div>
             <p style="color:black">● When your mouse moves to the element, please <strong>right-click</strong> your
               mouse button or press <strong>F7</strong> on the keyboard to select it.</p>
-            <p style="color:black; margin-top: 10px">● After the operation is completed, such as if no "Collect Data" operation is added in the task flowchart after clicking "Confirm Collect", just <strong> retry </strong> again.</p>
             <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also respond, but this click operation will not be recorded in the task flow. Similarly, if you want to input in a text box but do not want the action to be recorded , you can move the mouse to the text box and press <strong>F9</strong> on the keyboard to input.</p>
             <p style="color:black; margin-top: 10px">● If you accidentally left-click on an element and cause the page to jump, simply go back or switch back to the tab.</p>
+            <p style="color:black; margin-top: 10px">● After the operation is completed, such as if no "Collect Data" operation is added in the task flowchart after clicking "Confirm Collect", just <strong> retry </strong> again.</p>
             {{ initial() }}
           </div>
           <div v-if="list.nl.length==1">

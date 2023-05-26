@@ -280,10 +280,10 @@ def executeNode(nodeId, loopValue="", loopPath="", index=0):
         moveToElement(node["parameters"], loopValue, loopPath, index)
     elif node["option"] == 8:  # 循环
         recordLog("loop")
-        loopExcute(node, loopValue, loopPath, index)  # 执行循环
+        loopExecute(node, loopValue, loopPath, index)  # 执行循环
     elif node["option"] == 9:  # 条件分支
         recordLog("judge")
-        judgeExcute(node, loopValue, loopPath, index)
+        judgeExecute(node, loopValue, loopPath, index)
 
     # 执行完之后进行等待
     if node["option"] != 0:
@@ -295,7 +295,7 @@ def executeNode(nodeId, loopValue="", loopPath="", index=0):
 
 
 # 对判断条件的处理
-def judgeExcute(node, loopElement, clickPath="", index=0):
+def judgeExecute(node, loopElement, clickPath="", index=0):
     # rt = Time("IF Condition")
     global bodyText  # 引入bodyText
     executeBranchId = 0  # 要执行的BranchId
@@ -365,7 +365,7 @@ def get_output_code(output):
     return code
 
 # 对循环的处理
-def loopExcute(node, loopValue, clickPath="", index=0):
+def loopExecute(node, loopValue, clickPath="", index=0):
     time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
     # Log("循环执行前等待0.1秒")
     Log("Wait 0.1 second before loop")

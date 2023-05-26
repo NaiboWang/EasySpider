@@ -105,8 +105,8 @@ class BrowserThread(Thread):
         with open(stealth_path, 'r') as f:
             js = f.read()
             print("Loading stealth.min.js")
-        browser_t.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': js}) # TMALL 反扒
-        wait = WebDriverWait(self.browser, 10)
+        self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': js}) # TMALL 反扒
+        WebDriverWait(self.browser, 10)
         self.browser.get('about:blank')
         print("id: ", id)
         if saved_file_name != "":
@@ -182,11 +182,11 @@ class BrowserThread(Thread):
         if switch:
             print(text, text2)
 
-    @atexit.register
-    def clean(self):
-        self.saveData(exit=True)
-        self.browser.quit()
-        sys.exit(0)
+    # @atexit.register
+    # def clean(self):
+    #     self.saveData(exit=True)
+    #     self.browser.quit()
+    #     sys.exit(0)
 
     def saveData(self, exit=False):
         if exit == True or len(self.OUTPUT) >= 100: # 每100条保存一次
@@ -202,6 +202,7 @@ class BrowserThread(Thread):
             self.log = ""
 
     def scrollDown(self, para, rt=""):
+        time.sleep(para["scrollWaitTime"]) # 下拉前等待
         scrollType = int(para["scrollType"])
         try:
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
@@ -213,7 +214,7 @@ class BrowserThread(Thread):
                     elif scrollType == 2:
                         body.send_keys(Keys.END)
                     time.sleep(para["scrollWaitTime"])  # 下拉完等待
-        except TimeoutException:
+        except:
             self.Log('time out after set seconds when scrolling. ')
             self.recordLog('time out after set seconds when scrolling')
             self.browser.execute_script('window.stop()')
@@ -377,10 +378,10 @@ class BrowserThread(Thread):
             self.moveToElement(node["parameters"], loopValue, loopPath, index)
         elif node["option"] == 8:  # 循环
             self.recordLog("loop")
-            self.loopExcute(node, loopValue, loopPath, index)  # 执行循环
+            self.loopExecute(node, loopValue, loopPath, index)  # 执行循环
         elif node["option"] == 9:  # 条件分支
             self.recordLog("judge")
-            self.judgeExcute(node, loopValue, loopPath, index)
+            self.judgeExecute(node, loopValue, loopPath, index)
 
         # 执行完之后进行等待
         if node["option"] != 0:
@@ -392,7 +393,7 @@ class BrowserThread(Thread):
 
 
     # 对判断条件的处理
-    def judgeExcute(self, node, loopElement, clickPath="", index=0):
+    def judgeExecute(self, node, loopElement, clickPath="", index=0):
         executeBranchId = 0  # 要执行的BranchId
         for i in node["sequence"]:
             cnode = self.procedure[i]  # 获得条件分支
@@ -450,7 +451,7 @@ class BrowserThread(Thread):
             self.executeNode(executeBranchId, loopElement, clickPath, index)
 
     # 对循环的处理
-    def loopExcute(self, node, loopValue, clickPath="", index=0):
+    def loopExecute(self, node, loopValue, clickPath="", index=0):
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
         # self.Log("循环执行前等待0.1秒")
         self.Log("Wait 0.1 second before loop")
@@ -638,8 +639,13 @@ class BrowserThread(Thread):
         self.history["handle"] = self.browser.current_window_handle
         if para["useLoop"]:
             url = loopValue
-        else:
+        elif para["url"] != "about:blank":
             url = self.links[self.urlId]
+            # clear output parameters
+            for key in self.outputParameters:
+                self.outputParameters[key] = ""
+        else:
+            url = list(filter(isnull, para["links"].split("\n")))[0]
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
@@ -676,9 +682,6 @@ class BrowserThread(Thread):
             except Exception as e:
                 self.Log(e)
                 self.recordLog(str(e))
-        # clear output parameters
-        for key in self.outputParameters:
-            self.outputParameters[key] = ""
 
 
     # 键盘输入事件
@@ -748,9 +751,6 @@ class BrowserThread(Thread):
         except Exception as e:
             self.Log(e)
             self.recordLog(str(e))
-        time.sleep(0.5)  # 点击之后等半秒
-        self.Log("Wait 0.5 second after clicking element")
-        time.sleep(random.uniform(1, 2))  # 生成一个a到b的小数等待时间
         # 点击前对该元素执行一段JavaScript代码
         try:
             if para["afterJS"] != "":
@@ -866,8 +866,8 @@ class BrowserThread(Thread):
                     content = text
                 except Exception as e:
                     content = "OCR Error"
-                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH: https://tesseract-ocr.github.io/tessdoc/Installation.html")
-                    print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中：https://blog.csdn.net/u010454030/article/details/80515501")
+                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                    print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
             elif p["contentType"] == 9:
                 content = self.execute_code(2, p["JS"], p["JSWaitTime"], element)
             elif p["contentType"] == 10: # 下拉框选中的值
@@ -887,10 +887,6 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        if not isInLoop and para["wait"] == 0:
-            time.sleep(1)  # 如果提取数据字段不在循环内而且设置的等待时间为0，默认等待1秒
-            self.Log("Wait 1 second before extracting data")
-        # rt = Time("Extract Data")
         for p in para["paras"]:
             content = ""
             if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素

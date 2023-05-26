@@ -160,6 +160,7 @@ function addParameters(t) {
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
         t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["paras"] = []; //默认参数列表
+        t["parameters"]["wait"] = 2; //点击后等待时间默认2s
         t["parameters"]["beforeJS"] = ""; //执行前执行的js
         t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
         t["parameters"]["afterJS"] = ""; //执行后执行的js
