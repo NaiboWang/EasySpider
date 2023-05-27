@@ -300,6 +300,11 @@
             } else if(OSInfo.version == 'linux'){
                 app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             } else if(OSInfo.version == 'darwin'){
+                if(getUrlParam("lang") == "zh"){
+                    app.$data.easyspider_location = "你的EasySpider文件夹，如：cd /Users/你的用户名/Downloads/EasySpider_MacOS_all_arch";
+                } else {
+                    app.$data.easyspider_location = "Your EasySpider folder, such as: cd /Users/Your Username/Downloads/EasySpider_MacOS_all_arch";
+                }
                 app.$data.command = "./easyspider_executestage --id '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             }
         });

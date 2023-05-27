@@ -10,6 +10,6 @@ rm ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/V
 rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/chrome_win64
 rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/Data
 rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/.idea
-# rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/tasks
-# rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/execution_instances
+rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/tasks
+rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/execution_instances
 rm -r ../Releases/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/user_data
