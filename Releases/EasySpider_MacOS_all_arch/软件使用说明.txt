@@ -1,0 +1,16 @@
+欢迎将软件宣传给更多需要的朋友！
+
+由于MacOS复杂的安全性设置，初次打开软件会显示未验证开发者从而不允许打开的问题，请参考以下视频来查看MacOS版本如何打开软件和执行任务：https://www.bilibili.com/video/BV1WL411h71r
+
+文件访问权限必须给，麦克风权限完全用不到，作者也不清楚为什么会需要麦克风，因此可以拒绝。
+
+官方网址: https://github.com/NaiboWang/EasySpider
+
+支持Windows 10 x64及以上版本。
+
+打开如果白屏请等待最多20秒，界面就会显示。
+
+视频教程：https://www.bilibili.com/video/BV1Fk4y1L7xX/
+
+可以从其他机器导入任务，只需要把其他机器的tasks文件夹里的.json文件放入/Users/你的用户名/Library/Application Support/EasySpider/tasks文件夹里即可。同理执行号文件可以通过复制execution_instances文件夹中的.json文件来导入。注意，两个文件夹里的.json文件只支持命名为大于0的数字。
+

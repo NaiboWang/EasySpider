@@ -1,0 +1,9 @@
+When you start to design a task, but chrome exits instantly after it is opened, please do the following to make it normal:
+
+There is a potential issue with the software for MacOS, in that the Chrome software called by the software often updates automatically after opening, but the version of Chromedriver that the software relies on does not update automatically with Chrome, leading to the problem of being unable to open Chrome. Note that the EasySpider version used for Chrome is 113.0.
+
+To check the Chrome version, enter the EasySpider software and right-click to "Show Package Contents". Then go to Contents/Resources/app folder and double-click on the chrome_mac64 software to open Chrome. Then go to Settings -> About to check if the Chrome version is 113.0.
+
+If it is not, you can download the corresponding macOS version of Chromedriver for your current Chrome version from the following website: https://chromedriver.chromium.org/downloads, and then place the downloaded Chromedriver in the Contents/Resources/app folder mentioned above, rename it and replace the "chromedriver_mac64" file to restore normal use of the software.
+
+
