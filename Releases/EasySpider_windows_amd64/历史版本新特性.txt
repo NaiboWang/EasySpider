@@ -1,4 +1,4 @@
-如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.3.0/Download_Link_Address_in_China_Mainland.txt)。
+## v0.3.1
 
 ### 强烈建议大家观看新特性讲解视频
 
