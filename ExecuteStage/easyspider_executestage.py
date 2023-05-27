@@ -797,101 +797,101 @@ class BrowserThread(Thread):
 
     def get_content(self, p, element):
         content = ""
-        # 先处理特殊节点类型
-        if p["nodeType"] == 2:
-            if element.get_attribute("href") != None:
-                content = element.get_attribute("href")
-            else:
-                content = ""
-        elif p["nodeType"] == 3:
-            if element.get_attribute("value") != None:
-                content = element.get_attribute("value")
-            else:
-                content = ""
-        elif p["nodeType"] == 4:  # 图片
-            if element.get_attribute("src") != None:
-                content = element.get_attribute("src")
-            else:
-                content = ""
-            try:
-                downloadPic = p["downloadPic"]
-            except:
-                downloadPic = 0
-            if downloadPic == 1:
-                download_image(content, "Data/" + self.saveName + "/")
-        else: # 普通节点
-            if p["contentType"] == 0:
+        if p["contentType"] == 0:
+            # 先处理特殊节点类型
+            if p["nodeType"] == 2:
+                if element.get_attribute("href") != None:
+                    content = element.get_attribute("href")
+                else:
+                    content = ""
+            elif p["nodeType"] == 3:
+                if element.get_attribute("value") != None:
+                    content = element.get_attribute("value")
+                else:
+                    content = ""
+            elif p["nodeType"] == 4:  # 图片
+                if element.get_attribute("src") != None:
+                    content = element.get_attribute("src")
+                else:
+                    content = ""
+                try:
+                    downloadPic = p["downloadPic"]
+                except:
+                    downloadPic = 0
+                if downloadPic == 1:
+                    download_image(content, "Data/" + self.saveName + "/")
+            else: # 普通节点
                 content = element.text
-            elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
-                command = 'var arr = [];\
-                var content = arguments[0];\
-                for(var i = 0, len = content.childNodes.length; i < len; i++) {\
-                    if(content.childNodes[i].nodeType === 3){  \
-                        arr.push(content.childNodes[i].nodeValue);\
-                    }\
+        elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
+            command = 'var arr = [];\
+            var content = arguments[0];\
+            for(var i = 0, len = content.childNodes.length; i < len; i++) {\
+                if(content.childNodes[i].nodeType === 3){  \
+                    arr.push(content.childNodes[i].nodeValue);\
                 }\
-                var str = arr.join(" "); \
-                return str;'
-                content = self.browser.execute_script(command, element).replace(
-                    "\n", "").replace("\\s+", " ")
-            elif p["contentType"] == 2:
-                content = element.get_attribute('innerHTML')
-            elif p["contentType"] == 3:
-                content = element.get_attribute('outerHTML')
-            elif p["contentType"] == 4:
-                # 获取元素的背景图片地址
-                bg_url = element.value_of_css_property('background-image')
-                # 清除背景图片地址中的多余字符
-                bg_url = bg_url.replace('url("', '').replace('")', '')
-                content = bg_url
-            elif p["contentType"] == 5:
-                content = self.browser.current_url
-            elif p["contentType"] == 6:
-                content = self.browser.title
-            elif p["contentType"] == 7:
-                # 获取整个网页的高度和宽度
-                height = self.browser.execute_script("return document.body.scrollHeight");
-                width = self.browser.execute_script("return document.body.scrollWidth");
-                # 调整浏览器窗口的大小
-                self.browser.set_window_size(width, height)
-                element.screenshot("Data/" + self.saveName + "/"+ str(time.time()) + ".png")
-            elif p["contentType"] == 8:
-                try:
-                    screenshot = element.screenshot_as_png
-                    screenshot_stream = io.BytesIO(screenshot)
-                    # 使用Pillow库打开截图，并转换为灰度图像
-                    image = Image.open(screenshot_stream).convert('L')
-                    # 使用Tesseract OCR引擎识别图像中的文本
-                    text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
-                    content = text
-                except Exception as e:
-                    content = "OCR Error"
-                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
-                    if sys.platform == "win32":
-                        print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
-                    elif sys.platform == "darwin":
-                        print(e)
-                        print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/146044810")
-                    elif sys.platform == "linux":
-                        print(e)
-                        print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/420259031")
-                    else:
-                        print(e)
-                        print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
-            elif p["contentType"] == 9:
-                content = self.execute_code(2, p["JS"], p["JSWaitTime"], element)
-            elif p["contentType"] == 10: # 下拉框选中的值
-                try:
-                    select_element = Select(element)
-                    content = select_element.first_selected_option.get_attribute("value")
-                except:
-                    content = ""
-            elif p["contentType"] == 11: # 下拉框选中的文本
-                try:
-                    select_element = Select(element)
-                    content = select_element.first_selected_option.text
-                except:
-                    content = ""
+            }\
+            var str = arr.join(" "); \
+            return str;'
+            content = self.browser.execute_script(command, element).replace(
+                "\n", "").replace("\\s+", " ")
+        elif p["contentType"] == 2:
+            content = element.get_attribute('innerHTML')
+        elif p["contentType"] == 3:
+            content = element.get_attribute('outerHTML')
+        elif p["contentType"] == 4:
+            # 获取元素的背景图片地址
+            bg_url = element.value_of_css_property('background-image')
+            # 清除背景图片地址中的多余字符
+            bg_url = bg_url.replace('url("', '').replace('")', '')
+            content = bg_url
+        elif p["contentType"] == 5:
+            content = self.browser.current_url
+        elif p["contentType"] == 6:
+            content = self.browser.title
+        elif p["contentType"] == 7:
+            # 获取整个网页的高度和宽度
+            height = self.browser.execute_script("return document.body.scrollHeight");
+            width = self.browser.execute_script("return document.body.scrollWidth");
+            # 调整浏览器窗口的大小
+            self.browser.set_window_size(width, height)
+            element.screenshot("Data/" + self.saveName + "/"+ str(time.time()) + ".png")
+        elif p["contentType"] == 8:
+            try:
+                screenshot = element.screenshot_as_png
+                screenshot_stream = io.BytesIO(screenshot)
+                # 使用Pillow库打开截图，并转换为灰度图像
+                image = Image.open(screenshot_stream).convert('L')
+                # 使用Tesseract OCR引擎识别图像中的文本
+                text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
+                content = text
+            except Exception as e:
+                content = "OCR Error"
+                print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                if sys.platform == "win32":
+                    print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
+                elif sys.platform == "darwin":
+                    print(e)
+                    print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/146044810")
+                elif sys.platform == "linux":
+                    print(e)
+                    print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/420259031")
+                else:
+                    print(e)
+                    print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
+        elif p["contentType"] == 9:
+            content = self.execute_code(2, p["JS"], p["JSWaitTime"], element)
+        elif p["contentType"] == 10: # 下拉框选中的值
+            try:
+                select_element = Select(element)
+                content = select_element.first_selected_option.get_attribute("value")
+            except:
+                content = ""
+        elif p["contentType"] == 11: # 下拉框选中的文本
+            try:
+                select_element = Select(element)
+                content = select_element.first_selected_option.text
+            except:
+                content = ""
         return content
 
 
