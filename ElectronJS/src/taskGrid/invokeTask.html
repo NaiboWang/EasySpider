@@ -275,6 +275,7 @@
                                 "execute_type": 1,
                             }
                         };
+                        app.$data.ID = result;
                         ws.send(JSON.stringify(message));
                         $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
                             if(OSInfo.version == 'darwin'){
@@ -299,7 +300,7 @@
             } else if(OSInfo.version == 'linux'){
                 app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             } else if(OSInfo.version == 'darwin'){
-                app.$data.command = "./easyspider_executestage --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                app.$data.command = "./easyspider_executestage --id '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             }
         });
     }
