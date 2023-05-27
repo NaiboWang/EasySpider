@@ -4,11 +4,11 @@ const messages = {
     zh: zhLocale,
     en: enLocale,
 }
-const i18n = VueI18n.createI18n({
-  locale: 'zh',
-  fallbackLocale: 'en',
-  messages
-})
+// const i18n = VueI18n.createI18n({
+//   locale: 'zh',
+//   fallbackLocale: 'en',
+//   messages
+// })
 
 
 function getUrlParam(name) {
@@ -70,5 +70,5 @@ var app = Vue.createApp({
             window.electronAPI.startInvoke(lang);
         }
     }
-}).use(i18n).mount('#app')
-console.log(i18n.global.t('test'))
+}).mount('#app');
+// console.log(i18n.global.t('test'))
