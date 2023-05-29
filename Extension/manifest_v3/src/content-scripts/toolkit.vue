@@ -7,11 +7,12 @@
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
             <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
                    v-on:mousedown="specialSelect"/>
-            <p style="margin-bottom:10px;display:inline-block">特殊点选模式</p>
+            <p style="margin-bottom:10px;display:inline-block">特殊点选模式<span title="普通模式下如果不能选中元素可以勾选此项">☺</span></p>
             <div class="innercontent" v-if = "list.nl.length==0">
-              <div><a v-on:mousedown="getCurrentTitle">采集当前页面的标题</a><span title="">☺</span></div>
-              <div><a v-on:mousedown="getCurrentURL">采集当前页面的网址</a><span title="">☺</span></div>
+              <div><a v-on:mousedown="getCurrentTitle">采集当前页面的标题</a><span title="当前页面标题">☺</span></div>
+              <div><a v-on:mousedown="getCurrentURL">采集当前页面的网址</a><span title="当前页面URL地址">☺</span></div>
             </div>
+            <p style="color:black; margin-top: 10px">● 鼠标移动到笑脸☺查看操作提示。</p>
             <p style="color:black; margin-top: 10px">● 鼠标移动到元素上后，请<strong>右键</strong>点击或者按<strong>F7</strong>键选中页面元素。
             </p>
             <p style="color:black; margin-top: 10px">● 通过鼠标左键进行点击时，页面也会有反应，但左键点击发生的操作不会被记录在任务流程中；同理，如果想输入文本框但并不想将动作记录，可以鼠标移动到文本框，并按键盘的<strong>F9</strong>进行输入。
@@ -26,37 +27,37 @@
                 v-if="numOfReady()>0&&tname()!='下一页元素'">同时发现{{ numOfReady() }}个同类元素（如果不全或不准请继续手动选择其余您认为的同类元素），</span>您可以:
               <div class="innercontent">
                 <div v-if="numOfReady()>0 && !selectStatus"><a v-on:mousedown="selectAll">选中全部</a> <span
-                    title="">☺</span></div>
+                    title=""></span></div>
                 <div v-if="existDescendents()&& !selectStatus &&(tname()=='元素' || tname()=='链接')"><a
-                    v-on:mousedown="selectDescendents">选中子元素</a> <span title="">☺</span></div>
+                    v-on:mousedown="selectDescendents">选中子元素</a> <span title="应选尽选模式，如想使用其他模式请先选中全部再选中子元素">☺</span></div>
                 <div v-if="!selectedDescendents && !selectStatus" id="Single">
-                  <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">切换下拉选项</a><span title="">☺</span></div>
-                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">输入文字</a><span title="">☺</span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">切换下拉选项</a><span title=""></span></div>
+                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">输入文字</a><span title=""></span></div>
                   <div v-if="tname()!='图片'"><a v-on:mousedown="getText">采集该{{ tname() }}的文本</a><span
-                      title="采集文本">☺</span></div>
-                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">采集当前选中项的值</a><span title="">☺</span></div>
-                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">采集当前选中项的文本</a><span title="">☺</span></div>
+                      title="采集文本"></span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">采集当前选中项的值</a><span title=""></span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">采集当前选中项的文本</a><span title=""></span></div>
                   <div v-if="tname()=='链接'||tname()=='图片'"><a
-                      v-on:mousedown="getLink">采集该{{ tname() }}的地址</a><span title="">☺</span></div>
+                      v-on:mousedown="getLink">采集该{{ tname() }}的地址</a><span title=""></span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
-                      v-on:mousedown="clickElement">点击该{{ tname() }}</a><span title="">☺</span></div>
+                      v-on:mousedown="clickElement">点击该{{ tname() }}</a><span title=""></span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
-                      v-on:mousedown="loopClickSingleElement">循环点击该{{ tname() }}</a><span title="">☺</span></div>
-                  <div><a v-on:mousedown="getBackgroundPic">采集该{{ tname() }}的背景图片地址</a><span title="">☺</span></div>
+                      v-on:mousedown="loopClickSingleElement">循环点击该{{ tname() }}</a><span title="常用于循环点击下一页场景">☺</span></div>
+                  <div><a v-on:mousedown="getBackgroundPic">采集该{{ tname() }}的背景图片地址</a><span title="部分元素的图片是设定为背景图像的">☺</span></div>
                   <div v-if="tname()=='链接'||tname()=='元素'"><a v-on:mousedown="getInnerHtml">采集该{{
                       tname()
                     }}的Inner
-                    Html</a><span title="">☺</span></div>
-                  <div><a v-on:mousedown="getOuterHtml">采集该{{ tname() }}的Outer Html</a><span title="">☺</span></div>
+                    Html</a><span title="不包括元素自身标签的HTML">☺</span></div>
+                  <div><a v-on:mousedown="getOuterHtml">采集该{{ tname() }}的Outer Html</a><span title="包括元素自身标签的HTML">☺</span></div>
 
-                  <div><a href="#" v-on:mousedown="mouseMove">鼠标移动到该{{ tname() }}上</a><span title="">☺</span></div>
+                  <div><a href="#" v-on:mousedown="mouseMove">鼠标移动到该{{ tname() }}上</a><span title=""></span></div>
 <!--                  <div v-if="tname()=='文本框'"><a>识别验证码</a><span title="">☺</span></div>-->
                 </div>
                 <div v-if="selectedDescendents" id="Single">
-                  <div><a v-on:mousedown="confirmCollectSingle">采集数据</a><span title="">☺</span></div>
+                  <div><a v-on:mousedown="confirmCollectSingle">采集数据</a><span title=""></span></div>
                 </div>
                 <div v-if="selectStatus" id="Confirm">
-                  <div><a v-on:mousedown="confirmCollectSingle">确认采集</a><span title="">☺</span></div>
+                  <div><a v-on:mousedown="confirmCollectSingle">确认采集</a><span title=""></span></div>
                 </div>
               </div>
             </div>
@@ -67,8 +68,8 @@
             <div v-if="option==100">
               ● 已选择了以下元素，您可以：
               <div class="innercontent">
-                <div><a v-on:mousedown="confirmCollectMulti">采集数据</a><span title="">☺</span></div>
-                <div><a v-on:mousedown="revoke">撤销本次选择</a><span title="">☺</span></div>
+                <div><a v-on:mousedown="confirmCollectMulti">采集数据</a><span title=""></span></div>
+                <div><a v-on:mousedown="revoke">撤销本次选择</a><span title=""></span></div>
               </div>
             </div>
 
@@ -76,15 +77,19 @@
               ● 已选择了{{ numOfList() }}个同类元素，<span
                 v-if="numOfReady()>0">另外发现{{ numOfReady() }}个同类元素（如果不全或不准请继续手动选择其余您认为的同类元素），</span>您可以：
               <div class="innercontent">
-                <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">选中全部</a><span title="">☺</span></div>
+                <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">选中全部</a><span title=""></span></div>
                 <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
-                    v-on:mousedown="selectDescendents">选中子元素</a><span title="">☺</span></div>
-                <div><a v-on:mousedown="confirmCollectMultiAndDescendents">采集数据</a><span title="">☺</span></div>
+                    v-on:mousedown="selectDescendents">选中子元素（应选尽选）</a><span title="每个块的每个子元素都选中进来">☺</span></div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents(1,1)">选中子元素（相对首选块共同元素）</a><span title="只选中和第一个选中块的子元素共同的子元素">☺</span></div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents(1,2)">选中子元素（所有块共同元素）</a><span title="只选中所有块都有的子元素">☺</span></div>
+                <div><a v-on:mousedown="confirmCollectMultiAndDescendents">采集数据</a><span title=""></span></div>
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                    v-on:mousedown="loopClickEveryElement">循环点击每个{{ tname() }}</a><span title="">☺</span></div>
+                    v-on:mousedown="loopClickEveryElement">循环点击每个{{ tname() }}</a><span title="常用于循环点击列表中的链接打开详情页采集场景">☺</span></div>
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                    v-on:mousedown="loopMouseMove">循环移动到每个{{ tname() }}</a><span title="">☺</span></div>
-                <div><a v-on:mousedown="revoke">撤销本次选择</a><span title="">☺</span></div>
+                    v-on:mousedown="loopMouseMove">循环移动到每个{{ tname() }}</a><span title=""></span></div>
+                <div><a v-on:mousedown="revoke">撤销本次选择</a><span title=""></span></div>
               </div>
             </div>
           </div>
@@ -92,8 +97,9 @@
             <div class="toolkitcontain">{{ setWidth("290px") }}
               <table cellSpacing="0" class="toolkittb2">
                 <tbody>
-                <th v-for="i in list.opp">{{ i["name"] }}</th>
+                <th v-for="(i, index) in list.opp"> <div>{{ i["name"] }}</div> <span v-bind:index="index" v-on:mousedown="removeField" title="删除此字段">×</span> </th>
                 <th style="width:40px">删除</th>
+
                 </tbody>
               </table>
               <table cellSpacing="0" class="toolkittb4">
@@ -104,6 +110,7 @@
                       v-on:mousedown="deleteSingleLine">×
                   </td>
                 </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -154,11 +161,12 @@
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
             <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
                    v-on:mousedown="specialSelect"> </input>
-            <p style="margin-bottom:10px;display:inline-block">Special click mode</p>
+            <p style="margin-bottom:10px;display:inline-block">Special click mode<span title="If cannot select element by mouse, select this option">☺</span></p>
             <div class="innercontent" v-if = "list.nl.length==0">
-              <div><a v-on:mousedown="getCurrentTitle">Collect Title of current page</a><span title="">☺</span></div>
-              <div><a v-on:mousedown="getCurrentURL">Collect URL of current page</a><span title="">☺</span></div>
+              <div><a v-on:mousedown="getCurrentTitle">Collect Title of current page</a><span title="Title of this page">☺</span></div>
+              <div><a v-on:mousedown="getCurrentURL">Collect URL of current page</a><span title="URL of this page">☺</span></div>
             </div>
+            <p style="color:black">● Mouse move to smiling face ☺ to see operation help.</p>
             <p style="color:black">● When your mouse moves to the element, please <strong>right-click</strong> your
               mouse button or press <strong>F7</strong> on the keyboard to select it.</p>
             <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also respond, but this click operation will not be recorded in the task flow. Similarly, if you want to input in a text box but do not want the action to be recorded , you can move the mouse to the text box and press <strong>F9</strong> on the keyboard to input.</p>
@@ -173,41 +181,41 @@
               can:
               <div class="innercontent">
                 <div v-if="numOfReady()>0 && !selectStatus"><a v-on:mousedown="selectAll">Select All</a><span
-                    title="">☺</span></div>
+                    title=""></span></div>
                 <div v-if="existDescendents()&& !selectStatus &&(tname()=='元素' || tname()=='链接')"><a
-                    v-on:mousedown="selectDescendents">Select child elements</a> <span title="">☺</span></div>
+                    v-on:mousedown="selectDescendents">Select child elements</a> <span title="Greedy Mode, if you want to use other modes, please select 'Select All' option first">☺</span></div>
                 <div v-if="!selectedDescendents && !selectStatus" id="Single">
                   <!-- <div v-if="tname()=='selection box'"> <a>循环切换该下拉项</a><span title="">☺</span></div> -->
-                  <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">Change selection option</a><span title="">☺</span></div>
-                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">Input Text</a><span title="">☺</span>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">Change selection option</a><span title=""></span></div>
+                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">Input Text</a><span title=""></span>
                   </div>
                   <div v-if="tname()!='图片'"><a v-on:mousedown="getText">Extract {{ tname() | toEng }}'s text</a><span
-                      title="collect text">☺</span></div>
-                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">Collect selected option value</a><span title="">☺</span></div>
-                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">Collect selected option text</a><span title="">☺</span></div>
+                      title="collect text"></span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">Collect selected option value</a><span title=""></span></div>
+                  <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">Collect selected option text</a><span title=""></span></div>
 
                   <div v-if="tname()=='链接'||tname()=='图片'"><a v-on:mousedown="getLink">Collect address of this
-                    {{ tname() | toEng }}</a><span title="">☺</span></div>
+                    {{ tname() | toEng }}</a><span title=""></span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a v-on:mousedown="clickElement">Click
-                    this {{ tname() | toEng }}</a><span title="">☺</span></div>
+                    this {{ tname() | toEng }}</a><span title=""></span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
                       v-on:mousedown="loopClickSingleElement">Loop-click this {{ tname() | toEng }}</a><span
-                      title="">☺</span>
+                      title="Usually used to loop-click the next-page button">☺</span>
                   </div>
-                  <div><a v-on:mousedown="getBackgroundPic">Collect background image URL</a><span title="">☺</span></div>
+                  <div><a v-on:mousedown="getBackgroundPic">Collect background image URL</a><span title="Some elements have background images">☺</span></div>
                   <div v-if="tname()=='链接'||tname()=='元素'"><a v-on:mousedown="getInnerHtml">Collect Inner Html of
-                    this {{ tname() | toEng }}</a><span title="">☺</span></div>
-                  <div><a v-on:mousedown="getOuterHtml">Collect Outer Html of this element</a><span title="">☺</span>
+                    this {{ tname() | toEng }}</a><span title="HTML not including the tag of this selected element">☺</span></div>
+                  <div><a v-on:mousedown="getOuterHtml">Collect Outer Html of this element</a><span title="HTML including the tag of this selected element">☺</span>
                   </div>
 
-                   <div><a href="#" v-on:mousedown="mouseMove">Move mouse to this element</a><span title="">☺</span></div>
+                   <div><a href="#" v-on:mousedown="mouseMove">Move mouse to this element</a><span title=""></span></div>
                   <!-- <div v-if="tname()=='text box'"> <a>识别验证码</a><span title="">☺</span></div> -->
                 </div>
                 <div v-if="selectedDescendents" id="Single">
-                  <div><a v-on:mousedown="confirmCollectSingle">Collect Data</a><span title="">☺</span></div>
+                  <div><a v-on:mousedown="confirmCollectSingle">Collect Data</a><span title=""></span></div>
                 </div>
                 <div v-if="selectStatus" id="Confirm">
-                  <div><a v-on:mousedown="confirmCollectSingle">Confirm Collect</a><span title="">☺</span></div>
+                  <div><a v-on:mousedown="confirmCollectSingle">Confirm Collect</a><span title=""></span></div>
                 </div>
               </div>
             </div>
@@ -218,8 +226,8 @@
             <div v-if="option==100">
               ● Already selected the following element, you can:
               <div class="innercontent">
-                <div><a v-on:mousedown="confirmCollectMulti">Collect Data</a><span title="">☺</span></div>
-                <div><a v-on:mousedown="revoke">Revoke selection</a><span title="">☺</span></div>
+                <div><a v-on:mousedown="confirmCollectMulti">Collect Data</a><span title=""></span></div>
+                <div><a v-on:mousedown="revoke">Revoke selection</a><span title=""></span></div>
               </div>
             </div>
 
@@ -227,16 +235,20 @@
               ● Already selected {{ numOfList() }} similar elements, <span
                 v-if="numOfReady()>0">and we find other{{ numOfReady() }} similar elements (If unsatisfied with auto-detected similar elements, you can continue to manually select the rest of the elements that you think are similar), </span>you can:
               <div class="innercontent">
-                <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">Select All</a><span title="">☺</span></div>
+                <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">Select All</a><span title=""></span></div>
                 <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
-                    v-on:mousedown="selectDescendents">Select child elements</a><span title="">☺</span></div>
-                <div><a v-on:mousedown="confirmCollectMultiAndDescendents">Collect Data</a><span title="">☺</span></div>
+                    v-on:mousedown="selectDescendents">Select child elements (Greedy)</a><span title="Select All child elements for all blocks">☺</span></div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents(1,1)">Select child elements (RFSE)</a><span title="Relative to First Selected Element, will only select the common child elements between the first selected block and the rest of the blocks">☺</span></div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents(1,2)">Select child elements (RASE)</a><span title="Relative to All Selected Elements, will select only the common child elements that exist in all blocks">☺</span></div>
+                <div><a v-on:mousedown="confirmCollectMultiAndDescendents">Collect Data</a><span title=""></span></div>
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                    v-on:mousedown="loopClickEveryElement">Loop-click every {{ tname() | toEng}}</a><span title="">☺</span>
+                    v-on:mousedown="loopClickEveryElement">Loop-click every {{ tname() | toEng}}</a><span title="Usually used to click every link in a list to open detail page to collect data">☺</span>
                 </div>
                 <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                    v-on:mousedown="loopMouseMove">Loop-mouse-move to every {{ tname() | toEng}}</a><span title="">☺</span></div>
-                <div><a v-on:mousedown="revoke">Revoke selection</a><span title="">☺</span></div>
+                    v-on:mousedown="loopMouseMove">Loop-mouse-move to every {{ tname() | toEng}}</a><span title=""></span></div>
+                <div><a v-on:mousedown="revoke">Revoke selection</a><span title=""></span></div>
               </div>
             </div>
 
@@ -246,7 +258,7 @@
             <div class="toolkitcontain">{{ setWidth("350px") }}
               <table cellspacing="0" class="toolkittb2">
                 <tbody>
-                <th v-for="i in list.opp">{{ i["name"] }}</th>
+                <th v-for="(i, index) in list.opp"><div>{{ i["name"] }}</div> <span v-bind:index="index" v-on:mousedown="removeField" title="Remove this field">×</span> </th>
                 <th style="width:40px">Delete</th>
                 </tbody>
               </table>
@@ -357,6 +369,7 @@ export default {
     winHeight: window.outerHeight,
     optionMode: 0,
     optionValue: "",
+    mode: 0, //记录删除字段模式
   },
   mounted(){
     this.$nextTick(() => {
@@ -423,7 +436,7 @@ export default {
       if (global.nodeList.length > 1) { // 如果删到没有就没有其他的操作了
         handleElement();
         if (this.selectedDescendents) {
-          handleDescendents(); //如果之前有选中子元素，新加入的节点又则这里也需要重新选择子元素
+          handleDescendents(this.mode); //如果之前有选中子元素，新加入的节点又则这里也需要重新选择子元素
         }
       } else {
         this.valTable = [];
@@ -432,6 +445,25 @@ export default {
       }
       let at2 = parseInt(new Date().getTime());
       console.log("delete:", at2, at, at2 - at);
+    },
+    removeField: function (event){
+        let index = event.target.getAttribute("index");
+        let tParameter = global.outputParameters.splice(index, 1)[0];
+        if(global.outputParameters.length == 0){
+          this.valTable = [];
+          clearEl();
+        } else { //删除对应的列
+          console.log("remove:", tParameter, global);
+          this.valTable.splice(index, 1);
+          for (let i = global.outputParameterNodes.length - 1; i >= 0; i--) {
+            let node = global.outputParameterNodes[i];
+            if(node["unique_index"] == tParameter["unique_index"]){
+              node["node"].style.backgroundColor = "";
+              node["node"].style.boxShadow = "";
+              global.outputParameterNodes.splice(i, 1);
+            }
+          }
+        }
     },
     clickElement: function () { //点击元素操作
       sendSingleClick();
@@ -705,8 +737,9 @@ export default {
       }
       handleElement(); //每次数组元素有变动，都需要重新处理下
     },
-    selectDescendents: function () { //选择所有子元素操作
-      handleDescendents();
+    selectDescendents: function (e, mode = 0) { //选择所有子元素操作
+      handleDescendents(mode);
+      this.mode = mode;
     }
   },
 }

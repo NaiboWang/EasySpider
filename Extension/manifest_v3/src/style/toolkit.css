@@ -134,11 +134,28 @@
     font-weight: normal !important;
     overflow: hidden !important;
     font-size: 11px !important;
-    padding-left: 1px !important;
-    padding-right: 0px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
     vertical-align: middle!important;
+    white-space: nowrap;
+}
+
+.toolkitcontain th span{
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    /*position: absolute;*/
+    /*position: ;*/
+    margin-right: 10px;
+    vertical-align: text-bottom!important;
+}
+
+.toolkitcontain th div{
+    display: inline-block!important;
+    overflow: hidden!important;
+    max-width: 90%!important;
 }
 
 .toolkitcontain .toolkittb2 {

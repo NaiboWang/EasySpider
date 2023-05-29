@@ -65,7 +65,7 @@ export function readXPath(element, type = 1, node = document.body) {
             if (element.className != ""){ //如果有class且某个class name只有一个元素，则使用class name生成xpath
                 console.log("class name: " + element.className);
                 let names = element.className.split(" ");
-                for (var i = 0; i < names.length; i++) {
+                for (let i = 0; i < names.length; i++) {
                     if (names[i] != "") {
                         // return '//*[@class=\"' + names[i] + '\"]';
                         console.log('//*[@contains(@class, \"' + names[i] + '\")]');
@@ -86,11 +86,11 @@ export function readXPath(element, type = 1, node = document.body) {
                 return "";
             }
         }
-        var ix = 1, //在nodelist中的位置，且每次点击初始化
+        let ix = 1, //在nodelist中的位置，且每次点击初始化
             siblings = element.parentNode.childNodes; //同级的子元素
 
-        for (var i = 0, l = siblings.length; i < l; i++) {
-            var sibling = siblings[i];
+        for (let i = 0, l = siblings.length; i < l; i++) {
+            let sibling = siblings[i];
             //如果这个元素是siblings数组中的元素，则执行递归操作;arguments.callee代表当前函数的名称
             if (sibling == element) {
                 return readXPath(element.parentNode, type, node) + '/' + element.tagName.toLowerCase() + '[' + (ix) + ']';
@@ -143,7 +143,7 @@ export function addEl() {
         handleElement(); //处理新状态
 
         //将虚线框显示在元素上方但屏蔽其鼠标操作
-        var pos = global.NowNode.getBoundingClientRect();
+        let pos = global.NowNode.getBoundingClientRect();
         global.div.style.display = "block";
         global.div.style.height = global.NowNode.offsetHeight + "px";
         global.div.style.width = global.NowNode.offsetWidth + "px";
@@ -278,7 +278,10 @@ export function generateParameters(type, linktext = true, linkhref = true) {
             let nd = global.nodeList[num]["node"];
             ndPath = global.nodeList[num]["xpath"];
             ndAllXPaths = global.nodeList[num]["allXPaths"];
-            global.outputParameterNodes.push({ "node": nd, "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow });
+            let unique_index = Math.random().toString(36).substring(2) + Date.now().toString(36);; //唯一标识符
+            global.outputParameterNodes.push({ "node": nd,
+                "unique_index": unique_index,
+                "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow });
             nd.style.boxShadow = global.boxShadowColor;
             let pname = parameterName("文本");
             let ndText = "";
@@ -296,7 +299,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                 // ndText = $(nd).contents().filter(function() { return this.nodeType === 3; }).text().replace(/\s+/g, '');
                 ndText = "";
                 let ndContents = nd.childNodes;
-                for (var i = 0; i < ndContents.length; i++) {
+                for (let i = 0; i < ndContents.length; i++) {
                     if (ndContents[i].nodeType === 3) { // if it's a text node
                         ndText += ndContents[i].textContent.trim(); // add its content to the string
                     }
@@ -344,7 +347,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "extractType": 0, //提取方式 0 普通 1 OCR
                         "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
                         "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
-                        "exampleValues": [{ "num": num, "value": ndText }]
+                        "exampleValues": [{ "num": num, "value": ndText }],
+                        "unique_index": unique_index,
                     });
                 } else if (nd.tagName == "A") { //如果元素是超链接
                     if (linktext) {
@@ -357,7 +361,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                             "extractType": 0, //提取方式 0 普通 1 OCR
                             "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
                             "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
-                            "exampleValues": [{ "num": num, "value": ndText }]
+                            "exampleValues": [{ "num": num, "value": ndText }],
+                            "unique_index": unique_index,
                         });
                     }
                     if (linkhref) {
@@ -369,7 +374,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                             "desc": "", //参数描述
                             "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
                             "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
-                            "exampleValues": [{ "num": num, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }]
+                            "exampleValues": [{ "num": num, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }],
+                            "unique_index": unique_index,
                         });
                     }
                 } else if (nd.tagName == "INPUT") { //如果元素是输入项
@@ -382,7 +388,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "extractType": 0, //提取方式 0 普通 1 OCR
                         "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
                         "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
-                        "exampleValues": [{ "num": num, "value": ndText }]
+                        "exampleValues": [{ "num": num, "value": ndText }],
+                        "unique_index": unique_index,
                     });
                 } else { //其他所有情况
                     global.outputParameters.push({
@@ -394,7 +401,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "extractType": 0, //提取方式 0 普通 1 OCR
                         "relativeXPath": global.nodeList.length > 1 ? "" : ndPath,
                         "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
-                        "exampleValues": [{ "num": num, "value": ndText }]
+                        "exampleValues": [{ "num": num, "value": ndText }],
+                        "unique_index": unique_index,
                     });
                 }
             } else { //如果元素节点已经存在，则只需要插入值就可以了
@@ -432,7 +440,8 @@ export function generateMultiParameters() {
             let nd = global.nodeList[num]["node"];
             ndPath = global.nodeList[num]["xpath"];
             ndAllXPaths = global.nodeList[num]["allXPaths"];
-            global.outputParameterNodes.push({ "node": nd, "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow });
+            let unique_index = Math.random().toString(36).substring(2) + Date.now().toString(36);;
+            global.outputParameterNodes.push({ "node": nd, "unique_index": unique_index, "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow });
             nd.style.boxShadow = global.boxShadowColor;
             // ndText = $(nd).text();
             ndText = nd.textContent;
@@ -445,7 +454,8 @@ export function generateMultiParameters() {
                     "desc": "", //参数描述
                     "relativeXPath": ndPath,
                     "allXPaths": ndAllXPaths,
-                    "exampleValues": [{ "num": 0, "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src") }]
+                    "exampleValues": [{ "num": 0, "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src") }],
+                    "unique_index": unique_index,
                 });
             } else if (nd.tagName == "A") { //如果元素是超链接
                 global.outputParameters.push({
@@ -456,7 +466,8 @@ export function generateMultiParameters() {
                     "desc": "", //参数描述
                     "relativeXPath": ndPath,
                     "allXPaths": ndAllXPaths,
-                    "exampleValues": [{ "num": 0, "value": ndText }]
+                    "exampleValues": [{ "num": 0, "value": ndText }],
+                    "unique_index": unique_index,
                 });
                 global.outputParameters.push({
                     "nodeType": 2,
@@ -466,7 +477,8 @@ export function generateMultiParameters() {
                     "desc": "", //参数描述
                     "relativeXPath": ndPath,
                     "allXPaths": ndAllXPaths,
-                    "exampleValues": [{ "num": 0, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }]
+                    "exampleValues": [{ "num": 0, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }],
+                    "unique_index": unique_index,
                 });
             } else if (nd.tagName == "INPUT") { //如果元素是输入项
                 global.outputParameters.push({
@@ -477,7 +489,8 @@ export function generateMultiParameters() {
                     "desc": "", //参数描述
                     "relativeXPath": ndPath,
                     "allXPaths": ndAllXPaths,
-                    "exampleValues": [{ "num": 0, "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value") }]
+                    "exampleValues": [{ "num": 0, "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value") }],
+                    "unique_index": unique_index,
                 });
             } else { //其他所有情况
                 global.outputParameters.push({
@@ -488,7 +501,8 @@ export function generateMultiParameters() {
                     "desc": "", //参数描述
                     "relativeXPath": ndPath,
                     "allXPaths": ndAllXPaths,
-                    "exampleValues": [{ "num": 0, "value": ndText }]
+                    "exampleValues": [{ "num": 0, "value": ndText }],
+                    "unique_index": unique_index,
                 });
             }
         }
@@ -501,140 +515,341 @@ export function generateMultiParameters() {
 }
 
 //处理子元素,对于每个块中多出的特殊元素，需要特殊处理
-export function handleDescendents() {
+export function handleDescendents(mode = 0) {
     let n = 1;
     chrome.storage.local.get({ parameterNum: 1 }, function(items) {
         let at = parseInt(new Date().getTime());
         n = items.parameterNum;
         clearParameters(); //清除原来的参数列表
         global.app._data.selectedDescendents = true;
-        let nd, ndText, ndPath, pname, ndAllPaths;
-        for (let num = 0; num < global.nodeList.length; num++) {
-            let tnode = global.nodeList[num]["node"];
-            let stack = new Array(); //深度优先搜索遍历元素
-            stack.push(tnode); //从此节点开始
-            while (stack.length > 0) {
-                let nd = stack.pop(); // 挨个取出元素
-                if (nd.parentNode.tagName == "A" && nd.tagName == "SPAN") {
-                    continue; //对A标签内的SPAN元素不进行处理,剪枝，此时子元素根本不加入stack，即实现了此功能
-                }
-                ndPath = readXPath(nd, 1, tnode);
-                ndAllPaths = getElementXPaths(nd, tnode);
-                let index = -1;
-                for (let i = 0; i < global.outputParameters.length; i++) {
-                    if (global.outputParameters[i]["relativeXPath"] == ndPath) {
-                        index = i;
-                        break;
+        let nd, ndText, ndPath, pname, ndAllPaths, tmode;
+        tmode = mode;
+        if(mode == 2){
+            let xpath_list = [];
+            // mode == 1; //如果是选中全部块的共有子元素，则先选中和第一个块相同的子元素，然后最后再删除第一个块中和其他块不同的子元素
+            for (let num = 0; num < global.nodeList.length; num++) {
+                let node_xpaths = [];
+                let tnode = global.nodeList[num]["node"];
+                let stack = new Array(); //深度优先搜索遍历元素
+                stack.push(tnode); //从此节点开始
+                while (stack.length > 0) {
+                    let nd = stack.pop(); // 挨个取出元素
+                    if (nd.parentNode.tagName == "A" && nd.tagName == "SPAN") {
+                        continue; //对A标签内的SPAN元素不进行处理,剪枝，此时子元素根本不加入stack，即实现了此功能
+                    }
+                    ndPath = readXPath(nd, 1, tnode);
+                    node_xpaths.push(ndPath);
+                    for (let i = nd.children.length - 1; i >= 0; i--) {
+                        stack.push(nd.children[i]);
                     }
                 }
-                global.outputParameterNodes.push({
-                    "node": nd,
-                    "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow
-                });
-                nd.style.boxShadow = global.boxShadowColor;
-                // ndText = $(nd).contents().filter(function() {
-                //     return this.nodeType === 3;
-                // }).text().replace(/\s+/g, '');
-                ndText = "";
-                let ndContents = nd.childNodes;
-                for (var i = 0; i < ndContents.length; i++) {
-                    if (ndContents[i].nodeType === 3) { // if it's a text node
-                        ndText += ndContents[i].textContent.trim(); // add its content to the string
+                xpath_list.push(node_xpaths);
+            }
+            // 取第一个子数组作为初始的共有元素集合
+            let commonXPaths = new Set(xpath_list[0]);
+            // 遍历剩余的子数组
+            for (let i = 1; i < xpath_list.length; i++) {
+                // 使用过滤函数来筛选出与共有元素集合中的元素相同的元素
+                commonXPaths = new Set(xpath_list[i].filter(element => commonXPaths.has(element)));
+            }
+            // 将共有元素集合转换为数组
+            let commonXPathList = Array.from(commonXPaths);
+            console.log(commonXPathList);
+            let hash = {}; //记录index和数组位置的对应关系
+            for (let num = 0; num < global.nodeList.length; num++) {
+                let tnode = global.nodeList[num]["node"];
+                let stack = new Array(); //深度优先搜索遍历元素
+                stack.push(tnode); //从此节点开始
+                while (stack.length > 0) {
+                    let nd = stack.pop(); // 挨个取出元素
+                    if (nd.parentNode.tagName == "A" && nd.tagName == "SPAN") {
+                        continue; //对A标签内的SPAN元素不进行处理,剪枝，此时子元素根本不加入stack，即实现了此功能
                     }
-                }
-                ndText = ndText.replace(/\s+/g, ''); // remove any whitespace characters
-                if (index == -1) { //从第二个节点开始，只插入那些不在参数列表中的元素，根据xpath进行寻址
-                    //如果当前节点除了子元素外仍然有其他文字或者该元素是图片/表单项，加入子元素节点
-                    if (ndText != "" || nd.tagName == "IMG" || nd.tagName == "INPUT" || nd.tagName == "A") {
-                        if (nd.tagName == "IMG") { //如果元素是图片
-                            global.outputParameters.push({
-                                "nodeType": 4, //节点类型
-                                "contentType": 1, // 内容类型
-                                "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径,注意当只选择了子元素没有选中全部的时候，需要判断
-                                "name": parameterName("参数") + (n++) + parameterName("_图片地址"),
-                                "desc": "", //参数描述
-                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd), //同理需要判断
-                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
-                                "exampleValues": [{
-                                    "num": num,
-                                    "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
-                                }]
-                            });
-                        } else if (nd.tagName == "A") { //如果元素是超链接
-                            global.outputParameters.push({
-                                "nodeType": 1,
-                                "contentType": 0, // 内容类型
-                                "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
-                                "name": parameterName("参数") + (n++) + parameterName("_链接文本"),
-                                "desc": "", //参数描述
-                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
-                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
-                                "exampleValues": [{ "num": num, "value": nd.textContent }] //注意这里的ndtext是整个a的文字！！！
-                            });
-                            global.outputParameters.push({
-                                "nodeType": 2,
-                                "contentType": 0, // 内容类型
-                                "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
-                                "name": parameterName("参数") + (n++) + parameterName("_链接地址"),
-                                "desc": "", //参数描述
-                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
-                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
-                                "exampleValues": [{
-                                    "num": num,
-                                    "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
-                                }]
-                            });
-                        } else if (nd.tagName == "INPUT") { //如果元素是输入项
-                            global.outputParameters.push({
-                                "nodeType": 3,
-                                "contentType": 1, // 内容类型
-                                "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
-                                "name": parameterName("参数") + (n++) + parameterName("_文本"),
-                                "desc": "", //参数描述
-                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
-                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
-                                "exampleValues": [{
-                                    "num": num,
-                                    "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
-                                }]
-                            });
-                        } else { //其他所有情况
-                            global.outputParameters.push({
-                                "nodeType": 0,
-                                "contentType": 1, // 内容类型
-                                "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
-                                "name": parameterName("参数") + (n++) + parameterName("_文本"),
-                                "desc": "", //参数描述
-                                "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
-                                "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
-                                "exampleValues": [{ "num": num, "value": ndText }]
-                            });
+                    ndPath = readXPath(nd, 1, tnode);
+                    ndAllPaths = getElementXPaths(nd, tnode);
+                    let index = -1;
+                    for (let i = 0; i < commonXPathList.length; i++) {
+                        if (commonXPathList[i] == ndPath) {
+                            index = i;
+                            break;
                         }
                     }
-                } else //如果元素节点已经存在，则只需要插入值就可以了
-                {
-                    if (nd.tagName == "IMG") { //如果元素是图片
-                        global.outputParameters[index]["exampleValues"].push({
-                            "num": num,
-                            "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
-                        });
-                    } else if (nd.tagName == "A") { //如果元素是超链接
-                        global.outputParameters[index]["exampleValues"].push({ "num": num, "value": nd.textContent });
-                        global.outputParameters[index + 1]["exampleValues"].push({
-                            "num": num,
-                            "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
-                        });
-                    } else if (nd.tagName == "INPUT") { //如果元素是输入项
-                        global.outputParameters[index]["exampleValues"].push({
-                            "num": num,
-                            "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
-                        });
-                    } else { //其他所有情况
-                        global.outputParameters[index]["exampleValues"].push({ "num": num, "value": ndText });
+
+                    if (index != -1) { //如果是共有元素
+                        let unique_index = ndPath;
+                        ndText = "";
+                        let ndContents = nd.childNodes;
+                        for (let i = 0; i < ndContents.length; i++) {
+                            if (ndContents[i].nodeType === 3) { // if it's a text node
+                                ndText += ndContents[i].textContent.trim(); // add its content to the string
+                            }
+                        }
+                        ndText = ndText.replace(/\s+/g, ''); // remove any whitespace characters
+                        if (ndText != "" || nd == tnode) {
+                            global.outputParameterNodes.push({
+                                "node": nd,
+                                "unique_index": unique_index,
+                                "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow
+                            });
+                            nd.style.boxShadow = global.boxShadowColor;
+                        }
+                        console.log("Hash", hash);
+                        if (num == 0) { //从第二个节点开始，只插入那些不在参数列表中的元素，根据xpath进行寻址
+                            //如果当前节点除了子元素外仍然有其他文字或者该元素是图片/表单项，加入子元素节点
+                            if (ndText != "" || nd.tagName == "IMG" || nd.tagName == "INPUT" || nd.tagName == "A") {
+                                    hash[index] = global.outputParameters.length;
+                                    if (nd.tagName == "IMG") { //如果元素是图片
+                                        global.outputParameters.push({
+                                            "nodeType": 4, //节点类型
+                                            "contentType": 1, // 内容类型
+                                            "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径,注意当只选择了子元素没有选中全部的时候，需要判断
+                                            "name": parameterName("参数") + (n++) + parameterName("_图片地址"),
+                                            "desc": "", //参数描述
+                                            "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd), //同理需要判断
+                                            "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                            "exampleValues": [{
+                                                "num": num,
+                                                "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
+                                            }],
+                                            "unique_index": unique_index,
+                                        });
+                                    } else if (nd.tagName == "A") { //如果元素是超链接
+                                        global.outputParameters.push({
+                                            "nodeType": 1,
+                                            "contentType": 0, // 内容类型
+                                            "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                            "name": parameterName("参数") + (n++) + parameterName("_链接文本"),
+                                            "desc": "", //参数描述
+                                            "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                            "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                            "exampleValues": [{"num": num, "value": nd.textContent}], //注意这里的ndtext是整个a的文字！！！
+                                            "unique_index": unique_index,
+                                        });
+                                        global.outputParameters.push({
+                                            "nodeType": 2,
+                                            "contentType": 0, // 内容类型
+                                            "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                            "name": parameterName("参数") + (n++) + parameterName("_链接地址"),
+                                            "desc": "", //参数描述
+                                            "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                            "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                            "exampleValues": [{
+                                                "num": num,
+                                                "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
+                                            }],
+                                            "unique_index": unique_index,
+                                        });
+                                    } else if (nd.tagName == "INPUT") { //如果元素是输入项
+                                        global.outputParameters.push({
+                                            "nodeType": 3,
+                                            "contentType": 1, // 内容类型
+                                            "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                            "name": parameterName("参数") + (n++) + parameterName("_文本"),
+                                            "desc": "", //参数描述
+                                            "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                            "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                            "exampleValues": [{
+                                                "num": num,
+                                                "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
+                                            }],
+                                            "unique_index": unique_index,
+                                        });
+                                    } else { //其他所有情况
+                                        global.outputParameters.push({
+                                            "nodeType": 0,
+                                            "contentType": 1, // 内容类型
+                                            "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                            "name": parameterName("参数") + (n++) + parameterName("_文本"),
+                                            "desc": "", //参数描述
+                                            "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                            "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                            "exampleValues": [{"num": num, "value": ndText}],
+                                            "unique_index": unique_index,
+                                        });
+                                    }
+                                }
+                        } else //如果元素节点已经存在，则只需要插入值就可以了
+                        {
+                            try{
+                                if (ndText != "" || nd.tagName == "IMG" || nd.tagName == "INPUT" || nd.tagName == "A") {
+                                    if (nd.tagName == "IMG") { //如果元素是图片
+                                        global.outputParameters[hash[index]]["exampleValues"].push({
+                                            "num": num,
+                                            "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
+                                        });
+                                    } else if (nd.tagName == "A") { //如果元素是超链接
+                                        global.outputParameters[hash[index]]["exampleValues"].push({
+                                            "num": num,
+                                            "value": nd.textContent
+                                        });
+                                        global.outputParameters[hash[index] + 1]["exampleValues"].push({
+                                            "num": num,
+                                            "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
+                                        });
+                                    } else if (nd.tagName == "INPUT") { //如果元素是输入项
+                                        global.outputParameters[hash[index]]["exampleValues"].push({
+                                            "num": num,
+                                            "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
+                                        });
+                                    } else { //其他所有情况
+                                        global.outputParameters[hash[index]]["exampleValues"].push({
+                                            "num": num,
+                                            "value": ndText
+                                        });
+                                    }
+                                }
+                            } catch (e) {
+                                console.log("Error: -----------------------\n\n", e);
+                            }
+
+                        }
+                    }
+                    for (let i = nd.children.length - 1; i >= 0; i--) {
+                        stack.push(nd.children[i]);
                     }
                 }
-                for (let i = nd.children.length - 1; i >= 0; i--) {
-                    stack.push(nd.children[i]);
+            }
+        }
+        else {
+            for (let num = 0; num < global.nodeList.length; num++) {
+                let tnode = global.nodeList[num]["node"];
+                let stack = new Array(); //深度优先搜索遍历元素
+                stack.push(tnode); //从此节点开始
+                while (stack.length > 0) {
+                    let nd = stack.pop(); // 挨个取出元素
+                    if (nd.parentNode.tagName == "A" && nd.tagName == "SPAN") {
+                        continue; //对A标签内的SPAN元素不进行处理,剪枝，此时子元素根本不加入stack，即实现了此功能
+                    }
+                    ndPath = readXPath(nd, 1, tnode);
+                    ndAllPaths = getElementXPaths(nd, tnode);
+                    let index = -1;
+                    for (let i = 0; i < global.outputParameters.length; i++) {
+                        if (global.outputParameters[i]["relativeXPath"] == ndPath) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    ndText = "";
+                    let ndContents = nd.childNodes;
+                    for (let i = 0; i < ndContents.length; i++) {
+                        if (ndContents[i].nodeType === 3) { // if it's a text node
+                            ndText += ndContents[i].textContent.trim(); // add its content to the string
+                        }
+                    }
+                    ndText = ndText.replace(/\s+/g, ''); // remove any whitespace characters
+                    let unique_index = ndPath;
+                    if(ndText!= "" || nd == tnode){
+                        if (mode == 0 || (mode == 1 && (index != -1 || num == 0))) { //如果不是应选尽选，则只添加和第一个元素相同类型的子元素
+                            global.outputParameterNodes.push({
+                                "node": nd,
+                                "unique_index": unique_index,
+                                "boxShadow": nd.style.boxShadow == "" || global.boxShadowColor ? "none" : nd.style.boxShadow
+                            });
+                            nd.style.boxShadow = global.boxShadowColor;
+                        } else if(mode == 1 && nd == tnode){ //最外层元素标记一下
+                            nd.style.boxShadow = global.boxShadowColor;
+                        }
+                    }
+                    if (index == -1) { //从第二个节点开始，只插入那些不在参数列表中的元素，根据xpath进行寻址
+                        //如果当前节点除了子元素外仍然有其他文字或者该元素是图片/表单项，加入子元素节点
+                        if (!(mode == 1 && num > 0)) { //如果不是应选尽选，则只添加和第一个元素相同类型的子元素
+                            if (ndText!= "" || nd.tagName == "IMG" || nd.tagName == "INPUT" || nd.tagName == "A") {
+                                if (nd.tagName == "IMG") { //如果元素是图片
+                                    global.outputParameters.push({
+                                        "nodeType": 4, //节点类型
+                                        "contentType": 1, // 内容类型
+                                        "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径,注意当只选择了子元素没有选中全部的时候，需要判断
+                                        "name": parameterName("参数") + (n++) + parameterName("_图片地址"),
+                                        "desc": "", //参数描述
+                                        "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd), //同理需要判断
+                                        "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                        "exampleValues": [{
+                                            "num": num,
+                                            "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
+                                        }],
+                                        "unique_index": unique_index,
+                                    });
+                                } else if (nd.tagName == "A") { //如果元素是超链接
+                                    global.outputParameters.push({
+                                        "nodeType": 1,
+                                        "contentType": 0, // 内容类型
+                                        "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                        "name": parameterName("参数") + (n++) + parameterName("_链接文本"),
+                                        "desc": "", //参数描述
+                                        "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                        "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                        "exampleValues": [{"num": num, "value": nd.textContent}], //注意这里的ndtext是整个a的文字！！！
+                                        "unique_index": unique_index,
+                                    });
+                                    global.outputParameters.push({
+                                        "nodeType": 2,
+                                        "contentType": 0, // 内容类型
+                                        "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                        "name": parameterName("参数") + (n++) + parameterName("_链接地址"),
+                                        "desc": "", //参数描述
+                                        "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                        "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                        "exampleValues": [{
+                                            "num": num,
+                                            "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
+                                        }],
+                                        "unique_index": unique_index,
+                                    });
+                                } else if (nd.tagName == "INPUT") { //如果元素是输入项
+                                    global.outputParameters.push({
+                                        "nodeType": 3,
+                                        "contentType": 1, // 内容类型
+                                        "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                        "name": parameterName("参数") + (n++) + parameterName("_文本"),
+                                        "desc": "", //参数描述
+                                        "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                        "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                        "exampleValues": [{
+                                            "num": num,
+                                            "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
+                                        }],
+                                        "unique_index": unique_index,
+                                    });
+                                } else { //其他所有情况
+                                    global.outputParameters.push({
+                                        "nodeType": 0,
+                                        "contentType": 1, // 内容类型
+                                        "relative": global.nodeList.length > 1 ? true : false, //是否为相对xpath路径
+                                        "name": parameterName("参数") + (n++) + parameterName("_文本"),
+                                        "desc": "", //参数描述
+                                        "relativeXPath": global.nodeList.length > 1 ? ndPath : readXPath(nd),
+                                        "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
+                                        "exampleValues": [{"num": num, "value": ndText}],
+                                        "unique_index": unique_index,
+                                    });
+                                }
+                            }
+                        }
+                    } else //如果元素节点已经存在，则只需要插入值就可以了
+                    {
+                        if (nd.tagName == "IMG") { //如果元素是图片
+                            global.outputParameters[index]["exampleValues"].push({
+                                "num": num,
+                                "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
+                            });
+                        } else if (nd.tagName == "A") { //如果元素是超链接
+                            global.outputParameters[index]["exampleValues"].push({ "num": num, "value": nd.textContent });
+                            global.outputParameters[index + 1]["exampleValues"].push({
+                                "num": num,
+                                "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
+                            });
+                        } else if (nd.tagName == "INPUT") { //如果元素是输入项
+                            global.outputParameters[index]["exampleValues"].push({
+                                "num": num,
+                                "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
+                            });
+                        } else { //其他所有情况
+                            global.outputParameters[index]["exampleValues"].push({ "num": num, "value": ndText });
+                        }
+                    }
+                    for (let i = nd.children.length - 1; i >= 0; i--) {
+                        stack.push(nd.children[i]);
+                    }
                 }
             }
         }
@@ -665,6 +880,7 @@ export function generateValTable(multiline = true) {
         paravalues.push(tvalues);
     }
     global.app._data.valTable = paravalues;
+    console.log("生成参数表格", paravalues);
 }
 
 // 选中第一个节点，自动寻找同类节点
@@ -712,7 +928,7 @@ export function findRelated() {
 //根据path将元素放入readylist中
 export function pushToReadyList(path) {
     let result = document.evaluate(path, document, null, XPathResult.ANY_TYPE, null);
-    var node = result.iterateNext(); //枚举第一个元素
+    let node = result.iterateNext(); //枚举第一个元素
     while (node) { //只添加不在已选中列表内的元素
         let exist = false;
         for (let o of global.nodeList) {
@@ -763,11 +979,11 @@ export function combineXpath(nameList, indexList) {
 // /html/body/div[3]/div[1]/div[1]/div[1]/div[3]/div/div[3]/a
 export function relatedTest() {
     let at = new Date().getTime()
-    var testList = [];
-    var testpath = "";
+    let testList = [];
+    let testpath = "";
     for (let i = 0; i < global.nodeList.length; i++) {
-        var testnumList = []; //用于比较节点索引号不同
-        var tpath = global.nodeList[i]["xpath"].split("/").splice(1); //清理第一个空元素
+        let testnumList = []; //用于比较节点索引号不同
+        let tpath = global.nodeList[i]["xpath"].split("/").splice(1); //清理第一个空元素
         for (let j = 0; j < tpath.length; j++) {
             if (tpath[j].indexOf("[") >= 0) { //如果存在索引值
                 testnumList.push(parseInt(tpath[j].split("[")[1].replace("]", ""))); //只留下数字
@@ -785,7 +1001,7 @@ export function relatedTest() {
         testList.push(testnumList);
     }
     testpath = testpath.split("/"); //清理第一个空元素
-    var indexList = []; //记录新生成的xpath
+    let indexList = []; //记录新生成的xpath
     //如果选中的元素属于同样的序列，则计算出序列的最佳xpath表达式
     for (let j = 0; j < testList[0].length; j++) {
         indexList.push(testList[0][j]);
