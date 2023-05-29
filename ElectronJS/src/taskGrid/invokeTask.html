@@ -113,7 +113,7 @@
                 <input type="text" class="form-control" v-model="user_data_folder"></input>
             </div>
         </form>
-
+        <label>{{"Click the button below to execute the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha (Note: set a waiting time in the task flow for manual intervention): ~如手动输入密码，验证码等（注意任务流程中设定好操作后的等待时间以用来手工干预）：" | lang}}</label>
         <button class="btn btn-primary" v-on:click="localExecuteInstant(false)">{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" |
             lang}}
         </button>

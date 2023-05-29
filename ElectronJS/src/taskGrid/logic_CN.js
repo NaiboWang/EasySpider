@@ -401,7 +401,7 @@ function saveService(type) {
             "url": url,
             "links": links,
             "create_time": new Date().toLocaleString(),
-            "version": "0.3.1",
+            "version": "0.3.2",
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

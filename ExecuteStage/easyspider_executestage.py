@@ -130,14 +130,17 @@ class BrowserThread(Thread):
         print("任务名称:", service["name"])
         self.procedure = service["graph"]  # 程序执行流程
         try:
-            if service["version"] != version:
-                print("版本不一致，请使用" + service["version"] + "版本的EasySpider运行该任务")
-                print("Version not match, please use EasySpider " + service["version"] + " to run this task")
-                self.browser.quit()
-                sys.exit()
-        except:
-            print("版本不一致，请使用v0.2.0版本的EasySpider运行该任务")
-            print("Version not match, please use EasySpider v0.2.0 to run this task")
+            if service["version"] >= "0.3.1": # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
+                pass
+            else: # 0.3.1以下版本的EasySpider不兼容0.3.1及以上版本的EasySpider
+                if service["version"] != version:
+                    print("版本不一致，请使用" + service["version"] + "版本的EasySpider运行该任务！")
+                    print("Version not match, please use EasySpider " + service["version"] + " to run this task!")
+                    self.browser.quit()
+                    sys.exit()
+        except: # 0.2.0版本没有version字段，所以直接退出
+            print("版本不一致，请使用v0.2.0版本的EasySpider运行该任务！")
+            print("Version not match, please use EasySpider v0.2.0 to run this task!")
             self.browser.quit()
             sys.exit()
         self.links = list(filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
@@ -189,7 +192,7 @@ class BrowserThread(Thread):
     #     sys.exit(0)
 
     def saveData(self, exit=False):
-        if exit == True or len(self.OUTPUT) >= 100: # 每100条保存一次
+        if exit == True or len(self.OUTPUT) >= 10: # 每10条保存一次
             with open("Data/"+ self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
                 file_obj.write(self.log)
                 file_obj.close()
@@ -950,25 +953,25 @@ class BrowserThread(Thread):
                 self.execute_code(2, p["beforeJS"], p["beforeJSWaitTime"], element) # 执行前置js
                 content = self.get_content(p, element)
             except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
-                self.recordLog('StaleElementReferenceException：'+p["relativeXPath"])
+                self.recordLog('StaleElementReferenceException: '+p["relativeXPath"])
                 time.sleep(3)
                 try:
                     if p["relative"]:  # 是否相对xpath
                         if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                             element = loopElement
-                            self.recordLog('StaleElementReferenceException：loopElement')
+                            self.recordLog('StaleElementReferenceException: loopElement')
                         else:
                             element = loopElement.find_element(By.XPATH,
                                                             p["relativeXPath"][1:])
                             self.recordLog(
-                                'StaleElementReferenceException：loopElement+relativeXPath')
+                                'StaleElementReferenceException: loopElement+relativeXPath')
                     else:
                         element = self.browser.find_element(
                             By.XPATH, p["relativeXPath"])
-                        self.recordLog('StaleElementReferenceException：relativeXPath')
+                        self.recordLog('StaleElementReferenceException: relativeXPath')
                     content = self.get_content(p, element)
                 except StaleElementReferenceException:
-                    self.recordLog('StaleElementReferenceException：'+p["relativeXPath"])
+                    self.recordLog('StaleElementReferenceException: '+p["relativeXPath"])
                     continue  # 再出现类似问题直接跳过
             self.outputParameters[p["name"]] = content
             self.execute_code(2, p["afterJS"], p["afterJSWaitTime"], element) # 执行后置JS
@@ -991,7 +994,7 @@ if __name__ == '__main__':
         "read_type": "remote",
         "headless": False,
         "server_address": "http://localhost:8074",
-        "version": "0.3.1",
+        "version": "0.3.2",
     }
     c = Config(config)
     print(c)
