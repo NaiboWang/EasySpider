@@ -2,7 +2,7 @@
 
 官方网址: https://github.com/NaiboWang/EasySpider
 
-支持Windows 10 x64及以上版本。
+支持Windows 10 x32及以上版本。
 
 打开如果白屏请等待最多20秒，界面就会显示。
 
