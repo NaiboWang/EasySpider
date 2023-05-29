@@ -1,9 +1,3 @@
-Due to the complex security settings of MacOS, the issue of being unable to open software due to the "unverified developer" message may occur upon the first attempt to open the software. Please refer to the following GitHub document to see how to open software and perform tasks on your MacOS version: 
-
-https://github.com/NaiboWang/EasySpider/wiki/MacOS-Guide
-
-File access permissions must be granted, microphone permissions are not necessary at all, and the author is not sure why microphone permissions are being requested, so they can be declined.
-
 Official Site: https://github.com/NaiboWang/EasySpider
 
 Welcome to promote this software to other friends.
