@@ -26,6 +26,8 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
 
+Ebay样例博客：https://blog.csdn.net/ihero/article/details/130805504
+
 Documentation can be found from [GitHub Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
 
