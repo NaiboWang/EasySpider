@@ -2,7 +2,7 @@ Official Site: https://github.com/NaiboWang/EasySpider
 
 Welcome to promote this software to other friends.
 
-This version is for Windows 10 x64 and above.
+This version is for MacOS, can be used on all Chips, including Intel (such as Corel i7) and Arm (such as M1).
 
 Please wait for at most 20 seconds if you see a white screen when open EasySpider.
 
