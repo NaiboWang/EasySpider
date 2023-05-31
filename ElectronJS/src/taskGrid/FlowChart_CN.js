@@ -1,6 +1,6 @@
 //处理表现层
-var nodeList = Array(); //所有新生成的节点全部存储在这里，并且有唯一索引号，所有的定位均通过index进行，即将图保存下来了
-var root = {
+let nodeList = Array(); //所有新生成的节点全部存储在这里，并且有唯一索引号，所有的定位均通过index进行，即将图保存下来了
+let root = {
     index: 0, //在nodeList中的索引号
     id: 0,
     parentId: 0,
@@ -18,16 +18,16 @@ var root = {
     isInLoop: false, //是否处于循环内
 };
 nodeList.push(root);
-var queue = new Array();
-var actionSequence = new Array(); //存储图结构，每个元素为在nodelist里面的索引值，下面的id和pid根据此数组进行索引，然后再在nodelist里找
-var nowNode = null; //存储现在所在的节点
-var vueData = { nowNodeIndex: 0 }; //存储目前所在节点的索引号,不能直接使用变量而需要用对象包起来
-var option = 0; //工具箱选项
-var title = "";
-var parameterNum = 1; //记录目前的参数个数
+let queue = new Array();
+let actionSequence = new Array(); //存储图结构，每个元素为在nodelist里面的索引值，下面的id和pid根据此数组进行索引，然后再在nodelist里找
+let nowNode = null; //存储现在所在的节点
+let vueData = { nowNodeIndex: 0 }; //存储目前所在节点的索引号,不能直接使用变量而需要用对象包起来
+let option = 0; //工具箱选项
+let title = "";
+let parameterNum = 1; //记录目前的参数个数
 
 //处理逻辑层
-var app = new Vue({
+let app = new Vue({
     el: '#app',
     data: {
         list: { nl: nodeList },
@@ -167,8 +167,8 @@ var app = new Vue({
 //深复制
 function DeepClone(obj) {
     if (obj === null || typeof obj !== 'object') return obj;
-    var cpObj = obj instanceof Array ? [] : {};
-    for (var key in obj) cpObj[key] = DeepClone(obj[key]);
+    let cpObj = obj instanceof Array ? [] : {};
+    for (let key in obj) cpObj[key] = DeepClone(obj[key]);
     return cpObj;
 }
 
@@ -228,8 +228,8 @@ function branchMouseDown(e) {
     if (e.button == 2) //右键点击
     {
         let judgeId = this.getAttribute('data');
-        var l = nodeList.length;
-        var t = {
+        let l = nodeList.length;
+        let t = {
             index: l,
             id: 0,
             parentId: 0,
@@ -261,8 +261,8 @@ function arrowMouseDown(e) {
 //增加分支点击事件
 function branchClick(e) {
     let judgeId = this.getAttribute('data');
-    var l = nodeList.length;
-    var t = {
+    let l = nodeList.length;
+    let t = {
         index: l,
         id: 0,
         parentId: 0,
@@ -328,13 +328,13 @@ function toolBoxKernel(e, para = null) {
         } else {
             let position = parseInt(nowNode.getAttribute('position'));
             let pId = nowNode.getAttribute('pId');
-            var tt = nodeList[nodeList[actionSequence[pId]]["sequence"][position]]; //在相应位置添加新元素
+            let tt = nodeList[nodeList[actionSequence[pId]]["sequence"][position]]; //在相应位置添加新元素
             t = DeepClone(tt); //浅复制元素
-            var l = nodeList.length;
+            let l = nodeList.length;
             t.index = l;
             nodeList.push(t);
-            var position2 = parseInt(app._data.nowArrow['position']);
-            var pId2 = app._data.nowArrow['pId'];
+            let position2 = parseInt(app._data.nowArrow['position']);
+            let pId2 = app._data.nowArrow['pId'];
             nodeList[actionSequence[pId2]]["sequence"].splice(position2 + 1, 0, t.index); //在相应位置添加新元素
             refresh(); //重新渲染页面
             app._data.nowArrow = { "position": t["position"], "pId": t["parentId"], "num": 0 };
@@ -350,11 +350,11 @@ function toolBoxKernel(e, para = null) {
         } else {
             let position = parseInt(nowNode.getAttribute('position'));
             let pId = nowNode.getAttribute('pId');
-            var position2 = parseInt(app._data.nowArrow['position']);
-            var pId2 = app._data.nowArrow['pId'];
-            var id = nowNode.getAttribute('data');
-            var pidt = pId2;
-            var move = true;
+            let position2 = parseInt(app._data.nowArrow['position']);
+            let pId2 = app._data.nowArrow['pId'];
+            let id = nowNode.getAttribute('data');
+            let pidt = pId2;
+            let move = true;
             console.log(pidt, id);
             while (pidt != 0) {
                 if (pidt == id) {
@@ -382,8 +382,8 @@ function toolBoxKernel(e, para = null) {
             e.stopPropagation(); //防止冒泡
         }
     } else if (option > 0) { //新增操作
-        var l = nodeList.length;
-        var t = {
+        let l = nodeList.length;
+        let t = {
             id: 0,
             index: l,
             parentId: 0,
@@ -401,7 +401,7 @@ function toolBoxKernel(e, para = null) {
         {
             t["type"] = 2;
             // 增加两个分支
-            var nt = {
+            let nt = {
                 id: 0,
                 parentId: 0,
                 index: l + 1,
@@ -411,7 +411,7 @@ function toolBoxKernel(e, para = null) {
                 sequence: [],
                 isInLoop: false,
             };
-            var nt2 = {
+            let nt2 = {
                 id: 0,
                 parentId: 0,
                 index: l + 2,
@@ -504,12 +504,12 @@ function refresh(nowArrowReset = true) {
                         <p id="firstArrow" class="arrow" position=-1 pId=0>↓</p>`);
     actionSequence.splice(0);
     queue.splice(0);
-    var idd = 1;
+    let idd = 1;
     queue.push(0);
     actionSequence.push(0);
     while (queue.length != 0) {
-        var nd = queue.shift(); //取出父元素并建立对子元素的链接
-        for (i = 0; i < nodeList[nd].sequence.length; i++) {
+        let nd = queue.shift(); //取出父元素并建立对子元素的链接
+        for (let i = 0; i < nodeList[nd].sequence.length; i++) {
             nodeList[nodeList[nd].sequence[i]].parentId = nodeList[nd].id;
             nodeList[nodeList[nd].sequence[i]]["position"] = i;
             nodeList[nodeList[nd].sequence[i]].id = idd++;
@@ -525,11 +525,11 @@ function refresh(nowArrowReset = true) {
     }
     if (nowArrowReset) //如果要重置锚点位置
     {
-        app._data.nowArrow = { "position": -1, "pId": 0, "num": 0 }; //设置默认要添加的位置是元素流程最开头处
+        app._data.nowArrow = { "position": nodeList[0].sequence.length - 1, "pId": 0, "num": 0 }; //设置默认要添加的位置是元素流程最开头处
     }
     //第一个元素不渲染
-    for (i = 1; i < actionSequence.length; i++) {
-        parentId = nodeList[actionSequence[i]]["parentId"];
+    for (let i = 1; i < actionSequence.length; i++) {
+        let parentId = nodeList[actionSequence[i]]["parentId"];
         $("#" + parentId).append(newNode(nodeList[actionSequence[i]]));
     }
     bindEvents();

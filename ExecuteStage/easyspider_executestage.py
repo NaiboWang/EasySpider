@@ -49,10 +49,10 @@ def download_image(url, save_directory):
     # 检查响应状态码是否为成功状态
     if response.status_code == requests.codes.ok:
         # 提取文件名
-        file_name = url.split('/')[-1]
+        file_name = url.split('/')[-1].split("?")[0]
         
         # 生成唯一的新文件名
-        new_file_name = str(uuid.uuid4()) + '_' + file_name
+        new_file_name = file_name + '_' +  str(uuid.uuid4()) + '_' + file_name
         
         # 构建保存路径
         save_path = os.path.join(save_directory, new_file_name)

@@ -245,7 +245,7 @@
                             <option :value = 4>图片地址</option>
                         </select>
                         <div v-if='paras.parameters[paraIndex]["nodeType"] == 4'>
-                            <label>提取图片地址后是否同时<b>下载图片</b></label>
+                            <label>提取图片地址后是否同时<b>下载图片</b>：</label>
                             <select v-model='paras.parameters[paraIndex]["downloadPic"]' class="form-control">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
@@ -427,6 +427,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
+                    <label>判断条件是从左往右判断的，即如果最左边的判断分支的条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。</label>
                     <label>条件类型：</label>
                     <select v-model='TClass' class="form-control">
                         <option value = 0>无条件</option>

@@ -245,7 +245,7 @@
                             <option :value = 4>Image Address</option>
                         </select>
                         <div v-if='paras.parameters[paraIndex]["nodeType"] == 4'>
-                            <label>Whether to <b>download image</b> after extracting the image address</label>
+                            <label>Whether to <b>download image</b> after extracting the image address: </label>
                             <select v-model='paras.parameters[paraIndex]["downloadPic"]' class="form-control">
                                 <option :value = 0>No</option>
                                 <option :value = 1>Yes</option>
@@ -427,6 +427,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
+                    <label>The conditions are evaluated from left to right, which means if the condition in the leftmost branch is satisfied, the operations within that branch are executed. Otherwise, the condition in the next branch from left to right is evaluated, and so on.</label>
                     <label>Condition Type:</label>
                     <select v-model='TClass' class="form-control">
                         <option value = 0>No Condition</option>
