@@ -2,9 +2,7 @@
 
 官方网址: https://github.com/NaiboWang/EasySpider
 
-支持MacOS系统，包括Intel芯片和Arm芯片，如酷睿i7和M1芯片。
-
-打开如果白屏请等待最多20秒，界面就会显示。
+支持MacOS系统，包括Intel芯片和Arm芯片，如酷睿i7和M1芯片，最低MacOS系统版本为11.x。
 
 视频教程：https://www.bilibili.com/video/BV1Fk4y1L7xX/
 
