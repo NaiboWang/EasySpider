@@ -120,6 +120,7 @@
     word-wrap: break-word;
     text-overflow: ellipsis;
     overflow: hidden;
+    margin-top: 0px !important;
     white-space: nowrap;
     width: 100%;
 }

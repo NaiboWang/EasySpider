@@ -10,6 +10,6 @@ rm -r out/EasySpider/resources/app/.idea
 rm -r out/EasySpider/resources/app/tasks
 rm -r out/EasySpider/resources/app/execution_instances
 rm -r out/EasySpider/resources/app/user_data
-rm -r ../Releases/EasySpider_linux_amd64_Ubuntu/EasySpider
+rm -r ../.temp_to_pub/EasySpider_linux_amd64_Ubuntu/EasySpider
 rm out/EasySpider/resources/app/vs_BuildTools.exe
-mv out/EasySpider ../Releases/EasySpider_linux_amd64_Ubuntu/EasySpider
+mv out/EasySpider ../.temp_to_pub/EasySpider_linux_amd64_Ubuntu/EasySpider

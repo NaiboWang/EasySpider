@@ -5,6 +5,6 @@ rmdir /s /q out\EasySpider\resources\app\.idea
 rmdir /s /q out\EasySpider\resources\app\tasks
 rmdir /s /q out\EasySpider\resources\app\user_data
 rmdir /s /q out\EasySpider\resources\app\execution_instances
-rmdir /s /q ..\Releases\EasySpider_windows_amd64\EasySpider
+rmdir /s /q ..\.temp_to_pub\EasySpider_windows_amd64\EasySpider
 del out\EasySpider\resources\app\vs_BuildTools.exe
-move out\EasySpider ..\Releases\EasySpider_windows_amd64\EasySpider
+move out\EasySpider ..\.temp_to_pub\EasySpider_windows_amd64\EasySpider
