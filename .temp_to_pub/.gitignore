@@ -3,4 +3,4 @@ EasySpider
 EasySpider.app/
 EasySpider_windows_amd64/user_data
 *.tmp
-*.7z
+*.7z*
