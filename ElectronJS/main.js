@@ -296,6 +296,7 @@ async function runBrowser(lang = "en", user_data_folder = '') {
     }
     options.addExtensions(path.join(__dirname, "XPathHelper.crx"));
     options.setChromeBinaryPath(chromeBinaryPath);
+    options.add
     if (user_data_folder != "") {
         let dir = path.join(task_server.getDir(), user_data_folder);
         console.log(dir);

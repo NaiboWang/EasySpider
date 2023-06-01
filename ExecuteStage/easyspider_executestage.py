@@ -702,10 +702,18 @@ class BrowserThread(Thread):
             textbox.send_keys(Keys.SHIFT, Keys.END)
             # Send the DELETE key
             textbox.send_keys(Keys.DELETE)
+            value = ""
             if para["useLoop"]:
-                textbox.send_keys(loopValue)
+                value = loopValue
             else:
-                textbox.send_keys(para["value"])
+                value = para["value"]
+            pattern = r'Field\["([^"]+)"\]' # 将value中的Field[""]替换为outputParameters中的键值
+            try:
+                replaced_text = re.sub(pattern, lambda match: self.outputParameters.get(match.group(1), ''), value)
+            except:
+                replaced_text = value
+            value = replaced_text
+            textbox.send_keys(value)
             self.execute_code(2, para["afterJS"], para["afterJSWaitTime"], textbox) # 执行后置js
             # global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
             self.bodyText = self.browser.find_element(By.CSS_SELECTOR, "body").text
@@ -1089,6 +1097,22 @@ if __name__ == '__main__':
     option.add_argument(
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
     options.add_argument("--disable-blink-features=AutomationControlled")  # TMALL 反扒
+    options.add_experimental_option("prefs", {
+            "download.default_directory": "Data/",  # 设置文件下载路径
+            "download.prompt_for_download": False,  # 禁止下载提示框
+            "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
+            "download.directory_upgrade": True,
+            "download.extensions_to_open": "applications/pdf",
+            "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
+        })
+    option.add_experimental_option("prefs", {
+            "download.default_directory": "Data/",  # 设置文件下载路径
+            "download.prompt_for_download": False,  # 禁止下载提示框
+            "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
+            "download.directory_upgrade": True,
+            "download.extensions_to_open": "applications/pdf",
+            "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
+        })
     print(options)
     threads = []
     for i in c.id:
