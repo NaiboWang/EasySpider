@@ -272,7 +272,7 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use text inside the Loop (If not checked, the text entered each time will be the text inside the "Input Value" textbox below. If checked, the text set within the loop will be used)</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>Input Value:</label>
+                        <label>Input Value (Use Field["FieldName"] to input the last extracted value of a field):</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
                     </div>
 
@@ -378,7 +378,7 @@
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["pathList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 5'>
-                        <label>Content List:</label>
+                        <label>Content List (Use Field["FieldName"] to input the last extracted value of a field):</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="One text/URL per line" v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 7'>
