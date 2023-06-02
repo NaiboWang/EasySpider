@@ -24,6 +24,7 @@ from selenium.common.exceptions import StaleElementReferenceException, InvalidSe
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
+# import undetected_chromedriver as uc
 import random
 # import numpy
 import csv
