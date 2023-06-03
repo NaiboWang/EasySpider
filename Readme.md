@@ -4,6 +4,10 @@
 
 If you think this tool is good, please gently click the **Star** button in the upper right corner at this page to increase the project exposure, thank you! The software is completely free (except for commercial use), only ask everyone to Star and promote it to other friends in need, thank you!
 
+## 官方网址/Official Website
+
+https://www.easyspider.org
+
 # EasySpider: Visual Code-Free Web Crawler
 
 一个可视化爬虫软件，可以使用图形化界面，无代码可视化的设计和执行爬虫任务。只需要在网页上选择自己想要爬的内容并根据提示框操作即可完成爬虫设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
