@@ -8,9 +8,9 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 http://www.easyspider.org
 
-# EasySpider: Visual Code-Free Web Crawler
+# 易采集EasySpider: Visual Code-Free Web Crawler
 
-一个可视化爬虫软件，可以使用图形化界面，无代码可视化的设计和执行爬虫任务。只需要在网页上选择自己想要爬的内容并根据提示框操作即可完成爬虫设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
+易采集：一个可视化爬虫软件，可以使用图形化界面，无代码可视化的设计和执行爬虫任务。只需要在网页上选择自己想要爬的内容并根据提示框操作即可完成爬虫设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
 
 A visual code-free/no-code web crawler/spider, just select the content you want to crawl on the web page and operate according to the prompt box to complete the design and execution of the crawler. At the same time, the software can be executed by command line alone, so it can be easily embedded into other systems.
 
@@ -18,7 +18,7 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 ![animation_en](media/animation_en.gif)
 
-## 下载 EasySpider/Download EasySpider
+## 下载易采集/Download EasySpider
 
 进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.3.1/Download_Link_Address_in_China_Mainland.txt)。
 
@@ -90,7 +90,7 @@ At the same time, the software is protected by patent rights. If you want to use
 
 ## 出版物/Publications
 
-- This software has been accepted by The Web Conference (WWW) 2023 (中国计算机学会顶级会议，CCF A): [EasySpider: A No-Code Visual System for Crawling the Web](https://dl.acm.org/doi/abs/10.1145/3543873.3587345), March 2023.
+- This software has been accepted by The Web Conference (WWW) 2023 (中国计算机学会顶级会议，CCF A): [EasySpider: A No-Code Visual System for Crawling the Web](https://dl.acm.org/doi/abs/10.1145/3543873.3587345), April 2023.
 
 - 中国国家知识产权局发明专利，[一种自定义提取流程的服务封装系统](media/patent.png)， 2022年5月。
 
