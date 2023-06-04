@@ -1,6 +1,6 @@
 EasySpider_MacOS_all_arch/easyspider_executestage
 EasySpider
 EasySpider.app/
-EasySpider_windows_amd64/user_data
+EasySpider_windows_x64/user_data
 *.tmp
 *.7z*
