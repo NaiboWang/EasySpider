@@ -34,7 +34,6 @@ Ebay样例博客：https://blog.csdn.net/ihero/article/details/130805504
 
 Documentation can be found from [GitHub Wiki](https://github.com/NaiboWang/EasySpider/wiki).
 
-
 ## 视频教程/Video Tutorials
 
 Bilibili/B站视频教程:
@@ -68,6 +67,11 @@ Bilibili/B站视频教程:
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
+## 样例任务/Sample Tasks
+
+从本项目的[Examples](Examples)文件夹中下载样例任务，更名为大于0的数字，导入到EasySpider中的`tasks`文件夹中，然后在EasySpider中打开即可。
+
+Download sample tasks from the [Examples](Examples) folder of this project, rename them to numbers greater than 0, import them into the `tasks` folder in EasySpider, and then open them in EasySpider.
 
 ## 声明/Declaration
 
