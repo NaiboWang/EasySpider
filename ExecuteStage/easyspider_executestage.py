@@ -650,6 +650,12 @@ class BrowserThread(Thread):
                 self.outputParameters[key] = ""
         else:
             url = list(filter(isnull, para["links"].split("\n")))[0]
+        pattern = r'Field\["([^"]+)"\]' # 将value中的Field[""]替换为outputParameters中的键值
+        try:
+            replaced_text = re.sub(pattern, lambda match: self.outputParameters.get(match.group(1), ''), url)
+        except:
+            replaced_text = url
+        url = replaced_text
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
