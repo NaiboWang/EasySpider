@@ -4,6 +4,8 @@
 
 支持MacOS系统，包括Intel芯片和Arm芯片，如酷睿i7和M1芯片，最低MacOS系统版本为11.x。
 
+10.x版本MacOS请下载v0.2.0版本使用。
+
 视频教程：https://www.bilibili.com/video/BV1Fk4y1L7xX/
 
 可以从其他机器导入任务，只需要把其他机器的tasks文件夹里的.json文件放入/Users/你的用户名/Library/Application Support/EasySpider/tasks文件夹里即可。同理执行号文件可以通过复制execution_instances文件夹中的.json文件来导入。注意，两个文件夹里的.json文件只支持命名为大于0的数字。
