@@ -1,0 +1,360 @@
+{
+    "id": 33,
+    "name": "名录产品检索",
+    "url": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360",
+    "links": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360",
+    "create_time": "6/7/2023, 10:27:39 PM",
+    "version": "0.3.2",
+    "containJudge": true,
+    "desc": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360",
+    "inputParameters": [
+        {
+            "id": 0,
+            "name": "urlList_0",
+            "nodeId": 1,
+            "nodeName": "打开网页",
+            "value": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360",
+            "desc": "要采集的网址列表，多行以\\n分开",
+            "type": "string",
+            "exampleValue": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360"
+        },
+        {
+            "id": 1,
+            "name": "loopTimes_循环点击下一页_1",
+            "nodeId": 2,
+            "nodeName": "循环点击下一页",
+            "desc": "循环循环点击下一页执行的次数（0代表无限循环）",
+            "type": "int",
+            "exampleValue": 0,
+            "value": 0
+        }
+    ],
+    "outputParameters": [
+        {
+            "id": 0,
+            "name": "参数1_文本",
+            "desc": "",
+            "type": "string",
+            "exampleValue": "\n            \n              \n                  \n                        冶金钢铁\n                     · 中国免费名录资源 ·     \n                  \n                \n            \n            \n              \n            \n\t\t\t\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t  全国有色金属行业协会名单\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t  —暂无   免费资源 Directory.MS\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t样本预览满意付款\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\n\t\t\t\n\t\t\tEXCEL  ￥580   2023中国冶金行业企业名录EXCEL  ￥480   2023中国钢铁行业企业名录EXCEL  ￥300   2023满州里企业名录\n            \n              \n            \n            \n              全国有色金属行业协会名单 中国有色金属工业协会 中国钨业协会 中国有色金属建设协会 中国有色金属加工工业协会 中国工程爆破协会 中国游艺机游乐园协会\n            \n            \n              \n            \n            \n                本类目相关名录产品推荐\n            \n            \n              行业名录2023中国冶金行业企业名录2023中国钢铁行业企业名录2023中国建筑钢材制造企业名录2023中国板（卷）材制造企业名...2023中国型材制造企业名录2023中国管材制造企业名录2023中国炉料制造企业名录2023中国冶金机械企业名录2023中国不锈钢材制造企业名录2023中国基本金属制造企业名录名录书籍中国冶金行业企事业名录中国冶金企事业名录全国冶金企业名录全国重点钢材经销企业名录大全中国有色金属工业企事业单位名录...中国铸造行业企事业名录大全中国钢铁和有色金属企业大全中国有色金属产品选购指南金刚石磨料磨具、石材厂商通讯录中国冶金企业选购设备指南黄页号簿2023中国冶金行业企业黄页2023中国钢铁行业企业黄页免费资源2023中国冶金行业企业名录2023中国钢铁行业企业名录2007中国十大不锈钢品牌名单2009年钢铁企业最新排名2007中国钢铁工业协会团体会员单...2010年铁合金出口企业名单中国黄金协会会员名单值得重点关注钢铁上市公司名单2005中国钢铁行业百强名单2004年度中国1000大制造商排行榜（...\n            \n            \n          "
+        }
+    ],
+    "graph": [
+        {
+            "index": 0,
+            "id": 0,
+            "parentId": 0,
+            "type": -1,
+            "option": 0,
+            "title": "root",
+            "sequence": [
+                1,
+                2
+            ],
+            "parameters": {
+                "history": 1,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0
+            },
+            "isInLoop": false
+        },
+        {
+            "id": 1,
+            "index": 1,
+            "parentId": 0,
+            "type": 0,
+            "option": 1,
+            "title": "打开网页",
+            "sequence": [],
+            "isInLoop": false,
+            "position": 0,
+            "parameters": {
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "url": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360",
+                "links": "https://emagecompany.com/search.php?key=%E5%8D%8F%E4%BC%9A&page=1&total=360",
+                "maxWaitTime": 10,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1
+            }
+        },
+        {
+            "id": 2,
+            "index": 2,
+            "parentId": 0,
+            "type": 1,
+            "option": 8,
+            "title": "循环点击下一页",
+            "sequence": [
+                4,
+                3
+            ],
+            "isInLoop": false,
+            "position": 1,
+            "parameters": {
+                "history": 4,
+                "tabIndex": -1,
+                "useLoop": false,
+                "xpath": "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table[13]/tbody[1]/tr[1]/td[1]/a[last()]/font[1]",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "loopType": 0,
+                "pathList": "",
+                "textList": "",
+                "code": "",
+                "waitTime": 0,
+                "exitCount": 0,
+                "historyWait": 2,
+                "breakMode": 0,
+                "breakCode": "",
+                "breakCodeWaitTime": 0,
+                "allXPaths": [
+                    "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table[13]/tbody[1]/tr[1]/td[1]/a[11]/font[1]",
+                    "//font[contains(., '下一页')]"
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "index": 3,
+            "parentId": 2,
+            "type": 0,
+            "option": 2,
+            "title": "点击元素",
+            "sequence": [],
+            "isInLoop": true,
+            "position": 1,
+            "parameters": {
+                "history": 4,
+                "tabIndex": -1,
+                "useLoop": true,
+                "xpath": "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table[13]/tbody[1]/tr[1]/td[1]/a[11]/font[1]",
+                "wait": 2,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "maxWaitTime": 10,
+                "paras": [],
+                "allXPaths": [
+                    "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table[13]/tbody[1]/tr[1]/td[1]/a[11]/font[1]",
+                    "//font[contains(., '下一页')]"
+                ],
+                "loopType": 0
+            }
+        },
+        {
+            "id": 3,
+            "index": 4,
+            "parentId": 2,
+            "type": 1,
+            "option": 8,
+            "title": "循环",
+            "sequence": [
+                7
+            ],
+            "isInLoop": true,
+            "position": 0,
+            "parameters": {
+                "history": 5,
+                "tabIndex": -1,
+                "useLoop": false,
+                "xpath": "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table/tbody[1]/tr[1]/td[1]/a[1]",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "loopType": 1,
+                "pathList": "",
+                "textList": "",
+                "code": "",
+                "waitTime": 0,
+                "exitCount": 0,
+                "historyWait": 2,
+                "breakMode": 0,
+                "breakCode": "",
+                "breakCodeWaitTime": 0,
+                "allXPaths": ""
+            }
+        },
+        {
+            "id": 7,
+            "index": 5,
+            "parentId": 6,
+            "type": 0,
+            "option": 2,
+            "title": "点击元素",
+            "sequence": [],
+            "isInLoop": true,
+            "position": 0,
+            "parameters": {
+                "history": 5,
+                "tabIndex": -1,
+                "useLoop": true,
+                "xpath": "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table/tbody[1]/tr[1]/td[1]/a[1]",
+                "wait": 2,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "maxWaitTime": 10,
+                "paras": [],
+                "allXPaths": "",
+                "loopType": 1
+            }
+        },
+        {
+            "id": 8,
+            "index": 6,
+            "parentId": 6,
+            "type": 0,
+            "option": 3,
+            "title": "提取数据",
+            "sequence": [],
+            "isInLoop": true,
+            "position": 1,
+            "parameters": {
+                "history": 1,
+                "tabIndex": -1,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "paras": [
+                    {
+                        "nodeType": 0,
+                        "contentType": 0,
+                        "relative": false,
+                        "name": "参数1_文本",
+                        "desc": "",
+                        "extractType": 0,
+                        "relativeXPath": "/html/body/table/tbody/tr/td/table[3]/tbody/tr/td[2]",
+                        "allXPaths": [
+                            "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]",
+                            "//td[contains(., '')]"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "\n            \n              \n                  \n                        冶金钢铁\n                     · 中国免费名录资源 ·     \n                  \n                \n            \n            \n              \n            \n\t\t\t\n\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t  全国有色金属行业协会名单\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t  —暂无   免费资源 Directory.MS\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\t样本预览满意付款\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t\t\n\t\t\t\n\t\t\t\n\t\t\tEXCEL  ￥580   2023中国冶金行业企业名录EXCEL  ￥480   2023中国钢铁行业企业名录EXCEL  ￥300   2023满州里企业名录\n            \n              \n            \n            \n              全国有色金属行业协会名单 中国有色金属工业协会 中国钨业协会 中国有色金属建设协会 中国有色金属加工工业协会 中国工程爆破协会 中国游艺机游乐园协会\n            \n            \n              \n            \n            \n                本类目相关名录产品推荐\n            \n            \n              行业名录2023中国冶金行业企业名录2023中国钢铁行业企业名录2023中国建筑钢材制造企业名录2023中国板（卷）材制造企业名...2023中国型材制造企业名录2023中国管材制造企业名录2023中国炉料制造企业名录2023中国冶金机械企业名录2023中国不锈钢材制造企业名录2023中国基本金属制造企业名录名录书籍中国冶金行业企事业名录中国冶金企事业名录全国冶金企业名录全国重点钢材经销企业名录大全中国有色金属工业企事业单位名录...中国铸造行业企事业名录大全中国钢铁和有色金属企业大全中国有色金属产品选购指南金刚石磨料磨具、石材厂商通讯录中国冶金企业选购设备指南黄页号簿2023中国冶金行业企业黄页2023中国钢铁行业企业黄页免费资源2023中国冶金行业企业名录2023中国钢铁行业企业名录2007中国十大不锈钢品牌名单2009年钢铁企业最新排名2007中国钢铁工业协会团体会员单...2010年铁合金出口企业名单中国黄金协会会员名单值得重点关注钢铁上市公司名单2005中国钢铁行业百强名单2004年度中国1000大制造商排行榜（...\n            \n            \n          "
+                            }
+                        ],
+                        "default": "",
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    }
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "index": 7,
+            "parentId": 3,
+            "type": 2,
+            "option": 9,
+            "title": "判断条件",
+            "sequence": [
+                8
+            ],
+            "isInLoop": true,
+            "position": 0,
+            "parameters": {
+                "history": 1,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0
+            }
+        },
+        {
+            "id": 6,
+            "parentId": 5,
+            "index": 8,
+            "type": 3,
+            "option": 10,
+            "title": "条件分支",
+            "sequence": [
+                5,
+                6
+            ],
+            "isInLoop": true,
+            "parameters": {
+                "history": 1,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "class": "7",
+                "value": "",
+                "code": "return arguments[0].nextElementSibling.nextSibling.innerText.includes(\"免费资源\") && !arguments[0].innerText.includes(\"上一页\")",
+                "waitTime": 0
+            },
+            "position": 0
+        },
+        {
+            "id": -1,
+            "parentId": 5,
+            "index": 9,
+            "type": 3,
+            "option": 10,
+            "title": "条件分支",
+            "sequence": [],
+            "isInLoop": true,
+            "parameters": {
+                "history": 1,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "class": 0,
+                "value": "",
+                "code": "",
+                "waitTime": 0
+            },
+            "position": 1
+        }
+    ]
+}
