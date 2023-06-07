@@ -15,6 +15,27 @@
 
 ======版本更新说明======
 
+-----v0.3.2-----
+
+## 更新说明
+
+1. 选中子元素操作可删除字段并在浏览器中实时取消标记被删除的字段。
+<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/e016c832-6ff9-4814-b86c-38787e73aa30" width=50% />
+
+2. 选中子元素增加选择模式，可以只选择所有块都有的子元素，或者所有块中和第一个选中的块相同的子元素。
+<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/0082b11d-96bc-43f1-acdb-8280decb48b4" width=50% />
+
+3. 输入文字和打开网页选项中可以使用最后一次提取到的字段值**作为变量**进行文字输入，用`Field["字段名"]`表示此变量。
+![image](https://github.com/NaiboWang/EasySpider/assets/30287768/d81cd082-e01a-490e-85f7-9baac93510d8)
+
+4. 可下载文件，如PDF。
+5. 修复打开后有可能会白屏10秒左右的Bug，使得在内网，暗网以及任意局域网都可以使用软件。
+6. 修复提取当前页面URL和标题时可能提取不到的bug。
+7. 修复OCR识别可能提取不到的bug。
+8. 提取逻辑更新为每采集10条本地保存一次。
+9. 修改任务时默认锚点位置为任务流程的最后操作后。
+10. 更新Chrome版本为114。
+
 -----V0.3.1-----
 
 如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.3.0/Download_Link_Address_in_China_Mainland.txt)。

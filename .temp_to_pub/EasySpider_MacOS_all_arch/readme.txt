@@ -10,6 +10,21 @@ You can import tasks from other machines by simply opening the EasySpider softwa
 
 ======Version Update Instruction======
 
+-----v0.3.2-----
+
+## Update Instruction
+
+1. Selected child element operations can delete fields and unmark deleted fields in real-time in the browser.
+2. Selecting child elements adds a selection mode that allows you to choose only the child elements that are present in all blocks or the child elements that are the same as the first selected block.
+3. In the text input and webpage open options, you can use the extracted field value as a variable for text input, represented by Field["field_name"].
+4. Files can be downloaded, such as PDF files.
+5. Fixed a bug where the software could display a blank screen for about 10 seconds after opening, making it usable in intranets, darknets, and any local network.
+6. Fixed a bug where the current page URL and title could not be extracted.
+7. Fixed a bug where OCR recognition could fail to extract information.
+8. Updated extraction logic to save locally every 10 records collected.
+9. When modifying a task, the default anchor position is set to after the last operation in the task flow.
+10. Updated Chrome version to 114.
+
 -----V0.3.1-----
 
 

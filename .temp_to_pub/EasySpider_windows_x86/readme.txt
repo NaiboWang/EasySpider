@@ -4,6 +4,8 @@ Welcome to promote this software to other friends.
 
 This version is for Windows 10 x32 and above.
 
+The Windows version supports **Windows 10 and above**. There is no direct usable version available for Windows 7, but the [32-bit version](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0/EasySpider_0.2.0_windows_386.7z) of [v0.2.0](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0) is available and can be run by compiling the software yourself. Therefore, if you want to use Windows 7 for data collection, please download the 32-bit version of v0.2.0 or download the code and compile it yourself.
+
 Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
 
 The software is totally not trojan/virus! If mistaken by antivirus software such as Windows Defender as a virus, please recover it, or open "EasySpider.bat" to run our software instead.
@@ -12,6 +14,21 @@ Tasks can be imported from other machines by simply placing the .json files from
 
 
 ======Version New Features======
+
+-----v0.3.2-----
+
+## Update Instruction
+
+1. Selected child element operations can delete fields and unmark deleted fields in real-time in the browser.
+2. Selecting child elements adds a selection mode that allows you to choose only the child elements that are present in all blocks or the child elements that are the same as the first selected block.
+3. In the text input and webpage open options, you can use the extracted field value as a variable for text input, represented by Field["field_name"].
+4. Files can be downloaded, such as PDF files.
+5. Fixed a bug where the software could display a blank screen for about 10 seconds after opening, making it usable in intranets, darknets, and any local network.
+6. Fixed a bug where the current page URL and title could not be extracted.
+7. Fixed a bug where OCR recognition could fail to extract information.
+8. Updated extraction logic to save locally every 10 records collected.
+9. When modifying a task, the default anchor position is set to after the last operation in the task flow.
+10. Updated Chrome version to 114.
 
 -----v0.3.1-----
 
