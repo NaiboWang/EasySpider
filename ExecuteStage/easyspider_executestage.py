@@ -264,7 +264,7 @@ class BrowserThread(Thread):
             self.recordLog("执行系统命令:" + code)
             # 执行系统命令，超时时间为5秒
             try:
-                output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8")
+                output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8", shell=True)
                 # 输出命令返回值
                 output = output.stdout
                 print(output)
@@ -272,7 +272,8 @@ class BrowserThread(Thread):
                 # 命令执行时间超过5秒，抛出异常
                 self.recordLog("Command timed out")
                 self.recordLog("命令执行超时")
-            except:
+            except Exception as e:
+                print(e) # 打印异常信息
                 self.recordLog("Command execution failed")
                 self.recordLog("命令执行失败")
         return str(output)
@@ -1009,7 +1010,7 @@ if __name__ == '__main__':
         "read_type": "remote",
         "headless": False,
         "server_address": "http://localhost:8074",
-        "version": "0.3.2",
+        "version": "0.3.3",
     }
     c = Config(config)
     print(c)
