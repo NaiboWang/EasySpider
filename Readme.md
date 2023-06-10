@@ -6,7 +6,7 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 ## 官方网站/Official Website
 
-http://www.easyspider.org
+https://www.easyspider.org
 
 # 易采集/EasySpider: Visual Code-Free Web Crawler
 
