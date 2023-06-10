@@ -6,7 +6,7 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 ## 官方网站/Official Website
 
-访问EasySpider官网：www.easyspider.cn
+访问易采集官网：www.easyspider.cn
 
 Visit the official website of EasySpider: www.easyspider.net
 
