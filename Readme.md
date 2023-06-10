@@ -6,7 +6,9 @@ If you think this tool is good, please gently click the **Star** button in the u
 
 ## 官方网站/Official Website
 
-https://www.easyspider.org
+访问EasySpider官网：www.easyspider.cn
+
+Visit the official website of EasySpider: www.easyspider.net
 
 # 易采集/EasySpider: Visual Code-Free Web Crawler
 
