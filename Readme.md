@@ -85,9 +85,9 @@ This software is for learning and communication only. **It is strictly forbidden
 
 For the crawler operations of government and military websites, **the author will not answer any questions** in order to avoid violating relevant national laws, regulations and policies.
 
-同时，软件受到专利权保护，如要用于商业用途，请联系[浙江大学天道专利事务所](https://www.patentguru.com/cn/search?q=%E4%B8%80%E7%A7%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%90%E5%8F%96%E6%B5%81%E7%A8%8B%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F)进行专利授权等付费操作。
+同时，软件受到专利权保护，如要用于商业用途，请联系[杭州天勤知识产权代理有限公司](http://www.tqip.com/)进行专利授权等付费操作。
 
-At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact [Zhejiang University Tiandao Patent Agency](https://www.patentguru.com/cn/search?q=%E4%B8%80%E7%A7%8D%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%90%E5%8F%96%E6%B5%81%E7%A8%8B%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F) for patent authorization and other paid operations.
+At the same time, the software is protected by patent rights. If you want to use it for commercial purposes, please contact [Hangzhou Tianqin Intellectual Property Agency](http://www.tqip.com/) for patent authorization and other paid operations.
 
 
 ## 出版物/Publications
