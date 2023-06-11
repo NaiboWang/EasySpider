@@ -441,7 +441,7 @@
                       </select>
                     <div v-if='TClass > 0 && TClass < 5'>
                         <label>Text/Element XPath to Include: <span style="font-size: 30px!important;" title="Relative XPath syntax: starts with /, e.g., if the XPath of the loop item is /html/body/div[1], and you input /*[@id='tab-customer'], the final XPath will be: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea onkeydown="inputDelete(event)" required placeholder="If the current loop contains elements, input the xpath of the relative element (such as /div[2]/div[1]/img, or /div[2]//img, but direct usage of //img is not supported, meaning it's not allowed to set // as the relative XPATH directly. However, it's possible to set the descendants' path as a relative path following the first child's absolute path)." class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" required placeholder="If the current loop contains elements, input the xpath of the relative element (such as '/div[2]/div[1]/img', if written in relative path, it should be written as '/*//img', which means checking whether there exists an 'img' tag among all the descendant elements of the current loop item.)." class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
                     <div v-else-if='TClass > 0 && TClass < 7'>
                         <label>Code/Script Content: </label>

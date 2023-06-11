@@ -441,7 +441,7 @@
                       </select>
                     <div v-if='TClass>0 && TClass <5'>
                         <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，或/div[2]//img，但不支持直接写//img，即不能直接设置为//这种相对XPATH，但可以在第一个子元素绝对路径后设置后面子孙元素为相对路径）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
                     <div v-else-if='TClass > 0 && TClass < 7'>
                         <label>代码/脚本内容： </label>
