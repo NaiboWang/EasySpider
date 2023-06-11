@@ -46,6 +46,8 @@ Bilibili/B站视频教程:
 
 [实战采集汽车网文章内容并下载文章内图片](https://www.bilibili.com/video/BV1RW4y197ih/)
 
+[定时执行任务+选中子元素多种模式+将提取值作为变量输入](https://www.bilibili.com/video/BV14V4y1m7iL/)
+
 [【重要】自定义条件判断之使用循环项内的JS命令返回值 - 第二弹](https://www.bilibili.com/video/BV1mu411x7Nn/)
 
 [流程图执行逻辑解析 - 58同城房源描述采集案例](https://www.bilibili.com/video/BV1YL411z7uW)
