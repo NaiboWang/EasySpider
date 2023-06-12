@@ -49,10 +49,31 @@ export function getElementXPaths(element, parentElement = document.body) {
     if (element.alt) {
         paths.push("//" + element.tagName + "[@alt='" + element.alt + "']");
     }
+    paths.push(getAbsoluteXPathWithReverseIndex(element));
     console.log("ALL PATHS: " + paths);
     return paths;
 }
 
+function getAbsoluteXPathWithReverseIndex(element) {
+    var path = [];
+    while (element && element.nodeType == Node.ELEMENT_NODE) {
+        var index = 0;
+        for (var sibling = element.nextSibling; sibling; sibling = sibling.nextSibling) {
+            // Ignore document type declaration.
+            if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE)
+                continue;
+            if (sibling.nodeName == element.nodeName)
+                ++index;
+        }
+
+        var tagName = element.nodeName.toLowerCase();
+        var pathIndex = (index ? "[last()-" + index + "]" : "");
+        path.unshift(tagName + pathIndex);
+
+        element = element.parentNode;
+    }
+    return "/" + path.join("/");
+}
 
 //返回element相对node节点的xpath，默认的node节点是: /
 export function readXPath(element, type = 1, node = document.body) {
