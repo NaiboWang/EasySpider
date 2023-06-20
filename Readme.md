@@ -42,6 +42,8 @@ Bilibili/B站视频教程:
 
 [EasySpider介绍 - 中国地震台网采集案例](https://www.bilibili.com/video/BV1Fk4y1L7xX/)
 
+[自动/手动同类型元素匹配功能说明](https://www.bilibili.com/video/BV1pu411a7pK/)
+
 [如何无代码可视化的爬取需要登录才能爬的网站 - 知乎网站案例](https://www.bilibili.com/video/BV1HV4y1r7v8)
 
 [实战采集汽车网文章内容并下载文章内图片](https://www.bilibili.com/video/BV1RW4y197ih/)
