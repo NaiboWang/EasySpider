@@ -916,7 +916,7 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        for p in para["paras"]:
+        for p in para["paras"]: # 加并行处理
             content = ""
             if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
                 try:
@@ -1075,7 +1075,10 @@ if __name__ == '__main__':
 
     option.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
-
+    options.add_argument('-ignore-certificate-errors')
+    options.add_argument('-ignore -ssl-errors')
+    option.add_argument('-ignore-certificate-errors')
+    option.add_argument('-ignore -ssl-errors')
     # user_data_dir = r''  # 注意没有Default！
 
     # options.add_argument('--user-data-dir='+p)
