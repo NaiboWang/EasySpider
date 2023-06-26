@@ -389,9 +389,9 @@ class BrowserThread(Thread):
             self.judgeExecute(node, loopValue, loopPath, index)
 
         # 执行完之后进行等待
-        if node["option"] != 0:
+        if node["option"] != 0 and node["option"] != 2:
             waitTime = 0.01  # 默认等待0.01秒
-            if node["parameters"]["wait"] > 1:
+            if node["parameters"]["wait"] >= 1:
                 waitTime = node["parameters"]["wait"]
             time.sleep(waitTime)
             self.Log("Wait seconds after node executing: ", waitTime)
@@ -780,6 +780,8 @@ class BrowserThread(Thread):
             self.recordLog("Cannot find element:" +
                     path + ", please try to set the wait time before executing this operation")
             print("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
+        waitTime = float(para["wait"]) + 0.01  # 点击之后等待
+        time.sleep(waitTime)  # 点击之后等待waitTime秒
         if tempHandleNum != len(self.browser.window_handles):  # 如果有新标签页的行为发生
             self.browser.switch_to.window(self.browser.window_handles[-1])  # 跳转到新的标签页
             self.history["handle"] = self.browser.current_window_handle
