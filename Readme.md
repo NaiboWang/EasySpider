@@ -70,6 +70,7 @@ Bilibili/B站视频教程:
 
 [如何同时执行多个任务（并行多开）](https://www.bilibili.com/video/BV13c411G7LE/)
 
+[实例 - 反人类网站文章采集和代码调试](https://www.bilibili.com/video/BV11W4y1D71t/)
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 
