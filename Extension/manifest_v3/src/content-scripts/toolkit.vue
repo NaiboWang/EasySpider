@@ -39,7 +39,7 @@
                   <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedText">采集当前选中项的文本</a><span title=""></span></div>
                   <div v-if="tname()=='链接'||tname()=='图片'"><a
                       v-on:mousedown="getLink">采集该{{ tname() }}的地址</a><span title=""></span></div>
-                  <div v-if="tname()!='选择框' && tname()!='文本框'"><a
+                  <div><a
                       v-on:mousedown="clickElement">点击该{{ tname() }}</a><span title=""></span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
                       v-on:mousedown="loopClickSingleElement">循环点击该{{ tname() }}</a><span title="常用于循环点击下一页场景">☺</span></div>
@@ -196,7 +196,7 @@
 
                   <div v-if="tname()=='链接'||tname()=='图片'"><a v-on:mousedown="getLink">Collect address of this
                     {{ tname() | toEng }}</a><span title=""></span></div>
-                  <div v-if="tname()!='选择框' && tname()!='文本框'"><a v-on:mousedown="clickElement">Click
+                  <div><a v-on:mousedown="clickElement">Click
                     this {{ tname() | toEng }}</a><span title=""></span></div>
                   <div v-if="tname()!='选择框' && tname()!='文本框'"><a
                       v-on:mousedown="loopClickSingleElement">Loop-click this {{ tname() | toEng }}</a><span
