@@ -186,10 +186,35 @@ async function beginInvoke(msg, ws) {
                 let message = JSON.parse(msg.message.pipe);
                 let type = message.type;
                 console.log("FROM Browser: ", message);
-                // if(type.indexOf("Click")>=0){
-                //     await new Promise(resolve => setTimeout(resolve, 2000)); //等两秒
-                //
-                // }
+                if(type.indexOf("Click")>=0){
+                    let handles = await driver.getAllWindowHandles();
+                    console.log("handles", handles);
+                    let exit = false;
+                    let content_handle = handle_pairs[message.id];
+                    console.log(message.id,  content_handle);
+                    let order = [...handles.filter(handle => handle != current_handle && handle != content_handle), current_handle, content_handle]; //搜索顺序
+                    let len = order.length;
+                    while(true) {
+                        try{
+                            let h = order[len - 1];
+                            console.log("current_handle", current_handle);
+                            if(h != null && handles.includes(h)){
+                                await driver.switchTo().window(h);
+                                current_handle = h;
+                                console.log("switch to handle: ", h);
+                            }
+                            let element = await driver.findElement(By.xpath(message.xpath));
+                            await element.click();
+                            break;
+                        } catch (error) {
+                            console.log("len", len);
+                            len = len - 1;
+                            if (len == 0) {
+                                break;
+                            }
+                        }
+                    }
+                }
             } else {
                 socket_window.send(msg.message.pipe);
                 console.log("FROM Flowchart: ", JSON.parse(msg.message.pipe));

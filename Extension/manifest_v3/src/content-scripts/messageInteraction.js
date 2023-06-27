@@ -57,6 +57,7 @@ export function input(value) {
 export function sendSingleClick() {
     let message = {
         "type": "singleClick",
+        "id": global.id,
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
@@ -208,6 +209,7 @@ export function collectMultiWithPattern() {
 export function sendLoopClickSingle(name) {
     let message = {
         "type": "loopClickSingle",
+        "id": global.id,
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": true, //是否使用循环内元素
@@ -231,6 +233,7 @@ export function sendLoopClickSingle(name) {
 export function sendLoopClickEvery() {
     let message = {
         "type": "loopClickEvery",
+        "id": global.id,
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "xpath": "", //默认值设置为空

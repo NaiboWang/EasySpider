@@ -129,6 +129,11 @@
                     </div>
                     <label>点击后页面加载最长等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
+                    <label>点击类型：</label>
+                    <select v-model='nowNode["parameters"]["clickWay"]' class="form-control">
+                        <option :value = 0>Selenium点击</option>
+                        <option :value = 1>JavaScript点击</option>
+                    </select>
                     <label>点击后是否向下滚动页面：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>不滚动</option>
@@ -194,7 +199,7 @@
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
                         <p>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">

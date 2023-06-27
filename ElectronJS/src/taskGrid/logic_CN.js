@@ -158,6 +158,7 @@ function addParameters(t) {
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
+        t["parameters"]["clickWay"] = 0; //点击方式，0代表selenium点击，1代表js点击
         t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["paras"] = []; //默认参数列表
         t["parameters"]["wait"] = 2; //点击后等待时间默认2s

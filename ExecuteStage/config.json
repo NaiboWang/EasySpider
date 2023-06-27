@@ -2,5 +2,5 @@
     "webserver_address": "http://localhost",
     "webserver_port": 8074,
     "user_data_folder": "./user_data",
-    "absolute_user_data_folder": "D:\\Documents\\Projects\\EasySpider\\ElectronJS\\user_data"
+    "absolute_user_data_folder": "D:\\Documents\\Projects\\EasySpider\\.temp_to_pub\\EasySpider_windows_x64\\user_data"
 }

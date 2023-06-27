@@ -129,6 +129,11 @@
                     </div>
                     <label>Maximum wait time for page load after clicking (in seconds):</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
+                    <label>Click Type:</label>
+                    <select v-model='nowNode["parameters"]["clickWay"]' class="form-control">
+                        <option :value = 0>Selenium</option>
+                        <option :value = 1>JavaScript</option>
+                    </select>
                     <label>Whether to scroll down after clicking:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option value = 0>No Scrolling</option>
@@ -194,7 +199,7 @@
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPath</p>
                         <p>XPATH: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="If you want to write the XPath relative to the current element in the loop, you can write as *../div[1] which matches the first div child element of the parent of the current element in the loop."></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">

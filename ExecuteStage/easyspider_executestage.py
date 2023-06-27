@@ -760,9 +760,17 @@ class BrowserThread(Thread):
                     path + ", please try to set the wait time before executing this operation")
         tempHandleNum = len(self.browser.window_handles)  # 记录之前的窗口位置
         try:
-            script = 'var result = document.evaluate(`' + path + \
-                '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
-            self.browser.execute_script(script, str(index))  # 用js的点击方法
+            click_way = int(para["clickWay"])
+        except:
+            click_way = 0
+        try:
+            if click_way == 0: # 用selenium的点击方法
+                actions = ActionChains(self.browser)  # 实例化一个action对象
+                actions.click(element).perform()
+            elif click_way == 1: # 用js的点击方法
+                script = 'var result = document.evaluate(`' + path + \
+                    '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
+                self.browser.execute_script(script, str(index))  # 用js的点击方法
         except TimeoutException:
             self.Log('time out after set seconds when loading clicked page')
             self.recordLog('time out after set seconds when loading clicked page')
@@ -936,7 +944,7 @@ class BrowserThread(Thread):
                                                                 p["relativeXPath"][1:])
                     else:
                         element = self.browser.find_element(By.XPATH, p["relativeXPath"])
-                except (NoSuchElementException, InvalidSelectorException):  # 找不到元素的时候，使用默认值
+                except (NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
                     # print(p)
                     try:
                         content = p["default"]

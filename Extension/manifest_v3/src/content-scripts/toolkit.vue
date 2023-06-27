@@ -465,11 +465,12 @@ export default {
           }
         }
     },
-    clickElement: function () { //点击元素操作
+    clickElement: async function () { //点击元素操作
       sendSingleClick();
       //先发送数据
       global.nodeList[0]["node"].focus(); //获得元素焦点
-      global.nodeList[0]["node"].click(); //点击元素
+      await new Promise(resolve => setTimeout(resolve, 500)); //因为nodejs点击后又会把当前元素加入到列表中，所以这里需要等待一下再清空
+      // global.nodeList[0]["node"].click(); //点击元素
       clearEl();
     },
     changeSelect: function(){
@@ -527,18 +528,20 @@ export default {
       sendLoopMouseMove();
       clearEl();
     },
-    loopClickSingleElement: function () { //循环点击单个元素
+    loopClickSingleElement: async function () { //循环点击单个元素
       sendLoopClickSingle(this.tname()); //识别下一页,循环点击单个元素和点击多个元素
       // if (this.tname() != "下一页元素") { //下一页元素不进行点击操作
-        global.nodeList[0]["node"].focus(); //获得元素焦点
-        global.nodeList[0]["node"].click(); //点击元素
+      global.nodeList[0]["node"].focus(); //获得元素焦点
+      await new Promise(resolve => setTimeout(resolve, 500)); //因为nodejs点击后又会把当前元素加入到列表中，所以这里需要等待一下再清空
+      // global.nodeList[0]["node"].click(); //点击元素
       // }
       clearEl();
     },
-    loopClickEveryElement: function () { //循环点击每个元素
+    loopClickEveryElement: async function () { //循环点击每个元素
       sendLoopClickEvery(); //识别下一页,循环点击单个元素和点击多个元素
       global.nodeList[0]["node"].focus(); //获得元素焦点
-      global.nodeList[0]["node"].click(); //点击元素
+      await new Promise(resolve => setTimeout(resolve, 500)); //因为nodejs点击后又会把当前元素加入到列表中，所以这里需要等待一下再清空
+      // global.nodeList[0]["node"].click(); //点击元素
       clearEl();
     },
     setInput: function () { //输入文字
