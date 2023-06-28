@@ -373,14 +373,14 @@ function saveService(type) {
                     if (nodeList[i]["parameters"]["recordASField"] == 1) {
                         let id = outputIndex++;
                         let title = nodeList[i]["title"];
-                        if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
-                            $('#myModal').modal('hide');
-                            $("#tip2").slideDown(); //提示框
-                            fadeout = setTimeout(function() {
-                                $("#tip2").slideUp();
-                            }, 5000);
-                            return;
-                        }
+                        // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
+                        //     $('#myModal').modal('hide');
+                        //     $("#tip2").slideDown(); //提示框
+                        //     fadeout = setTimeout(function() {
+                        //         $("#tip2").slideUp();
+                        //     }, 5000);
+                        //     return;
+                        // }
                         outputNames.push(title);
                         outputParameters.push({
                             id: id,
