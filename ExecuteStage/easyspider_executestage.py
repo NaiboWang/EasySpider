@@ -156,9 +156,10 @@ class BrowserThread(Thread):
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
         for para in tOut:
-            self.outputParameters[para["name"]] = ""
-            self.dataNotFoundKeys[para["name"]] = False
-            self.OUTPUT[0].append(para["name"])
+            if para["name"] not in self.outputParameters.keys():
+                self.outputParameters[para["name"]] = ""
+                self.dataNotFoundKeys[para["name"]] = False
+                self.OUTPUT[0].append(para["name"])
         self.urlId = 0  # 全局记录变量
         
     def run(self):
