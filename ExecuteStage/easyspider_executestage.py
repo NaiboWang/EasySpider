@@ -265,7 +265,8 @@ class BrowserThread(Thread):
             self.recordLog("执行系统命令:" + code)
             # 执行系统命令，超时时间为5秒
             try:
-                output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8", shell=True)
+                # output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8", shell=True)
+                output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, shell=True)
                 # 输出命令返回值
                 output = output.stdout
                 print(output)
@@ -1063,6 +1064,12 @@ if __name__ == '__main__':
             sys.exit()
         print("Chrome location:", options.binary_location)
         print("Chromedriver location:", driver_path)
+    # elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
+    #     print("Finding chromedriver in ./Chrome",
+    #           os.getcwd()+"/Chrome")
+    #     options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
+    #     # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
+    #     driver_path = "./Chrome/chromedriver.exe"
     elif os.path.exists(os.getcwd()+"/../ElectronJS"): 
         if os.getcwd().find("ElectronJS") >= 0:  # 软件dev用
             print("Finding chromedriver in EasySpider",
@@ -1074,12 +1081,6 @@ if __name__ == '__main__':
                 os.getcwd()+"/ElectronJS")
             option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
             driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-    elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
-        print("Finding chromedriver in ./Chrome",
-              os.getcwd()+"/Chrome")
-        options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
-        # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
-        driver_path = "./Chrome/chromedriver.exe"
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"

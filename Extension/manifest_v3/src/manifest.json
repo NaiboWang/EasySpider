@@ -1,48 +1,57 @@
 {
-  "name": "EasySpider",
-  "version": "0.3.3",
-  "description": "EasySpider's chrome extension",
-  "author": "Naibo Wang",
-  "manifest_version": 3,
-  "action": {
-    "default_icon": {
-      "16": "assets/icon-16.png",
-      "19": "assets/icon-19.png",
-      "38": "assets/icon-38.png",
-      "128": "assets/icon-128.png"
+    "name": "EasySpider",
+    "version": "0.3.3",
+    "description": "EasySpider's chrome extension",
+    "author": "Naibo Wang",
+    "manifest_version": 3,
+    "action": {
+        "default_icon": {
+            "16": "assets/icon-16.png",
+            "19": "assets/icon-19.png",
+            "38": "assets/icon-38.png",
+            "128": "assets/icon-128.png"
+        },
+        "default_title": "EasySpider"
     },
-    "default_title": "EasySpider"
-  },
-  "icons": {
-    "16": "assets/icon-16.png",
-    "38": "assets/icon-38.png",
-    "128": "assets/icon-128.png"
-  },
-  "background": {
-    "service_worker": "background.ts"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "css": ["style/toolkit.css"],
-      "js": ["content-scripts/main.js"],
-      "run_at": "document_end",
-      "all_frames": true
-    }
-  ],
-   "web_accessible_resources": [
-    {
-      "resources": [ "*/*.js" ],
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ]
-    }
-  ],
-  "permissions": [
-    "identity", "storage", "tabs","scripting"
-  ]
+    "icons": {
+        "16": "assets/icon-16.png",
+        "38": "assets/icon-38.png",
+        "128": "assets/icon-128.png"
+    },
+    "background": {
+        "service_worker": "background.ts"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "css": [
+                "style/toolkit.css"
+            ],
+            "js": [
+                "content-scripts/main.js"
+            ],
+            "run_at": "document_end",
+            "all_frames": true
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "*/*.js"
+            ],
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ]
+        }
+    ],
+    "permissions": [
+        "identity",
+        "storage",
+        "tabs",
+        "scripting"
+    ]
 }
