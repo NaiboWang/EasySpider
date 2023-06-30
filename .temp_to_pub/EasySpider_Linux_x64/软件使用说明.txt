@@ -4,7 +4,7 @@
 ./easy-spider.sh
 注意软件运行过程中不要关闭terminal。
 
-官方网址: https://github.com/NaiboWang/EasySpider
+官方网址: https://www.easyspider.cn
 
 支持Ubuntu 20.04, Debian, Deepin x64及以上版本。
 
@@ -14,6 +14,8 @@
 
 
 ======版本更新说明======
+
+v0.3.2以上版本更新说明请查看Github Release Pages页面：https://github.com/NaiboWang/EasySpider/releases
 
 -----v0.3.2-----
 

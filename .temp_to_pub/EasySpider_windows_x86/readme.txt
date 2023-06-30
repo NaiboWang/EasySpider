@@ -1,4 +1,4 @@
-Official Site: https://github.com/NaiboWang/EasySpider
+Official Site: https://www.easyspider.net
 
 Welcome to promote this software to other friends.
 
@@ -14,6 +14,8 @@ Tasks can be imported from other machines by simply placing the .json files from
 
 
 ======Version New Features======
+
+Please see more new features for version greater than v0.3.2 at github release page: https://github.com/NaiboWang/EasySpider/releases
 
 -----v0.3.2-----
 

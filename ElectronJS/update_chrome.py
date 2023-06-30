@@ -93,4 +93,4 @@ if __name__ == "__main__":
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         pass
 
-    print("Done!")
+    print("Done and don't forget to generate executestage EXEcutable program!")

@@ -263,7 +263,7 @@ class BrowserThread(Thread):
         elif int(codeMode) == 1:
             self.recordLog("Execute System Call:" + code)
             self.recordLog("执行系统命令:" + code)
-            # 执行系统命令，超时时间为5秒
+            # 执行系统命令
             try:
                 # output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, encoding="utf-8", shell=True)
                 output = subprocess.run(code, capture_output=True, text=True, timeout=max_wait_time, shell=True)
@@ -271,7 +271,7 @@ class BrowserThread(Thread):
                 output = output.stdout
                 print(output)
             except subprocess.TimeoutExpired:
-                # 命令执行时间超过5秒，抛出异常
+                # 命令执行时间超过指定值，抛出异常
                 self.recordLog("Command timed out")
                 self.recordLog("命令执行超时")
             except Exception as e:

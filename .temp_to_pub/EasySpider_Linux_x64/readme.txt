@@ -2,7 +2,7 @@ To open the EasySpider, please open your terminal, and then type:
 ./easy-spider.sh
 Then EasySpider will be opened, and don't close the terminal when running EasySpider.
 
-Official Site: https://github.com/NaiboWang/EasySpider
+Official Site: https://www.easyspider.net
 
 Welcome to promote this software to other friends.
 
@@ -13,8 +13,9 @@ Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1Qsaa
 Tasks can be imported from other machines by simply placing the .json files from the "tasks" folder of those machines into the "tasks" folder of this directory. Similarly, execution instance files can be imported by copying the .json files from the "execution_instances" folder. Note that only files named with a number greater than 0 are supported in both folders.
 
 
-
 ======Version Update Instruction======
+
+Please see more new features for version greater than v0.3.2 at github release page: https://github.com/NaiboWang/EasySpider/releases
 
 -----v0.3.2-----
 

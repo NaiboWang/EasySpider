@@ -1,6 +1,6 @@
 欢迎将软件宣传给更多需要的朋友！
 
-官方网址: https://github.com/NaiboWang/EasySpider
+官方网址: https://www.easyspider.cn
 
 支持MacOS系统，包括Intel芯片和Arm芯片，如酷睿i7和M1芯片，最低MacOS系统版本为11.x。
 
@@ -12,6 +12,8 @@
 
 
 ======版本更新说明======
+
+v0.3.2以上版本更新说明请查看Github Release Pages页面：https://github.com/NaiboWang/EasySpider/releases
 
 -----v0.3.2-----
 

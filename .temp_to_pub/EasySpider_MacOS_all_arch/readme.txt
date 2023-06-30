@@ -1,4 +1,4 @@
-Official Site: https://github.com/NaiboWang/EasySpider
+Official Site: https://www.easyspider.net
 
 Welcome to promote this software to other friends.
 
@@ -11,6 +11,8 @@ Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1Qsaa
 You can import tasks from other machines by simply opening the EasySpider software in this directory, right-clicking "Show Package Contents", and then placing the .json files from the tasks folder in the /Users/your user name/Library/Application Support/EasySpider/tasks folder of the other machine. Similarly, execution ID files can be imported by copying the .json files from the execution_instances folder. Please note that the .json files in both folders only support names greater than 0.
 
 ======Version Update Instruction======
+
+Please see more new features for version greater than v0.3.2 at github release page: https://github.com/NaiboWang/EasySpider/releases
 
 -----v0.3.2-----
 

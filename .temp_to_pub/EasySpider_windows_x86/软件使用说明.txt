@@ -1,6 +1,6 @@
 欢迎将软件宣传给更多需要的朋友！
 
-官方网址: https://github.com/NaiboWang/EasySpider
+官方网址: https://www.easyspider.cn
 
 支持Windows 10 x32及以上版本。
 
@@ -14,6 +14,8 @@ Windows 7此版本无直接可用版本（因为Chrome 109是最后一个支持W
 
 
 ======版本更新说明======
+
+v0.3.2以上版本更新说明请查看Github Release Pages页面：https://github.com/NaiboWang/EasySpider/releases
 
 -----v0.3.2-----
 
