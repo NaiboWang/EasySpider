@@ -27,11 +27,11 @@ def copy_folder(source_folder, destination_folder):
     # 使用copytree()函数复制文件夹及其内容
     shutil.copytree(source_folder, destination_folder)
 
-update_version = "114" # 要更新的chromedriver版本
+update_version = "115" # 要更新的chromedriver版本
 
 chrome_driver_url = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
 win64_chrome_path = "C:\\Program Files\\Google\\Chrome\\Application"
-win32_chrome_path = "C:\\Program Files (x86)\\Google\\Chrome\\Application"
+win32_chrome_path = "C:\\Program Files\\Google\\Chrome\\Application"
 mac_chrome_path = "/Applications/Google Chrome.app/Contents/MacOS"
 linux_chrome_path = "/opt/google/chrome"
 
