@@ -277,7 +277,7 @@
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在循环内设置的文本）</p>
                     </div>
                     <div v-if='!useLoop'>
-                        <label>输入值（用Field["字段名"]来输入某字段最后一次提取到的值）：</label>
+                        <label>输入值（用Field["字段名"]来输入某字段提取到的最新值，用&lt;enter&gt;或&lt;ENTER&gt;表示模拟按下回车键）：</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
                     </div>
 
@@ -313,7 +313,7 @@
                     </select>
 
                     <div>
-                        <label>代码/脚本内容： </label>
+                        <label>代码/脚本内容（用Field["字段名"]来输入某字段提取到的最新值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
@@ -383,11 +383,11 @@
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个XPath"  v-model='nowNode["parameters"]["pathList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 5'>
-                        <label>内容列表（用Field["字段名"]来输入某字段最后一次提取到的值）：</label>
+                        <label>内容列表（用Field["字段名"]来输入某字段提取到的最新值）：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个文本/网址" v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 7'>
-                        <label>代码/脚本内容： </label>
+                        <label>代码/脚本内容（用Field["字段名"]来输入某字段提取到的最新值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则继续循环，否则停止循环。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
@@ -449,7 +449,7 @@
                         <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
                     <div v-else-if='TClass > 0 && TClass < 7'>
-                        <label>代码/脚本内容： </label>
+                        <label>代码/脚本内容（用Field["字段名"]来输入某字段提取到的最新值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则执行此分支内操作，否则不执行。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
@@ -462,7 +462,7 @@
                     </div>
                 </div>
                 <div style="margin-top:5px">
-                    <label><b>执行后</b>等待秒数：</label>
+                    <label><b>执行后</b>等待秒数（所有等待时间均可设置为小数，如0.5）：</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
                 </div>
                 <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">确定</button>

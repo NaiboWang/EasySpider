@@ -36,7 +36,6 @@ mac_chrome_path = "/Applications/Google Chrome.app/Contents/MacOS"
 linux_chrome_path = "/opt/google/chrome"
 
 if __name__ == "__main__":
-  
     driver_downloads = []
     response = requests.get(chrome_driver_url)
     if response.status_code == 200:

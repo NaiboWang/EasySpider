@@ -11,6 +11,7 @@ import base64
 import hashlib
 import time
 import requests
+from lxml import etree
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -161,7 +162,19 @@ class BrowserThread(Thread):
                 self.dataNotFoundKeys[para["name"]] = False
                 self.OUTPUT[0].append(para["name"])
         self.urlId = 0  # 全局记录变量
-        
+        self.preprocess() # 预处理，优化提取数据流程
+
+    # 检测如果没有复杂的操作，优化提取数据流程
+    def preprocess(self):
+        for node in self.procedure:
+            if node["option"] == 3: # 提取数据操作
+                paras = node["parameters"]["paras"]
+                for para in paras:
+                    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
+                        para["optimizable"] = True
+                    else:
+                        para["optimizable"] = False
+
     def run(self):
         # 挨个执行程序
         for i in range(len(self.links)):
@@ -242,6 +255,12 @@ class BrowserThread(Thread):
         if max_wait_time == 0:
             max_wait_time = 999999
         # print(codeMode, code)
+        pattern = r'Field\["([^"]+)"\]' # 将value中的Field[""]替换为outputParameters中的键值
+        try:
+            replaced_text = re.sub(pattern, lambda match: self.outputParameters.get(match.group(1), ''), code)
+        except:
+            replaced_text = code
+        code = replaced_text
         if int(codeMode) == 0:
             self.recordLog("Execute JavaScript:" + code)
             self.recordLog("执行JavaScript:" + code)
@@ -391,9 +410,9 @@ class BrowserThread(Thread):
             self.judgeExecute(node, loopValue, loopPath, index)
 
         # 执行完之后进行等待
-        if node["option"] != 0 and node["option"] != 2:
+        if node["option"] != 0 and node["option"] != 2: # 点击元素操作单独定义等待时间操作
             waitTime = 0.01  # 默认等待0.01秒
-            if node["parameters"]["wait"] >= 1:
+            if node["parameters"]["wait"] >= 0:
                 waitTime = node["parameters"]["wait"]
             time.sleep(waitTime)
             self.Log("Wait seconds after node executing: ", waitTime)
@@ -536,10 +555,10 @@ class BrowserThread(Thread):
                             self.history["index"]  # 计算历史记录变化差值
                         self.browser.execute_script(
                             'history.go(' + str(difference) + ')')  # 回退历史记录
-                        if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
-                            time.sleep(node["parameters"]["historyWait"])
-                        else:
-                            time.sleep(2)
+                        # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
+                        time.sleep(node["parameters"]["historyWait"])
+                        # else:
+                            # time.sleep(2)
                         # 切换历史记录等待2秒或者：
                         self.Log("Change history back time or:",
                             node["parameters"]["historyWait"])
@@ -573,10 +592,10 @@ class BrowserThread(Thread):
                             self.history["index"]  # 计算历史记录变化差值
                         self.browser.execute_script(
                             'history.go(' + str(difference) + ')')  # 回退历史记录
-                        if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
-                            time.sleep(node["parameters"]["historyWait"])
-                        else:
-                            time.sleep(2)
+                        # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
+                        time.sleep(node["parameters"]["historyWait"])
+                        # else:
+                            # time.sleep(2)
                         self.Log("Change history back time or:",
                             node["parameters"]["historyWait"])
                         self.browser.execute_script('window.stop()')
@@ -638,7 +657,7 @@ class BrowserThread(Thread):
 
     # 打开网页事件
     def openPage(self, para, loopValue):
-        time.sleep(2)  # 打开网页后强行等待至少2秒
+        time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
             self.browser.switch_to.window(self.browser.window_handles[-1])  # 打开网页操作从第1个页面开始
             self.browser.close()
@@ -700,7 +719,7 @@ class BrowserThread(Thread):
     # 键盘输入事件
     def inputInfo(self, para, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
-        self.Log("Wait 1 second before input")
+        self.Log("Wait 0.1 second before input")
         try:
             textbox = self.browser.find_element(By.XPATH, para["xpath"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
@@ -720,10 +739,12 @@ class BrowserThread(Thread):
             pattern = r'Field\["([^"]+)"\]' # 将value中的Field[""]替换为outputParameters中的键值
             try:
                 replaced_text = re.sub(pattern, lambda match: self.outputParameters.get(match.group(1), ''), value)
+                replaced_text = re.sub('<enter>', '', replaced_text, flags=re.IGNORECASE)
             except:
                 replaced_text = value
-            value = replaced_text
-            textbox.send_keys(value)
+            textbox.send_keys(replaced_text)
+            if value.lower().find("<enter>") >= 0:
+                textbox.send_keys(Keys.ENTER)
             self.execute_code(2, para["afterJS"], para["afterJSWaitTime"], textbox) # 执行后置js
             # global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
             self.bodyText = self.browser.find_element(By.CSS_SELECTOR, "body").text
@@ -928,81 +949,130 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        for p in para["paras"]: # 加并行处理
-            content = ""
-            if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
+        pageHTML = etree.HTML(self.browser.page_source)
+        loopElementOuterHTML = loopElement.get_attribute('outerHTML')
+        loopElementHTML = etree.HTML(loopElementOuterHTML)
+        for p in para["paras"]:
+            if p["optimizable"]:
                 try:
-                    if p["relative"]:  # 是否相对xpath
-                        if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
-                            element = loopElement
+                    p["relativeXPath"] = p["relativeXPath"].lower()
+                    if p["nodeType"] == 2:
+                        xpath = p["relativeXPath"] + "/@href"
+                    elif p["contentType"] == 1:
+                        xpath = p["relativeXPath"] + "/text()"
+                    elif p["contentType"] == 0:
+                        xpath = p["relativeXPath"] + "//text()"
+                    if p["relative"]:
+                        # if p["relativeXPath"] == "":
+                        #     content = [loopElementHTML]
+                        # else:
+                        if p["relativeXPath"].find("//") >= 0:  # 如果字串里有//即子孙查找，则不动语句
+                            full_path = "(" + parentPath + \
+                                xpath + ")" + \
+                                "[" + str(index + 1) + "]"
+                            content = pageHTML.xpath(full_path)
                         else:
-                            if p["relativeXPath"].find("//") >= 0:  # 如果字串里有//即子孙查找，则不动语句
-                                full_path = "(" + parentPath + \
-                                    p["relativeXPath"] + ")" + \
-                                    "[" + str(index + 1) + "]"
-                                element = self.browser.find_element(By.XPATH, full_path)
+                            content = loopElementHTML.xpath("/html/body/" + loopElementHTML[0][0].tag + xpath)
+                    else:
+                        if xpath.find("/html/body") < 0:
+                            xpath = "/html/body" + xpath
+                        content = pageHTML.xpath(xpath)
+                    if len(content) > 0:
+                        # html = etree.tostring(content[0], encoding='utf-8').decode('utf-8')
+                        # 拼接所有文本内容并去掉两边的空白
+                        content = ' '.join(result.strip() for result in content if result.strip())
+                    else:
+                        content = p["default"]
+                        try:
+                            if not self.dataNotFoundKeys[p["name"]]:
+                                print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (p["relativeXPath"], p["name"]))
+                                print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (p["name"], p["relativeXPath"]))
+                                self.dataNotFoundKeys[p["name"]] = True
+                                self.recordLog('Element %s not found, use default' % p["relativeXPath"])
+                        except:
+                            pass
+                except Exception as e:
+                    print(e)
+                self.outputParameters[p["name"]] = content
+
+        # 对于不能优化的操作，使用selenium执行
+        for p in para["paras"]:
+            if not p["optimizable"]:
+                content = ""
+                if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
+                    try:
+                        p["relativeXPath"] = p["relativeXPath"].lower()
+                        if p["relative"]:  # 是否相对xpath
+                            if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                                element = loopElement
+                            else:
+                                if p["relativeXPath"].find("//") >= 0:  # 如果字串里有//即子孙查找，则不动语句
+                                    full_path = "(" + parentPath + \
+                                        p["relativeXPath"] + ")" + \
+                                        "[" + str(index + 1) + "]"
+                                    element = self.browser.find_element(By.XPATH, full_path)
+                                else:
+                                    element = loopElement.find_element(By.XPATH,
+                                                                    p["relativeXPath"][1:])
+                        else:
+                            element = self.browser.find_element(By.XPATH, p["relativeXPath"])
+                    except (NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
+                        # print(p)
+                        try:
+                            content = p["default"]
+                        except Exception as e:
+                            content = ""
+                        self.outputParameters[p["name"]] = content
+                        try:
+                            if not self.dataNotFoundKeys[p["name"]]:
+                                print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (p["relativeXPath"], p["name"]))
+                                print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (p["name"], p["relativeXPath"]))
+                                self.dataNotFoundKeys[p["name"]] = True
+                                self.recordLog('Element %s not found, use default' % p["relativeXPath"])
+                        except:
+                            pass
+                        continue
+                    except TimeoutException:  # 超时的时候设置超时值
+                        self.Log('time out after set seconds when getting data')
+                        self.recordLog('time out after set seconds when getting data')
+                        self.browser.execute_script('window.stop()')
+                        if p["relative"]:  # 是否相对xpath
+                            if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                                element = loopElement
                             else:
                                 element = loopElement.find_element(By.XPATH,
                                                                 p["relativeXPath"][1:])
-                    else:
-                        element = self.browser.find_element(By.XPATH, p["relativeXPath"])
-                except (NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
-                    # print(p)
-                    try:
-                        content = p["default"]
-                    except Exception as e:
-                        content = ""
-                    self.outputParameters[p["name"]] = content
-                    try:
-                        if not self.dataNotFoundKeys[p["name"]]:
-                            print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (p["relativeXPath"], p["name"]))
-                            print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (p["name"], p["relativeXPath"]))
-                            self.dataNotFoundKeys[p["name"]] = True
-                            self.recordLog('Element %s not found, use default' % p["relativeXPath"])
-                    except:
-                        pass
-                    continue
-                except TimeoutException:  # 超时的时候设置超时值
-                    self.Log('time out after set seconds when getting data')
-                    self.recordLog('time out after set seconds when getting data')
-                    self.browser.execute_script('window.stop()')
-                    if p["relative"]:  # 是否相对xpath
-                        if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
-                            element = loopElement
                         else:
-                            element = loopElement.find_element(By.XPATH,
-                                                            p["relativeXPath"][1:])
-                    else:
-                        element = self.browser.find_element(By.XPATH, p["relativeXPath"])
-                    # rt.end()
-            else:
-                element = self.browser.find_element(By.XPATH, "//body")
-            try:
-                self.execute_code(2, p["beforeJS"], p["beforeJSWaitTime"], element) # 执行前置js
-                content = self.get_content(p, element)
-            except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
-                self.recordLog('StaleElementReferenceException: '+p["relativeXPath"])
-                time.sleep(3)
+                            element = self.browser.find_element(By.XPATH, p["relativeXPath"])
+                        # rt.end()
+                else:
+                    element = self.browser.find_element(By.XPATH, "//body")
                 try:
-                    if p["relative"]:  # 是否相对xpath
-                        if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
-                            element = loopElement
-                            self.recordLog('StaleElementReferenceException: loopElement')
-                        else:
-                            element = loopElement.find_element(By.XPATH,
-                                                            p["relativeXPath"][1:])
-                            self.recordLog(
-                                'StaleElementReferenceException: loopElement+relativeXPath')
-                    else:
-                        element = self.browser.find_element(
-                            By.XPATH, p["relativeXPath"])
-                        self.recordLog('StaleElementReferenceException: relativeXPath')
+                    self.execute_code(2, p["beforeJS"], p["beforeJSWaitTime"], element) # 执行前置js
                     content = self.get_content(p, element)
-                except StaleElementReferenceException:
+                except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
                     self.recordLog('StaleElementReferenceException: '+p["relativeXPath"])
-                    continue  # 再出现类似问题直接跳过
-            self.outputParameters[p["name"]] = content
-            self.execute_code(2, p["afterJS"], p["afterJSWaitTime"], element) # 执行后置JS
+                    time.sleep(3)
+                    try:
+                        if p["relative"]:  # 是否相对xpath
+                            if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                                element = loopElement
+                                self.recordLog('StaleElementReferenceException: loopElement')
+                            else:
+                                element = loopElement.find_element(By.XPATH,
+                                                                p["relativeXPath"][1:])
+                                self.recordLog(
+                                    'StaleElementReferenceException: loopElement+relativeXPath')
+                        else:
+                            element = self.browser.find_element(
+                                By.XPATH, p["relativeXPath"])
+                            self.recordLog('StaleElementReferenceException: relativeXPath')
+                        content = self.get_content(p, element)
+                    except StaleElementReferenceException:
+                        self.recordLog('StaleElementReferenceException: '+p["relativeXPath"])
+                        continue  # 再出现类似问题直接跳过
+                self.outputParameters[p["name"]] = content
+                self.execute_code(2, p["afterJS"], p["afterJSWaitTime"], element) # 执行后置JS
         line = []
         for value in self.outputParameters.values():
             line.append(value)
