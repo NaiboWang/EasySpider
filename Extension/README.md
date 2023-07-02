@@ -44,7 +44,7 @@ npm install
 npm run dev
 ```
 
-打开一个Chrome浏览器窗口，然后在浏览器地址栏输入`chrome://extensions/`，在打开的页面中，打开右上角的`开发者模式`，点击`加载已解压的扩展程序`，选择`manifest_v3\dist`文件夹，即可加载扩展。
+打开一个Chrome浏览器窗口，然后在浏览器地址栏输入`chrome://extensions/`，在打开的页面中，打开右上角的`开发者模式`，点击`加载已解压的扩展程序`，选择`manifest_v3/dist`文件夹，即可加载扩展。
 
 -----
 
@@ -54,7 +54,7 @@ Run the following command to hot reload the extension:
 npm run dev
 ```
 
-Open a Chrome browser window, then enter `chrome://extensions/` in the browser address bar. On the opened page, open the `Developer mode` in the upper right corner, click `Load unpacked` and select the `manifest_v3\dist` folder to load the extension.
+Open a Chrome browser window, then enter `chrome://extensions/` in the browser address bar. On the opened page, open the `Developer mode` in the upper right corner, click `Load unpacked` and select the `manifest_v3/dist` folder to load the extension.
 
 ## 打包扩展/Package the extension
 

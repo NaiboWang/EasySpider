@@ -45,9 +45,9 @@ desired_capabilities["pageLoadStrategy"] = "none"
 # 控制流程的暂停和继续
 
 
-def check_pause(event):
+def check_pause(key, event):
     while True:
-        if keyboard.is_pressed('p'):  # 按下p键，暂停程序
+        if keyboard.is_pressed(key):  # 按下p键，暂停程序
             if event._flag == False:
                 print("任务执行中，长按p键暂停执行。")
                 print("Task is running, long press 'p' to pause.")
@@ -1106,19 +1106,23 @@ class BrowserThread(Thread):
                                            for result in content if result.strip())
                     else:
                         content = p["default"]
-                        try:
-                            if not self.dataNotFoundKeys[p["name"]]:
-                                print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                                    p["relativeXPath"], p["name"]))
-                                print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
-                                    p["name"], p["relativeXPath"]))
-                                self.dataNotFoundKeys[p["name"]] = True
-                                self.recordLog(
-                                    'Element %s not found, use default' % p["relativeXPath"])
-                        except:
-                            pass
+                        if not self.dataNotFoundKeys[p["name"]]:
+                            print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
+                                p["relativeXPath"], p["name"]))
+                            print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
+                                p["name"], p["relativeXPath"]))
+                            self.dataNotFoundKeys[p["name"]] = True
+                            self.recordLog(
+                                'Element %s not found, use default' % p["relativeXPath"])
                 except Exception as e:
-                    print(e)
+                    if not self.dataNotFoundKeys[p["name"]]:
+                        print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
+                            p["relativeXPath"], p["name"]))
+                        print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
+                            p["name"], p["relativeXPath"]))
+                        self.dataNotFoundKeys[p["name"]] = True
+                        self.recordLog(
+                            'Element %s not found, use default' % p["relativeXPath"])
                 self.outputParameters[p["name"]] = content
 
         # 对于不能优化的操作，使用selenium执行
@@ -1350,7 +1354,7 @@ if __name__ == '__main__':
         if not os.path.exists("Data/" + str(i)):
             os.mkdir("Data/" + str(i))
         if not os.path.exists("Data/" + str(i) + "/" + saveName):
-            os.mkdir("Data/" + saveName)  # 创建保存文件夹用来保存截图
+            os.mkdir("Data/" + str(i) + "/" + saveName)  # 创建保存文件夹用来保存截图
         if c.read_type == "remote":
             print("remote")
             content = requests.get(
@@ -1405,7 +1409,7 @@ if __name__ == '__main__':
         print("Thread with task id: ", i, " is created")
         threads.append(thread)
         thread.start()
-        Thread(target=check_pause, args=(event)).start()
+        Thread(target=check_pause, args=("p", event)).start()
         time.sleep(5)
         print("\n\n----------------------------------")
         print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")

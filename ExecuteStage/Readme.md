@@ -64,7 +64,7 @@ The above is an example command to run a task with the ID of `1`. For more infor
 
 ### VS Code调试/VS Code Debug
 
-可以用VS Code打开此文件夹即可调试程序，可修改`.vscode`下的`launch.json`文件中的调试参数，调试说明参考：https://zhuanlan.zhihu.com/p/41189402
+可以用VS Code打开此文件夹即可调试程序，可修改`.vscode`下的`launch.json`文件中的调试参数，调试说明参考：[https://zhuanlan.zhihu.com/p/41189402](https://zhuanlan.zhihu.com/p/41189402)。
 
 You can use VS Code to open this folder and debug the program. You can modify the debugging parameters in the launch.json file located under the .vscode folder. For instructions on debugging with VSCode, you can refer to this guide: [Debugging Python with Visual Studio Code](https://code.visualstudio.com/docs/python/debugging).
 
