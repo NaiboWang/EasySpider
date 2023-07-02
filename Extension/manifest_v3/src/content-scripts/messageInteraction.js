@@ -184,6 +184,9 @@ export function collectMultiWithPattern() {
         "isDescendents": global.app._data.selectedDescendents, //标记是否采集的是子元素
         "parameters": global.outputParameters,
     };
+    for(let i=0;i<global.outputParameters.length;i++){
+        global.outputParameters[i]["exampleValues"] = [global.outputParameters[i]["exampleValues"][0]];
+    }
     if (!detectAllSelected()) //如果不是全部选中的话
     {
         message.loopType = 2; //固定元素列表
