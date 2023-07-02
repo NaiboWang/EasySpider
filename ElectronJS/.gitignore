@@ -13,3 +13,4 @@ Chrome/
 execution_instances/*
 .DS_Store
 npminstall-debug.log
+package-lock.json

@@ -1,6 +1,6 @@
 {
     "name": "EasySpider",
-    "version": "0.3.3",
+    "version": "0.3.5",
     "description": "EasySpider's chrome extension",
     "author": "Naibo Wang",
     "manifest_version": 3,

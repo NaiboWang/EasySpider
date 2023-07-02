@@ -1,11 +1,81 @@
-出现permission denied请关闭杀毒软件
+# 环境编译说明/Environment Compilation Instructions
 
-先安装python3.6及以上版本
+EasySpider分三部分：
 
-然后安装pip3
+1. 主程序：在`ElectronJS`文件夹下。
+2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作控制台”的代码。
+3. 执行阶段程序：在`ExecuteStage`文件夹下。
 
-然后安装依赖库： pip3 install -r requirements.txt
+此部分为`执行阶段程序`的编译说明。
 
-然后运行：python3 easyspider_executestage.py即可运行
+-----
 
-打包说明： windows直接运行generateEXE_win64.cmd即可打包成exe文件并自动拷贝到../ElectronJS/chrome_win64/目录下
+EasySpider is divided into three parts:
+
+1. Main program: Located in the ElectronJS folder.
+2. Browser extension: Located in the Extension folder.
+3. Execution stage program: Located in the ExecuteStage folder.
+
+This section covers the compilation instructions for the `Execution stage program`.
+
+## 环境构建/Environment Setup
+
+1. 安装python3.6及以上版本并添加至系统环境变量：https://www.python.org/downloads/
+2. 安装pip3 并添加至系统环境变量（windows安装python后会自带pip，Linux和MacOS安装方式请自行搜索）。
+3. 安装执行阶段需要的依赖库：
+   
+   ```sh
+        pip3 install -r requirements.txt
+   ```
+
+-----
+
+1. Install Python 3.6 or higher version and add it to the system environment variables: [https://www.python.org/downloads/](https://www.python.org/downloads/).
+2. Install pip3 and add it to the system environment variables. (On Windows, pip is automatically installed with Python. For Linux and macOS, please refer to the appropriate installation instructions).
+3. Install the required dependencies for the execution stage by running:
+   
+    ```sh
+        pip3 install -r requirements.txt
+    ```
+
+## 运行说明/Run Instruction
+
+运行程序前，确保已经完成了`ElectronJS`文件夹下的编译说明，保证`chrome`文件夹和`chromedriver`环境已经就绪，同时**EasySpider**主程序已在运行中。
+
+在当前文件夹下直接运行程序：
+
+```Python
+python3 easyspider_executestage.py --id [1]
+```
+
+以上是运行任务号为`1`的任务的示例命令，更多命令行参数使用说明请参考：https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction
+
+-----
+
+Before running the program, make sure you have completed the compilation instructions in the `ElectronJS` folder and ensure that the `chrome` folder and `chromedriver` environment are ready. Also, ensure that the **EasySpider** main program is already running.
+
+To run the program directly in the current folder, use the following command:
+
+```Python
+python3 easyspider_executestage.py --id [1]
+```
+
+The above is an example command to run a task with the ID of `1`. For more information on command-line parameters, please refer to: [Argument Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction) on the project's GitHub Wiki.
+
+### VS Code调试/VS Code Debug
+
+可以用VS Code打开此文件夹即可调试程序，可修改`.vscode`下的`launch.json`文件中的调试参数，调试说明参考：https://zhuanlan.zhihu.com/p/41189402
+
+You can use VS Code to open this folder and debug the program. You can modify the debugging parameters in the launch.json file located under the .vscode folder. For instructions on debugging with VSCode, you can refer to this guide: [Debugging Python with Visual Studio Code](https://code.visualstudio.com/docs/python/debugging).
+
+## 打包说明/Package Instruction
+
+如果想要在主程序直接点击“本地直接运行”按钮即可执行程序，则需要打包程序为可执行程序。
+
+Windows x64直接运行`generateEXE_win64.cmd`即可把执行阶段程序打包成`exe`文件并自动拷贝到`../ElectronJS/chrome_win64/`目录下，其他系统同理。
+
+-----
+
+To execute the program by simply clicking the "Run Locally" button in the main program, you will need to package the program into an executable file.
+
+For Windows x64, you can run the generateEXE_win64.cmd script. This script will package the execution stage program into an .exe file and automatically copy it to the ../ElectronJS/chrome_win64/ directory. The process for other systems is similar.

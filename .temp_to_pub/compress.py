@@ -39,7 +39,7 @@ def compress_folder_to_7z_split(folder_path, output_file):
     # 压缩文件夹
     subprocess.call(["7z", "a", "-v95m", output_file, folder_path])
 
-easyspider_version = "0.3.3"
+easyspider_version = "0.3.5"
 
 if __name__ == "__main__":
 

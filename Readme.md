@@ -105,6 +105,12 @@ At the same time, the software is protected by patent rights. If you want to use
 <!-- - See the [Copyright Declaration Page](https://github.com/NaiboWang/EasySpider/blob/master/media/readme_back.md) here.
  -->
 
+## 编译说明/Compilation Instructions
+
+查看[编译说明](ElectronJS/README.md)。
+
+Refer to [Compilation Instructions](ElectronJS/README.md).
+
 ## 中文界面截图
 
 #### 软件界面示例

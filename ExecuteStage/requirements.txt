@@ -4,3 +4,5 @@ selenium==4.5.0
 pyinstaller
 Pillow
 pytesseract
+keyboard
+undetected_chromedriver

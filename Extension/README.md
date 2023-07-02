@@ -1,0 +1,78 @@
+# 环境编译说明/Environment Compilation Instructions
+
+EasySpider分三部分：
+
+1. 主程序：在`ElectronJS`文件夹下。
+2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作控制台”的代码，打包后的扩展在`ElectronJS`目录下的`EasySpider_zh.crx`文件。
+3. 执行阶段程序：在`ExecuteStage`文件夹下。
+
+此部分为`浏览器扩展`的编译说明，本节的所有命令都在`manifest_v3`文件夹内执行。
+
+-----
+
+EasySpider is divided into three parts:
+
+1. Main program: Located in the ElectronJS folder.
+2. Browser extension: Located in the Extension folder, i.e., the `EasySpider_en.crx` file in the `ElectronJS` folder.
+3. Execution stage program: Located in the ExecuteStage folder.
+
+This section covers the compilation instructions for the `Browser extension`, all commands in this section are executed in the `manifest_v3` folder.
+
+## 环境构建/Environment Setup
+
+1. 安装`NodeJS`：https://nodejs.org/zh-cn/download/
+2. 运行下面的命令来安装依赖：
+
+```
+npm install
+```
+
+-----
+
+1. Install `NodeJS`: https://nodejs.org/en/download/
+2. Run the following command to install dependencies:
+
+```
+npm install
+```
+
+## 热加载扩展/Hot reload the extension
+
+执行下面的命令来热加载扩展：
+
+```
+npm run dev
+```
+
+打开一个Chrome浏览器窗口，然后在浏览器地址栏输入`chrome://extensions/`，在打开的页面中，打开右上角`开发者模式`，点击`加载已解压的扩展程序`，选择`manifest_v3\dist`文件夹，即可加载扩展。
+
+-----
+
+Run the following command to hot reload the extension:
+
+```
+npm run dev
+```
+
+Open a Chrome browser window, then enter `chrome://extensions/` in the browser address bar. On the opened page, open the `Developer mode` in the upper right corner, click `Load unpacked` and select the `manifest_v3\dist` folder to load the extension.
+
+## 打包扩展/Package the extension
+
+执行下面的命令来打包扩展：
+
+```
+npm run package
+```
+
+打包后会自动更新`ElectronJS`目录下的`EasySpider_zh.crx`文件，运行过程中的报错信息可以忽略。
+
+-----
+
+Run the following command to package the extension:
+
+```
+npm run package
+```
+
+After packaging, the `EasySpider_en.crx` file in the `ElectronJS` folder will be automatically updated, and the error messages during the running process can be ignored.
+
