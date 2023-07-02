@@ -894,39 +894,17 @@ class BrowserThread(Thread):
             else: # 普通节点
                 content = element.text
         elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
-            if p["nodeType"] == 2:
-                if element.get_attribute("href") != None:
-                    content = element.get_attribute("href")
-                else:
-                    content = ""
-            elif p["nodeType"] == 3:
-                if element.get_attribute("value") != None:
-                    content = element.get_attribute("value")
-                else:
-                    content = ""
-            elif p["nodeType"] == 4:  # 图片
-                if element.get_attribute("src") != None:
-                    content = element.get_attribute("src")
-                else:
-                    content = ""
-                try:
-                    downloadPic = p["downloadPic"]
-                except:
-                    downloadPic = 0
-                if downloadPic == 1:
-                    download_image(content, "Data/" + self.saveName + "/")
-            else:
-                command = 'var arr = [];\
-                var content = arguments[0];\
-                for(var i = 0, len = content.childNodes.length; i < len; i++) {\
-                    if(content.childNodes[i].nodeType === 3){  \
-                        arr.push(content.childNodes[i].nodeValue);\
-                    }\
+            command = 'var arr = [];\
+            var content = arguments[0];\
+            for(var i = 0, len = content.childNodes.length; i < len; i++) {\
+                if(content.childNodes[i].nodeType === 3){  \
+                    arr.push(content.childNodes[i].nodeValue);\
                 }\
-                var str = arr.join(" "); \
-                return str;'
-                content = self.browser.execute_script(command, element).replace(
-                    "\n", "").replace("\\s+", " ")
+            }\
+            var str = arr.join(" "); \
+            return str;'
+            content = self.browser.execute_script(command, element).replace(
+                "\n", "").replace("\\s+", " ")
         elif p["contentType"] == 2:
             content = element.get_attribute('innerHTML')
         elif p["contentType"] == 3:
@@ -991,10 +969,7 @@ class BrowserThread(Thread):
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
         pageHTML = etree.HTML(self.browser.page_source)
-        try:
-            loopElementOuterHTML = loopElement.get_attribute('outerHTML')
-        except:
-            loopElementOuterHTML = ""
+        loopElementOuterHTML = loopElement.get_attribute('outerHTML')
         loopElementHTML = etree.HTML(loopElementOuterHTML)
         for p in para["paras"]:
             if p["optimizable"]:
@@ -1225,7 +1200,7 @@ if __name__ == '__main__':
 
     if c.headless:
         print("Headless mode")
-        print("无头模式")
+        print("无头模式1")
         option.add_argument("--headless")
         options.add_argument("--headless")
 

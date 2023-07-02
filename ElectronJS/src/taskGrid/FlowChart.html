@@ -465,6 +465,12 @@
                 <div style="margin-top:5px">
                     <label>Seconds <b>after executed</b> (Can be set to a decimal, such as 0.5):</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
+                    <label>等待类型</label>
+                    <label>Wait Type</label>
+                    <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
+                        <option value = 0>Fixed wait (set to wait for 10 seconds then it will wait for 10 seconds)</option>
+                        <option value = 1>Random wait (set to wait for 10 seconds then it will randomly wait for 10 × 0.5 - 10 × 1.5 seconds)</option>
+                    </select>
                 </div>
                 <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">Confirm</button>
 
@@ -476,7 +482,7 @@
     </div>
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="myModalLabel">Save Task</h4>
@@ -488,7 +494,19 @@
                     <label>Task Name:</label>
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="New Crawler Task" id="serviceName" class="form-control"></input>
                     <label>Task Description:</label>
-                    <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
+                    <input onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
+                    <label>How many data to save locally each time (the larger the value, the faster the collection speed, but there is a risk of data loss):</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
+                    <label>Is the page an extreme anti-crawler website such as Cloudflare:</label>
+                    <select id="cloudflare" name="cloudflare" class="form-control">
+                        <option value = 0>No</option>
+                        <option value = 1>Yes</option>
+                    </select>
+                    <label>Browser simulation type:</label>
+                    <select id="environment" name="environment" class="form-control">
+                        <option value = 0>Personal Computer</option>
+                        <option value = 1>Mobile (not support on Cloudflare mode)</option>
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="saveAsButton" class="btn btn-outline-primary">Save as</button>

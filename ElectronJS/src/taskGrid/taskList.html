@@ -16,11 +16,18 @@
         text-align: left;
         vertical-align: middle!important;
     }
+    @media (max-width: 500px) {
+        .tasklist{
+            margin-left:10%!important;
+
+        }
+    }
 </style>
 <body>
     <div class="row" style="margin-top: 40px;">
-        <div style="margin:0 auto;min-width: 70%;" id="taskList">
+        <div style="margin:0 auto; min-width: 70%;" id="taskList" class="tasklist">
             <h4 style="text-align: center;">{{"Task List~任务列表" | lang}}</h4>
+            <h5 style="text-align: center;" v-if="mobile==1">{{"View this table by direction keys on keyboard~按键盘方向键浏览此表格" | lang}}</h5>
             <p><a v-if="type==3" href="javascript:void(0)" v-on:click="newTask" class="btn btn-primary">{{"New Task~创建新任务" | lang}}</a></p>
             <div v-if="type != 3" style="margin-bottom: 20px">
                 <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/wiki" target="_blank">{{"Software Documentation~软件使用说明文档" | lang}}</a>
@@ -64,11 +71,12 @@
         data: {
             list: [],
             type: 3, //记录服务行为
+            mobile: getUrlParam("mobile"),
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
             newTask: function (){
-                window.location.href = "newTask.html?lang="+getUrlParam("lang")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
+                window.location.href = "newTask.html?lang="+getUrlParam("lang")+"&mobile="+getUrlParam("mobile")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
             },
             modifyTask: function(id, url) {
                 let message = { //显示flowchart
@@ -129,4 +137,5 @@
         // 关闭 websocket
         console.log("连接已关闭...");
     };
+
 </script>

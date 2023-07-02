@@ -309,7 +309,7 @@ wss.on('connection', function (ws) {
 
 console.log(process.platform);
 
-async function runBrowser(lang = "en", user_data_folder = '') {
+async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
     const serviceBuilder = new ServiceBuilder(driverPath);
     let options = new chrome.Options();
     options.addArguments('--disable-blink-features=AutomationControlled');
@@ -329,6 +329,13 @@ async function runBrowser(lang = "en", user_data_folder = '') {
         config.user_data_folder = user_data_folder;
         fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
     }
+    if (mobile) {
+        const mobileEmulation = {
+            deviceName: 'iPhone XR'
+        };
+        options.addArguments(`--user-agent="Mozilla/5.0 (iPhone; CPU iPhone OS 13_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1"`);
+        options.setMobileEmulation(mobileEmulation);
+    }
     driver = new Builder()
         .forBrowser('chrome')
         .setChromeOptions(options)
@@ -343,7 +350,12 @@ async function runBrowser(lang = "en", user_data_folder = '') {
         source: stealth,
     });
     try {
-        await driver.get(server_address + "/taskGrid/taskList.html?wsport=" + websocket_port + "&backEndAddressServiceWrapper=" + server_address + "&lang=" + lang);
+        if(mobile){
+            await driver.get(server_address + "/taskGrid/taskList.html?wsport=" + websocket_port + "&backEndAddressServiceWrapper=" + server_address + "&mobile=1&lang=" + lang);
+        } else {
+            await driver.get(server_address + "/taskGrid/taskList.html?wsport=" + websocket_port + "&backEndAddressServiceWrapper=" + server_address + "&lang=" + lang);
+        }
+
         old_handles = await driver.getAllWindowHandles();
         current_handle = old_handles[old_handles.length - 1];
     } finally {
@@ -351,10 +363,10 @@ async function runBrowser(lang = "en", user_data_folder = '') {
     }
 }
 
-function handleOpenBrowser(event, lang = "en", user_data_folder = "") {
+function handleOpenBrowser(event, lang = "en", user_data_folder = "", mobile = false) {
     const webContents = event.sender;
     const win = BrowserWindow.fromWebContents(webContents);
-    runBrowser(lang, user_data_folder);
+    runBrowser(lang, user_data_folder, mobile);
     let size = screen.getPrimaryDisplay().workAreaSize;
     let width = parseInt(size.width);
     let height = parseInt(size.height * 0.6);
@@ -368,9 +380,9 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "") {
     let url = "";
     let id = -1;
     if (lang == "en") {
-        url = server_address + `/taskGrid/FlowChart.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
+        url = server_address + `/taskGrid/FlowChart.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address + "&mobile=" + mobile.toString();
     } else if (lang == "zh") {
-        url = server_address + `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
+        url = server_address + `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address+ "&mobile=" + mobile.toString();
     }
     // and load the index.html of the app.
     flowchart_window.loadURL(url);

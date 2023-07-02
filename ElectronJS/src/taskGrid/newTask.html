@@ -10,12 +10,20 @@
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
     <title>New Task</title>
+<style>
+    @media (max-width: 500px) {
+        #newTask{
+            margin-left:10%!important;
+        }
+    }
+</style>
 
 </head>
 
+
 <body>
-    <div class="row" style="margin-top: 40px;" id="newTask">
-        <div class="col-md-6" style="margin:0 auto" style="text-align: center;">
+    <div class="row" style="margin-top: 40px" id="newTask">
+        <div class="col-md-6" style="margin:0 auto;" style="text-align: center;">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb" style="padding-left:0;background-color: white">
                     <li class="breadcrumb-item" @click="gotoHome"><a href="#">{{"Home~首页" | lang}}</a></li>

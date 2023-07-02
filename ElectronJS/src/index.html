@@ -85,6 +85,11 @@
                       style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Clean Mode</a>
                 </p>
 
+                <p><a @click="startDesign('en', false, true)"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Clean Mode (Mobile)</a>
+                </p>
+
                 <p><a @click="step = 2" @click
                       class="btn btn-primary btn-lg"
                       style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Data Mode</a>
@@ -107,6 +112,10 @@
                 <p><a @click="startDesign('en', true)"
                       class="btn btn-primary btn-lg"
                       style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Design</a></p>
+                <p>
+                <p><a @click="startDesign('en', true, true)"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">Start Design (Mobile)</a></p>
                 <p>
                     <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">Go to Home Page</a>
                 </p>
@@ -132,20 +141,24 @@
             </div>
             <div v-else-if="step == 1">
                 <h4 style="margin-top: 20px">请选择设计模式</h4>
-                <p style="margin-top: 20px; text-align: left; width:310px; margin-left: 18%">
+                <p style="margin-top: 20px; text-align: left; width:320px; margin-left: 18%">
                     纯净版浏览器：无任何用户信息的浏览器。</p>
-                <p style="text-align: left; width:310px; margin-left: 18%">
+                <p style="text-align: left; width:320px; margin-left: 18%">
                     带用户信息的浏览器：保存有用户数据，如网站的登录信息，cookie的浏览器。</p>
                 <p><a @click="startDesign('zh')"
                       class="btn btn-primary btn-lg"
-                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">使用纯净版浏览器设计</a>
+                      style="margin-top: 15px; width: 320px;height:60px;padding-top:12px;color:white;">使用纯净版浏览器设计</a>
+                </p>
+                <p><a @click="startDesign('zh', false, true)"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 320px;height:60px;padding-top:12px;color:white;">纯净版浏览器设计（手机模式）</a>
                 </p>
 
                 <p><a @click="step = 2" class="btn btn-primary btn-lg"
-                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">使用带用户信息浏览器设计</a>
+                      style="margin-top: 15px; width: 320px;height:60px;padding-top:12px;color:white">使用带用户信息浏览器设计</a>
                 </p>
                 <p>
-                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">返回首页</a>
+                    <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 320px;height:45px;padding-top:5px">返回首页</a>
                 </p>
 
             </div>
@@ -163,6 +176,10 @@
                 <p><a @click="startDesign('zh', true)"
                       class="btn btn-primary btn-lg"
                       style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">开始设计</a></p>
+                <p>
+                <p><a @click="startDesign('zh', true, true)"
+                      class="btn btn-primary btn-lg"
+                      style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;color:white">开始设计（手机模式）</a></p>
                 <p>
                     <a @click="step = 0" class="btn btn-outline-primary btn-lg"style="margin-top: 10px; width: 300px;height:45px;padding-top:5px">返回首页</a>
                 </p>

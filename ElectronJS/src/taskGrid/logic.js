@@ -142,6 +142,7 @@ function addParameters(t) {
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
         wait: 0, //执行后等待
+        waitType: 0, //等待类型，0代表固定时间，1代表随机等待
         beforeJS: "", //执行前执行的js
         beforeJSWaitTime: 0, //执行前js等待时间
         afterJS: "", //执行后执行的js
@@ -277,6 +278,10 @@ function getUrlParam(name) {
 
 var sId = getUrlParam('id');
 var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
+let mobile = getUrlParam("mobile");
+if (mobile == "true") {
+    $("#environment").val(1);
+}
 
 function saveService(type) {
     let serviceId = $("#serviceId").val();
@@ -296,6 +301,9 @@ function saveService(type) {
         let outputIndex = 0;
         let links = ""; //记录所有的link
         let containJudge = false; //是否含有判断语句
+        let saveThreshold = parseInt($("#saveThreshold").val());
+        let cloudflare = parseInt($("#cloudflare").val());
+        let environment = parseInt($("#environment").val());
         for (let i = 1; i < nodeList.length; i++) {
             if (nodeList[i]["id"] != -1) { //已经被删除的节点不进行统计
                 if (nodeList[i]["option"] == 1) //打开网页操作，统计输入框输入操作
@@ -403,6 +411,9 @@ function saveService(type) {
             "links": links,
             "create_time": new Date().toLocaleString(),
             "version": "0.3.3",
+            "saveThreshold": saveThreshold,
+            "cloudflare": cloudflare,
+            "environment": environment,
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

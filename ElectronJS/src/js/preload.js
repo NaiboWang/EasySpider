@@ -8,6 +8,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    startDesign: (lang="en", user_data_folder = '') => ipcRenderer.send('start-design', lang, user_data_folder),
+    startDesign: (lang="en", user_data_folder = '', mobile=false) => ipcRenderer.send('start-design', lang, user_data_folder, mobile),
     startInvoke: (lang="en") => ipcRenderer.send('start-invoke', lang),
 })

@@ -9,6 +9,7 @@ rmdir /s /q out\EasySpider\resources\app\execution_instances
 rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x64\EasySpider
 del out\EasySpider\resources\app\vs_BuildTools.exe
 move out\EasySpider ..\.temp_to_pub\EasySpider_windows_x64\EasySpider
+copy ..\ExecuteStage\easyspider_executestage.py ..\.temp_to_pub\EasySpider_windows_x64
 rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x64\user_data
 rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x64\execution_instances
 mkdir ..\.temp_to_pub\EasySpider_windows_x64\execution_instances

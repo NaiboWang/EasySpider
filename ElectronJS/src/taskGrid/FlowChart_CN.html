@@ -110,7 +110,7 @@
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
-                      </select>
+                    </select>
                     <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
@@ -464,6 +464,11 @@
                 <div style="margin-top:5px">
                     <label><b>执行后</b>等待秒数（所有等待时间均可设置为小数，如0.5）：</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
+                    <label>等待类型</label>
+                    <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
+                        <option value = 0>固定等待（设置等10秒就等10秒）</option>
+                        <option value = 1>随机等待（设置等10秒会随机等10×0.5 - 10 × 1.5 秒）</option>
+                    </select>
                 </div>
                 <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">确定</button>
 
@@ -475,7 +480,7 @@
     </div>
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="myModalLabel">保存任务</h4>
@@ -487,7 +492,20 @@
                     <label>任务名称：</label>
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
                     <label>任务描述：</label>
-                    <textarea onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control" rows="3"></textarea>
+                    <input onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
+                    <label>每采集多少条数据本地保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
+                    <label>是否为cloudflare等极端反爬网站：</label>
+                    <select id="cloudflare" name="cloudflare" class="form-control">
+                        <option value = 0>否</option>
+                        <option value = 1>是</option>
+                    </select>
+                    <label>浏览器模拟类型：</label>
+                    <select id="environment" name="environment" class="form-control">
+                        <option value = 0>电脑端</option>
+                        <option value = 1>手机端（Cloudflare模式下不支持）</option>
+                    </select>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>

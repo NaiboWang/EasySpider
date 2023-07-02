@@ -4,6 +4,8 @@ const url = require('url');
 const fs = require('fs');
 const path=require('path');
 const {app, dialog} = require('electron');
+const XLSX = require('xlsx');
+const multer  = require('multer');
 function travel(dir,callback){
     fs.readdirSync(dir).forEach((file)=>{
         const pathname=path.join(dir,file)

@@ -50,7 +50,7 @@ var app = Vue.createApp({
             this.init = false;
             this.lang = lang;
         },
-        startDesign(lang, with_data = false) {
+        startDesign(lang, with_data = false, mobile=false) {
             if (with_data) {
                 console.log(this.user_data_folder)
                 if (this.user_data_folder == null || this.user_data_folder == "") {
@@ -61,9 +61,9 @@ var app = Vue.createApp({
                     }
                     return;
                 }
-                window.electronAPI.startDesign(lang, this.user_data_folder);
+                window.electronAPI.startDesign(lang, this.user_data_folder, mobile);
             } else {
-                window.electronAPI.startDesign(lang);
+                window.electronAPI.startDesign(lang, '', mobile);
             }
         },
         startInvoke(lang) {
