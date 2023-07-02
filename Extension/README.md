@@ -20,7 +20,7 @@ This section covers the compilation instructions for the `Browser extension`, al
 
 ## 环境构建/Environment Setup
 
-1. 安装`NodeJS`：https://nodejs.org/zh-cn/download/
+1. 安装`NodeJS`：[https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)。
 2. 运行下面的命令来安装依赖：
 
 ```
@@ -29,7 +29,7 @@ npm install
 
 -----
 
-1. Install `NodeJS`: https://nodejs.org/en/download/
+1. Install `NodeJS`: [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
 2. Run the following command to install dependencies:
 
 ```
@@ -44,7 +44,7 @@ npm install
 npm run dev
 ```
 
-打开一个Chrome浏览器窗口，然后在浏览器地址栏输入`chrome://extensions/`，在打开的页面中，打开右上角`开发者模式`，点击`加载已解压的扩展程序`，选择`manifest_v3\dist`文件夹，即可加载扩展。
+打开一个Chrome浏览器窗口，然后在浏览器地址栏输入`chrome://extensions/`，在打开的页面中，打开右上角的`开发者模式`，点击`加载已解压的扩展程序`，选择`manifest_v3\dist`文件夹，即可加载扩展。
 
 -----
 
@@ -64,7 +64,7 @@ Open a Chrome browser window, then enter `chrome://extensions/` in the browser a
 npm run package
 ```
 
-打包后会自动更新`ElectronJS`目录下的`EasySpider_zh.crx`文件，运行过程中的报错信息可以忽略。
+打包后会自动更新`ElectronJS`目录下的`EasySpider_zh.crx`文件，命令运行过程中的报错信息可以忽略。
 
 -----
 
@@ -74,5 +74,5 @@ Run the following command to package the extension:
 npm run package
 ```
 
-After packaging, the `EasySpider_en.crx` file in the `ElectronJS` folder will be automatically updated, and the error messages during the running process can be ignored.
+After packaging, the `EasySpider_en.crx` file in the `ElectronJS` folder will be automatically updated, and the error messages during the command running can be ignored.
 

@@ -20,8 +20,8 @@ This section covers the compilation instructions for the `Execution stage progra
 
 ## 环境构建/Environment Setup
 
-1. 安装python3.6及以上版本并添加至系统环境变量：https://www.python.org/downloads/
-2. 安装pip3 并添加至系统环境变量（windows安装python后会自带pip，Linux和MacOS安装方式请自行搜索）。
+1. 安装python3.6及以上版本并添加至系统环境变量：[https://www.python.org/downloads/](https://www.python.org/downloads/)。
+2. 安装pip3 并添加至系统环境变量（Windows安装python后会自带pip，Linux和MacOS安装方式请自行搜索）。
 3. 安装执行阶段需要的依赖库：
    
    ```sh
@@ -48,7 +48,7 @@ This section covers the compilation instructions for the `Execution stage progra
 python3 easyspider_executestage.py --id [1]
 ```
 
-以上是运行任务号为`1`的任务的示例命令，更多命令行参数使用说明请参考：https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction
+以上是运行任务号为`1`的任务的示例命令，更多命令行参数使用说明请参考：[Argument Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction)。
 
 -----
 
@@ -70,12 +70,12 @@ You can use VS Code to open this folder and debug the program. You can modify th
 
 ## 打包说明/Package Instruction
 
-如果想要在主程序直接点击“本地直接运行”按钮即可执行程序，则需要打包程序为可执行程序。
+如果想要在主程序直接点击`本地直接运行`按钮即可执行程序，则需要打包程序为可执行程序。
 
 Windows x64直接运行`generateEXE_win64.cmd`即可把执行阶段程序打包成`exe`文件并自动拷贝到`../ElectronJS/chrome_win64/`目录下，其他系统同理。
 
 -----
 
-To execute the program by simply clicking the "Run Locally" button in the main program, you will need to package the program into an executable file.
+To execute the program by simply clicking the `Directly Run Locally` button in the main program, you will need to package the program into an executable file.
 
-For Windows x64, you can run the generateEXE_win64.cmd script. This script will package the execution stage program into an .exe file and automatically copy it to the ../ElectronJS/chrome_win64/ directory. The process for other systems is similar.
+For Windows x64, you can run the `generateEXE_win64.cmd` script. This script will package the execution stage program into an .exe file and automatically copy it to the `../ElectronJS/chrome_win64/` directory. The process for other systems is similar.

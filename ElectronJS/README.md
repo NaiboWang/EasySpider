@@ -53,7 +53,7 @@ chrome_linux64/ # for linux x64
 chrome_mac64/ # for mac x64
 ```
 
-然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：https://chromedriver.chromium.org/downloads，把chromedriver放入刚刚的chrome文件夹内，并更名为下面的格式：
+然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)，把chromedriver放入刚刚的chrome文件夹内，并更名为下面的格式：
 
 ```
 chromedriver_win32.exe # for windows x86
@@ -91,8 +91,8 @@ Finally, copy the `stealth.min.js` and `execute.bat` (for Windows x64) file in t
 
 ### NodeJS环境/NodeJS Environment
 
-1. Windows环境下需要先安装`VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe)的`Visual C++ Build Tools`组件，不然下面的命令无法执行，其他系统不需要。
-2. 安装`NodeJS`：https://nodejs.org/zh-cn/download/
+1. Windows环境下需要先安装`VS Build Tools 2017` （[https://aka.ms/vs/15/release/vs_buildtools.exe](https://aka.ms/vs/15/release/vs_buildtools.exe)）的`Visual C++ Build Tools`组件，不然下面的命令无法执行，其他系统不需要。
+2. 安装`NodeJS`：[https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)。
 3. 运行下面的命令来安装依赖：
 
 ```
@@ -100,12 +100,12 @@ npm install
 npm install @electron-forge/cli -g
 ```
 
-如果上面的命令运行速度很慢可以参考NodeJS换源说明：https://blog.csdn.net/qq_23211463/article/details/123769061
+如果上面的命令运行速度很慢可以参考NodeJS换源说明：[https://blog.csdn.net/qq_23211463/article/details/123769061](https://blog.csdn.net/qq_23211463/article/details/123769061)。
 
 -----
 
 1. On Windows, you need to install `VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe, select and install the `Visual C++ Build Tools` component) first for node-gyp to install `node-windows-manager` (No need for other OS).
-2. Install `NodeJS`: https://nodejs.org/en/download/
+2. Install `NodeJS`: [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
 3. Run the following commands to install NodeJS packages:
 
 ```
@@ -115,7 +115,7 @@ npm install @electron-forge/cli -g
 
 ## 运行说明/Run Instruction
 
-在当前文件夹执行以下命令即可运行程序：
+在当前文件夹执行以下命令即可在开发模式下运行程序：
 
 ```sh
 npm run start_direct
