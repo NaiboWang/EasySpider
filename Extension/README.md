@@ -1,4 +1,4 @@
-# 环境编译说明/Environment Compilation Instructions
+# 环境编译说明/Environment Compilation Instruction
 
 EasySpider分三部分：
 
