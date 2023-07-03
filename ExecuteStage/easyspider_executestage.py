@@ -162,7 +162,6 @@ class BrowserThread(Thread):
         self.links = list(
             filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
-        self.OUTPUT.append([])  # 添加表头
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         self.bodyText = ""  # 记录bodyText
         tOut = service["outputParameters"]  # 生成输出参数对象
@@ -171,11 +170,14 @@ class BrowserThread(Thread):
         self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
+        if not os.path.exists("Data/" + str(self.id) + "/" + self.saveName + '.csv'): # 文件叠加的时候不添加表头
+            self.OUTPUT.append([])  # 添加表头
         for para in tOut:
             if para["name"] not in self.outputParameters.keys():
                 self.outputParameters[para["name"]] = ""
                 self.dataNotFoundKeys[para["name"]] = False
-                self.OUTPUT[0].append(para["name"])
+                if not os.path.exists("Data/" + str(self.id) + "/" + self.saveName + '.csv'):
+                    self.OUTPUT[0].append(para["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
 

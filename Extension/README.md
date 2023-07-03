@@ -6,7 +6,7 @@ EasySpider分三部分：
 2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作控制台”的代码，打包后的扩展在`ElectronJS`目录下的`EasySpider_zh.crx`文件。
 3. 执行阶段程序：在`ExecuteStage`文件夹下。
 
-此部分为`浏览器扩展`的编译说明，本节的所有命令都在`manifest_v3`文件夹内执行。
+此部分为`浏览器扩展`的编译说明，**本节的所有命令都在`manifest_v3`文件夹内执行**。
 
 -----
 
@@ -16,7 +16,7 @@ EasySpider is divided into three parts:
 2. Browser extension: Located in the Extension folder, i.e., the `EasySpider_en.crx` file in the `ElectronJS` folder.
 3. Execution stage program: Located in the ExecuteStage folder.
 
-This section covers the compilation instructions for the `Browser extension`, all commands in this section are executed in the `manifest_v3` folder.
+This section covers the compilation instructions for the `Browser extension`, **all commands in this section are executed in the `manifest_v3` folder**.
 
 ## 环境构建/Environment Setup
 

@@ -34,11 +34,11 @@ Taking the example of Windows x64 version.
 
 实在搞不定本节的情况下，下载一个直接能用的EasySpider，并把文件夹内的`EasySpider\resources\app\chrome_win64`文件夹拷贝到此`ElectronJS`文件夹下即可。
 
-If you're unable to handle the tasks in this section, you can download a ready-to-use EasySpider. Simply copy the EasySpider\resources\app\chrome_win64 folder from the downloaded files and paste it into the ElectronJS folder.
+If you're unable to handle the tasks in this section, you can download a ready-to-use EasySpider. Simply copy the `EasySpider\resources\app\chrome_win64` folder from the downloaded files and paste it into the ElectronJS folder.
 
 ------
 
-在自己的机器环境已经安装了Chrome的情况下，直接执行`python3 update_chrome.py`也可以完成本节下面写的一系列的操作，注意设置文件中的chrome大版本号为本机chrome的版本号。
+在自己的机器环境已经安装了Chrome的情况下，直接执行`python3 update_chrome.py`也可以完成本节下面写的一系列的操作，注意设置文件中的Chrome大版本号为本机Chrome的版本号。
 
 If you already have Chrome installed on your local machine, you can directly execute python3 update_chrome.py to perform the operations mentioned in the following section. Make sure to set the Chrome major version in the configuration file to match the version of Chrome installed on your machine.
 
@@ -85,7 +85,7 @@ chromedriver_linux64 # for linux x64
 chromedriver_mac64 # for mac x64
 ```
 
-For example, if you want to build this software on Windows x64 platform, then you should first download a chrome for Windows x64, then copy the whole `chrome` folder to this `ElectronJS` folder and rename the folder to `chrome_win64`, assume the chrome version you downloaded is 110; then, download a `chromedriver.exe` with version 110 for Windows x64, and put it into the `chrome_win64` folder, then rename it to `chromedriver_win64.exe`.
+For example, if you want to build this software on Windows x64 platform, then you should first download a Chrome for Windows x64, then copy the whole `chrome` folder to this `ElectronJS` folder and rename the folder to `chrome_win64`, assume the Chrome version you downloaded is 110; then, download a `chromedriver.exe` with version 110 for Windows x64, and put it into the `chrome_win64` folder, then rename it to `chromedriver_win64.exe`.
 
 Finally, copy the `stealth.min.js` and `execute.bat` (for Windows x64) file in this folder to these `chrome` folders.
 

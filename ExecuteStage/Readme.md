@@ -25,7 +25,7 @@ This section covers the compilation instructions for the `Execution stage progra
 3. 安装执行阶段需要的依赖库：
    
    ```sh
-        pip3 install -r requirements.txt
+    pip3 install -r requirements.txt
    ```
 
 -----
@@ -35,12 +35,12 @@ This section covers the compilation instructions for the `Execution stage progra
 3. Install the required dependencies for the execution stage by running:
    
     ```sh
-        pip3 install -r requirements.txt
+    pip3 install -r requirements.txt
     ```
 
 ## 运行说明/Run Instruction
 
-运行程序前，确保已经完成了`ElectronJS`文件夹下的编译说明，保证`chrome`文件夹和`chromedriver`环境已经就绪，同时**EasySpider**主程序已在运行中。
+运行程序前，确保已经完成了`ElectronJS`文件夹下`主程序`的编译，保证`chrome`文件夹和`chromedriver`环境已经就绪，同时**EasySpider主程序已在运行中**。
 
 在当前文件夹下直接运行程序：
 
@@ -52,7 +52,7 @@ python3 easyspider_executestage.py --id [1]
 
 -----
 
-Before running the program, make sure you have completed the compilation instructions in the `ElectronJS` folder and ensure that the `chrome` folder and `chromedriver` environment are ready. Also, ensure that the **EasySpider** main program is already running.
+Before running the program, make sure you have completed the compilation of the `main program` in the `ElectronJS` folder and ensure that the `chrome` folder and `chromedriver` environment are ready. Also, ensure that the **EasySpider main program is already running**.
 
 To run the program directly in the current folder, use the following command:
 
