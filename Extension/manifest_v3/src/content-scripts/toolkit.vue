@@ -132,7 +132,7 @@
           <button style="margin-left:0px!important;" v-on:click="getInput">确定</button>
           <button style="margin-left:0px!important;" v-on:click="cancelInput">取消</button>
           <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
-            如果点击“确定”按钮后文本框没有自动填充，且流程图中没有显示“输入文字”节点，重试即可。
+            输入&lt;enter&gt;或&lt;ENTER&gt;表示输入完成后模拟按下回车键，适用于只能通过回车键获得数据的情况。
           </div>
         </div>
         <div v-if="page==2">
@@ -292,7 +292,7 @@
           <button style="margin-left:0px!important;" v-on:click="getInput">Confirm</button>
           <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
           <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
-            If the text box does not auto-populate after clicking the "Confirm" button, and the "Input Text" operation is not displayed in the workflow manager, please try again.
+            Inputting &lt;enter&gt; or &lt;ENTER&gt; represents the simulation of pressing the Enter key after input is complete, which is applicable in situations where data can only be obtained through pressing the Enter key.
           </div>
         </div>
         <div v-if="page==2">
@@ -322,6 +322,7 @@
 <script>
 import {
   global,
+  isInIframe,
   getOS,
   readXPath,
   addEl,
@@ -375,6 +376,33 @@ export default {
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize);
     });
+    if(isInIframe()){
+      global.iframe = true;
+    }
+    // 获取页面上所有的iframe
+    let iframes = document.getElementsByTagName('iframe');
+
+    // 循环遍历所有的iframe
+    for(let i = 0; i < iframes.length; i++) {
+      let iframe = iframes[i];
+      // 获取iframe的当前高度
+      let currentHeight = iframe.offsetHeight;
+      console.log("IFRAME: ", getElementXPaths(iframe), readXPath(iframe));
+      console.log("IFrame Height: ", currentHeight, "px")
+      // 如果当前高度小于600px，那么将其设置为600px
+      if(currentHeight < 600) {
+        iframe.style.height = '600px!important';
+        iframe.height = '600';
+      }
+
+      let currentWidth = iframe.offsetWidth;
+      console.log("IFrame Width: ", currentWidth, "px")
+      // 如果当前高度小于600px，那么将其设置为600px
+      if(currentWidth < 600) {
+        iframe.style.width = '600px!important';
+        iframe.width = '600';
+      }
+    }
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize);

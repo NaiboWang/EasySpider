@@ -40,7 +40,7 @@ Documentation can be found from [GitHub Wiki](https://github.com/NaiboWang/EasyS
 
 Bilibili/B站视频教程:
 
-[EasySpider介绍 - 中国地震台网采集案例](https://www.bilibili.com/video/BV1Fk4y1L7xX/)
+[EasySpider介绍 - 中国地震台网采集案例](https://www.bilibili.com/video/BV1th411A7ey/)
 
 [自动/手动同类型元素匹配功能说明](https://www.bilibili.com/video/BV1pu411a7pK/)
 

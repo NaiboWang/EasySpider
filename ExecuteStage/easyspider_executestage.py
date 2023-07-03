@@ -39,84 +39,10 @@ import pytesseract
 from PIL import Image
 import uuid
 from threading import Thread, Event
+
+from utils import check_pause, download_image, get_output_code, isnull
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
-
-# 控制流程的暂停和继续
-
-
-def check_pause(key, event):
-    while True:
-        if keyboard.is_pressed(key):  # 按下p键，暂停程序
-            if event._flag == False:
-                print("任务执行中，长按p键暂停执行。")
-                print("Task is running, long press 'p' to pause.")
-                # 设置Event的值为True，使得线程b可以继续执行
-                event.set()
-            else:
-                # 设置Event的值为False，使得线程b暂停执行
-                print("任务已暂停，长按p键继续执行...")
-                print("Task paused, press 'p' to continue...")
-                event.clear()
-        time.sleep(1)  # 每秒检查一次
-
-
-def download_image(url, save_directory):
-    # 定义浏览器头信息
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
-
-    # 发送 GET 请求获取图片数据
-    response = requests.get(url, headers=headers)
-
-    # 检查响应状态码是否为成功状态
-    if response.status_code == requests.codes.ok:
-        # 提取文件名
-        file_name = url.split('/')[-1].split("?")[0]
-
-        # 生成唯一的新文件名
-        new_file_name = file_name + '_' + str(uuid.uuid4()) + '_' + file_name
-
-        # 构建保存路径
-        save_path = os.path.join(save_directory, new_file_name)
-
-        # 保存图片到本地
-        with open(save_path, 'wb') as file:
-            file.write(response.content)
-
-        print("图片已成功下载到:", save_path)
-        print("The image has been successfully downloaded to:", save_path)
-    else:
-        print("下载图片失败，请检查此图片链接是否有效:", url)
-        print("Failed to download image, please check if this image link is valid:", url)
-
-
-def get_output_code(output):
-    try:
-        if output.find("rue") != -1:  # 如果返回值中包含true
-            code = 1
-        else:
-            code = int(output)
-    except:
-        code = 0
-    return code
-
-# 判断字段是否为空
-
-
-def isnull(s):
-    return len(s) != 0
-
-
-class Time:
-    def __init__(self, type1=""):
-        self.t = int(round(time.time() * 1000))
-        self.type = type1
-
-    def end(self):
-        at = int(round(time.time() * 1000))
-        print("Time used for", self.type, ":", at - self.t, "ms")
 
 
 class BrowserThread(Thread):
@@ -170,13 +96,14 @@ class BrowserThread(Thread):
         self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
-        if not os.path.exists("Data/" + str(self.id) + "/" + self.saveName + '.csv'): # 文件叠加的时候不添加表头
+        # 文件叠加的时候不添加表头
+        if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv'):
             self.OUTPUT.append([])  # 添加表头
         for para in tOut:
             if para["name"] not in self.outputParameters.keys():
                 self.outputParameters[para["name"]] = ""
                 self.dataNotFoundKeys[para["name"]] = False
-                if not os.path.exists("Data/" + str(self.id) + "/" + self.saveName + '.csv'):
+                if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv'):
                     self.OUTPUT[0].append(para["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
@@ -197,10 +124,10 @@ class BrowserThread(Thread):
         for i in range(len(self.links)):
             self.executeNode(0)
             self.urlId = self.urlId + 1
-        files = os.listdir("Data/" + str(self.id) + "/" + self.saveName)
+        files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
         if not files:
-            os.rmdir("Data/" + str(self.id) + "/" + self.saveName)
+            os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         print("Done!")
         print("执行完成！")
         self.recordLog("Done!")
@@ -225,10 +152,10 @@ class BrowserThread(Thread):
     def saveData(self, exit=False):
         # 每save_threshold条保存一次
         if exit == True or len(self.OUTPUT) >= self.save_threshold:
-            with open("Data/" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
+            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
                 file_obj.write(self.log)
                 file_obj.close()
-            with open("Data/" + str(self.id) + "/" + self.saveName + '.csv', 'a', encoding='utf-8-sig', newline="") as f:
+            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv', 'a', encoding='utf-8-sig', newline="") as f:
                 f_csv = csv.writer(f)
                 for line in self.OUTPUT:
                     f_csv.writerow(line)
@@ -250,8 +177,8 @@ class BrowserThread(Thread):
                         body.send_keys(Keys.END)
                     time.sleep(para["scrollWaitTime"])  # 下拉完等待
         except:
-            self.Log('time out after set seconds when scrolling. ')
-            self.recordLog('time out after set seconds when scrolling')
+            self.Log('Time out after set seconds when scrolling. ')
+            self.recordLog('Time out after set seconds when scrolling')
             self.browser.execute_script('window.stop()')
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 for i in range(para["scrollCount"]):
@@ -535,8 +462,8 @@ class BrowserThread(Thread):
                         self.executeNode(
                             i, element, node["parameters"]["xpath"], 0)
                     finished = True
-                    self.Log("click: ", node["parameters"]["xpath"])
-                    self.recordLog("click:" + node["parameters"]["xpath"])
+                    self.Log("Click: ", node["parameters"]["xpath"])
+                    self.recordLog("Click:" + node["parameters"]["xpath"])
                 except NoSuchElementException:
                     # except:
                     print("Single loop element not found: ",
@@ -555,7 +482,7 @@ class BrowserThread(Thread):
                         print("\n\n-------Retrying-------\n\n")
                         self.Log("-------Retrying-------: ",
                                  node["parameters"]["xpath"])
-                        self.recordLog("clickNotFound:" +
+                        self.recordLog("ClickNotFound:" +
                                        node["parameters"]["xpath"])
                         for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                             if node["option"] != 2:
@@ -747,9 +674,9 @@ class BrowserThread(Thread):
             self.Log('Loading page: ' + url)
             self.recordLog('Loading page: ' + url)
         except TimeoutException:
-            self.Log('time out after set seconds when loading page: ' + url)
+            self.Log('Time out after set seconds when loading page: ' + url)
             self.recordLog(
-                'time out after set seconds when loading page: ' + url)
+                'Time out after set seconds when loading page: ' + url)
             self.browser.execute_script('window.stop()')
         try:
             self.history["index"] = self.browser.execute_script(
@@ -867,9 +794,9 @@ class BrowserThread(Thread):
                     '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
                 self.browser.execute_script(script, str(index))  # 用js的点击方法
         except TimeoutException:
-            self.Log('time out after set seconds when loading clicked page')
+            self.Log('Time out after set seconds when loading clicked page')
             self.recordLog(
-                'time out after set seconds when loading clicked page')
+                'Time out after set seconds when loading clicked page')
             self.browser.execute_script('window.stop()')
         except Exception as e:
             self.Log(e)
@@ -921,9 +848,9 @@ class BrowserThread(Thread):
                 self.bodyText = self.browser.find_element(
                     By.CSS_SELECTOR, "body").text
             except TimeoutException:
-                self.Log('time out after 10 seconds when getting body text')
+                self.Log('Time out after 10 seconds when getting body text')
                 self.recordLog(
-                    'time out after 10 seconds when getting body text')
+                    'Time out after 10 seconds when getting body text')
                 self.browser.execute_script('window.stop()')
                 time.sleep(1)
                 self.Log("wait one second after get body text")
@@ -960,7 +887,7 @@ class BrowserThread(Thread):
                 except:
                     downloadPic = 0
                 if downloadPic == 1:
-                    download_image(content, "Data/" +
+                    download_image(content, "Data/Task_" +
                                    str(self.id) + "/" + self.saveName + "/")
             else:  # 普通节点
                 content = element.text
@@ -985,7 +912,7 @@ class BrowserThread(Thread):
                 except:
                     downloadPic = 0
                 if downloadPic == 1:
-                    download_image(content, "Data/" +
+                    download_image(content, "Data/Task_" +
                                    str(self.id) + "/" + self.saveName + "/")
             else:
                 command = 'var arr = [];\
@@ -1021,7 +948,7 @@ class BrowserThread(Thread):
                 "return document.body.scrollWidth")
             # 调整浏览器窗口的大小
             self.browser.set_window_size(width, height)
-            element.screenshot("Data/" + str(self.id) + "/" + self.saveName +
+            element.screenshot("Data/Task_" + str(self.id) + "/" + self.saveName +
                                "/" + str(time.time()) + ".png")
         elif p["contentType"] == 8:
             try:
@@ -1120,7 +1047,7 @@ class BrowserThread(Thread):
                     if not self.dataNotFoundKeys[p["name"]]:
                         print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
                             p["relativeXPath"], p["name"]))
-                        print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
+                        print("提取数据操作时，字段名 %s 对应XPath %s 未找到（请查看原因，如是否翻页太快页面元素未加载出来），使用默认值，本字段将不再重复报错" % (
                             p["name"], p["relativeXPath"]))
                         self.dataNotFoundKeys[p["name"]] = True
                         self.recordLog(
@@ -1171,9 +1098,9 @@ class BrowserThread(Thread):
                             pass
                         continue
                     except TimeoutException:  # 超时的时候设置超时值
-                        self.Log('time out after set seconds when getting data')
+                        self.Log('Time out after set seconds when getting data')
                         self.recordLog(
-                            'time out after set seconds when getting data')
+                            'Time out after set seconds when getting data')
                         self.browser.execute_script('window.stop()')
                         if p["relative"]:  # 是否相对xpath
                             if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
@@ -1353,10 +1280,10 @@ if __name__ == '__main__':
             saveName = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
         print("Save Name for task ID", i, "is:", saveName)
         print("任务ID", i, "的保存文件名为:", saveName)
-        if not os.path.exists("Data/" + str(i)):
-            os.mkdir("Data/" + str(i))
-        if not os.path.exists("Data/" + str(i) + "/" + saveName):
-            os.mkdir("Data/" + str(i) + "/" + saveName)  # 创建保存文件夹用来保存截图
+        if not os.path.exists("Data/Task_" + str(i)):
+            os.mkdir("Data/Task_" + str(i))
+        if not os.path.exists("Data/Task_" + str(i) + "/" + saveName):
+            os.mkdir("Data/Task_" + str(i) + "/" + saveName)  # 创建保存文件夹用来保存截图
         if c.read_type == "remote":
             print("remote")
             content = requests.get(
@@ -1375,7 +1302,8 @@ if __name__ == '__main__':
             cloudflare = 0
         if cloudflare == 0:
             options.add_experimental_option("prefs", {
-                "download.default_directory": "Data/",  # 设置文件下载路径
+                # 设置文件下载路径
+                "download.default_directory": "Data/Task_" + str(i),
                 "download.prompt_for_download": False,  # 禁止下载提示框
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,
@@ -1383,7 +1311,8 @@ if __name__ == '__main__':
                 "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
             })
             option.add_experimental_option("prefs", {
-                "download.default_directory": "Data/",  # 设置文件下载路径
+                # 设置文件下载路径
+                "download.default_directory": "Data/Task_" + str(i),
                 "download.prompt_for_download": False,  # 禁止下载提示框
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,

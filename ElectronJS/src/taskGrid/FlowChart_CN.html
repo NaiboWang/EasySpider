@@ -123,6 +123,7 @@
                         <!-- 如果在循环内才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
                     </div>
+                    <p v-if="!useLoop"><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <div v-if='!useLoop'>
                         <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
@@ -199,6 +200,7 @@
                         <p>当前编辑字段参数名（点击字段的“修改”选项切换参数）： </p>
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
+                        <p v-if='!paras.parameters[paraIndex]["relative"]'><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["iframe"]'></input>元素在iframe内</p>
                         <p>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
@@ -277,6 +279,7 @@
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在循环内设置的文本）</p>
                     </div>
+                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <div v-if='!useLoop'>
                         <label>输入值（用Field["字段名"]来输入某字段提取到的最新值，用&lt;enter&gt;或&lt;ENTER&gt;表示模拟按下回车键）：</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
@@ -306,6 +309,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==5">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
                     <label>自定义执行模式</label>
                     <select v-model='nowNode["parameters"]["codeMode"]' class="form-control">
                         <option value = 0>执行一段JavaScript脚本</option>
@@ -332,6 +336,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==6">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <label>XPath： </label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
@@ -353,6 +358,7 @@
                         <!-- 如果在循环内才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
                     </div>
+                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <div v-if='!useLoop'>
                         <label>XPath： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
@@ -363,6 +369,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==8">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
                     <!-- 循环选项 -->
                     <label>循环类型：</label>
                     <select v-model='loopType' class="form-control">
@@ -434,6 +441,7 @@
 
                 <div class="elements" v-if="nodeType==10">
                     <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，依此类推。</label>
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
                     <label>条件类型：</label>
                     <select v-model='TClass' class="form-control">
                         <option value = 0>无条件</option>
@@ -445,6 +453,7 @@
                         <option value = 6>系统命令返回值</option>
                         <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值（需以return 开头）</option>
                       </select>
+
                     <div v-if='TClass>0 && TClass <5'>
                         <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>

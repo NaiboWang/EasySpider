@@ -48,6 +48,7 @@ function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["afterJS"] = ""; //执行后执行的js
     msg["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
     msg["parameters"][i]["downloadPic"] = 0; //是否下载图片
+    msg["parameters"][i]["iframe"] = false; //是否在iframe中
 }
 
 
@@ -141,12 +142,14 @@ function addParameters(t) {
         tabIndex: 0,
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
+        iframe: false, //是否在iframe中
         wait: 0, //执行后等待
         waitType: 0, //等待类型，0代表固定时间，1代表随机等待
         beforeJS: "", //执行前执行的js
         beforeJSWaitTime: 0, //执行前js等待时间
         afterJS: "", //执行后执行的js
         afterJSWaitTime: 0, //执行后js等待时间
+        iframe: false, //是否在iframe中
     }; //公共参数处理
     if (t.option == 1) {
         t["parameters"]["url"] = "about:blank";
@@ -209,6 +212,7 @@ function addParameters(t) {
 function modifyParameters(t, para) {
     t["parameters"]["history"] = para["history"];
     t["parameters"]["tabIndex"] = para["tabIndex"];
+    t["parameters"]["iframe"] = para["iframe"];
     if (t.option == 1) {
         t["parameters"]["url"] = para["url"];
         t["parameters"]["links"] = para["links"];

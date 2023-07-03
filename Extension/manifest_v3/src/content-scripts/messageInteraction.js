@@ -1,6 +1,6 @@
 //实现与后台和流程图部分的交互
 
-import {getElementXPaths, global, readXPath} from "./global.js";
+import {getElementXPaths, global, readXPath, isInIframe} from "./global.js";
 
 // var startMsg = { "type": 0, msg: ""};
 //
@@ -36,6 +36,7 @@ export function input(value) {
         "tabIndex": -1,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
+        "iframe": global.iframe,
         "value": value,
     };
     window.stop();
@@ -48,7 +49,7 @@ export function input(value) {
     // msg = { type: 2, value: value, xpath: message.xpath, id: global.id};
     let message_keyboard = {
         type: 2, //消息类型，2代表键盘输入
-        message: { "keyboardStr": value, "xpath": message.xpath, "id": global.id } // {}全选{BS}退格
+        message: { "keyboardStr": value, "xpath": message.xpath, "iframe": global.iframe, "id": global.id } // {}全选{BS}退格
     };
     global.ws.send(JSON.stringify(message_keyboard));
 }
@@ -61,6 +62,7 @@ export function sendSingleClick() {
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
+        "iframe": global.iframe,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
@@ -80,6 +82,7 @@ export function sendChangeOption(optionMode, optionValue){
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
+        "iframe": global.iframe,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
@@ -97,6 +100,7 @@ export function sendMouseMove(){
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
+        "iframe": global.iframe,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
@@ -116,6 +120,7 @@ export function sendLoopMouseMove(){
         "xpath": "", //默认值设置为空
         "allXPaths": "",
         "useLoop": true, //是否使用循环内元素
+        "iframe": global.iframe,
         "loopType": 1, //循环类型，1为不固定元素列表
     };
     if (!detectAllSelected()) //如果不是全部选中的话
@@ -145,6 +150,7 @@ export function collectSingle() {
         "type": "singleCollect",
         "history": history.length, //记录history的长度
         "tabIndex": -1,
+        "iframe": global.iframe,
         "parameters": global.outputParameters,
     };
     let message_action = {
@@ -161,6 +167,7 @@ export function collectMultiNoPattern() {
         "type": "multiCollectNoPattern",
         "history": history.length, //记录history的长度
         "tabIndex": -1,
+        "iframe": global.iframe,
         "parameters": global.outputParameters,
     };
     let message_action = {
@@ -179,6 +186,7 @@ export function collectMultiWithPattern() {
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "loopType": 1,
+        "iframe": global.iframe,
         "xpath": "", //默认值设置为空
         "allXPaths": "",
         "isDescendents": global.app._data.selectedDescendents, //标记是否采集的是子元素
@@ -216,6 +224,7 @@ export function sendLoopClickSingle(name) {
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "useLoop": true, //是否使用循环内元素
+        "iframe": global.iframe,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
         "loopType": 0, //循环类型，0为单个元素
@@ -242,6 +251,7 @@ export function sendLoopClickEvery() {
         "xpath": "", //默认值设置为空
         "allXPaths": "",
         "useLoop": true, //是否使用循环内元素
+        "iframe": global.iframe,
         "loopType": 1, //循环类型，1为不固定元素列表
     };
     if (!detectAllSelected()) //如果不是全部选中的话

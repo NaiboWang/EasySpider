@@ -19,8 +19,16 @@ export var global = {
     lang: config.language,
     id: "C" + Math.floor(Math.random() * (99999999)).toString(), //处理不同标签页的handles，生成的id
     ws: null,
+    iframe: false,
 };
 
+export function isInIframe() {
+    try {
+        return window.self !== window.parent;
+    } catch (e) {
+        return true;
+    }
+}
 export function getOS () {
     if (navigator.userAgent.indexOf('Window') > 0) {
         return 'Windows'
@@ -34,20 +42,24 @@ export function getOS () {
 }
 
 export function getElementXPaths(element, parentElement = document.body) {
-    const paths = [];
+    let paths = [];
+    let pre_xpath = "";
+    // if(global.iframe){
+    //     pre_xpath = "//iframe";
+    // }
     paths.push(readXPath(element,1, parentElement));
-    paths.push("//" + element.tagName.toLowerCase() + "[contains(., '" + element.textContent.slice(0, 10).trim() + "')]");
+    paths.push(pre_xpath + "//" + element.tagName.toLowerCase() + "[contains(., '" + element.textContent.slice(0, 10).trim() + "')]");
     if (element.id) {
-        paths.push(`id("${element.id}")`);
+        paths.push(pre_xpath + `id("${element.id}")`);
     }
     if (element.className) {
-        paths.push("//" + element.tagName + "[@class='" + element.className + "']");
+        paths.push(pre_xpath + "//" + element.tagName + "[@class='" + element.className + "']");
     }
     if (element.name) {
-        paths.push("//" + element.tagName + "[@name='" + element.name + "']");
+        paths.push(pre_xpath + "//" + element.tagName + "[@name='" + element.name + "']");
     }
     if (element.alt) {
-        paths.push("//" + element.tagName + "[@alt='" + element.alt + "']");
+        paths.push(pre_xpath + "//" + element.tagName + "[@alt='" + element.alt + "']");
     }
     paths.push(getAbsoluteXPathWithReverseIndex(element));
     console.log("ALL PATHS: " + paths);
@@ -55,10 +67,14 @@ export function getElementXPaths(element, parentElement = document.body) {
 }
 
 function getAbsoluteXPathWithReverseIndex(element) {
-    var path = [];
+    let pre_xpath = "";
+    // if(global.iframe){
+    //     pre_xpath = "//iframe";
+    // }
+    let path = [];
     while (element && element.nodeType == Node.ELEMENT_NODE) {
-        var index = 0;
-        for (var sibling = element.nextSibling; sibling; sibling = sibling.nextSibling) {
+        let index = 0;
+        for (let sibling = element.nextSibling; sibling; sibling = sibling.nextSibling) {
             // Ignore document type declaration.
             if (sibling.nodeType == Node.DOCUMENT_TYPE_NODE)
                 continue;
@@ -66,22 +82,26 @@ function getAbsoluteXPathWithReverseIndex(element) {
                 ++index;
         }
 
-        var tagName = element.nodeName.toLowerCase();
-        var pathIndex = (index ? "[last()-" + index + "]" : "");
+        let tagName = element.nodeName.toLowerCase();
+        let pathIndex = (index ? "[last()-" + index + "]" : "");
         path.unshift(tagName + pathIndex);
 
         element = element.parentNode;
     }
-    return "/" + path.join("/");
+    return pre_xpath + "/" + path.join("/");
 }
 
 //返回element相对node节点的xpath，默认的node节点是: /
 export function readXPath(element, type = 1, node = document.body) {
+    let pre_xpath = "";
+    // if(global.iframe){
+    //     pre_xpath = "//iframe";
+    // }
     try {
         if (type == 0) //type=0代表默认可通过id生成xpath  type=1代表只能从根节点生成xpath, nodeList里必须使用绝对xpath!
         {
             if (element.id !== "") { //判断id属性，如果这个元素有id，则显示//*[@id="xPath"]  形式内容
-                return '//*[@id=\"' + element.id + '\"]';
+                return pre_xpath + '//*[@id=\"' + element.id + '\"]';
             }
             if (element.className != ""){ //如果有class且某个class name只有一个元素，则使用class name生成xpath
                 console.log("class name: " + element.className);
@@ -89,11 +109,11 @@ export function readXPath(element, type = 1, node = document.body) {
                 for (let i = 0; i < names.length; i++) {
                     if (names[i] != "") {
                         // return '//*[@class=\"' + names[i] + '\"]';
-                        console.log('//*[@contains(@class, \"' + names[i] + '\")]');
+                        // console.log('//*[@contains(@class, \"' + names[i] + '\")]');
                         let elements_of_class = node.getElementsByClassName(names[i]);
-                        console.log("Length of elements_of_class: " + elements_of_class.length);
+                        // console.log("Length of elements_of_class: " + elements_of_class.length);
                         if(elements_of_class.length == 1){
-                            return '//*[contains(@class, \"' + names[i] + '\")]'
+                            return pre_xpath + '//*[contains(@class, \"' + names[i] + '\")]'
                         }
                     }
                 }
@@ -102,9 +122,9 @@ export function readXPath(element, type = 1, node = document.body) {
         //这里需要需要主要字符串转译问题，可参考js 动态生成html时字符串和变量转译（注意引号的作用）
         if (element == node) { //递归到body处，结束递归
             if (node == document.body) {
-                return '/html/' + element.tagName.toLowerCase();
+                return pre_xpath + '/html/' + element.tagName.toLowerCase();
             } else {
-                return "";
+                return  "";
             }
         }
         let ix = 1, //在nodelist中的位置，且每次点击初始化
@@ -124,7 +144,7 @@ export function readXPath(element, type = 1, node = document.body) {
             }
         }
     } catch {
-        return "/"
+        return pre_xpath + "/"
     }
 }
 
@@ -370,6 +390,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                         "exampleValues": [{ "num": num, "value": ndText }],
                         "unique_index": unique_index,
+                        "iframe": global.iframe,
                     });
                 } else if (nd.tagName == "A") { //如果元素是超链接
                     if (linktext) {
@@ -384,6 +405,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                             "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                             "exampleValues": [{ "num": num, "value": ndText }],
                             "unique_index": unique_index,
+                            "iframe": global.iframe,
                         });
                     }
                     if (linkhref) {
@@ -397,6 +419,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                             "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                             "exampleValues": [{ "num": num, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }],
                             "unique_index": unique_index,
+                            "iframe": global.iframe,
                         });
                     }
                 } else if (nd.tagName == "INPUT") { //如果元素是输入项
@@ -411,6 +434,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                         "exampleValues": [{ "num": num, "value": ndText }],
                         "unique_index": unique_index,
+                        "iframe": global.iframe,
                     });
                 } else { //其他所有情况
                     global.outputParameters.push({
@@ -424,6 +448,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                         "allXPaths": global.nodeList.length > 1 ? "" : ndAllXPaths,
                         "exampleValues": [{ "num": num, "value": ndText }],
                         "unique_index": unique_index,
+                        "iframe": global.iframe,
                     });
                 }
             } else { //如果元素节点已经存在，则只需要插入值就可以了
@@ -477,6 +502,7 @@ export function generateMultiParameters() {
                     "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src") }],
                     "unique_index": unique_index,
+                    "iframe": global.iframe,
                 });
             } else if (nd.tagName == "A") { //如果元素是超链接
                 global.outputParameters.push({
@@ -489,6 +515,7 @@ export function generateMultiParameters() {
                     "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": ndText }],
                     "unique_index": unique_index,
+                    "iframe": global.iframe,
                 });
                 global.outputParameters.push({
                     "nodeType": 2,
@@ -500,6 +527,7 @@ export function generateMultiParameters() {
                     "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href") }],
                     "unique_index": unique_index,
+                    "iframe": global.iframe,
                 });
             } else if (nd.tagName == "INPUT") { //如果元素是输入项
                 global.outputParameters.push({
@@ -512,6 +540,7 @@ export function generateMultiParameters() {
                     "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value") }],
                     "unique_index": unique_index,
+                    "iframe": global.iframe,
                 });
             } else { //其他所有情况
                 global.outputParameters.push({
@@ -524,6 +553,7 @@ export function generateMultiParameters() {
                     "allXPaths": ndAllXPaths,
                     "exampleValues": [{ "num": 0, "value": ndText }],
                     "unique_index": unique_index,
+                    "iframe": global.iframe,
                 });
             }
         }
@@ -633,6 +663,7 @@ export function handleDescendents(mode = 0) {
                                                 "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
                                             }],
                                             "unique_index": unique_index,
+                                            "iframe": global.iframe,
                                         });
                                     } else if (nd.tagName == "A") { //如果元素是超链接
                                         global.outputParameters.push({
@@ -645,6 +676,7 @@ export function handleDescendents(mode = 0) {
                                             "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                             "exampleValues": [{"num": num, "value": nd.textContent}], //注意这里的ndtext是整个a的文字！！！
                                             "unique_index": unique_index,
+                                            "iframe": global.iframe,
                                         });
                                         global.outputParameters.push({
                                             "nodeType": 2,
@@ -659,6 +691,7 @@ export function handleDescendents(mode = 0) {
                                                 "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
                                             }],
                                             "unique_index": unique_index,
+                                            "iframe": global.iframe,
                                         });
                                     } else if (nd.tagName == "INPUT") { //如果元素是输入项
                                         global.outputParameters.push({
@@ -674,6 +707,7 @@ export function handleDescendents(mode = 0) {
                                                 "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
                                             }],
                                             "unique_index": unique_index,
+                                            "iframe": global.iframe,
                                         });
                                     } else { //其他所有情况
                                         global.outputParameters.push({
@@ -686,6 +720,7 @@ export function handleDescendents(mode = 0) {
                                             "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                             "exampleValues": [{"num": num, "value": ndText}],
                                             "unique_index": unique_index,
+                                            "iframe": global.iframe,
                                         });
                                     }
                                 }
@@ -789,6 +824,7 @@ export function handleDescendents(mode = 0) {
                                             "value": nd.getAttribute("src") == null ? "" : nd.getAttribute("src")
                                         }],
                                         "unique_index": unique_index,
+                                        "iframe": global.iframe,
                                     });
                                 } else if (nd.tagName == "A") { //如果元素是超链接
                                     global.outputParameters.push({
@@ -801,6 +837,7 @@ export function handleDescendents(mode = 0) {
                                         "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                         "exampleValues": [{"num": num, "value": nd.textContent}], //注意这里的ndtext是整个a的文字！！！
                                         "unique_index": unique_index,
+                                        "iframe": global.iframe,
                                     });
                                     global.outputParameters.push({
                                         "nodeType": 2,
@@ -815,6 +852,7 @@ export function handleDescendents(mode = 0) {
                                             "value": nd.getAttribute("href") == null ? "" : nd.getAttribute("href")
                                         }],
                                         "unique_index": unique_index,
+                                        "iframe": global.iframe,
                                     });
                                 } else if (nd.tagName == "INPUT") { //如果元素是输入项
                                     global.outputParameters.push({
@@ -830,6 +868,7 @@ export function handleDescendents(mode = 0) {
                                             "value": nd.getAttribute("value") == null ? "" : nd.getAttribute("value")
                                         }],
                                         "unique_index": unique_index,
+                                        "iframe": global.iframe,
                                     });
                                 } else { //其他所有情况
                                     global.outputParameters.push({
@@ -842,6 +881,7 @@ export function handleDescendents(mode = 0) {
                                         "allXPaths": global.nodeList.length > 1 ? ndAllPaths : getElementXPaths(nd),
                                         "exampleValues": [{"num": num, "value": ndText}],
                                         "unique_index": unique_index,
+                                        "iframe": global.iframe,
                                     });
                                 }
                             }
@@ -884,24 +924,24 @@ export function handleDescendents(mode = 0) {
 
 //根据参数列表生成可视化参数界面
 export function generateValTable(multiline = true) {
-    let paravalues = [];
+    let paraValues = [];
     for (let i = 0; i < global.outputParameters.length; i++) {
-        let tvalues = [];
+        let tValues = [];
         let tindex = 0;
         let l = multiline ? global.nodeList.length : 1;
         for (let j = 0; j < l; j++) {
             //注意第一个循环条件，index超出界限了就不需要再寻找了，其他的全是空
             if (tindex < global.outputParameters[i]["exampleValues"].length && global.outputParameters[i]["exampleValues"][tindex]["num"] == j) {
-                tvalues.push(global.outputParameters[i]["exampleValues"][tindex]["value"]);
+                tValues.push(global.outputParameters[i]["exampleValues"][tindex]["value"]);
                 tindex++;
             } else {
-                tvalues.push(" ");
+                tValues.push(" ");
             }
         }
-        paravalues.push(tvalues);
+        paraValues.push(tValues);
     }
-    global.app._data.valTable = paravalues;
-    console.log("生成参数表格", paravalues);
+    global.app._data.valTable = paraValues;
+    console.log("生成参数表格", paraValues);
 }
 
 // 选中第一个节点，自动寻找同类节点
@@ -911,7 +951,7 @@ export function generateValTable(multiline = true) {
 // 直到找到第一个变多的节点或者追溯到根节点为止
 export function findRelated() {
     let at = parseInt(new Date().getTime());
-    let testPath = global.nodeList[0]["xpath"].split("/").splice(1); //分离xpath成 ["html","body","div[0]"]这样子
+    let testPath = global.nodeList[0]["xpath"].replace("//iframe","").split("/").splice(1); //分离xpath成 ["html","body","div[0]"]这样子
     let nodeNameList = [];
     let nodeIndexList = [];
     for (let i = 0; i < testPath.length; i++) {
@@ -1004,7 +1044,7 @@ export function relatedTest() {
     let testpath = "";
     for (let i = 0; i < global.nodeList.length; i++) {
         let testnumList = []; //用于比较节点索引号不同
-        let tpath = global.nodeList[i]["xpath"].split("/").splice(1); //清理第一个空元素
+        let tpath = global.nodeList[i]["xpath"].replace("//iframe","").split("/").splice(1); //清理第一个空元素
         for (let j = 0; j < tpath.length; j++) {
             if (tpath[j].indexOf("[") >= 0) { //如果存在索引值
                 testnumList.push(parseInt(tpath[j].split("[")[1].replace("]", ""))); //只留下数字

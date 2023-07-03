@@ -124,7 +124,7 @@ async function beginInvoke(msg, ws) {
         flowchart_window.show();
         // flowchart_window.openDevTools();
     } else if (msg.type == 2) {
-        //keyboard
+        // 键盘输入事件
         // const robot = require("@jitsi/robotjs");
         let keyInfo = msg.message.keyboardStr;
         let handles = await driver.getAllWindowHandles();
@@ -137,6 +137,12 @@ async function beginInvoke(msg, ws) {
         while (true) {
             // console.log("handles");
             try{
+                let iframe = msg.message.iframe;
+                let enter = false;
+                if (/<enter>/i.test(keyInfo)) {
+                    keyInfo = keyInfo.replace(/<enter>/gi, '');
+                    enter = true;
+                }
                 let h = order[len - 1];
                 console.log("current_handle", current_handle);
                 if(h != null && handles.includes(h)){
@@ -146,11 +152,42 @@ async function beginInvoke(msg, ws) {
                 }
                 // await driver.executeScript("window.stop();");
                 // console.log("executeScript");
-                let element = await driver.findElement(By.xpath(msg.message.xpath));
-                console.log("Find Element at handle: ", current_handle);
-                await element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
-                console.log("send key");
-                break;
+                if(!iframe){
+                    let element = await driver.findElement(By.xpath(msg.message.xpath));
+                    console.log("Find Element at handle: ", current_handle);
+                    // 使用正则表达式匹配 '<enter>'，不论大小写
+                    await element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
+                    if(enter){
+                        await element.sendKeys(Key.ENTER);
+                    }
+                    console.log("send key");
+                    break;
+                } else {
+                    let iframes = await driver.findElements(By.tagName('iframe'));
+                    // 遍历所有的 iframe 并点击里面的元素
+                    for(let i = 0; i < iframes.length; i++) {
+                        let iframe = iframes[i];
+                        // 切换到 iframe
+                        await driver.switchTo().frame(iframe);
+                        // 在 iframe 中查找并点击元素
+                        let element;
+                        try {
+                            element = await driver.findElement(By.xpath(msg.message.xpath));
+                        } catch (error) {
+                            console.log('No such element found in the iframe');
+                        }
+                        if (element) {
+                            await element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
+                            if(enter){
+                                await element.sendKeys(Key.ENTER);
+                            }
+                        }
+                        // 完成操作后切回主文档
+                        await driver.switchTo().defaultContent();
+                    }
+                    break;
+                }
+
             } catch (error) {
                 console.log("len", len);
                 len = len - 1;
@@ -186,7 +223,10 @@ async function beginInvoke(msg, ws) {
                 let message = JSON.parse(msg.message.pipe);
                 let type = message.type;
                 console.log("FROM Browser: ", message);
+                console.log("Iframe:", message.iframe);
                 if(type.indexOf("Click")>=0){
+                    // 鼠标点击事件
+                    let iframe = message.iframe;
                     let handles = await driver.getAllWindowHandles();
                     console.log("handles", handles);
                     let exit = false;
@@ -199,15 +239,39 @@ async function beginInvoke(msg, ws) {
                             let h = order[len - 1];
                             console.log("current_handle", current_handle);
                             if(h != null && handles.includes(h)){
-                                await driver.switchTo().window(h);
+                                await driver.switchTo().window(h); //执行失败会抛出异常
                                 current_handle = h;
                                 console.log("switch to handle: ", h);
                             }
-                            let element = await driver.findElement(By.xpath(message.xpath));
-                            await element.click();
-                            break;
+                            //下面是找到窗口的情况下
+                            if(!iframe){
+                                let element = await driver.findElement(By.xpath(message.xpath));
+                                await element.click();
+                                break;
+                            } else {
+                                let iframes = await driver.findElements(By.tagName('iframe'));
+                                // 遍历所有的 iframe 并点击里面的元素
+                                for(let i = 0; i < iframes.length; i++) {
+                                    let iframe = iframes[i];
+                                    // 切换到 iframe
+                                    await driver.switchTo().frame(iframe);
+                                    // 在 iframe 中查找并点击元素
+                                    let element;
+                                    try {
+                                        element = await driver.findElement(By.xpath(message.xpath));
+                                    } catch (error) {
+                                        console.log('No such element found in the iframe');
+                                    }
+                                    if (element) {
+                                        await element.click();
+                                    }
+                                    // 完成操作后切回主文档
+                                    await driver.switchTo().defaultContent();
+                                }
+                                break;
+                            }
                         } catch (error) {
-                            console.log("len", len);
+                            console.log("len", len); //如果没有找到元素，就切换到下一个窗口
                             len = len - 1;
                             if (len == 0) {
                                 break;
@@ -321,7 +385,6 @@ async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
     }
     options.addExtensions(path.join(__dirname, "XPathHelper.crx"));
     options.setChromeBinaryPath(chromeBinaryPath);
-    options.add
     if (user_data_folder != "") {
         let dir = path.join(task_server.getDir(), user_data_folder);
         console.log(dir);

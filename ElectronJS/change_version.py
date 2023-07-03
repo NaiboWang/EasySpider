@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     # index.html
     file_path = "./src/index.html"
-    update_file_version(file_path, version, key="当前版本/Current Version: v")
+    update_file_version(file_path, version, key="当前版本/Current Version: <b>v")
 
     # package.json
     file_path = "./package.json"

@@ -141,6 +141,7 @@ function addParameters(t) {
         tabIndex: 0,
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
+        iframe: false, //是否在iframe中
         wait: 0, //执行后等待
         waitType: 0, //等待类型，0代表固定时间，1代表随机等待
         beforeJS: "", //执行前执行的js
@@ -209,6 +210,7 @@ function addParameters(t) {
 function modifyParameters(t, para) {
     t["parameters"]["history"] = para["history"];
     t["parameters"]["tabIndex"] = para["tabIndex"];
+    t["parameters"]["iframe"] = para["iframe"];
     if (t.option == 1) {
         t["parameters"]["url"] = para["url"];
         t["parameters"]["links"] = para["links"];

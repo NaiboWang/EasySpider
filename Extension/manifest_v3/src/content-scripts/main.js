@@ -4,13 +4,6 @@ import {global, getOS, readXPath, addEl, clearEl, clearReady, handleElement, cle
 import ToolKit from "./toolkit.vue";
 import iframe from "./iframe.vue";
 
-function isInIframe() {
-    try {
-        return window.self !== window.parent;
-    } catch (e) {
-        return true;
-    }
-}
 
 //表现逻辑层的处理
 
@@ -43,11 +36,11 @@ var mousemovebind = false; //如果出现元素默认绑定了mousemove事件导
 var toolkit = document.createElement("div");
 toolkit.classList = "tooltips"; //添加样式
 // @ts-ignore
-if(isInIframe()){
-    toolkit.setAttribute("id", "wrapperToolkitIframe");
-} else {
-    toolkit.setAttribute("id", "wrapperToolkit");
-}
+// if(isInIframe()){
+//     toolkit.setAttribute("id", "wrapperToolkitIframe");
+// } else {
+toolkit.setAttribute("id", "wrapperToolkit");
+// }
 
 
 var tooltips = false; //标记鼠标是否在提示框上
@@ -115,8 +108,9 @@ document.addEventListener("mousemove", function() {
         } else {
             try {
                 global.oe.style.backgroundColor = global.defaultbgColor; //设置新元素的背景元素
-            } catch {}
+            } catch {
 
+            }
         }
         global.xnode = global.oe;
         global.div.style.display = "none";
@@ -188,11 +182,11 @@ function generateToolkit() {
     $(".tooltips").html(`
     <div id="realcontent"></div>
 `);
-    if(isInIframe()){
-        global.app = new Vue(iframe);
-    } else{
-        global.app = new Vue(ToolKit);
-    }
+    // if(isInIframe()){
+    //     global.app = new Vue(iframe);
+    // } else{
+    global.app = new Vue(ToolKit);
+    // }
 
     let h = $(".tooldrag").height();
     let difference = 26 - h; //获得高度值差

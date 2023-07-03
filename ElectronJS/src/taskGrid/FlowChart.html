@@ -122,6 +122,7 @@
                         <!-- 如果在循环内才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the Loop</p>
                     </div>
+                    <p v-if="!useLoop"><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <div v-if='!useLoop'>
                         <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
@@ -198,6 +199,7 @@
                         <p>Current parameter name (Clicking on the "Modify" option of the field toggles the parameters)</p>
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPath</p>
+                        <p v-if='!paras.parameters[paraIndex]["relative"]'><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["iframe"]'></input>Element is inside iframe</p>
                         <p>XPATH: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="If you want to write the XPath relative to the current element in the loop, you can write as *../div[1] which matches the first div child element of the parent of the current element in the loop."></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
@@ -276,6 +278,7 @@
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use text inside the Loop (If not checked, the text entered each time will be the text inside the "Input Value" textbox below. If checked, the text set within the loop will be used)</p>
                     </div>
+                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <div v-if='!useLoop'>
                         <label>Input Value (Use Field["FieldName"] to input the last extracted value of a field, Use &lt;enter&gt; or &lt;ENTER&gt; to simulate pressing the Enter key):</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
@@ -305,6 +308,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==5">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Action is inside iframe</p>
                     <label>Custom Action Mode</label>
                     <select v-model='nowNode["parameters"]["codeMode"]' class="form-control">
                         <option value = 0>Execute JavaScript script</option>
@@ -331,6 +335,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==6">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <label>XPath: </label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
@@ -352,6 +357,7 @@
                         <!-- 如果在循环内才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the loop</p>
                     </div>
+                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <div v-if='!useLoop'>
                         <label>XPath: </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
@@ -362,6 +368,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==8">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Operation is in iframe</p>
                     <!-- 循环选项 -->
                     <label>Loop Type:</label>
                     <select v-model='loopType' class="form-control">
@@ -433,6 +440,7 @@
 
                 <div class="elements" v-if="nodeType==10">
                     <label>The conditions are evaluated from left to right, which means if the condition in the leftmost branch is satisfied, the operations within that branch are executed. Otherwise, the condition in the next branch from left to right is evaluated, and so on.</label>
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Operation is in iframe</p>
                     <label>Condition Type:</label>
                     <select v-model='TClass' class="form-control">
                         <option value = 0>No Condition</option>
@@ -465,7 +473,6 @@
                 <div style="margin-top:5px">
                     <label>Seconds <b>after executed</b> (Can be set to a decimal, such as 0.5):</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
-                    <label>等待类型</label>
                     <label>Wait Type</label>
                     <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
                         <option value = 0>Fixed wait (set to wait for 10 seconds then it will wait for 10 seconds)</option>
