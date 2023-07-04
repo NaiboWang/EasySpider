@@ -42,7 +42,7 @@ Bilibili/B站视频教程:
 
 [EasySpider介绍 - 中国地震台网采集案例](https://www.bilibili.com/video/BV1th411A7ey/)
 
-[自动/手动同类型元素匹配功能说明](https://www.bilibili.com/video/BV1pu411a7pK/)
+[设置页面向下滚动](https://www.bilibili.com/video/BV1G14y1o7Qa/)
 
 [如何无代码可视化的爬取需要登录才能爬的网站 - 知乎网站案例](https://www.bilibili.com/video/BV1HV4y1r7v8)
 
@@ -69,6 +69,8 @@ Bilibili/B站视频教程:
 [如何切换IP池和使用隧道IP - 打开详情页采集案例](https://www.bilibili.com/video/BV1KT411t79n)
 
 [如何同时执行多个任务（并行多开）](https://www.bilibili.com/video/BV13c411G7LE/)
+
+[Python代码运算后的结果作为文本框的输入](https://www.bilibili.com/video/BV1kF411R7VJ/)
 
 [实例 - 反人类网站文章采集和代码调试](https://www.bilibili.com/video/BV11W4y1D71t/)
 

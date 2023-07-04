@@ -12,7 +12,7 @@ import sys
 # import base64
 # import hashlib
 import time
-import keyboard
+# import keyboard
 import requests
 from lxml import etree
 from selenium.webdriver.chrome.options import Options
@@ -28,18 +28,18 @@ from selenium.common.exceptions import StaleElementReferenceException, InvalidSe
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
 import undetected_chromedriver as uc
 import random
 # import numpy
 import csv
 import os
-from selenium.webdriver.common.by import By
 from commandline_config import Config
 import pytesseract
 from PIL import Image
-import uuid
+# import uuid
 from threading import Thread, Event
-
+from myChrome import MyChrome
 from utils import check_pause, download_image, get_output_code, isnull
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
@@ -111,11 +111,23 @@ class BrowserThread(Thread):
     # 检测如果没有复杂的操作，优化提取数据流程
     def preprocess(self):
         for node in self.procedure:
+            try:
+                iframe = node["parameters"]["iframe"]
+            except:
+                node["parameters"]["iframe"] = False
             if node["option"] == 3:  # 提取数据操作
                 paras = node["parameters"]["paras"]
                 for para in paras:
+                    try:
+                        iframe = para["iframe"]
+                    except:
+                        para["iframe"] = False
                     if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
-                        para["optimizable"] = True
+                        # iframe中提取数据的绝对寻址操作不可优化
+                        if para["relative"] == False and para["iframe"] == True:
+                            para["optimizable"] = False
+                        else:
+                            para["optimizable"] = True
                     else:
                         para["optimizable"] = False
 
@@ -170,7 +182,8 @@ class BrowserThread(Thread):
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 for i in range(para["scrollCount"]):
                     self.Log("Wait for set second after screen scrolling")
-                    body = self.browser.find_element(By.CSS_SELECTOR, "body")
+                    body = self.browser.find_element(
+                        By.CSS_SELECTOR, "body", iframe=para["iframe"])
                     if scrollType == 1:
                         body.send_keys(Keys.PAGE_DOWN)
                     elif scrollType == 2:
@@ -183,7 +196,8 @@ class BrowserThread(Thread):
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 for i in range(para["scrollCount"]):
                     self.Log("Wait for set second after screen scrolling")
-                    body = self.browser.find_element(By.CSS_SELECTOR, "body")
+                    body = self.browser.find_element(
+                        By.CSS_SELECTOR, "body", iframe=para["iframe"])
                     if scrollType == 1:
                         body.send_keys(Keys.PGDN)
                     elif scrollType == 2:
@@ -253,7 +267,8 @@ class BrowserThread(Thread):
         max_wait_time = int(paras["waitTime"])
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
-                elements = self.browser.find_elements(By.XPATH, loopPath)
+                elements = self.browser.find_elements(
+                    By.XPATH, loopPath, iframe=paras["iframe"])
                 element = elements[index]
                 output = self.execute_code(
                     codeMode, code, max_wait_time, element)
@@ -277,7 +292,7 @@ class BrowserThread(Thread):
         optionValue = para["optionValue"]
         try:
             dropdown = Select(self.browser.find_element(
-                By.XPATH, para["xpath"]))
+                By.XPATH, para["xpath"], iframe=para["iframe"]))
             try:
                 if optionMode == 0:
                     # 获取当前选中的选项索引
@@ -310,7 +325,8 @@ class BrowserThread(Thread):
             index = 0
             path = para["xpath"]  # 不然使用元素定义的xpath
         try:
-            elements = self.browser.find_elements(By.XPATH, path)
+            elements = self.browser.find_elements(
+                By.XPATH, path, iframe=para["iframe"])
             element = elements[index]
             try:
                 ActionChains(self.browser).move_to_element(element).perform()
@@ -396,7 +412,7 @@ class BrowserThread(Thread):
                     continue
             elif tType == 2:  # 当前页面包含元素
                 try:
-                    if self.browser.find_element(By.XPATH, cnode["parameters"]["value"]):
+                    if self.browser.find_element(By.XPATH, cnode["parameters"]["value"], iframe=cnode["parameters"]["iframe"]):
                         executeBranchId = i
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
@@ -410,7 +426,7 @@ class BrowserThread(Thread):
                     continue
             elif tType == 4:  # 当前循环元素包括元素
                 try:
-                    if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:]):
+                    if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:], iframe=cnode["parameters"]["iframe"]):
                         executeBranchId = i
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
@@ -449,7 +465,8 @@ class BrowserThread(Thread):
             'return history.length')  # 记录本次循环内的history的length
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
-
+        if node["parameters"]["iframe"]:
+            self.browser.switch_to.default_content()  # 循环前切换到主文档
         if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
             # 无跳转标签页操作
             count = 0  # 执行次数
@@ -457,7 +474,7 @@ class BrowserThread(Thread):
                 try:
                     finished = False
                     element = self.browser.find_element(
-                        By.XPATH, node["parameters"]["xpath"])
+                        By.XPATH, node["parameters"]["xpath"], iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(
                             i, element, node["parameters"]["xpath"], 0)
@@ -504,7 +521,7 @@ class BrowserThread(Thread):
         elif int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
             try:
                 elements = self.browser.find_elements(By.XPATH,
-                                                      node["parameters"]["xpath"])
+                                                      node["parameters"]["xpath"], iframe=node["parameters"]["iframe"])
                 if len(elements) == 0:
                     print("Loop element not found: ",
                           node["parameters"]["xpath"])
@@ -552,7 +569,8 @@ class BrowserThread(Thread):
             # 千万不要忘了分割！！
             for path in node["parameters"]["pathList"].split("\n"):
                 try:
-                    element = self.browser.find_element(By.XPATH, path)
+                    element = self.browser.find_element(
+                        By.XPATH, path, iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(i, element, path, 0)
                     if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
@@ -633,10 +651,11 @@ class BrowserThread(Thread):
                     self.executeNode(i, code, node["parameters"]["xpath"], 0)
         self.history["index"] = thisHistoryLength
         self.history["handle"] = self.browser.current_window_handle
+        if node["parameters"]["iframe"]:
+            self.browser.switch_to.default_content()
         self.scrollDown(node["parameters"])
 
     # 打开网页事件
-
     def openPage(self, para, loopValue):
         time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
@@ -677,19 +696,25 @@ class BrowserThread(Thread):
             self.Log('Time out after set seconds when loading page: ' + url)
             self.recordLog(
                 'Time out after set seconds when loading page: ' + url)
-            self.browser.execute_script('window.stop()')
+            try:
+                self.browser.execute_script('window.stop()')
+            except:
+                pass
         try:
             self.history["index"] = self.browser.execute_script(
                 "return history.length")
         except TimeoutException:
-            self.browser.execute_script('window.stop()')
-            self.history["index"] = self.browser.execute_script(
-                "return history.length")
+            try:
+                self.browser.execute_script('window.stop()')
+                self.history["index"] = self.browser.execute_script(
+                    "return history.length")
+            except:
+                self.history["index"] = 0
         self.scrollDown(para)  # 控制屏幕向下滚动
         if self.containJudge:
             try:
                 self.bodyText = self.browser.find_element(
-                    By.CSS_SELECTOR, "body").text
+                    By.CSS_SELECTOR, "body", iframe=False).text
                 self.Log('URL Page: ' + url)
                 self.recordLog('URL Page: ' + url)
             except TimeoutException:
@@ -702,7 +727,7 @@ class BrowserThread(Thread):
                 self.Log("Need to wait 1 second to get body text")
                 # 再执行一遍
                 self.bodyText = self.browser.find_element(
-                    By.CSS_SELECTOR, "body").text
+                    By.CSS_SELECTOR, "body", iframe=False).text
             except Exception as e:
                 self.Log(e)
                 self.recordLog(str(e))
@@ -713,7 +738,8 @@ class BrowserThread(Thread):
         time.sleep(0.1)  # 输入之前等待0.1秒
         self.Log("Wait 0.1 second before input")
         try:
-            textbox = self.browser.find_element(By.XPATH, para["xpath"])
+            textbox = self.browser.find_element(
+                By.XPATH, para["xpath"], iframe=para["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
             #     textbox.send_keys(Keys.BACKSPACE)
             self.execute_code(
@@ -770,7 +796,8 @@ class BrowserThread(Thread):
         self.browser.set_script_timeout(maxWaitTime)
         # 点击前对该元素执行一段JavaScript代码
         try:
-            element = self.browser.find_element(By.XPATH, path)
+            element = self.browser.find_element(
+                By.XPATH, path, iframe=para["iframe"])
             if para["beforeJS"] != "":
                 self.execute_code(2, para["beforeJS"],
                                   para["beforeJSWaitTime"], element)
@@ -786,7 +813,7 @@ class BrowserThread(Thread):
         except:
             click_way = 0
         try:
-            if click_way == 0:  # 用selenium的点击方法
+            if click_way == 0 or para["iframe"]:  # 用selenium的点击方法
                 actions = ActionChains(self.browser)  # 实例化一个action对象
                 actions.click(element).perform()
             elif click_way == 1:  # 用js的点击方法
@@ -804,7 +831,8 @@ class BrowserThread(Thread):
         # 点击前对该元素执行一段JavaScript代码
         try:
             if para["afterJS"] != "":
-                element = self.browser.find_element(By.XPATH, path)
+                element = self.browser.find_element(
+                    By.XPATH, path, iframe=para["iframe"])
                 self.execute_code(2, para["afterJS"],
                                   para["afterJSWaitTime"], element)
         except:
@@ -812,6 +840,8 @@ class BrowserThread(Thread):
             self.recordLog("Cannot find element:" +
                            path + ", please try to set the wait time before executing this operation")
             print("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
+        if para["iframe"]:
+            self.browser.switch_to.default_content()
         waitTime = float(para["wait"]) + 0.01  # 点击之后等待
         try:
             waitType = int(para["waitType"])
@@ -1071,13 +1101,13 @@ class BrowserThread(Thread):
                                         p["relativeXPath"] + ")" + \
                                         "[" + str(index + 1) + "]"
                                     element = self.browser.find_element(
-                                        By.XPATH, full_path)
+                                        By.XPATH, full_path, iframe=p["iframe"])
                                 else:
                                     element = loopElement.find_element(By.XPATH,
                                                                        p["relativeXPath"][1:])
                         else:
                             element = self.browser.find_element(
-                                By.XPATH, p["relativeXPath"])
+                                By.XPATH, p["relativeXPath"], iframe=p["iframe"])
                     except (NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
                         # print(p)
                         try:
@@ -1110,10 +1140,11 @@ class BrowserThread(Thread):
                                                                    p["relativeXPath"][1:])
                         else:
                             element = self.browser.find_element(
-                                By.XPATH, p["relativeXPath"])
+                                By.XPATH, p["relativeXPath"], iframe=p["iframe"])
                         # rt.end()
                 else:
-                    element = self.browser.find_element(By.XPATH, "//body")
+                    element = self.browser.find_element(
+                        By.XPATH, "//body", iframe=p["iframe"])
                 try:
                     self.execute_code(
                         2, p["beforeJS"], p["beforeJSWaitTime"], element)  # 执行前置js
@@ -1135,7 +1166,7 @@ class BrowserThread(Thread):
                                     'StaleElementReferenceException: loopElement+relativeXPath')
                         else:
                             element = self.browser.find_element(
-                                By.XPATH, p["relativeXPath"])
+                                By.XPATH, p["relativeXPath"], iframe=p["iframe"])
                             self.recordLog(
                                 'StaleElementReferenceException: relativeXPath')
                         content = self.get_content(p, element)
@@ -1327,7 +1358,7 @@ if __name__ == '__main__':
                         'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
             except:
                 pass
-            browser_t = webdriver.Chrome(
+            browser_t = MyChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
             browser_t = uc.Chrome(
