@@ -123,11 +123,11 @@ class BrowserThread(Thread):
                     except:
                         para["iframe"] = False
                     if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
-                        # iframe中提取数据的绝对寻址操作不可优化
-                        if para["relative"] == False and para["iframe"] == True:
-                            para["optimizable"] = False
-                        else:
-                            para["optimizable"] = True
+                        # # iframe中提取数据的绝对寻址操作不可优化
+                        # if para["relative"] == False and para["iframe"] == True:
+                        #     para["optimizable"] = False
+                        # else:
+                        para["optimizable"] = True
                     else:
                         para["optimizable"] = False
 
@@ -465,8 +465,8 @@ class BrowserThread(Thread):
             'return history.length')  # 记录本次循环内的history的length
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
-        if node["parameters"]["iframe"]:
-            self.browser.switch_to.default_content()  # 循环前切换到主文档
+        # if node["parameters"]["iframe"]:
+        #     self.browser.switch_to.default_content()  # 循环前切换到主文档
         if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
             # 无跳转标签页操作
             count = 0  # 执行次数
@@ -651,8 +651,8 @@ class BrowserThread(Thread):
                     self.executeNode(i, code, node["parameters"]["xpath"], 0)
         self.history["index"] = thisHistoryLength
         self.history["handle"] = self.browser.current_window_handle
-        if node["parameters"]["iframe"]:
-            self.browser.switch_to.default_content()
+        # if node["parameters"]["iframe"]:
+        #     self.browser.switch_to.default_content()
         self.scrollDown(node["parameters"])
 
     # 打开网页事件
@@ -840,8 +840,8 @@ class BrowserThread(Thread):
             self.recordLog("Cannot find element:" +
                            path + ", please try to set the wait time before executing this operation")
             print("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
-        if para["iframe"]:
-            self.browser.switch_to.default_content()
+        # if para["iframe"]:
+        #     self.browser.switch_to.default_content()
         waitTime = float(para["wait"]) + 0.01  # 点击之后等待
         try:
             waitType = int(para["waitType"])
@@ -1034,6 +1034,10 @@ class BrowserThread(Thread):
         for p in para["paras"]:
             if p["optimizable"]:
                 try:
+                    # 只有当前环境不变变化才可以快速提取数据
+                    if self.browser.iframe_env != p["iframe"]:
+                        p["optimizable"] = False
+                        continue
                     p["relativeXPath"] = p["relativeXPath"].lower()
                     if p["nodeType"] == 2:
                         xpath = p["relativeXPath"] + "/@href"

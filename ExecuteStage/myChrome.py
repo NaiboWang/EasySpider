@@ -19,7 +19,15 @@ desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class MyChrome(webdriver.Chrome):
+
+    def __init__(self, *args, **kwargs):
+        self.iframe_env = False  # 现在的环境是root还是iframe
+        super().__init__(*args, **kwargs)  # 调用父类的 __init__
+
     def find_element(self, by=By.ID, value=None, iframe=False):
+        if self.iframe_env:
+            super().switch_to.default_content()
+            self.iframe_env = False
         # 在这里改变查找元素的行为
         if iframe:
             # 获取所有的 iframe
@@ -32,6 +40,7 @@ class MyChrome(webdriver.Chrome):
             for iframe in iframes:
                 # 切换到 iframe
                 super().switch_to.frame(iframe)
+                self.iframe_env = True
                 try:
                     # 在 iframe 中查找并点击元素
                     # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
@@ -49,6 +58,9 @@ class MyChrome(webdriver.Chrome):
             return super().find_element(by=by, value=value)
 
     def find_elements(self, by=By.ID, value=None, iframe=False):
+        if self.iframe_env:
+            super().switch_to.default_content()
+            self.iframe_env = False
         # 在这里改变查找元素的行为
         if iframe:
             # 获取所有的 iframe
@@ -58,6 +70,7 @@ class MyChrome(webdriver.Chrome):
             for iframe in iframes:
                 # 切换到 iframe
                 super().switch_to.frame(iframe)
+                self.iframe_env = True
                 try:
                     # 在 iframe 中查找并点击元素
                     # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素

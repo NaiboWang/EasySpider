@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dynamic Iframe</title>
+    <script>
+        window.onload = function() {
+            var urlParams = new URLSearchParams(window.location.search);
+            var address = urlParams.get('address');
+            if (address) {
+                document.getElementById('myIframe').src = address;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>IFRAME TEST</h1>
+  <table border="1">
+        <tr>
+            <th>Header 1</th>
+            <th>Header 2</th>
+        </tr>
+        <tr>
+            <td>Row 1, Cell 1</td>
+            <td>Row 1, Cell 2</td>
+        </tr>
+        <tr>
+            <td>Row 2, Cell 1</td>
+            <td>Row 2, Cell 2</td>
+        </tr>
+    </table>    
+<iframe  id="myIframe" src="https://www.easyspider.cn" style="width: 100%; min-height: 600px;"></iframe>
+    <iframe src="https://www.easyspider.cn" style="width: 100%; min-height: 1200px;"></iframe>
+</body>
+</html>
