@@ -11,9 +11,24 @@ const fs = require('fs');
 const {exec} = require('child_process');
 const iconPath = path.join(__dirname, 'favicon.ico');
 const task_server = require(path.join(__dirname, 'server.js'));
+const util = require('util');
 
 let config = fs.readFileSync(path.join(task_server.getDir(), `config.json`), 'utf8');
 config = JSON.parse(config);
+
+if(config.debug){
+    let logPath = 'info.log'
+    let logFile = fs.createWriteStream(logPath, { flags: 'a' })
+    console.log = function() {
+        logFile.write(util.format.apply(null, arguments) + '\n')
+        process.stdout.write(util.format.apply(null, arguments) + '\n')
+    }
+    console.error = function() {
+        logFile.write(util.format.apply(null, arguments) + '\n')
+        process.stderr.write(util.format.apply(null, arguments) + '\n')
+    }
+}
+
 task_server.start(config.webserver_port); //start local server
 let server_address = `${config.webserver_address}:${config.webserver_port}`;
 const websocket_port = 8084; //目前只支持8084端口，写死，因为扩展里面写死了

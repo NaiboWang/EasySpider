@@ -12,4 +12,5 @@ Data/
 Chrome/
 execution_instances/*
 .DS_Store
+info.log
 npminstall-debug.log
