@@ -432,7 +432,7 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "", mobile = f
     runBrowser(lang, user_data_folder, mobile);
     let size = screen.getPrimaryDisplay().workAreaSize;
     let width = parseInt(size.width);
-    let height = parseInt(size.height * 0.7);
+    let height = parseInt(size.height * 0.65);
     flowchart_window = new BrowserWindow({
         x: 0,
         y: 0,

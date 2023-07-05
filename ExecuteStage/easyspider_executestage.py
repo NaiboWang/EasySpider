@@ -89,7 +89,6 @@ class BrowserThread(Thread):
             filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
         self.containJudge = service["containJudge"]  # 是否含有判断语句
-        self.bodyText = ""  # 记录bodyText
         tOut = service["outputParameters"]  # 生成输出参数对象
         self.outputParameters = {}
         self.dataNotFoundKeys = {}  # 记录没有找到数据的key
@@ -123,10 +122,6 @@ class BrowserThread(Thread):
                     except:
                         para["iframe"] = False
                     if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
-                        # # iframe中提取数据的绝对寻址操作不可优化
-                        # if para["relative"] == False and para["iframe"] == True:
-                        #     para["optimizable"] = False
-                        # else:
                         para["optimizable"] = True
                     else:
                         para["optimizable"] = False
@@ -206,7 +201,7 @@ class BrowserThread(Thread):
             if rt != "":
                 rt.end()
 
-    def execute_code(self, codeMode, code, max_wait_time, element=None):
+    def execute_code(self, codeMode, code, max_wait_time, element=None, iframe=False):
         output = ""
         if code == "":
             return ""
@@ -221,6 +216,24 @@ class BrowserThread(Thread):
         except:
             replaced_text = code
         code = replaced_text
+        if iframe and self.browser.iframe_env == False:
+            # 获取所有的 iframe
+            self.browser.switch_to.default_content()
+            iframes = self.browser.find_elements(
+                By.CSS_SELECTOR, "iframe", iframe=False)
+            # 遍历所有的 iframe 并点击里面的元素
+            for iframe in iframes:
+                # 切换到 iframe
+                try:
+                    self.browser.switch_to.default_content()
+                    self.browser.switch_to.frame(iframe)
+                    self.browser.iframe_env = True
+                    break
+                except:
+                    print("Iframe switch failed")
+        elif not iframe and self.browser.iframe_env == True:
+            self.browser.switch_to.default_content()
+            self.browser.iframe_env = False
         if int(codeMode) == 0:
             self.recordLog("Execute JavaScript:" + code)
             self.recordLog("执行JavaScript:" + code)
@@ -271,12 +284,13 @@ class BrowserThread(Thread):
                     By.XPATH, loopPath, iframe=paras["iframe"])
                 element = elements[index]
                 output = self.execute_code(
-                    codeMode, code, max_wait_time, element)
+                    codeMode, code, max_wait_time, element, iframe=paras["iframe"])
             except:
                 output = ""
                 print("JavaScript execution failed")
         else:
-            output = self.execute_code(codeMode, code, max_wait_time)
+            output = self.execute_code(
+                codeMode, code, max_wait_time, iframe=paras["iframe"])
         recordASField = int(paras["recordASField"])
         if recordASField:
             self.outputParameters[node["title"]] = output
@@ -321,9 +335,12 @@ class BrowserThread(Thread):
         time.sleep(0.1)  # 移动之前等待0.1秒
         if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             path = loopPath
+            # element = loopElement
         else:
             index = 0
             path = para["xpath"]  # 不然使用元素定义的xpath
+            # element = self.browser.find_element(
+            # By.XPATH, path, iframe=para["iframe"])
         try:
             elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
@@ -405,7 +422,9 @@ class BrowserThread(Thread):
                 break
             elif tType == 1:  # 当前页面包含文本
                 try:
-                    if self.bodyText.find(cnode["parameters"]["value"]) >= 0:
+                    bodyText = self.browser.find_element(
+                        By.CSS_SELECTOR, "body", iframe=cnode["parameters"]["iframe"]).text
+                    if bodyText.find(cnode["parameters"]["value"]) >= 0:
                         executeBranchId = i
                         break
                 except:  # 找不到元素下一个条件
@@ -426,7 +445,7 @@ class BrowserThread(Thread):
                     continue
             elif tType == 4:  # 当前循环元素包括元素
                 try:
-                    if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:], iframe=cnode["parameters"]["iframe"]):
+                    if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:]):
                         executeBranchId = i
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
@@ -434,13 +453,13 @@ class BrowserThread(Thread):
             elif tType <= 7:  # JS命令返回值
                 if tType == 5:  # JS命令返回值等于
                     output = self.execute_code(
-                        0, cnode["parameters"]["code"], cnode["parameters"]["waitTime"])
+                        0, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], iframe=cnode["parameters"]["iframe"])
                 elif tType == 6:  # System
                     output = self.execute_code(
-                        1, cnode["parameters"]["code"], cnode["parameters"]["waitTime"])
+                        1, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], iframe=cnode["parameters"]["iframe"])
                 elif tType == 7:  # 针对当前循环项的JS命令返回值
                     output = self.execute_code(
-                        2, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement)
+                        2, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement, iframe=cnode["parameters"]["iframe"])
                 try:
                     if output.find("rue") != -1:  # 如果返回值中包含true
                         code = 1
@@ -512,7 +531,7 @@ class BrowserThread(Thread):
                     break
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
@@ -547,13 +566,13 @@ class BrowserThread(Thread):
                         time.sleep(node["parameters"]["historyWait"])
                         # else:
                         # time.sleep(2)
-                        # 切换历史记录等待2秒或者：
+                        # 切换历史记录等待：
                         self.Log("Change history back time or:",
                                  node["parameters"]["historyWait"])
                         self.browser.execute_script('window.stop()')
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
-                            node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                            node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
                         code = get_output_code(output)
                         if code <= 0:
                             break
@@ -600,7 +619,7 @@ class BrowserThread(Thread):
                     raise
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
@@ -612,7 +631,7 @@ class BrowserThread(Thread):
                     self.executeNode(i, text, "", 0)
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
@@ -630,7 +649,7 @@ class BrowserThread(Thread):
                     self.executeNode(i, url, "", 0)
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
@@ -638,10 +657,10 @@ class BrowserThread(Thread):
             while True:  # do while循环
                 if int(node["parameters"]["loopType"]) == 5:  # JS
                     output = self.execute_code(
-                        0, node["parameters"]["code"], node["parameters"]["waitTime"])
+                        0, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
                 elif int(node["parameters"]["loopType"]) == 6:  # System
                     output = self.execute_code(
-                        1, node["parameters"]["code"], node["parameters"]["waitTime"])
+                        1, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
                 code = get_output_code(output)
                 if code <= 0:
                     break
@@ -707,29 +726,8 @@ class BrowserThread(Thread):
             except:
                 self.history["index"] = 0
         self.scrollDown(para)  # 控制屏幕向下滚动
-        if self.containJudge:
-            try:
-                self.bodyText = self.browser.find_element(
-                    By.CSS_SELECTOR, "body", iframe=False).text
-                self.Log('URL Page: ' + url)
-                self.recordLog('URL Page: ' + url)
-            except TimeoutException:
-                self.Log(
-                    'Time out after set seconds when getting body text: ' + url)
-                self.recordLog(
-                    'Time out after set seconds when getting body text:: ' + url)
-                self.browser.execute_script('window.stop()')
-                time.sleep(1)
-                self.Log("Need to wait 1 second to get body text")
-                # 再执行一遍
-                self.bodyText = self.browser.find_element(
-                    By.CSS_SELECTOR, "body", iframe=False).text
-            except Exception as e:
-                self.Log(e)
-                self.recordLog(str(e))
 
     # 键盘输入事件
-
     def inputInfo(self, para, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         self.Log("Wait 0.1 second before input")
@@ -739,7 +737,7 @@ class BrowserThread(Thread):
             #     textbox.send_keys(Keys.CONTROL, 'a')
             #     textbox.send_keys(Keys.BACKSPACE)
             self.execute_code(
-                2, para["beforeJS"], para["beforeJSWaitTime"], textbox)  # 执行前置JS
+                2, para["beforeJS"], para["beforeJSWaitTime"], textbox, iframe=para["iframe"])  # 执行前置JS
             # Send the HOME key
             textbox.send_keys(Keys.HOME)
             # Send the SHIFT + END key combination
@@ -764,10 +762,7 @@ class BrowserThread(Thread):
             if value.lower().find("<enter>") >= 0:
                 textbox.send_keys(Keys.ENTER)
             self.execute_code(
-                2, para["afterJS"], para["afterJSWaitTime"], textbox)  # 执行后置js
-            # global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
-            self.bodyText = self.browser.find_element(
-                By.CSS_SELECTOR, "body").text
+                2, para["afterJS"], para["afterJSWaitTime"], textbox, iframe=para["iframe"])  # 执行后置js
         except:
             print("Cannot find input box element:" +
                   para["xpath"] + ", please try to set the wait time before executing this operation")
@@ -780,10 +775,6 @@ class BrowserThread(Thread):
     def clickElement(self, para, loopElement=None, clickPath="", index=0):
         time.sleep(0.1)  # 点击之前等待0.1秒
         self.Log("Wait 0.1 second before clicking element")
-        if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
-            path = clickPath
-        else:
-            path = para["xpath"]  # 不然使用元素定义的xpath
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
@@ -792,11 +783,22 @@ class BrowserThread(Thread):
         self.browser.set_script_timeout(maxWaitTime)
         # 点击前对该元素执行一段JavaScript代码
         try:
-            element = self.browser.find_element(
+            # element = self.browser.find_element(
+            #     By.XPATH, path, iframe=para["iframe"])
+            if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+                path = clickPath
+                # element = loopElement
+            else:
+                index = 0
+                path = para["xpath"]  # 不然使用元素定义的xpath
+                # element = self.browser.find_element(
+                #     By.XPATH, path, iframe=para["iframe"])
+            elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
+            element = elements[index]
             if para["beforeJS"] != "":
                 self.execute_code(2, para["beforeJS"],
-                                  para["beforeJSWaitTime"], element)
+                                  para["beforeJSWaitTime"], element, iframe=para["iframe"])
         except:
             print("Cannot find element:" +
                   path + ", please try to set the wait time before executing this operation")
@@ -809,7 +811,7 @@ class BrowserThread(Thread):
         except:
             click_way = 0
         try:
-            if click_way == 0 or para["iframe"]:  # 用selenium的点击方法
+            if click_way == 0:  # 用selenium的点击方法
                 actions = ActionChains(self.browser)  # 实例化一个action对象
                 actions.click(element).perform()
             elif click_way == 1:  # 用js的点击方法
@@ -824,13 +826,13 @@ class BrowserThread(Thread):
         except Exception as e:
             self.Log(e)
             self.recordLog(str(e))
-        # 点击前对该元素执行一段JavaScript代码
+        # 点击后对该元素执行一段JavaScript代码
         try:
             if para["afterJS"] != "":
                 element = self.browser.find_element(
                     By.XPATH, path, iframe=para["iframe"])
                 self.execute_code(2, para["afterJS"],
-                                  para["afterJSWaitTime"], element)
+                                  para["afterJSWaitTime"], element, iframe=para["iframe"])
         except:
             print("Cannot find element:" + path)
             self.recordLog("Cannot find element:" +
@@ -866,25 +868,6 @@ class BrowserThread(Thread):
                     "return history.length")
                 # 如果打开了新窗口，切换到新窗口
         self.scrollDown(para)  # 根据参数配置向下滚动
-        if self.containJudge:  # 有判断语句才执行以下操作
-            # global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
-            try:
-                self.bodyText = self.browser.find_element(
-                    By.CSS_SELECTOR, "body").text
-            except TimeoutException:
-                self.Log('Time out after 10 seconds when getting body text')
-                self.recordLog(
-                    'Time out after 10 seconds when getting body text')
-                self.browser.execute_script('window.stop()')
-                time.sleep(1)
-                self.Log("wait one second after get body text")
-                # 再执行一遍
-                self.bodyText = self.browser.find_element(
-                    By.CSS_SELECTOR, "body").text
-                # rt.end()
-            except Exception as e:
-                self.Log(e)
-                self.recordLog(str(e))
         # rt.end()
 
     def get_content(self, p, element):
@@ -1000,7 +983,8 @@ class BrowserThread(Thread):
                     print(e)
                     print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
         elif p["contentType"] == 9:
-            content = self.execute_code(2, p["JS"], p["JSWaitTime"], element)
+            content = self.execute_code(
+                2, p["JS"], p["JSWaitTime"], element, iframe=p["iframe"])
         elif p["contentType"] == 10:  # 下拉框选中的值
             try:
                 select_element = Select(element)
@@ -1020,9 +1004,19 @@ class BrowserThread(Thread):
 
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
         pageHTML = etree.HTML(self.browser.page_source)
-        try:
-            loopElementOuterHTML = loopElement.get_attribute('outerHTML')
-        except:
+        if loopElement != "":  # 只在数据在循环中提取时才需要获取循环元素
+            try:
+                loopElementOuterHTML = loopElement.get_attribute('outerHTML')
+            except:
+                try:  # 循环点击每个链接如果没有新标签页打开，loopElement会丢失，此时需要重新获取
+                    elements = self.browser.find_elements(
+                        By.XPATH, parentPath, iframe=para["paras"][0]["iframe"])
+                    loopElement = elements[index]
+                    loopElementOuterHTML = loopElement.get_attribute(
+                        'outerHTML')
+                except:
+                    loopElementOuterHTML = ""
+        else:
             loopElementOuterHTML = ""
         loopElementHTML = etree.HTML(loopElementOuterHTML)
         for p in para["paras"]:
@@ -1053,7 +1047,7 @@ class BrowserThread(Thread):
                             content = loopElementHTML.xpath(
                                 "/html/body/" + loopElementHTML[0][0].tag + xpath)
                     else:
-                        if xpath.find("/html/body") < 0:
+                        if xpath.find("/body") < 0:
                             xpath = "/html/body" + xpath
                         content = pageHTML.xpath(xpath)
                     if len(content) > 0:
@@ -1145,7 +1139,7 @@ class BrowserThread(Thread):
                         By.XPATH, "//body", iframe=p["iframe"])
                 try:
                     self.execute_code(
-                        2, p["beforeJS"], p["beforeJSWaitTime"], element)  # 执行前置js
+                        2, p["beforeJS"], p["beforeJSWaitTime"], element, iframe=p["iframe"])  # 执行前置js
                     content = self.get_content(p, element)
                 except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
                     self.recordLog(
@@ -1174,7 +1168,7 @@ class BrowserThread(Thread):
                         continue  # 再出现类似问题直接跳过
                 self.outputParameters[p["name"]] = content
                 self.execute_code(
-                    2, p["afterJS"], p["afterJSWaitTime"], element)  # 执行后置JS
+                    2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS
         line = []
         for value in self.outputParameters.values():
             line.append(value)
