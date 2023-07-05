@@ -71,6 +71,7 @@ def isnull(s):
     return len(s) != 0
 
 
+
 class Time:
     def __init__(self, type1=""):
         self.t = int(round(time.time() * 1000))

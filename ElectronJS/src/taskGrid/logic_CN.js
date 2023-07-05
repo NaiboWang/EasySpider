@@ -65,7 +65,7 @@ function handleAddElement(msg) {
         addElement(1, msg);
     } else if (msg["type"] == "singleClick") {
         addElement(2, msg);
-    } else if (msg["type"] == "InputText") {
+    } else if (msg["type"] == "inputText") {
         addElement(4, msg);
     } else if (msg["type"] == "changeOption"){
         addElement(6, msg);
@@ -96,6 +96,14 @@ function handleAddElement(msg) {
         addElement(8, msg);
         addElement(3, msg);
         notifyParameterNum(msg["parameters"].length); //通知浏览器端参数的个数变化
+    } else if(msg["type"] == "GetCookies"){
+        for(let node of nodeList){
+            if(node["option"] == 1){
+                node["parameters"]["cookies"] = msg["message"];
+                $("#pageCookies").val(msg["message"]);
+                break;
+            }
+        }
     }
 }
 
@@ -156,6 +164,7 @@ function addParameters(t) {
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
+        t["parameters"]["cookies"] = ""; //cookies
     } else if (t.option == 2) { //点击元素
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
@@ -254,8 +263,7 @@ function modifyParameters(t, para) {
     }
 }
 
-//点击确定按钮时的处理
-$("#confirm").mousedown(function() {
+function updateUI() {
     refresh(false);
     app.$data.nowArrow["num"]++; //改变元素的值,通知画图，重新对锚点画图
     let tnodes = document.getElementsByClassName("clk");
@@ -268,7 +276,10 @@ $("#confirm").mousedown(function() {
             break;
         }
     }
-});
+}
+
+//点击确定按钮时的处理
+$("#confirm").mousedown(updateUI);
 
 //获取url中的参数
 function getUrlParam(name) {

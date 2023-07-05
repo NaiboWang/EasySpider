@@ -116,6 +116,23 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
+
+                    <p style="margin-top: 10px">
+                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseOpenPage" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            点此展开/折叠高级操作
+                        </a>
+                    </p>
+                    <div :class="{collapse: true, 'show': nowNode['parameters']['cookies'].length!=0}" id="collapseOpenPage">
+                        <div>
+                            <label>加载后设置Cookies： </label>
+                            <p style="margin-bottom: 20px;color:white"><a class="btn btn-primary" @click="getCookies">
+                                点击获取当前页面Cookie
+                            </a></p>
+                            <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
+                                      placeholder='key=value形式，每行一个键值对' v-model='nowNode["parameters"]["cookies"]' id="pageCookies" style="font-size: 14px!important;"></textarea>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="elements" v-if="nodeType==2">

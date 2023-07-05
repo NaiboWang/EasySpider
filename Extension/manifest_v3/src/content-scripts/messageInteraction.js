@@ -31,7 +31,7 @@ global.ws.onopen = function() {
 
 export function input(value) {
     let message = {
-        "type": "InputText",
+        "type": "inputText",
         "history": history.length, //记录history的长度
         "tabIndex": -1,
         "xpath": readXPath(global.nodeList[0]["node"], 0),

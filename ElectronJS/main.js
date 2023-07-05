@@ -333,7 +333,17 @@ async function beginInvoke(msg, ws) {
         try{
             flowchart_window.openDevTools();
         } catch {
-
+            console.log("open devtools error");
+        }
+    } else if (msg.type == 7) {
+        // 获得当前页面Cookies
+        try{
+            let cookies = await driver.manage().getCookies();
+            console.log("Cookies: ", cookies);
+            let cookiesText = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('\n');
+            socket_flowchart.send(JSON.stringify({"type": "GetCookies", "message": cookiesText}));
+        } catch {
+            console.log("Cannot get Cookies");
         }
     }
 }

@@ -87,6 +87,15 @@ let app = new Vue({
         },
     },
     methods: {
+        getCookies: function() { //获取cookies
+            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
+            command.onopen = function() {
+                let message = {
+                    type: 7, //消息类型，0代表连接操作
+                };
+                this.send(JSON.stringify(message));
+            };
+        },
         changeXPaths: function (XPaths){
             let result = "";
             for (let i = 0; i < XPaths.length; i++) {
@@ -588,7 +597,7 @@ document.onkeydown = function(e) {
             location.reload();
         } else if (currKey == 123) {
             console.log("打开devtools")
-            let command = new WebSocket("ws://localhost:8084")
+            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
             command.onopen = function() {
                 let message = {
                     type: 6, //消息类型，0代表连接操作

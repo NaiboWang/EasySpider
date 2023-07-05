@@ -114,6 +114,11 @@ class BrowserThread(Thread):
                 iframe = node["parameters"]["iframe"]
             except:
                 node["parameters"]["iframe"] = False
+            if node["option"] == 1:  # 打开网页操作
+                try:
+                    cookies = node["parameters"]["cookies"]
+                except:
+                    node["parameters"]["cookies"] = ""
             if node["option"] == 3:  # 提取数据操作
                 paras = node["parameters"]["paras"]
                 for para in paras:
@@ -705,6 +710,14 @@ class BrowserThread(Thread):
             self.browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
             self.browser.set_script_timeout(maxWaitTime)
             self.browser.get(url)
+            if para["cookies"] != "":
+                self.browser.delete_all_cookies()  # 清除所有已有cookie
+                cookies = para["cookies"].split('\n')
+                for cookie in cookies:
+                    name, value = cookie.split('=', 1)
+                    cookie_dict = {'name': name, 'value': value}
+                    # 加载 cookie
+                    self.browser.add_cookie(cookie_dict)
             self.Log('Loading page: ' + url)
             self.recordLog('Loading page: ' + url)
         except TimeoutException:
@@ -1001,7 +1014,6 @@ class BrowserThread(Thread):
         return content
 
     # 提取数据事件
-
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
         pageHTML = etree.HTML(self.browser.page_source)
         if loopElement != "":  # 只在数据在循环中提取时才需要获取循环元素

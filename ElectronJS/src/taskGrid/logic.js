@@ -66,7 +66,7 @@ function handleAddElement(msg) {
         addElement(1, msg);
     } else if (msg["type"] == "singleClick") {
         addElement(2, msg);
-    } else if (msg["type"] == "InputText") {
+    } else if (msg["type"] == "inputText") {
         addElement(4, msg);
     } else if (msg["type"] == "changeOption"){
         addElement(6, msg);
