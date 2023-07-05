@@ -6,3 +6,4 @@ Pillow
 pytesseract
 keyboard
 undetected_chromedriver
+openpyxl

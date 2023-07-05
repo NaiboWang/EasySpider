@@ -427,6 +427,8 @@ function saveService(type) {
             "saveThreshold": saveThreshold,
             "cloudflare": cloudflare,
             "environment": environment,
+            "maxViewLength": parseInt($("#maxViewLength").val()),
+            "outputFormat": $("#outputFormat").val(),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,
@@ -460,10 +462,24 @@ if (sId != null && sId != -1) //加载任务
     $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
+        for(let node of nodeList){ //兼容旧版本
+            if(node["option"] == 1){
+                if(!("cookies" in node["parameters"])) {
+                    node["parameters"]["cookies"] = "";
+                }
+            }
+        }
         $("#serviceName").val(result["name"]);
         $("#serviceId").val(result["id"]);
         $("#url").val(result["url"]);
         $("#serviceDescription").val(result["desc"]);
+        for(let key of Object.keys(result)){
+            try{
+                $("#"+key).val(result[key]);
+            } catch(e){
+                console.log(e);
+            }
+        }
         refresh();
     });
 } else {

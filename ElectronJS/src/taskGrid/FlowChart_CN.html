@@ -513,25 +513,33 @@
                     <h4 class="modal-title" id="myModalLabel">保存任务</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="height:400px;overflow: auto">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
                     <label>任务名称：</label>
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
                     <label>任务描述：</label>
                     <input onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
-                    <label>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
-                    <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
-                    <label>是否为cloudflare等极端反爬网站：</label>
-                    <select id="cloudflare" name="cloudflare" class="form-control">
-                        <option value = 0>否</option>
-                        <option value = 1>是</option>
+                    <label>导出数据格式：</label>
+                    <select id="outputFormat" class="form-control">
+                        <option value = "csv">CSV</option>
+                        <option value = "xlsx">XLSX（EXCEL）</option>
+                        <option value = "mysql">MySQL</option>
                     </select>
                     <label>浏览器模拟类型：</label>
                     <select id="environment" name="environment" class="form-control">
                         <option value = 0>电脑端</option>
                         <option value = 1>手机端（Cloudflare模式下不支持）</option>
                     </select>
+                    <label>是否为cloudflare等极端反爬网站：</label>
+                    <select id="cloudflare" name="cloudflare" class="form-control">
+                        <option value = 0>否</option>
+                        <option value = 1>是</option>
+                    </select>
+                    <label>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
+                    <label>控制台预览时数据最大显示长度：</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></input>
 
                 </div>
                 <div class="modal-footer">

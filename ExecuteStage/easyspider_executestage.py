@@ -31,6 +31,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 import undetected_chromedriver as uc
 import random
+# import pandas as pd
+from openpyxl import load_workbook, Workbook
 # import numpy
 import csv
 import os
@@ -40,15 +42,16 @@ from PIL import Image
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome
-from utils import check_pause, download_image, get_output_code, isnull
+from utils import check_pause, download_image, get_output_code, isnull, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class BrowserThread(Thread):
-    def __init__(self, browser_t, id, service, version, event):
+    def __init__(self, browser_t, id, service, version, event, config):
         Thread.__init__(self)
         self.browser = browser_t
+        self.config = config
         self.id = id
         self.event = event
         self.saveName = saveName
@@ -65,6 +68,14 @@ class BrowserThread(Thread):
         WebDriverWait(self.browser, 10)
         self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
+        try:
+            self.maxViewLength = service["maxViewLength"]  # 最大显示长度
+        except:
+            self.maxViewLength = 15
+        try:
+            self.outputFormat = service["outputFormat"]  # 输出格式
+        except:
+            self.outputFormat = "csv"
         try:
             if service["version"] >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
                 pass
@@ -88,6 +99,7 @@ class BrowserThread(Thread):
         self.links = list(
             filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
+        self.OUTPUT.append([])  # 添加表头
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         tOut = service["outputParameters"]  # 生成输出参数对象
         self.outputParameters = {}
@@ -95,15 +107,19 @@ class BrowserThread(Thread):
         self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
-        # 文件叠加的时候不添加表头
-        if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv'):
-            self.OUTPUT.append([])  # 添加表头
         for para in tOut:
             if para["name"] not in self.outputParameters.keys():
                 self.outputParameters[para["name"]] = ""
                 self.dataNotFoundKeys[para["name"]] = False
-                if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv'):
-                    self.OUTPUT[0].append(para["name"])
+                # 文件叠加的时候不添加表头
+                if self.outputFormat == "csv":
+                    if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv'):
+                        self.OUTPUT[0].append(para["name"])
+                elif self.outputFormat == "xlsx":
+                    if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.xlsx'):
+                        self.OUTPUT[0].append(para["name"])
+                elif self.outputFormat == "mysql":  # MySQL不需要表头
+                    pass
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
 
@@ -134,6 +150,8 @@ class BrowserThread(Thread):
     def run(self):
         # 挨个执行程序
         for i in range(len(self.links)):
+            print("正在执行第", i + 1, "/ ", len(self.links), "个链接")
+            print("Executing link", i + 1, "/ ", len(self.links))
             self.executeNode(0)
             self.urlId = self.urlId + 1
         files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
@@ -167,11 +185,17 @@ class BrowserThread(Thread):
             with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
                 file_obj.write(self.log)
                 file_obj.close()
-            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv', 'a', encoding='utf-8-sig', newline="") as f:
-                f_csv = csv.writer(f)
-                for line in self.OUTPUT:
-                    f_csv.writerow(line)
-                f.close()
+            if self.outputFormat == "csv":
+                file_name = "Data/Task_" + \
+                    str(self.id) + "/" + self.saveName + '.csv'
+                write_to_csv(file_name, self.OUTPUT)
+            elif self.outputFormat == "xlsx":
+                file_name = "Data/Task_" + \
+                    str(self.id) + "/" + self.saveName + '.xlsx'
+                write_to_excel(file_name, self.OUTPUT)
+            elif self.outputFormat == "mysql":
+                # write_to_mysql(self.config, )
+                pass
             self.OUTPUT = []
             self.log = ""
 
@@ -302,7 +326,7 @@ class BrowserThread(Thread):
             line = []
             for value in self.outputParameters.values():
                 line.append(value)
-                print(value[:15], " ", end="")
+                print(value[:self.maxViewLength], " ", end="")
             print("")
             self.OUTPUT.append(line)
 
@@ -728,6 +752,9 @@ class BrowserThread(Thread):
                 self.browser.execute_script('window.stop()')
             except:
                 pass
+        except Exception as e:
+            print("Failed to load page: " + url)
+            self.recordLog('Failed to load page: ' + url)
         try:
             self.history["index"] = self.browser.execute_script(
                 "return history.length")
@@ -1184,7 +1211,7 @@ class BrowserThread(Thread):
         line = []
         for value in self.outputParameters.values():
             line.append(value)
-            print(value[:15], " ", end="")
+            print(value[:self.maxViewLength], " ", end="")
         print("")
         self.OUTPUT.append(line)
         # rt.end()
@@ -1279,12 +1306,15 @@ if __name__ == '__main__':
     # 2. User Profile文件夹的路径是：C:\Users\用户名\AppData\Local\Google\Chrome\User Data不要加Default
     # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
     # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
-    if c.user_data:
+    try:
         with open(c.config_folder + c.config_file_name, "r", encoding='utf-8') as f:
             config = json.load(f)
             absolute_user_data_folder = config["absolute_user_data_folder"]
             print("\nAbsolute_user_data_folder:",
                   absolute_user_data_folder, "\n")
+    except:
+        pass
+    if c.user_data:
         option.add_argument(
             f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
         option.add_argument("--profile-directory=Default")
@@ -1371,7 +1401,8 @@ if __name__ == '__main__':
             print("过Cloudflare验证模式")
         event = Event()
         event.set()
-        thread = BrowserThread(browser_t, i, service, c.version, event)
+        thread = BrowserThread(browser_t, i, service,
+                               c.version, event, config=config)
         print("Thread with task id: ", i, " is created")
         threads.append(thread)
         thread.start()
