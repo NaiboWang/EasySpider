@@ -144,13 +144,17 @@ class Time:
 class myMySQL:
     def __init__(self, config_file="mysql_config.json"):
         # 读取配置文件
-        with open(config_file, 'r') as f:
-            config = json.load(f)
-            host = config["host"]
-            port = config["port"]
-            user = config["user"]
-            passwd = config["password"]
-            db = config["database"]
+        try:
+            with open(config_file, 'r') as f:
+                config = json.load(f)
+                host = config["host"]
+                port = config["port"]
+                user = config["user"]
+                passwd = config["password"]
+                db = config["database"]
+        except:
+            print("读取配置文件失败，请检查配置文件："+config_file+"是否存在。")
+            print("Failed to read configuration file, please check if the configuration file: "+config_file+" exists.")
         try:
             self.conn = pymysql.connect(
             host=host, port=port, user=user, passwd=passwd, db=db)

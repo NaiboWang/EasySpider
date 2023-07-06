@@ -1458,4 +1458,6 @@ if __name__ == '__main__':
 
     for thread in threads:
         thread.browser.quit()
-        print("Thread with task id: ", thread.id, " is closed")
+        # print("Thread with task id: ", thread.id, " is closed")
+        print("程序已运行完成，请手动关闭此窗口。")
+        print("The program has finished running, please manually close this window.")

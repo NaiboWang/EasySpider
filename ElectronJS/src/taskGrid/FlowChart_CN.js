@@ -14,6 +14,7 @@ let root = {
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
         wait: 0,
+        waitType: 0,
     },
     isInLoop: false, //是否处于循环内
 };
