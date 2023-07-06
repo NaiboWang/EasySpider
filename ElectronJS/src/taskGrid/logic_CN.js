@@ -41,6 +41,7 @@ ws.onmessage = function(evt) {
 
 function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["default"] = ""; //找不到元素时候的默认值
+    msg["parameters"][i]["paraType"] = "text"; //参数类型
     msg["parameters"][i]["beforeJS"] = ""; //执行前执行的js
     msg["parameters"][i]["beforeJSWaitTime"] = 0; //执行前js等待时间
     msg["parameters"][i]["JS"] = ""; //如果是JS，需要执行的js
@@ -190,6 +191,7 @@ function addParameters(t) {
         t["parameters"]["code"] = "";
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["recordASField"] = 0; //是否记录脚本输出
+        t["parameters"]["paraType"] = "text"; //记录脚本输出的字段索引
     } else if (t.option == 8) { //循环
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
@@ -296,6 +298,12 @@ if (mobile == "true") {
     $("#environment").val(1);
 }
 
+
+function isValidMySQLTableName(tableName) {
+    // 正则表达式：以字母或汉字开头，后接字母、数字、下划线或汉字的字符串，长度为1到64字符
+    const pattern = /^[\u4e00-\u9fa5a-zA-Z][\u4e00-\u9fa5a-zA-Z0-9_]{0,63}$/;
+    return pattern.test(tableName);
+}
 function saveService(type) {
     let serviceId = $("#serviceId").val();
     let text = "确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？";
@@ -330,7 +338,7 @@ function saveService(type) {
                             nodeName: nodeList[i]["title"],
                             value: nodeList[i]["parameters"]["links"],
                             desc: "要采集的网址列表，多行以\\n分开",
-                            type: "string",
+                            type: "text",
                             exampleValue: nodeList[i]["parameters"]["links"]
                         });
                         links = nodeList[i]["parameters"]["links"];
@@ -345,7 +353,7 @@ function saveService(type) {
                             nodeName: nodeList[i]["title"],
                             nodeId: i,
                             desc: "要输入的文本，如京东搜索框输入：电脑",
-                            type: "string",
+                            type: "text",
                             exampleValue: nodeList[i]["parameters"]["value"],
                             value: nodeList[i]["parameters"]["value"],
                         });
@@ -359,7 +367,7 @@ function saveService(type) {
                             nodeId: i,
                             nodeName: nodeList[i]["title"],
                             desc: "要输入的文本/网址,多行以\\n分开",
-                            type: "string",
+                            type: "text",
                             exampleValue: nodeList[i]["parameters"]["textList"],
                             value: nodeList[i]["parameters"]["textList"],
                         });
@@ -384,7 +392,7 @@ function saveService(type) {
                                 id: outputIndex++,
                                 name: nodeList[i]["parameters"]["paras"][j]["name"],
                                 desc: nodeList[i]["parameters"]["paras"][j]["desc"],
-                                type: "string",
+                                type: nodeList[i]["parameters"]["paras"][j]["paraType"],
                                 exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
                             });
                         }
@@ -407,7 +415,7 @@ function saveService(type) {
                             id: id,
                             name: title,
                             desc: "自定义操作返回的数据",
-                            type: "string",
+                            type: nodeList[i]["parameters"]["paraType"],
                             exampleValue: "",
                         });
                     }
@@ -436,6 +444,16 @@ function saveService(type) {
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
+        if(serviceInfo.outputFormat=="mysql"){
+            if(!isValidMySQLTableName(serviceInfo.saveName)) {
+                $('#myModal').modal('hide');
+                $("#tipMySQL").slideDown(); //提示框
+                let fadeout = setTimeout(function() {
+                    $("#tipMySQL").slideUp();
+                }, 4000);
+                return;
+            }
+        }
         $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) },
             function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");

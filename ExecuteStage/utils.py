@@ -1,6 +1,7 @@
 # 控制流程的暂停和继续
 
 import csv
+import json
 import os
 import time
 import uuid
@@ -8,7 +9,7 @@ import keyboard
 from openpyxl import Workbook, load_workbook
 import requests
 from urllib.parse import urlparse
-
+import pymysql
 
 def is_valid_url(url):
     try:
@@ -95,7 +96,8 @@ def write_to_csv(file_name, data):
         f.close()
 
 
-def write_to_excel(file_name, data):
+def write_to_excel(file_name, data, types):
+    first = False
     if os.path.exists(file_name):
         # 加载现有的工作簿
         wb = load_workbook(file_name)
@@ -104,11 +106,29 @@ def write_to_excel(file_name, data):
         # 创建新的工作簿和工作表
         wb = Workbook()
         ws = wb.active
+        first = True
     # 追加数据到工作表
     for line in data:
+        if not first: # 如果不是第一行，需要转换数据类型
+            for i in range(len(line)):
+                if types[i] == "int":
+                    try:
+                        line[i] = int(line[i])
+                    except:
+                        line[i] = 0
+                elif types[i] == "double":
+                    try:
+                        line[i] = float(line[i])
+                    except:
+                        line[i] = 0.0
+        else:
+            first = False
         ws.append(line)
     # 保存工作簿
     wb.save(file_name)
+
+
+
 
 
 class Time:
@@ -119,3 +139,91 @@ class Time:
     def end(self):
         at = int(round(time.time() * 1000))
         print("Time used for", self.type, ":", at - self.t, "ms")
+
+
+class myMySQL:
+    def __init__(self, config_file="mysql_config.json"):
+        # 读取配置文件
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+            host = config["host"]
+            port = config["port"]
+            user = config["user"]
+            passwd = config["password"]
+            db = config["database"]
+        try:
+            self.conn = pymysql.connect(
+            host=host, port=port, user=user, passwd=passwd, db=db)
+            print("成功连接到数据库。")
+            print("Successfully connected to the database.")
+        except:
+            print("连接数据库失败，请检查配置文件是否正确。")
+            print("Failed to connect to the database, please check if the configuration file is correct.")
+    
+    def create_table(self, table_name, parameters):
+        self.table_name = table_name
+        self.field_sql = "("
+        cursor = self.conn.cursor()
+        # 检查表是否存在
+        cursor.execute("SHOW TABLES LIKE '%s'" % table_name)
+        result = cursor.fetchone()
+
+        sql = "CREATE TABLE " + table_name + " (_id INT AUTO_INCREMENT PRIMARY KEY, "
+        for item in parameters:
+            name = item['name']
+            if item['type'] == 'int':
+                sql += f"{name} INT, "
+            elif item['type'] == 'double':
+                sql += f"{name} DOUBLE, "
+            elif item['type'] == 'text':
+                sql += f"{name} TEXT, "
+            elif item['type'] == 'mediumText':
+                sql += f"{name} MEDIUMTEXT, "
+            elif item['type'] == 'longText':
+                sql += f"{name} LONGTEXT, "
+            elif item['type'] == 'datetime':
+                sql += f"{name} DATETIME, "
+            elif item['type'] == 'date':
+                sql += f"{name} DATE, "
+            elif item['type'] == 'time':
+                sql += f"{name} TIME, "
+            elif item['type'] == 'varchar':
+                sql += f"{name} VARCHAR(255), "
+            self.field_sql += f"{name}, "
+        # 移除最后的逗号并添加闭合的括号
+        sql = sql.rstrip(', ') + ")"
+        self.field_sql = self.field_sql.rstrip(', ') + ")"
+
+        # 如果表不存在，创建它
+        if not result:
+            # 执行SQL命令
+            cursor.execute(sql)
+        else:
+            print("数据表" + table_name + "已存在。")
+            print("The data table " + table_name + " already exists.")
+        cursor.close()
+
+    def write_to_mysql(self, OUTPUT):
+        # 创建一个游标对象
+        cursor = self.conn.cursor()
+
+        for row in OUTPUT:
+            # 构造插入数据的 SQL 语句
+            sql = f"INSERT INTO "+ self.table_name +" "+self.field_sql+" VALUES ("
+            for item in row:
+                sql += "%s, "
+            # 移除最后的逗号并添加闭合的括号
+            sql = sql.rstrip(', ') + ")"
+            # 执行 SQL 语句
+            cursor.execute(sql, row)
+
+        # 提交到数据库执行
+        self.conn.commit()
+
+        # 关闭游标和连接
+        cursor.close()
+    
+    def close(self):
+        self.conn.close()
+        print("成功关闭数据库。")
+        print("Successfully closed the database.")

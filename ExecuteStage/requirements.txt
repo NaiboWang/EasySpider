@@ -7,3 +7,4 @@ pytesseract
 keyboard
 undetected_chromedriver
 openpyxl
+pymysql

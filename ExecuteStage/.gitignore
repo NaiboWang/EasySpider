@@ -14,3 +14,4 @@ Application/
 .history
 execution_instances/
 .DS_Store
+mysql_config.json

@@ -14,7 +14,9 @@ rm -r out/EasySpider/resources/app/user_data
 rm -r ../.temp_to_pub/EasySpider_Linux_x64/EasySpider
 rm out/EasySpider/resources/app/vs_BuildTools.exe
 mv out/EasySpider ../.temp_to_pub/EasySpider_Linux_x64/EasySpider
-cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_Linux_x64
+cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_Linux_x64/Code
 chmod 777 ../.temp_to_pub/EasySpider_Linux_x64/easy-spider.sh
 
 rm -r ..\.temp_to_pub\EasySpider_Linux_x64\user_data

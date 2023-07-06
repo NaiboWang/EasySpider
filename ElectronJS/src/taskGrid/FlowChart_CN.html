@@ -18,9 +18,10 @@
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存成功!
     </div>
-    <div id="tip2" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存失败，如果有多个自定义操作，则他们的选项名称必须设置成不同名称!
+    <div id="tipMySQL" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存名不符合MySQL表名规范，请重试！
     </div>
+
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
             <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
@@ -239,6 +240,18 @@
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["afterJSWaitTime"]'></input>
                             </div>
                         </div>
+                        <label>参数类型转换为（用于Excel和数据库）：</label>
+                        <select v-model='paras.parameters[paraIndex]["paraType"]' class="form-control">
+                            <option value = "text">文本（长度预估超过1万请选择大文本）</option>
+                            <option value = "int">整数</option>
+                            <option value = "double">浮点数（小数）</option>
+                            <option value = "mediumText">大文本（单个值长度超过1万）</option>
+                            <option value = "datetime">日期时间</option>
+                            <option value = "date">日期</option>
+                            <option value = "time">时间</option>
+                            <option value = "varchar">小文本（单个值长度小于50）</option>
+                            <option value = "longText">超大文本（单个值长度超过100万）</option>
+                        </select>
                         <label>采集内容类型</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>文本（包括子元素）</option>
@@ -281,6 +294,7 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
+
                         <label>参数描述：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
                         <label>元素找不到时的值：</label>
@@ -341,7 +355,14 @@
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
                             <option value = 0>否</option>
                             <option value = 1>是（JavaScript脚本需要以return 开头）</option>
-                        </select></p>
+                        </select>
+                        <label>参数转换类型：</label>
+                        <select v-model='nowNode["parameters"]["paraType"]' class="form-control">
+                            <option value = "text">文本</option>
+                            <option value = "int">整数</option>
+                            <option value = "double">浮点数</option>
+                        </select>
+                        </p>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
@@ -520,23 +541,24 @@
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
                     <label>任务描述：</label>
                     <input onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
-                    <label>导出数据格式：</label>
+                    <label>导出数据格式（Excel/CSV/TXT/数据库）：</label>
                     <select id="outputFormat" class="form-control">
                         <option value = "csv">CSV</option>
                         <option value = "xlsx">XLSX（EXCEL）</option>
+                        <option value = "txt">TXT</option>
                         <option value = "mysql">MySQL数据库</option>
                     </select>
                     <label>导出文件名/数据库表格名称（如果值为“Time”则名称为执行任务时的时间）：</label>
                     <input onkeydown="inputDelete(event)" value="Time" id="saveName" class="form-control"></input>
-                    <label>浏览器模拟类型：</label>
-                    <select id="environment" name="environment" class="form-control">
-                        <option value = 0>电脑端</option>
-                        <option value = 1>手机端（Cloudflare模式下不支持）</option>
-                    </select>
                     <label>是否为cloudflare等极端反爬网站：</label>
                     <select id="cloudflare" name="cloudflare" class="form-control">
                         <option value = 0>否</option>
                         <option value = 1>是</option>
+                    </select>
+                    <label>浏览器模拟类型：</label>
+                    <select id="environment" name="environment" class="form-control">
+                        <option value = 0>电脑端</option>
+                        <option value = 1>手机端（Cloudflare模式下不支持）</option>
                     </select>
                     <label>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
                     <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>

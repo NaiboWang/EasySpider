@@ -42,7 +42,7 @@ from PIL import Image
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome
-from utils import check_pause, download_image, get_output_code, isnull, write_to_csv, write_to_excel
+from utils import check_pause, download_image, get_output_code, isnull, myMySQL, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -121,10 +121,19 @@ class BrowserThread(Thread):
         self.links = list(
             filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
-        self.OUTPUT.append([])  # 添加表头
+        if self.outputFormat == "csv" or self.outputFormat == "txt":
+            if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+                self.OUTPUT.append([])  # 添加表头
+        elif self.outputFormat == "xlsx":
+            if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.xlsx'):
+                self.OUTPUT.append([])  # 添加表头
+        elif self.outputFormat == "mysql":
+            self.mysql = myMySQL(config["mysql_config_path"])
+            self.mysql.create_table(self.saveName, service["outputParameters"])
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         tOut = service["outputParameters"]  # 生成输出参数对象
         self.outputParameters = {}
+        self.outputParametersTypes = []
         self.dataNotFoundKeys = {}  # 记录没有找到数据的key
         self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
@@ -133,9 +142,10 @@ class BrowserThread(Thread):
             if para["name"] not in self.outputParameters.keys():
                 self.outputParameters[para["name"]] = ""
                 self.dataNotFoundKeys[para["name"]] = False
+                self.outputParametersTypes.append(para["type"])
                 # 文件叠加的时候不添加表头
-                if self.outputFormat == "csv":
-                    if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.csv'):
+                if self.outputFormat == "csv" or self.outputFormat == "txt":
+                    if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
                         self.OUTPUT[0].append(para["name"])
                 elif self.outputFormat == "xlsx":
                     if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.xlsx'):
@@ -184,6 +194,8 @@ class BrowserThread(Thread):
         print("执行完成！")
         self.recordLog("Done!")
         self.saveData(exit=True)
+        if self.outputFormat == "mysql":
+            self.mysql.close()
 
     def recordLog(self, str=""):
         self.log = self.log + str + "\n"
@@ -207,17 +219,17 @@ class BrowserThread(Thread):
             with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
                 file_obj.write(self.log)
                 file_obj.close()
-            if self.outputFormat == "csv":
+            if self.outputFormat == "csv" or self.outputFormat == "txt":
                 file_name = "Data/Task_" + \
-                    str(self.id) + "/" + self.saveName + '.csv'
+                    str(self.id) + "/" + self.saveName + '.' + self.outputFormat
                 write_to_csv(file_name, self.OUTPUT)
             elif self.outputFormat == "xlsx":
                 file_name = "Data/Task_" + \
                     str(self.id) + "/" + self.saveName + '.xlsx'
-                write_to_excel(file_name, self.OUTPUT)
+                write_to_excel(file_name, self.OUTPUT, self.outputParametersTypes)
             elif self.outputFormat == "mysql":
-                # write_to_mysql(self.config, )
-                pass
+                self.mysql.write_to_mysql(self.OUTPUT)
+                
             self.OUTPUT = []
             self.log = ""
 
@@ -1276,6 +1288,8 @@ if __name__ == '__main__':
         options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
         # MacOS需要用option而不是options！
         option.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
+        option.add_extension("EasySpider.app/Contents/Resources/app/XPathHelper.crx")
+        options.add_extension("EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
         # options.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
         # # MacOS需要用option而不是options！
@@ -1288,6 +1302,7 @@ if __name__ == '__main__':
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
@@ -1295,8 +1310,10 @@ if __name__ == '__main__':
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
         else:
             print("Unsupported platform")
@@ -1313,13 +1330,15 @@ if __name__ == '__main__':
         if os.getcwd().find("ElectronJS") >= 0:  # 软件dev用
             print("Finding chromedriver in EasySpider",
                   os.getcwd())
-            option.binary_location = "chrome_win64/chrome.exe"
+            options.binary_location = "chrome_win64/chrome.exe"
             driver_path = "chrome_win64/chromedriver_win64.exe"
+            options.add_extension("../ElectronJS/XPathHelper.crx")
         else:  # 直接在executeStage文件夹内使用python easyspider_executestage.py时的路径
             print("Finding chromedriver in EasySpider",
                   os.getcwd()+"/ElectronJS")
             option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
             driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
+            option.add_extension("../ElectronJS/XPathHelper.crx")
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"

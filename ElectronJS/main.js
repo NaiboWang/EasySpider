@@ -316,6 +316,8 @@ async function beginInvoke(msg, ws) {
             config.absolute_user_data_folder = user_data_folder_path;
             fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
         }
+        config.mysql_config_path = msg.message.mysql_config_path;
+        fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
         // child('Chrome/easyspider_executestage.exe', parameters, function(err,stdout, stderr) {
         //    console.log(stdout);
         // });

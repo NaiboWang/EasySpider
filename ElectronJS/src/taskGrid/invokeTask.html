@@ -208,6 +208,10 @@
                 <label>{{"User Data Folder (If you want to load the cookie, data and extension(s) from your local browser, please set this folder path, and then cilck the 'Run with (Data Mode)' button to run the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息，插件和cookie，请设置此目录，并点击下方“执行（带用户信息模式）”按钮开始执行任务）：" | lang}}</label>
                 <input type="text" class="form-control" v-model="user_data_folder"></input>
             </div>
+            <div class="form-group" style="margin-top: 10px" v-if="task.outputFormat=='mysql'">
+                <label>{{"Mysql configuration file Path:~Mysql配置文件路径：" | lang}}</label>
+                <input type="text" class="form-control" v-model="mysql_config_path"></input>
+            </div>
         </form>
         <label>{{"Click the button below to execute the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha (Note: set a waiting time in the task flow for manual intervention): ~如手动输入密码，验证码等（注意任务流程中设定好操作后的等待时间以用来手工干预）：" | lang}}</label>
         <button class="btn btn-primary" v-on:click="localExecuteInstant(false)">{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" |
@@ -265,9 +269,15 @@
             command: "./easyspider_executestage ",
             config_folder: "",
             easyspider_location: "",
+            mysql_config_path: "",
         }, mounted() {
         $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
             app.$data.user_data_folder = result.user_data_folder;
+            try{
+                app.$data.mysql_config_path = result.mysql_config_path;
+            } catch (e) {
+                app.$data.mysql_config_path = "./mysql_config.json";
+            }
         });
         //TODO 翻译  写清楚readme有关浏览器版本的问题  logo更换 提示看文档来运行
     },
@@ -391,6 +401,7 @@
                         message: {
                             "id": app.$data.ID,
                             "user_data_folder": app.$data.with_user_data ? app.$data.user_data_folder : "",
+                            "mysql_config_path": app.$data.mysql_config_path,
                             "execute_type": 0,
                         }
                     };
@@ -426,6 +437,7 @@
                             message: {
                                 "id": result,
                                 "user_data_folder": app.$data.with_user_data ? app.$data.user_data_folder : "",
+                                "mysql_config_path": app.$data.mysql_config_path,
                                 "execute_type": 1,
                             }
                         };

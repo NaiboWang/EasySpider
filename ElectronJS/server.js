@@ -284,9 +284,33 @@ exports.start = function(port = 8074) {
                     data["id"] = id;
                     // write JSON string to a fil
                 }
+                if(data["outputFormat"] == "mysql"){
+                    let mysql_config_path = path.join(getDir(), 'mysql_config.json');
+                    // 检测文件是否存在
+                    fs.access(mysql_config_path, fs.F_OK, (err) => {
+                        if (err) {
+                            console.log("File does not exist. Creating...");
+                            // 文件不存在，创建文件
+                            const config = {
+                                host: "localhost",
+                                port: 3306,
+                                user: "your_username",
+                                password: "your_password",
+                                database: "your_database"
+                            };
+                            fs.writeFile(mysql_config_path, JSON.stringify(config, null, 4), (err) => {
+                                if (err) throw err;
+                                console.log('File is created successfully.');
+                            });
+                        } else {
+                            console.log("File exists.");
+                        }
+                    });
+                }
                 data = JSON.stringify(data);
                 // write JSON string to a file
                 fs.writeFile(path.join(getDir(), `tasks/${id}.json`), data, (err) => {});
+
                 res.write(id.toString(), 'utf8');
                 res.end();
             } else if(pathName == "/invokeTask"){

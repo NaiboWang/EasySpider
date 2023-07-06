@@ -14,4 +14,6 @@ rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resource
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/tasks
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/execution_instances
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/user_data
-cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_MacOS_all_arch
+cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
+cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
+cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
