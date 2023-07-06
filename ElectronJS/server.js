@@ -5,7 +5,11 @@ const fs = require('fs');
 const path=require('path');
 const {app, dialog} = require('electron');
 const XLSX = require('xlsx');
+const formidable = require('formidable');
+const express = require('express');
 const multer  = require('multer');
+const cors = require('cors');
+
 function travel(dir,callback){
     fs.readdirSync(dir).forEach((file)=>{
         const pathname=path.join(dir,file)
@@ -59,13 +63,63 @@ if(!fs.existsSync(path.join(getDir(), "config.json"))){
 exports.getDir = getDir;
 exports.getEasySpiderLocation = getEasySpiderLocation;
 FileMimes = JSON.parse(fs.readFileSync(path.join(__dirname,'mime.json')).toString());
+
+const fileServer = express();
+const upload = multer({ dest: 'Data/' });
+
+fileServer.use(cors());
+fileServer.post('/excelUpload', upload.single('file'), (req, res) => {
+    let workbook = XLSX.readFile(req.file.path);
+    let sheet_name_list = workbook.SheetNames;
+    let data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+    let result = data.reduce((acc, obj) => {
+        Object.keys(obj).forEach(key => {
+            if(!acc[key]) {
+                acc[key] = [];
+            }
+            acc[key].push(obj[key]);
+        });
+        return acc;
+    }, {});
+    // console.log(data);
+    // delete file after reading
+    fs.unlink(req.file.path, (err) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        // file removed
+    });
+    res.send(JSON.stringify(result));
+});
+
+fileServer.listen(8075, () => {
+    console.log('Server listening on http://localhost:8075');
+});
+
+
 exports.start = function(port = 8074) {
     http.createServer(function(req, res) {
         let body = "";
         res.setHeader("Access-Control-Allow-Origin", "*"); // 设置可访问的源
         // 解析参数
         const pathName = url.parse(req.url).pathname;
-        if(pathName.indexOf(".") < 0) { //如果没有后缀名, 则为后台请求
+        if(pathName == "/excelUpload" && req.method.toLowerCase() === 'post'){
+            // // parse a file upload
+            // let form = new formidable.IncomingForm();
+            // // Set the max file size
+            // form.maxFileSize = 200 * 1024 * 1024; // 200MB
+            // form.parse(req, function (err, fields, files) {
+            //     console.log("excelUpload")
+            //     console.log(err, fields, files);
+            //     let oldpath = files.file.path;
+            //     let workbook = XLSX.readFile(oldpath);
+            //     let sheet_name_list = workbook.SheetNames;
+            //     let data = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
+            //     console.log(data);
+            //     res.end('File uploaded and read successfully.');
+            // });
+        } else if(pathName.indexOf(".") < 0) { //如果没有后缀名, 则为后台请求
             res.writeHead(200, { 'Content-Type': 'application/json' });
         }
         // else if(pathName.indexOf("index.html") >= 0) {
@@ -133,8 +187,7 @@ exports.start = function(port = 8074) {
             } else if(pathName == "/queryOSVersion") {
                 res.write(JSON.stringify({"version":process.platform, "bit":process.arch}));
                 res.end();
-            }
-            else if (pathName == "/queryExecutionInstances") { //查询所有服务信息，只包括id和服务名称
+            } else if (pathName == "/queryExecutionInstances") { //查询所有服务信息，只包括id和服务名称
                 output = [];
                 travel(path.join(getDir(), "execution_instances"),function(pathname){
                     const data = fs.readFileSync(pathname, 'utf8');
