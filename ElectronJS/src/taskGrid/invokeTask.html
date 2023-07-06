@@ -51,7 +51,8 @@
 <div class="row" style="margin-top: 40px;">
 
     <div class="col-md-7" id="taskInfo" style="margin:0 auto" v-if="show">
-
+        <div id="tipCustom" class="alert alert-success alert-dismissible fade show" style="display: none; z-index: 1000">
+            {{tip | lang}}</div>
 
         <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -243,6 +244,7 @@
             task: {},
             show: false, //是否渲染
             ID: "",
+            tip: "The parameter values in the Excel file have been successfully imported into the corresponding field text box~Excel文件中的参数值已成功导入到对应字段文本框中",
             file:null,
             user_data_folder:"",
             fileUploadStatus: "Status: Waiting for upload~状态：等待上传",
@@ -304,9 +306,13 @@
                         let inputParameters = app.$data.task.inputParameters;
                         inputParameters.forEach(function (item, index) {
                             if(Object.keys(response).includes(item.name)){
-                                item.value = "\r\n".join(response[item.name]);
+                                item.value = response[item.name].join("\r\n");
                             }
                         });
+                        $("#tipCustom").slideDown(); //提示框
+                        setTimeout(function() {
+                            $("#tipCustom").slideUp();
+                        }, 3000);
                     },
                     error: function(err) {
                         app.$data.fileUploadStatus = "Status: Upload failed~状态：上传失败";

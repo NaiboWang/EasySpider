@@ -57,7 +57,17 @@ if(!fs.existsSync(path.join(getDir(), "execution_instances"))){
     fs.mkdirSync(path.join(getDir(), "execution_instances"));
 }
 if(!fs.existsSync(path.join(getDir(), "config.json"))){
-    fs.writeFileSync(path.join(getDir(), "config.json"), JSON.stringify({"webserver_address":"http://localhost","webserver_port":8074,"user_data_folder":"./user_data","absolute_user_data_folder":""}));
+    // Generate config.json
+    fs.writeFileSync(path.join(getDir(), "config.json"),
+        JSON.stringify({
+                "webserver_address": "http://localhost",
+                "webserver_port": 8074,
+                "user_data_folder": "./user_data",
+                "debug": false,
+                "mysql_config_path": "./mysql_config.json",
+                "absolute_user_data_folder": "D:\\Document\\Projects\\EasySpider\\ElectronJS\\user_data"
+            }
+        ));
 }
 
 exports.getDir = getDir;
