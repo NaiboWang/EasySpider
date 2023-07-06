@@ -429,6 +429,7 @@ function saveService(type) {
             "environment": environment,
             "maxViewLength": parseInt($("#maxViewLength").val()),
             "outputFormat": $("#outputFormat").val(),
+            "saveName": $("#saveName").val(),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

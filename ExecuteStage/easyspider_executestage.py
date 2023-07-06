@@ -48,16 +48,38 @@ desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class BrowserThread(Thread):
-    def __init__(self, browser_t, id, service, version, event, config):
+    def __init__(self, browser_t, id, service, version, event, saveName, config):
         Thread.__init__(self)
         self.browser = browser_t
         self.config = config
         self.id = id
         self.event = event
-        self.saveName = saveName
+        try:
+            self.saveName = service["saveName"]  # 保存文件的名字
+        except:
+            now = datetime.now()
+            # 将时间格式化为精确到毫秒的字符串
+            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
         self.log = ""
         self.OUTPUT = ""
         self.SAVED = False
+
+        # 名称设定
+        if saveName != "": # 命令行覆盖保存名称
+            self.saveName = saveName  # 保存文件的名字
+        elif self.saveName == "Time":
+            # 获取当前时间
+            now = datetime.now()
+            # 将时间格式化为精确到毫秒的字符串
+            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
+
+        print("Save Name for task ID", i, "is:", self.saveName)
+        print("任务ID", i, "的保存文件名为:", self.saveName)
+        if not os.path.exists("Data/Task_" + str(i)):
+            os.mkdir("Data/Task_" + str(i))
+        if not os.path.exists("Data/Task_" + str(i) + "/" + self.saveName):
+            os.mkdir("Data/Task_" + str(i) + "/" + self.saveName)  # 创建保存文件夹用来保存截图
+
         stealth_path = driver_path[:driver_path.find(
             "chromedriver")] + "stealth.min.js"
         with open(stealth_path, 'r') as f:
@@ -200,7 +222,10 @@ class BrowserThread(Thread):
             self.log = ""
 
     def scrollDown(self, para, rt=""):
-        time.sleep(para["scrollWaitTime"])  # 下拉前等待
+        try:
+            time.sleep(para["scrollWaitTime"])  # 下拉前等待
+        except:
+            pass
         scrollType = int(para["scrollType"])
         try:
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
@@ -212,7 +237,10 @@ class BrowserThread(Thread):
                         body.send_keys(Keys.PAGE_DOWN)
                     elif scrollType == 2:
                         body.send_keys(Keys.END)
-                    time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                    try:
+                        time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                    except:
+                        pass
         except:
             self.Log('Time out after set seconds when scrolling. ')
             self.recordLog('Time out after set seconds when scrolling')
@@ -226,7 +254,10 @@ class BrowserThread(Thread):
                         body.send_keys(Keys.PGDN)
                     elif scrollType == 2:
                         body.send_keys(Keys.END)
-                    time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                    try:
+                        time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                    except:
+                        pass
             if rt != "":
                 rt.end()
 
@@ -862,7 +893,10 @@ class BrowserThread(Thread):
             self.Log('Time out after set seconds when loading clicked page')
             self.recordLog(
                 'Time out after set seconds when loading clicked page')
-            self.browser.execute_script('window.stop()')
+            try:
+                self.browser.execute_script('window.stop()')
+            except:
+                pass
         except Exception as e:
             self.Log(e)
             self.recordLog(str(e))
@@ -1336,19 +1370,6 @@ if __name__ == '__main__':
     for i in c.id:
         print(options)
         print("id: ", i)
-        if c.saved_file_name != "":
-            saveName = c.saved_file_name  # 保存文件的名字
-        else:
-            # 获取当前时间
-            now = datetime.now()
-            # 将时间格式化为精确到毫秒的字符串
-            saveName = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
-        print("Save Name for task ID", i, "is:", saveName)
-        print("任务ID", i, "的保存文件名为:", saveName)
-        if not os.path.exists("Data/Task_" + str(i)):
-            os.mkdir("Data/Task_" + str(i))
-        if not os.path.exists("Data/Task_" + str(i) + "/" + saveName):
-            os.mkdir("Data/Task_" + str(i) + "/" + saveName)  # 创建保存文件夹用来保存截图
         if c.read_type == "remote":
             print("remote")
             content = requests.get(
@@ -1402,7 +1423,7 @@ if __name__ == '__main__':
         event = Event()
         event.set()
         thread = BrowserThread(browser_t, i, service,
-                               c.version, event, config=config)
+                               c.version, event, c.saved_file_name, config=config)
         print("Thread with task id: ", i, " is created")
         threads.append(thread)
         thread.start()

@@ -524,8 +524,10 @@
                     <select id="outputFormat" class="form-control">
                         <option value = "csv">CSV</option>
                         <option value = "xlsx">XLSX（EXCEL）</option>
-                        <option value = "mysql">MySQL</option>
+                        <option value = "mysql">MySQL数据库</option>
                     </select>
+                    <label>导出文件名/数据库表格名称（如果值为“Time”则名称为执行任务时的时间）：</label>
+                    <input onkeydown="inputDelete(event)" value="Time" id="saveName" class="form-control"></input>
                     <label>浏览器模拟类型：</label>
                     <select id="environment" name="environment" class="form-control">
                         <option value = 0>电脑端</option>

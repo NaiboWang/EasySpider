@@ -118,26 +118,38 @@
                                 <td>{{"Argument Value 2_1~参数值2_2" | lang}}</td>
                                 <td>...</td>
                             </tr>
+                            <tr>
+                                <td>...</td>
+                                <td>...</td>
+                                <td>...</td>
+                            </tr>
                             </tbody>
                         </table>
                         <label>{{"The 'Invoke Name' is shown at the main table of this page, such as 'urlList_0' is the invoke name of the open page operation.~“调用名称”在本页面的主表格中显示，例如“urlList_0”是“打开网页“操作的调用名称。" | lang}}</label>
                         <label>{{"You can just put part of the arguments in the Excel file, and the values of the rest of the arguments will be set to default. Example table for this task is:~您可以只在Excel文件中放入部分参数，其余参数值将被设置为默认值。一个针对此任务的表格示例为：" | lang}}</label>
                         <table class="table table-bordered excel">
+                            <thead>
+                                <tr>
+                                    <th v-for="i in Math.min(3, task.inputParameters.length)" v-if="task.inputParameters.length>0">
+                                        {{task.inputParameters[i-1]["name"]}}
+                                    </th>
+                                </tr>
+                            </thead>
                             <tbody>
                             <tr>
                                 <td v-for="i in Math.min(3, task.inputParameters.length)" v-if="task.inputParameters.length>0">
-                                    {{task.inputParameters[i-1]["name"]}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td v-for="i in Math.min(3, task.inputParameters.length)" v-if="task.inputParameters.length>0">
-                                    {{task.inputParameters[i-1]['value']}}
+                                    {{getLine(i,0)}}
                                 </td>
                             <tr>
                             <tr>
                                 <td v-for="i in Math.min(3, task.inputParameters.length)">
-                                    <div v-if="task.inputParameters[i-1]['name'].indexOf('url') >=0">
-                                        {{task.inputParameters[i-1]['value']}}
+                                    {{getLine(i,1)}}
+                                </td>
+                            <tr>
+                            <tr>
+                                <td v-for="i in Math.min(3, task.inputParameters.length)">
+                                    <div v-if="task.inputParameters[i-1]['value'].toString().split('\n').length >=2 || task.inputParameters[i-1]['name'].indexOf('url') >=0">
+                                        ...
                                     </div>
                                 </td>
                             <tr>
@@ -276,7 +288,18 @@
                     url = "taskInfo.html?id="+getUrlParam("id")+"&lang=en&type="+getUrlParam("type")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
                 }
                 window.location.href = url;
-            }, readFromExcel: function(){
+            }, getLine: function(i, index){
+                const value = this.task.inputParameters[i-1]["value"].toString();
+                const parts = value.split("\n");
+                if(parts.length > index){
+                    return parts[index];
+                } else if(this.task.inputParameters[i-1]["name"].indexOf("url") >=0){
+                    return parts[0];
+                } else {
+                    return "";
+                }
+            },
+            readFromExcel: function(){
                 $('#excelModal').modal('show');
             }, submitFile: function() {
                 let form_data = new FormData();
