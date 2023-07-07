@@ -360,6 +360,7 @@ class BrowserThread(Thread):
         paras = node["parameters"]
         codeMode = int(paras["codeMode"])
         code = paras["code"]
+        output = ""
         max_wait_time = int(paras["waitTime"])
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
