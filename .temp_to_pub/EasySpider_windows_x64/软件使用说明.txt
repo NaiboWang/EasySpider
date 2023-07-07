@@ -4,7 +4,7 @@
 
 支持Windows 10 x64及以上版本。
 
-Windows 7此版本无直接可用版本（因为Chrome 109是最后一个支持Windows 7的Chrome版本），但v0.2.0的32位版本可用，且可以通过自行编译软件来运行，因此如想使用Windows 7采集数据，请下载v0.2.0的32位版本或自行下载代码并编译：https://github.com/NaiboWang/EasySpider/releases/tag/v0.2.0
+Windows 7此请下载Windows的32位版本使用。
 
 视频教程：https://www.bilibili.com/video/BV1th411A7ey/
 

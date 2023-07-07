@@ -2,9 +2,7 @@ Official Site: https://www.easyspider.net
 
 Welcome to promote this software to other friends.
 
-This version is for Windows 10 x32 and above.
-
-The Windows version supports **Windows 10 and above**. There is no direct usable version available for Windows 7, but the [32-bit version](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0/EasySpider_0.2.0_windows_386.7z) of [v0.2.0](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0) is available and can be run by compiling the software yourself. Therefore, if you want to use Windows 7 for data collection, please download the 32-bit version of v0.2.0 or download the code and compile it yourself.
+This version is for Windows 7 and above, including both 32-bit and 64-bit version. Please note that this version of the Chrome browser will always remain at version 109 and will not update with Chrome updates (for compatibility with Windows 7). Therefore, if you want to use the latest version of the Chrome browser for data scraping, please run the x64 version of EasySpider on Windows 10 x64 or higher systems.
 
 Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
 

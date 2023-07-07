@@ -4,7 +4,7 @@ Welcome to promote this software to other friends.
 
 This version is for Windows 10 x64 and above.
 
-The Windows version supports **Windows 10 and above**. There is no direct usable version available for Windows 7, but the [32-bit version](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0/EasySpider_0.2.0_windows_386.7z) of [v0.2.0](https://github.com/NaiboWang/EasySpider/releases/download/v0.2.0) is available and can be run by compiling the software yourself. Therefore, if you want to use Windows 7 for data collection, please download the 32-bit version of v0.2.0 or download the code and compile it yourself.
+The Windows version supports **Windows 10 and above**. If you want to use EasySpider on windows 7, please download the Windows x86 version of EasySpider.
 
 Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
 
