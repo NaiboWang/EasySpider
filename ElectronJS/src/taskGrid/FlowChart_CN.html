@@ -348,11 +348,11 @@
                 <div class="elements" v-if="nodeType==5">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
                     <label>自定义执行模式</label>
-                    <select v-model='nowNode["parameters"]["codeMode"]' class="form-control">
+                    <select v-model='codeMode' class="form-control">
                         <option value = 0>执行一段JavaScript脚本</option>
                         <option value = 1>执行一段操作系统级别命令</option>
                         <option v-if="nowNode['isInLoop']" value = 2>针对当前循环项的JavaScript脚本</option>
-                        <option v-if="nowNode['isInLoop']" value = 3>退出当前循环（Break操作，选择这个可以忽略下面的选项）</option>
+                        <option v-if="nowNode['isInLoop']" value = 3>退出当前循环（Break操作）</option>
 <!--                        <option v-if="nowNode['isInLoop']" value = 4>跳过当前循环后面的操作（Continue操作，选择这个可以忽略下面的选项）</option>-->
                     </select>
 
@@ -361,7 +361,7 @@
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
-                            <option :value = 0>否</option>
+                            <option :value = 0>否（仍可在任意操作中用Field["操作名"]表示此命令返回值）</option>
                             <option :value = 1>是（JavaScript脚本需要以return 开头）</option>
                         </select></p>
                         <p><label>参数类型转换为：</label>
@@ -457,19 +457,6 @@
                     <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素为止）：</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
-
-                    <label><b>历史记录回退后</b>等待秒数：</label>
-                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
-                    <label>执行完是否向下滚动：</label>
-                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>不滚动</option>
-                        <option value = 1>向下滚动一屏</option>
-                        <option value = 2>滚动到底部</option>
-                    </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
-                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
-                    <label>滚动后等待时间（秒）：</label>
-                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
                             <p><label>（高级操作）使用代码/脚本定义循环退出条件（也可以在流程中添加自定义操作，然后选择Break选项）： </label></p>
@@ -486,6 +473,18 @@
                             </div>
                         </div>
                     </div>
+                    <label><b>历史记录回退后</b>等待秒数：</label>
+                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+                    <label>执行完是否向下滚动：</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>不滚动</option>
+                        <option value = 1>向下滚动一屏</option>
+                        <option value = 2>滚动到底部</option>
+                    </select>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                    <label>滚动后等待时间（秒）：</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                 </div>
 
                 <div class="elements" v-if="nodeType==9">

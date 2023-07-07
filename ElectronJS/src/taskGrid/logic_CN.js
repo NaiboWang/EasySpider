@@ -129,7 +129,7 @@ function notifyParameterNum(num) {
 //     }
 // }
 
-// 流程图元素点击后的处理逻辑
+// 流程图元素点击后的处理逻辑，注意在FlowChart_CN.js中watch的那些数据的加载都需要在这里执行！！！
 function handleElement() {
     app._data["nowNode"] = nodeList[vueData.nowNodeIndex];
     app._data["nodeType"] = app._data["nowNode"]["option"];
@@ -139,6 +139,8 @@ function handleElement() {
     } else if (app._data["nodeType"] == 3) {
         app._data.paraIndex = 0; //参数索引初始化
         app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
+    } else if(app._data["nodeType"] == 5){
+      app._data.codeMode = app._data["nowNode"]["parameters"]["codeMode"];
     } else if (app._data["nodeType"] == 10) {
         app._data.TClass = app._data["nowNode"]["parameters"]["class"];
     }

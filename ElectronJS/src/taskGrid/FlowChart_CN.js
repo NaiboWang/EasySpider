@@ -35,6 +35,7 @@ let app = new Vue({
         index: vueData,
         nodeType: 0, // 当前元素的类型
         nowNode: null, // 用来临时存储元素的节点
+        codeMode: 0, //代码模式
         loopType: -1, //点击循环时候用来循环选项
         useLoop: false, //记录是否使用循环内元素
         nowArrow: { "position": -1, "pId": 0, "num": 0 },
@@ -66,7 +67,7 @@ let app = new Vue({
                 }
             }
         },
-        loopType: {
+        loopType: { //循环类型发生变化的时候更新参数值
             handler: function(newVal, oldVal) {
                 this.nowNode["parameters"]["loopType"] = newVal;
             }
@@ -86,6 +87,11 @@ let app = new Vue({
                 this.nowNode["parameters"]["paras"] = newVal["parameters"];
             }
         },
+        codeMode: {
+            handler: function(newVal, oldVal) {
+                this.nowNode["parameters"]["codeMode"] = newVal;
+            }
+        }
     },
     methods: {
         getCookies: function() { //获取cookies
@@ -222,19 +228,7 @@ function newNode(node) {
     }
 }
 
-function elementMousedown(e) {
-    if (e.button == 2) //右键点击
-    {
-        if (nowNode != null) {
-            nowNode.style.borderColor = "skyblue";
-        }
-        nowNode = this;
-        vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
-        this.style.borderColor = "blue";
-        handleElement(); //处理元素
-    }
-    e.stopPropagation(); //防止冒泡
-}
+
 
 function branchMouseDown(e) {
     if (e.button == 2) //右键点击
@@ -290,6 +284,20 @@ function branchClick(e) {
     refresh();
     app._data.nowArrow = { "position": -1, "pId": t["id"], "num": 0 };
     $("#" + t["id"]).click();
+    e.stopPropagation(); //防止冒泡
+}
+
+function elementMousedown(e) {
+    if (e.button == 2) //右键点击
+    {
+        if (nowNode != null) {
+            nowNode.style.borderColor = "skyblue";
+        }
+        nowNode = this;
+        vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
+        this.style.borderColor = "blue";
+        handleElement(); //处理元素
+    }
     e.stopPropagation(); //防止冒泡
 }
 
