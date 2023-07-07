@@ -87,16 +87,30 @@ def get_output_code(output):
 def isnull(s):
     return len(s) != 0
 
+def new_line(outputParameters, maxViewLength, record):
+    line = []
+    i = 0
+    for value in outputParameters.values():
+        line.append(value)
+        if record[i]:
+            print(value[:maxViewLength], " ", end="")
+        i += 1
+    print("")
+    return line
 
-def write_to_csv(file_name, data):
+def write_to_csv(file_name, data, record):
     with open(file_name, 'a', encoding='utf-8-sig', newline="") as f:
         f_csv = csv.writer(f)
         for line in data:
-            f_csv.writerow(line)
+            to_write = []
+            for i in range(len(line)):
+                if record[i]:
+                    to_write.append(line[i])
+            f_csv.writerow(to_write)
         f.close()
 
 
-def write_to_excel(file_name, data, types):
+def write_to_excel(file_name, data, types, record):
     first = False
     if os.path.exists(file_name):
         # 加载现有的工作簿
@@ -111,7 +125,7 @@ def write_to_excel(file_name, data, types):
     for line in data:
         if not first: # 如果不是第一行，需要转换数据类型
             for i in range(len(line)):
-                if types[i] == "int":
+                if types[i] == "int" or types[i] == "bigInt":
                     try:
                         line[i] = int(line[i])
                     except:
@@ -123,7 +137,11 @@ def write_to_excel(file_name, data, types):
                         line[i] = 0.0
         else:
             first = False
-        ws.append(line)
+        to_write = []
+        for i in range(len(line)):
+            if record[i]:
+                to_write.append(line[i])
+        ws.append(to_write)
     # 保存工作簿
     wb.save(file_name)
 
@@ -174,26 +192,29 @@ class myMySQL:
 
         sql = "CREATE TABLE " + table_name + " (_id INT AUTO_INCREMENT PRIMARY KEY, "
         for item in parameters:
-            name = item['name']
-            if item['type'] == 'int':
-                sql += f"{name} INT, "
-            elif item['type'] == 'double':
-                sql += f"{name} DOUBLE, "
-            elif item['type'] == 'text':
-                sql += f"{name} TEXT, "
-            elif item['type'] == 'mediumText':
-                sql += f"{name} MEDIUMTEXT, "
-            elif item['type'] == 'longText':
-                sql += f"{name} LONGTEXT, "
-            elif item['type'] == 'datetime':
-                sql += f"{name} DATETIME, "
-            elif item['type'] == 'date':
-                sql += f"{name} DATE, "
-            elif item['type'] == 'time':
-                sql += f"{name} TIME, "
-            elif item['type'] == 'varchar':
-                sql += f"{name} VARCHAR(255), "
-            self.field_sql += f"{name}, "
+            if item["recordASField"]:
+                name = item['name']
+                if item['type'] == 'int':
+                    sql += f"{name} INT, "
+                elif item['type'] == 'double':
+                    sql += f"{name} DOUBLE, "
+                elif item['type'] == 'text':
+                    sql += f"{name} TEXT, "
+                elif item['type'] == 'mediumText':
+                    sql += f"{name} MEDIUMTEXT, "
+                elif item['type'] == 'longText':
+                    sql += f"{name} LONGTEXT, "
+                elif item['type'] == 'datetime':
+                    sql += f"{name} DATETIME, "
+                elif item['type'] == 'date':
+                    sql += f"{name} DATE, "
+                elif item['type'] == 'time':
+                    sql += f"{name} TIME, "
+                elif item['type'] == 'varchar':
+                    sql += f"{name} VARCHAR(255), "
+                elif item['type'] == 'bigInt':
+                    sql += f"{name} BIGINT, "
+                self.field_sql += f"{name}, "
         # 移除最后的逗号并添加闭合的括号
         sql = sql.rstrip(', ') + ")"
         self.field_sql = self.field_sql.rstrip(', ') + ")"
@@ -207,19 +228,31 @@ class myMySQL:
             print("The data table " + table_name + " already exists.")
         cursor.close()
 
-    def write_to_mysql(self, OUTPUT):
+    def write_to_mysql(self, OUTPUT, record):
         # 创建一个游标对象
         cursor = self.conn.cursor()
 
         for row in OUTPUT:
+            to_write = []
+            for i in range(len(row)):
+                if record[i]:
+                    to_write.append(row[i])
             # 构造插入数据的 SQL 语句
             sql = f"INSERT INTO "+ self.table_name +" "+self.field_sql+" VALUES ("
-            for item in row:
+            for item in to_write:
                 sql += "%s, "
             # 移除最后的逗号并添加闭合的括号
             sql = sql.rstrip(', ') + ")"
             # 执行 SQL 语句
-            cursor.execute(sql, row)
+            try:
+                cursor.execute(sql, to_write)
+            except Exception as e:
+                print("Error:", e)
+                # print("Error SQL:", sql)
+                print("插入数据库错误，请查看以上的错误提示，然后检查数据的类型是否正确，是否文本过长（超过一万的文本类型要设置为大文本）。")
+                print("Inserting database error, please check the above error, and then check whether the data type is correct, whether the text is too long (text type over 10,000 should be set to large text).")
+                print("重新执行任务时，请删除数据库中的数据表" + self.table_name + "，然后再次运行程序。")
+                print("When re-executing the task, please delete the data table " + self.table_name + " in the database, and then run the program again.")
 
         # 提交到数据库执行
         self.conn.commit()

@@ -186,18 +186,18 @@
             <table class="table table-bordered">
                 <tbody>
                 <tr>
-                    <th style="min-width: 50px;">ID</th>
-                    <th>{{"Parameter Name~参数名称" | lang}}</th>
-                    <th>{{"Invoke Name~调用名称" | lang}}</th>
-                    <th>{{"Parameter Type~参数类型" | lang}}</th>
+                    <th style="min-width: 50px;text-align: center">ID</th>
+                    <th style="text-align: center">{{"Parameter Name~参数名称" | lang}}</th>
+                    <th style="text-align: center">{{"Invoke Name~调用名称" | lang}}</th>
+                    <th style="text-align: center">{{"Parameter Type~参数类型" | lang}}</th>
                     <th>{{"Parameter Value~参数值" | lang}}</th>
                 </tr>
 
                 <tr v-for="i in task.inputParameters.length" v-if="task.inputParameters.length>0">
-                    <td style="min-width: 50px;">{{i}}</td>
-                    <td style="max-width: 100px;">{{task.inputParameters[i-1]["nodeName"]}}</td>
-                    <td>{{task.inputParameters[i-1]["name"]}}</td>
-                    <td style="max-width: 100px;">{{task.inputParameters[i-1]["type"]}}</td>
+                    <td style="min-width: 50px;text-align: center">{{i}}</td>
+                    <td style="max-width: 100px; text-align: center">{{task.inputParameters[i-1]["nodeName"]}}</td>
+                    <td style="text-align: center">{{task.inputParameters[i-1]["name"]}}</td>
+                    <td style="max-width: 100px; text-align: center">{{task.inputParameters[i-1]["type"]}}</td>
                     <td><textarea class="form-control"
                                   style="min-height: 50px;min-width: 300px;" v-bind:name="task.inputParameters[i-1]['name']"
                                   v-model="task.inputParameters[i-1]['value']"></textarea></td>

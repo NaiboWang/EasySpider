@@ -70,6 +70,7 @@
     height: 30px;
     cursor: pointer;
     margin-left: 15px !important;
+    padding: 0!important;
 }
 
 .tooltips input[type=text] {

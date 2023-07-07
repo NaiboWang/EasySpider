@@ -242,15 +242,16 @@
                         </div>
                         <label>参数类型转换为（用于Excel和数据库）：</label>
                         <select v-model='paras.parameters[paraIndex]["paraType"]' class="form-control">
-                            <option value = "text">文本（长度预估超过1万请选择大文本）</option>
-                            <option value = "int">整数</option>
+                            <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
+                            <option value = "int">整数（位数在9位以内）</option>
                             <option value = "double">浮点数（小数）</option>
-                            <option value = "mediumText">大文本（单个值长度超过1万）</option>
+                            <option value = "mediumText">大文本（单个值长度超过1万低于100万）</option>
                             <option value = "datetime">日期时间</option>
                             <option value = "date">日期</option>
                             <option value = "time">时间</option>
                             <option value = "varchar">小文本（单个值长度小于50）</option>
                             <option value = "longText">超大文本（单个值长度超过100万）</option>
+                            <option value = "bigInt">大整数（位数超过9位）</option>
                         </select>
                         <label>采集内容类型</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
@@ -263,14 +264,15 @@
                             <option :value = 6>页面标题</option>
                             <option :value = 7>元素截图</option>
                             <option :value = 8>OCR识别文字</option>
-                            <option :value = 9>针对该元素的JavaScript代码返回值（需以return 开头）</option>
+                            <option :value = 9>（针对该元素的）JavaScript代码返回值（需以return 开头）</option>
+                            <option :value = 12>系统命令返回值</option>
                             <option :value = 10>当前选择框选中的选项值</option>
                             <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
-                        <div v-if='paras.parameters[paraIndex]["contentType"] == 9'>
-                            <label>JavaScript代码：</label>
+                        <div v-if='paras.parameters[paraIndex]["contentType"] == 9 || paras.parameters[paraIndex]["contentType"] == 12'>
+                            <label>JavaScript代码（也可以不针对该元素，直接写return JS代码即可）/系统命令代码：</label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例：return arguments[0].innerText + "美元"，即实现了提取该元素innerText并后面加“美元”的功能。' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
+                                      placeholder='如要针对该元素，则该元素用arguments[0]来表示，示例：return arguments[0].innerText + "美元"，即实现了提取该元素innerText并后面加“美元”的功能；不然直接如写return new Date().toString()即可获得当前时间戳。' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
                             <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["JSWaitTime"]'></input>
                         </div>
@@ -294,7 +296,11 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
-
+                        <label style="margin-top: 15px">是否保存该字段（只想把此字段当变量而不想保存时可选否）：</label>
+                        <select v-model='paras.parameters[paraIndex]["recordASField"]' class="form-control">
+                            <option :value = 1>是</option>
+                            <option :value = 0>否</option>
+                        </select>
                         <label>参数描述：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
                         <label>元素找不到时的值：</label>
@@ -346,21 +352,30 @@
                         <option value = 0>执行一段JavaScript脚本</option>
                         <option value = 1>执行一段操作系统级别命令</option>
                         <option v-if="nowNode['isInLoop']" value = 2>针对当前循环项的JavaScript脚本</option>
+                        <option v-if="nowNode['isInLoop']" value = 3>退出当前循环（Break操作，选择这个可以忽略下面的选项）</option>
+<!--                        <option v-if="nowNode['isInLoop']" value = 4>跳过当前循环后面的操作（Continue操作，选择这个可以忽略下面的选项）</option>-->
                     </select>
 
-                    <div>
+                    <div v-if='nowNode["parameters"]["codeMode"] < 3'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段提取到的最新值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
-                            <option value = 0>否</option>
-                            <option value = 1>是（JavaScript脚本需要以return 开头）</option>
-                        </select>
-                        <label>参数转换类型：</label>
+                            <option :value = 0>否</option>
+                            <option :value = 1>是（JavaScript脚本需要以return 开头）</option>
+                        </select></p>
+                        <p><label>参数类型转换为：</label>
                         <select v-model='nowNode["parameters"]["paraType"]' class="form-control">
-                            <option value = "text">文本</option>
-                            <option value = "int">整数</option>
-                            <option value = "double">浮点数</option>
+                            <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
+                            <option value = "int">整数（位数在9位以内）</option>
+                            <option value = "double">浮点数（小数）</option>
+                            <option value = "mediumText">大文本（单个值长度超过1万低于100万）</option>
+                            <option value = "datetime">日期时间</option>
+                            <option value = "date">日期</option>
+                            <option value = "time">时间</option>
+                            <option value = "varchar">小文本（单个值长度小于50）</option>
+                            <option value = "longText">超大文本（单个值长度超过100万）</option>
+                            <option value = "bigInt">大整数（位数超过9位）</option>
                         </select>
                         </p>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
@@ -457,7 +472,7 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
-                            <p><label>（高级操作）使用代码/脚本定义循环退出条件： </label></p>
+                            <p><label>（高级操作）使用代码/脚本定义循环退出条件（也可以在流程中添加自定义操作，然后选择Break选项）： </label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
                                 <option value = 1>JavaScript脚本返回值（需以return 开头）</option>
@@ -465,7 +480,7 @@
                             </select>
                             <div>
                                 <textarea style="margin-top: 10px" onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                          placeholder='命令返回值小于等于0或为假时则直接退出循环，不管其他条件如何。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。' v-model='nowNode["parameters"]["breakCode"]'></textarea>
+                                          placeholder='命令返回值小于等于0或为假时则直接退出循环，不管其他条件如何。如：document.evaluate("//div[1]/a", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue == null 或 python D:/test.py，分别为JS命令（判断某元素是否存在）和系统命令返回值示例。' v-model='nowNode["parameters"]["breakCode"]'></textarea>
                                 <label>最长等待脚本执行时间（0代表无限等待）：</label>
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["breakCodeWaitTime"]'></input>
                             </div>
@@ -548,8 +563,8 @@
                         <option value = "txt">TXT</option>
                         <option value = "mysql">MySQL数据库</option>
                     </select>
-                    <label>导出文件名/数据库表格名称（如果值为“Time”则名称为执行任务时的时间）：</label>
-                    <input onkeydown="inputDelete(event)" value="Time" id="saveName" class="form-control"></input>
+                    <label>导出文件名/数据库表格名称（名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
+                    <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
                     <label>是否为cloudflare等极端反爬网站：</label>
                     <select id="cloudflare" name="cloudflare" class="form-control">
                         <option value = 0>否</option>

@@ -42,7 +42,7 @@ from PIL import Image
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome
-from utils import check_pause, download_image, get_output_code, isnull, myMySQL, write_to_csv, write_to_excel
+from utils import check_pause, download_image, get_output_code, isnull, myMySQL, new_line, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -58,20 +58,17 @@ class BrowserThread(Thread):
             self.saveName = service["saveName"]  # 保存文件的名字
         except:
             now = datetime.now()
-            # 将时间格式化为精确到毫秒的字符串
-            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
+            # 将时间格式化为精确到秒的字符串
+            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S")
         self.log = ""
         self.OUTPUT = ""
         self.SAVED = False
-
+        self.BREAK = False
         # 名称设定
         if saveName != "": # 命令行覆盖保存名称
             self.saveName = saveName  # 保存文件的名字
-        elif self.saveName == "Time":
-            # 获取当前时间
-            now = datetime.now()
-            # 将时间格式化为精确到毫秒的字符串
-            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S_%f")
+        now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        self.saveName = self.saveName.replace("current_time", now)
 
         print("Save Name for task ID", i, "is:", self.saveName)
         print("任务ID", i, "的保存文件名为:", self.saveName)
@@ -121,37 +118,49 @@ class BrowserThread(Thread):
         self.links = list(
             filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
+        self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt":
             if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
                 self.OUTPUT.append([])  # 添加表头
+                self.writeMode = 0
         elif self.outputFormat == "xlsx":
             if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.xlsx'):
                 self.OUTPUT.append([])  # 添加表头
+                self.writeMode = 0
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
             self.mysql.create_table(self.saveName, service["outputParameters"])
+            self.writeMode = 2
+        if self.writeMode == 1:
+            print("追加模式")
+            print("Append Mode")
+        elif self.writeMode == 0:
+            print("新建模式")
+            print("New Mode")
+        elif self.writeMode == 2:
+            print("MySQL模式")
+            print("MySQL Mode")
         self.containJudge = service["containJudge"]  # 是否含有判断语句
-        tOut = service["outputParameters"]  # 生成输出参数对象
         self.outputParameters = {}
         self.outputParametersTypes = []
+        self.outputParametersRecord = [] # 字段是否被记录
         self.dataNotFoundKeys = {}  # 记录没有找到数据的key
         self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
-        for para in tOut:
+        for para in service["outputParameters"]: # 初始化输出参数
             if para["name"] not in self.outputParameters.keys():
                 self.outputParameters[para["name"]] = ""
                 self.dataNotFoundKeys[para["name"]] = False
                 self.outputParametersTypes.append(para["type"])
+                try:
+                    self.outputParametersRecord.append(bool(para["recordASField"]))
+                except:
+                    self.outputParametersRecord.append(True)
                 # 文件叠加的时候不添加表头
-                if self.outputFormat == "csv" or self.outputFormat == "txt":
-                    if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+                if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
+                    if self.writeMode == 0:
                         self.OUTPUT[0].append(para["name"])
-                elif self.outputFormat == "xlsx":
-                    if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.xlsx'):
-                        self.OUTPUT[0].append(para["name"])
-                elif self.outputFormat == "mysql":  # MySQL不需要表头
-                    pass
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
 
@@ -216,19 +225,21 @@ class BrowserThread(Thread):
     def saveData(self, exit=False):
         # 每save_threshold条保存一次
         if exit == True or len(self.OUTPUT) >= self.save_threshold:
+            # 写入日志
             with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
                 file_obj.write(self.log)
                 file_obj.close()
+            # 写入数据
             if self.outputFormat == "csv" or self.outputFormat == "txt":
                 file_name = "Data/Task_" + \
                     str(self.id) + "/" + self.saveName + '.' + self.outputFormat
-                write_to_csv(file_name, self.OUTPUT)
+                write_to_csv(file_name, self.OUTPUT, self.outputParametersRecord)
             elif self.outputFormat == "xlsx":
                 file_name = "Data/Task_" + \
                     str(self.id) + "/" + self.saveName + '.xlsx'
-                write_to_excel(file_name, self.OUTPUT, self.outputParametersTypes)
+                write_to_excel(file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord)
             elif self.outputFormat == "mysql":
-                self.mysql.write_to_mysql(self.OUTPUT)
+                self.mysql.write_to_mysql(self.OUTPUT, self.outputParametersRecord)
                 
             self.OUTPUT = []
             self.log = ""
@@ -360,17 +371,18 @@ class BrowserThread(Thread):
             except:
                 output = ""
                 print("JavaScript execution failed")
-        else:
+        elif codeMode == 3:
+            self.BREAK = True
+        else: # 0 1
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])
-        recordASField = int(paras["recordASField"])
+        recordASField = bool(paras["recordASField"])
         if recordASField:
-            self.outputParameters[node["title"]] = output
-            line = []
-            for value in self.outputParameters.values():
-                line.append(value)
-                print(value[:self.maxViewLength], " ", end="")
-            print("")
+            print("操作<" + node["title"] + ">的返回值为：" + output)
+            print("The return value of operation <" + node["title"] + "> is: " + output)
+        self.outputParameters[node["title"]] = output
+        if recordASField:
+            line = new_line(self.outputParameters, self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
     def switchSelect(self, para, loopValue):
@@ -567,6 +579,12 @@ class BrowserThread(Thread):
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(
                             i, element, node["parameters"]["xpath"], 0)
+                        if self.BREAK: # 如果有break操作，下面的操作不执行
+                            break
+                    if self.BREAK: # 如果有break操作，退出循环
+                        self.BREAK = False
+                        finished = True
+                        break
                     finished = True
                     self.Log("Click: ", node["parameters"]["xpath"])
                     self.recordLog("Click:" + node["parameters"]["xpath"])
@@ -621,6 +639,11 @@ class BrowserThread(Thread):
                     for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
                         self.executeNode(i, elements[index],
                                          node["parameters"]["xpath"], index)
+                        if self.BREAK:
+                            break
+                    if self.BREAK:
+                        self.BREAK = False
+                        break
                     if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
                         while True:  # 一直关闭窗口直到当前标签页
                             self.browser.close()  # 关闭使用完的标签页
@@ -662,6 +685,11 @@ class BrowserThread(Thread):
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(i, element, path, 0)
+                        if self.BREAK:
+                            break
+                    if self.BREAK:
+                        self.BREAK = False
+                        break
                     if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
                         while True:  # 一直关闭窗口直到当前标签页
                             self.browser.close()  # 关闭使用完的标签页
@@ -701,6 +729,11 @@ class BrowserThread(Thread):
                 self.recordLog("input: " + text)
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, text, "", 0)
+                    if self.BREAK:
+                        break
+                if self.BREAK:
+                    self.BREAK = False
+                    break
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
                         node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
@@ -719,6 +752,11 @@ class BrowserThread(Thread):
                 self.recordLog("input: " + url)
                 for i in node["sequence"]:
                     self.executeNode(i, url, "", 0)
+                    if self.BREAK:
+                        break
+                if self.BREAK:
+                    self.BREAK = False
+                    break
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
                         node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
@@ -738,6 +776,11 @@ class BrowserThread(Thread):
                     break
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, code, node["parameters"]["xpath"], 0)
+                    if self.BREAK:
+                        break
+                if self.BREAK:
+                    self.BREAK = False
+                    break
         self.history["index"] = thisHistoryLength
         self.history["handle"] = self.browser.current_window_handle
         self.scrollDown(node["parameters"])
@@ -1071,6 +1114,8 @@ class BrowserThread(Thread):
         elif p["contentType"] == 9:
             content = self.execute_code(
                 2, p["JS"], p["JSWaitTime"], element, iframe=p["iframe"])
+        elif p["contentType"] == 12: # 系统命令返回值
+            content = self.execute_code(1, p["JS"], p["JSWaitTime"])
         elif p["contentType"] == 10:  # 下拉框选中的值
             try:
                 select_element = Select(element)
@@ -1254,11 +1299,7 @@ class BrowserThread(Thread):
                 self.outputParameters[p["name"]] = content
                 self.execute_code(
                     2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS
-        line = []
-        for value in self.outputParameters.values():
-            line.append(value)
-            print(value[:self.maxViewLength], " ", end="")
-        print("")
+        line = new_line(self.outputParameters, self.maxViewLength, self.outputParametersRecord)
         self.OUTPUT.append(line)
         # rt.end()
 

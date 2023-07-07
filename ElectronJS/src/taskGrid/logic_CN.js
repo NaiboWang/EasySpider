@@ -42,6 +42,7 @@ ws.onmessage = function(evt) {
 function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["default"] = ""; //找不到元素时候的默认值
     msg["parameters"][i]["paraType"] = "text"; //参数类型
+    msg["parameters"][i]["recordASField"] = 1; //是否记录为字段值
     msg["parameters"][i]["beforeJS"] = ""; //执行前执行的js
     msg["parameters"][i]["beforeJSWaitTime"] = 0; //执行前js等待时间
     msg["parameters"][i]["JS"] = ""; //如果是JS，需要执行的js
@@ -393,32 +394,34 @@ function saveService(type) {
                                 name: nodeList[i]["parameters"]["paras"][j]["name"],
                                 desc: nodeList[i]["parameters"]["paras"][j]["desc"],
                                 type: nodeList[i]["parameters"]["paras"][j]["paraType"],
+                                recordASField: nodeList[i]["parameters"]["paras"][j]["recordASField"],
                                 exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
                             });
                         }
                     }
                 } else if (nodeList[i]["option"] == 5) //自定义操作
                 {
-                    if (nodeList[i]["parameters"]["recordASField"] == 1) {
-                        let id = outputIndex++;
-                        let title = nodeList[i]["title"];
-                        // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
-                        //     $('#myModal').modal('hide');
-                        //     $("#tip2").slideDown(); //提示框
-                        //     fadeout = setTimeout(function() {
-                        //         $("#tip2").slideUp();
-                        //     }, 5000);
-                        //     return;
-                        // }
-                        outputNames.push(title);
-                        outputParameters.push({
-                            id: id,
-                            name: title,
-                            desc: "自定义操作返回的数据",
-                            type: nodeList[i]["parameters"]["paraType"],
-                            exampleValue: "",
-                        });
-                    }
+                    // if (nodeList[i]["parameters"]["recordASField"] == 1) {
+                    let id = outputIndex++;
+                    let title = nodeList[i]["title"];
+                    // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
+                    //     $('#myModal').modal('hide');
+                    //     $("#tip2").slideDown(); //提示框
+                    //     fadeout = setTimeout(function() {
+                    //         $("#tip2").slideUp();
+                    //     }, 5000);
+                    //     return;
+                    // }
+                    outputNames.push(title);
+                    outputParameters.push({
+                        id: id,
+                        name: title,
+                        desc: "自定义操作返回的数据",
+                        type: nodeList[i]["parameters"]["paraType"],
+                        recordASField: nodeList[i]["parameters"]["recordASField"],
+                        exampleValue: "",
+                    });
+                    // }
                 } else if (nodeList[i]["option"] == 9) //条件判断
                 {
                     containJudge = true;

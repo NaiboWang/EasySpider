@@ -112,7 +112,8 @@ let app = new Vue({
                 "name": "自定义参数_" + this.nowNode["parameters"]["paras"].length.toString(),
                 "desc": "",
                 "extractType": 0,
-                "relativeXPath": "",
+                "relativeXPath": "//body",
+                "recordASField": 1,
                 "allXPaths": [],
                 "exampleValues": [
                     {
@@ -124,6 +125,7 @@ let app = new Vue({
                 "beforeJS": "",
                 "beforeJSWaitTime": 0,
                 "JS": "",
+                "paraType": "text",
                 "JSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,

@@ -54,28 +54,28 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <th style="min-width: 50px;">ID</th>
-                        <th>{{"Parameter Name~参数名称" | lang}}</th>
-                        <th>{{"Invoke Name~调用名称" | lang}}</th>
-                        <th>{{"Parameter Type~参数类型" | lang}}</th>
+                        <th style="min-width: 50px; text-align: center">ID</th>
+                        <th style="text-align: center">{{"Parameter Name~参数名称" | lang}}</th>
+                        <th style="text-align: center">{{"Invoke Name~调用名称" | lang}}</th>
+                        <th style="text-align: center">{{"Parameter Type~参数类型" | lang}}</th>
                         <th>{{"Example Value~示例值" | lang}}</th>
                         <th>{{"Parameter Description~参数描述" | lang}}</th>
                     </tr>
                     <tr v-if="task.inputParameters.length>0" v-for="i in task.inputParameters.length">
-                        <td style="min-width: 50px;">{{i}}</td>
-                        <td>{{task.inputParameters[i-1]["nodeName"]}}</td>
-                        <td>{{task.inputParameters[i-1]["name"]}}</td>
-                        <td>{{task.inputParameters[i-1]["type"]}}</td>
+                        <td style="min-width: 50px; text-align: center">{{i}}</td>
+                        <td style="text-align: center">{{task.inputParameters[i-1]["nodeName"]}}</td>
+                        <td style="text-align: center">{{task.inputParameters[i-1]["name"]}}</td>
+                        <td style="text-align: center">{{task.inputParameters[i-1]["type"]}}</td>
                         <td>{{task.inputParameters[i-1]["exampleValue"]}}</td>
                         <td>{{task.inputParameters[i-1]["desc"]}}</td>
                     </tr>
                     <tr v-if="task.inputParameters.length==0">
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
                     </tr>
                 </tbody>
             </table>
@@ -83,25 +83,28 @@
             <table class="table table-bordered">
                 <tbody>
                     <tr>
-                        <th style="min-width: 50px;">ID</th>
-                        <th>{{"Parameter Name~参数名称" | lang}}</th>
-                        <th>{{"Parameter Type~参数类型" | lang}}</th>
+                        <th style="min-width: 50px; text-align: center">ID</th>
+                        <th style="text-align: center">{{"Parameter Name~参数名称" | lang}}</th>
+                        <th style="text-align: center">{{"Parameter Type~参数类型" | lang}}</th>
                         <th>{{"Example Value~示例值" | lang}}</th>
                         <th>{{"Parameter Description~参数描述" | lang}}</th>
+                        <th style="text-align: center">{{"Record as a field~作为字段保存" | lang}}</th>
                     </tr>
                     <tr v-if="task.outputParameters.length>0" v-for="i in task.outputParameters.length">
-                        <td style="min-width: 50px;">{{i}}</td>
-                        <td>{{task.outputParameters[i-1]["name"]}}</td>
-                        <td>{{task.outputParameters[i-1]["type"]}}</td>
+                        <td style="min-width: 50px; text-align: center">{{i}}</td>
+                        <td style="text-align: center">{{task.outputParameters[i-1]["name"]}}</td>
+                        <td style="text-align: center">{{task.outputParameters[i-1]["type"]}}</td>
                         <td>{{task.outputParameters[i-1]["exampleValue"]}}</td>
                         <td>{{task.outputParameters[i-1]["desc"]}}</td>
+                        <td style="text-align: center">{{task.outputParameters[i-1]["recordASField"] == 1? "Yes~是": "No~否" | lang}}</td>
                     </tr>
                     <tr v-if="task.outputParameters.length==0">
-                        <td style="min-width: 50px;">{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
-                        <td>{{"Empty~无" | lang}}</td>
+                        <td style="min-width: 50px;text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
+                        <td style="text-align: center">{{"Empty~无" | lang}}</td>
                     </tr>
                 </tbody>
             </table>
