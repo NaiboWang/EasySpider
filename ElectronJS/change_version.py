@@ -39,11 +39,11 @@ if __name__ == "__main__":
     file_path = "../.temp_to_pub/compress.py"
     update_file_version(file_path, version, key='easyspider_version = "')
 
-    file_path = "./src/taskGrid/logic.js"
+    file_path = "./src/taskGrid/logic_deprecated.js"
     update_file_version(file_path, version, key='"version": "')
 
-    file_path = "./src/taskGrid/logic_CN.js"
-    update_file_version(file_path, version, key='"version": "')
+#     file_path = "./src/taskGrid/logic.js"
+#     update_file_version(file_path, version, key='"version": "')
 
     file_path = "../ExecuteStage/easyspider_executestage.py"
     update_file_version(file_path, version, key='"version": "')

@@ -136,7 +136,7 @@ Yin: Professor of College of Computer Science and Technology of Zhejiang Univers
 
 ### 后台流程图部分
 * ServiceGrid/frontEnd/FlowChart.html
-* ServiceGrid/frontEnd/FlowChart.js
+* ServiceGrid/frontEnd/FlowChart_Deprecated.js
 * ServiceGrid/frontEnd/FlowChart.css
 * ServiceGrid/frontEnd/logic.css
 

@@ -1,4 +1,4 @@
-exampleMsg = { //示例消息
+let exampleMsg = { //示例消息
     "type": 0, //消息类型，1代表增加操作
     "data": {
         "option": 1, //增加选项
@@ -8,7 +8,7 @@ exampleMsg = { //示例消息
     }
 }
 console.log(JSON.stringify(exampleMsg));
-ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
+let ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
 ws.onopen = function() {
     // Web Socket 已连接上，使用 send() 方法发送数据
     console.log("已连接");
@@ -36,11 +36,12 @@ ws.onmessage = function(evt) {
     } else {
         handleAddElement(evt); //处理增加元素操作
     }
-
 };
 
 function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["default"] = ""; //找不到元素时候的默认值
+    msg["parameters"][i]["paraType"] = "text"; //参数类型
+    msg["parameters"][i]["recordASField"] = 1; //是否记录为字段值
     msg["parameters"][i]["beforeJS"] = ""; //执行前执行的js
     msg["parameters"][i]["beforeJSWaitTime"] = 0; //执行前js等待时间
     msg["parameters"][i]["JS"] = ""; //如果是JS，需要执行的js
@@ -48,18 +49,8 @@ function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["afterJS"] = ""; //执行后执行的js
     msg["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
     msg["parameters"][i]["downloadPic"] = 0; //是否下载图片
-    msg["parameters"][i]["iframe"] = false; //是否在iframe中
 }
 
-
-function extractTitle(html) {
-    var match = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-    if (match && match[1]) {
-        return "Collect" + match[1];
-    } else {
-        return "New Web Collection Task";
-    }
-}
 
 function handleAddElement(msg) {
     if (msg["type"] == "openPage") {
@@ -83,7 +74,7 @@ function handleAddElement(msg) {
         addElement(8, msg);
         addElement(2, msg);
     } else if (msg["type"] == "singleCollect" || msg["type"] == "multiCollectNoPattern") {
-        if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果当前点击的动作就是提取数据
+        if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果现在节点就是提取数据节点，直接在此节点添加参数，而不是生成一个新的提取数据节点
             for (let i = 0; i < msg["parameters"].length; i++) {
                 changeGetDataParameters(msg, i);
                 app._data["nowNode"]["parameters"]["paras"].push(msg["parameters"][i]);
@@ -97,9 +88,16 @@ function handleAddElement(msg) {
         addElement(8, msg);
         addElement(3, msg);
         notifyParameterNum(msg["parameters"].length); //通知浏览器端参数的个数变化
+    } else if(msg["type"] == "GetCookies"){
+        for(let node of nodeList){
+            if(node["option"] == 1){
+                node["parameters"]["cookies"] = msg["message"];
+                $("#pageCookies").val(msg["message"]);
+                break;
+            }
+        }
     }
 }
-
 
 function notifyParameterNum(num) {
     parameterNum += num;
@@ -110,17 +108,9 @@ function notifyParameterNum(num) {
     };
     window.ws.send(JSON.stringify(message));
 }
-// function isExtract() { //检测当前锚点之前的元素是否为提取数据字段
-//     if (app.$data.nowArrow["position"] == -1) {
-//         return false;
-//     } else if (nodeList[nodeList[app.$data.nowArrow["pId"]].sequence[app.$data.nowArrow["position"]]]["option"] == 3) {
-//         return true;
-//     } else {
-//         return false;
-//     }
-// }
 
-// 流程图元素点击后的处理逻辑
+
+// 流程图元素点击后的处理逻辑，注意在FlowChart_CN.js中watch的那些数据的加载都需要在这里执行！！！
 function handleElement() {
     app._data["nowNode"] = nodeList[vueData.nowNodeIndex];
     app._data["nodeType"] = app._data["nowNode"]["option"];
@@ -130,6 +120,8 @@ function handleElement() {
     } else if (app._data["nodeType"] == 3) {
         app._data.paraIndex = 0; //参数索引初始化
         app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
+    } else if(app._data["nodeType"] == 5){
+        app._data.codeMode = app._data["nowNode"]["parameters"]["codeMode"];
     } else if (app._data["nodeType"] == 10) {
         app._data.TClass = app._data["nowNode"]["parameters"]["class"];
     }
@@ -149,7 +141,6 @@ function addParameters(t) {
         beforeJSWaitTime: 0, //执行前js等待时间
         afterJS: "", //执行后执行的js
         afterJSWaitTime: 0, //执行后js等待时间
-        iframe: false, //是否在iframe中
     }; //公共参数处理
     if (t.option == 1) {
         t["parameters"]["url"] = "about:blank";
@@ -158,6 +149,7 @@ function addParameters(t) {
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
+        t["parameters"]["cookies"] = ""; //cookies
     } else if (t.option == 2) { //点击元素
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
@@ -183,6 +175,7 @@ function addParameters(t) {
         t["parameters"]["code"] = "";
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["recordASField"] = 0; //是否记录脚本输出
+        t["parameters"]["paraType"] = "text"; //记录脚本输出的字段索引
     } else if (t.option == 8) { //循环
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
@@ -208,7 +201,23 @@ function addParameters(t) {
     }
 }
 
-//修改元素参数
+
+function updateUI() {
+    refresh(false);
+    app.$data.nowArrow["num"]++; //改变元素的值,通知画图，重新对锚点画图
+    let tnodes = document.getElementsByClassName("clk");
+    let position = nodeList[vueData.nowNodeIndex]["position"];
+    let pid = nodeList[vueData.nowNodeIndex]["parentId"];
+    for (let i = 0; i < tnodes.length; i++) {
+        if (position == tnodes[i].getAttribute("position") && pid == tnodes[i].getAttribute("pId")) {
+            tnodes[i].style.borderColor = "blue"; // 点击了确定按钮之后需要重新对选中的颜色画框
+            nowNode = tnodes[i];
+            break;
+        }
+    }
+}
+
+//修改元素参数，注意所有socket传过来的参数都需要在这里赋值给操作
 function modifyParameters(t, para) {
     t["parameters"]["history"] = para["history"];
     t["parameters"]["tabIndex"] = para["tabIndex"];
@@ -240,9 +249,9 @@ function modifyParameters(t, para) {
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
         if (para["nextPage"]) { //循环点击下一页的情况下
-            t["title"] = "Loop click next page"
+            t["title"] = LANG("循环点击下一页", "Loop click next page");
         } else {
-            t["title"] = "Loop"
+            t["title"] = LANG("循环", "Loop");
         }
         if (para["loopType"] == 2) //如果是固定元素列表
         {
@@ -256,43 +265,41 @@ function modifyParameters(t, para) {
     }
 }
 
-//点击确定按钮时的处理
-$("#confirm").mousedown(function() {
-    refresh(false);
-    app.$data.nowArrow["num"]++; //改变元素的值,通知画图，重新对锚点画图
-    let tnodes = document.getElementsByClassName("clk");
-    let position = nodeList[vueData.nowNodeIndex]["position"];
-    let pid = nodeList[vueData.nowNodeIndex]["parentId"];
-    for (let i = 0; i < tnodes.length; i++) {
-        if (position == tnodes[i].getAttribute("position") && pid == tnodes[i].getAttribute("pId")) {
-            tnodes[i].style.borderColor = "blue"; // 点击了确定按钮之后需要重新对选中的颜色画框
-            nowNode = tnodes[i];
-            break;
-        }
-    }
-});
-
-//获取url中的参数
-function getUrlParam(name) {
-    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
-    var r = window.location.search.substr(1).match(reg); //匹配目标参数
-    if (r != null) return unescape(r[2]);
-    return "";
+function showError(msg, time=4000) {
+    $("#error_message").text(msg);
+    $("#tipError").slideDown(); //提示框
+    let fadeout = setTimeout(function() {
+        $("#tipError").slideUp();
+    }, time);
 }
 
-var sId = getUrlParam('id');
-var backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
+//点击确定按钮时的处理
+$("#confirm").mousedown(updateUI);
+
+//点击保存任务按钮时的处理
+$("#saveButton").mousedown(function() {
+    saveService(0);
+});
+//点击另存为任务按钮时的处理
+$("#saveAsButton").mousedown(function() {
+    saveService(1);
+});
+
+let sId = getUrlParam('id');
+let backEndAddressServiceWrapper = getUrlParam("backEndAddressServiceWrapper");
 let mobile = getUrlParam("mobile");
 if (mobile == "true") {
     $("#environment").val(1);
 }
 
+
 function saveService(type) {
     let serviceId = $("#serviceId").val();
-    let text = "Confirm to save this task (If cannot click, can press Enter)? ";
+    let text = LANG("确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task (if you can't use the mouse to click, please press the enter key)?");
     if (type == 1) { //任务另存为
         serviceId = -1;
-        text = "Confirm to save as another task in the system (If cannot click, can press Enter)?";
+        $("#create_time").val(new Date().toLocaleString());
+        text = LANG("确认要另存为任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task as (if you can't use the mouse to click, please press the enter key)?");
     }
     // if (confirm(text)) {
         let serviceName = $("#serviceName").val();
@@ -320,8 +327,8 @@ function saveService(type) {
                             nodeId: i, //记录操作位于的节点位置，重要！！！
                             nodeName: nodeList[i]["title"],
                             value: nodeList[i]["parameters"]["links"],
-                            desc: "List of URLs to be collected, separated by \\n for multiple lines",
-                            type: "string",
+                            desc: LANG("要采集的网址列表，多行以\\n分开","List of URLs to be collected, separated by \\n for multiple lines",),
+                            type: "text",
                             exampleValue: nodeList[i]["parameters"]["links"]
                         });
                         links = nodeList[i]["parameters"]["links"];
@@ -335,8 +342,8 @@ function saveService(type) {
                             name: "inputText_" + inputIndex++,
                             nodeName: nodeList[i]["title"],
                             nodeId: i,
-                            desc: "The text to be entered, such as 'computer' at eBay search box",
-                            type: "string",
+                            desc: LANG("要输入的文本，如京东搜索框输入：电脑","The text to be entered, such as 'computer' at eBay search box"),
+                            type: "text",
                             exampleValue: nodeList[i]["parameters"]["value"],
                             value: nodeList[i]["parameters"]["value"],
                         });
@@ -349,8 +356,8 @@ function saveService(type) {
                             name: "loopText_" + inputIndex++,
                             nodeId: i,
                             nodeName: nodeList[i]["title"],
-                            desc:"Text/URL to be entered, multiple lines should be separated by \\n",
-                            type: "string",
+                            desc: LANG("要输入的文本/网址,多行以\\n分开", "Text/URL to be entered, multiple lines should be separated by \\n"),
+                            type: "text",
                             exampleValue: nodeList[i]["parameters"]["textList"],
                             value: nodeList[i]["parameters"]["textList"],
                         });
@@ -360,7 +367,7 @@ function saveService(type) {
                             name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
                             nodeId: i,
                             nodeName: nodeList[i]["title"],
-                            desc: "Number of loop executions, 0 means unlimited loops (until element not found)",
+                            desc: LANG("循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）", "Number of loop executions for loop "+nodeList[i]["title"]+", 0 means unlimited loops (until element not found)"),
                             type: "int",
                             exampleValue: nodeList[i]["parameters"]["exitCount"],
                             value: nodeList[i]["parameters"]["exitCount"],
@@ -375,33 +382,35 @@ function saveService(type) {
                                 id: outputIndex++,
                                 name: nodeList[i]["parameters"]["paras"][j]["name"],
                                 desc: nodeList[i]["parameters"]["paras"][j]["desc"],
-                                type: "string",
+                                type: nodeList[i]["parameters"]["paras"][j]["paraType"],
+                                recordASField: nodeList[i]["parameters"]["paras"][j]["recordASField"],
                                 exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
                             });
                         }
                     }
                 } else if (nodeList[i]["option"] == 5) //自定义操作
                 {
-                    if (nodeList[i]["parameters"]["recordASField"] == 1) {
-                        let id = outputIndex++;
-                        let title = nodeList[i]["title"];
-                        // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
-                        //     $('#myModal').modal('hide');
-                        //     $("#tip2").slideDown(); //提示框
-                        //     fadeout = setTimeout(function() {
-                        //         $("#tip2").slideUp();
-                        //     }, 5000);
-                        //     return;
-                        // }
-                        outputNames.push(title);
-                        outputParameters.push({
-                            id: id,
-                            name: title,
-                            desc: "Output of custom action",
-                            type: "string",
-                            exampleValue: "",
-                        });
-                    }
+                    // if (nodeList[i]["parameters"]["recordASField"] == 1) {
+                    let id = outputIndex++;
+                    let title = nodeList[i]["title"];
+                    // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
+                    //     $('#myModal').modal('hide');
+                    //     $("#tip2").slideDown(); //提示框
+                    //     fadeout = setTimeout(function() {
+                    //         $("#tip2").slideUp();
+                    //     }, 5000);
+                    //     return;
+                    // }
+                    outputNames.push(title);
+                    outputParameters.push({
+                        id: id,
+                        name: title,
+                        desc: LANG("自定义操作返回的数据","Output of custom action"),
+                        type: nodeList[i]["parameters"]["paraType"],
+                        recordASField: nodeList[i]["parameters"]["recordASField"],
+                        exampleValue: "",
+                    });
+                    // }
                 } else if (nodeList[i]["option"] == 9) //条件判断
                 {
                     containJudge = true;
@@ -413,17 +422,28 @@ function saveService(type) {
             "name": serviceName,
             "url": url,
             "links": links,
-            "create_time": new Date().toLocaleString(),
+            "create_time": parseInt(serviceId) == -1 ? new Date().toLocaleString() : $("#create_time").val(),
+            "update_time": new Date().toLocaleString(),
             "version": "0.3.5",
             "saveThreshold": saveThreshold,
             "cloudflare": cloudflare,
             "environment": environment,
+            "maxViewLength": parseInt($("#maxViewLength").val()),
+            "outputFormat": $("#outputFormat").val(),
+            "saveName": $("#saveName").val(),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,
             "outputParameters": outputParameters,
             "graph": nodeList, //图结构要存储下来
         };
+        if(serviceInfo.outputFormat=="mysql"){
+            if(!isValidMySQLTableName(serviceInfo.saveName)) {
+                $('#myModal').modal('hide');
+                showError(LANG("提示：保存名不符合MySQL表名规范，请重试！","The save name is not valid for MySQL table name!"));
+                return;
+            }
+        }
         $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) },
             function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
@@ -432,31 +452,42 @@ function saveService(type) {
         let fadeout = setTimeout(function() {
             $("#tip").slideUp();
         }, 2000);
-
     // }
 }
-
-//点击保存任务按钮时的处理
-$("#saveButton").mousedown(function() {
-    saveService(0);
-});
-//点击另存为任务按钮时的处理
-$("#saveAsButton").mousedown(function() {
-    saveService(1);
-});
-
 
 if (sId != null && sId != -1) //加载任务
 {
     $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function(result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
+        for(let node of nodeList){ //兼容旧版本
+            if(node["option"] == 1){
+                if(!("cookies" in node["parameters"])) {
+                    node["parameters"]["cookies"] = "";
+                }
+            }
+        }
         $("#serviceName").val(result["name"]);
         $("#serviceId").val(result["id"]);
         $("#url").val(result["url"]);
         $("#serviceDescription").val(result["desc"]);
+        for(let key of Object.keys(result)){
+            try{
+                $("#"+key).val(result[key]);
+            } catch(e){
+                console.log(e);
+            }
+        }
         refresh();
     });
 } else {
     refresh(); //新增任务
+}
+
+function LANG(zh, en) {
+    if(window.location.href.indexOf("_CN") != -1){
+        return zh;
+    } else {
+        return en;
+    }
 }

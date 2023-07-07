@@ -47,6 +47,8 @@
             <p>{{"Task Name:~任务名称：" | lang}} {{task["name"]}}</p>
             <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Task Description:~任务描述：" | lang}} {{task["desc"]}}</p>
             <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Example URL:~样例网址：" | lang}} {{task["url"]}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Create Time:~创建时间：" | lang}} {{dateFormat(task["create_time"])}}</p>
+            <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Update Time:~更新时间：" | lang}} {{dateFormat(task["update_time"])}}</p>
             <p>{{"Operations (Please close this window and select 'Design Task' button if you want to modify task with a browser)~操作（如要带浏览器修改任务流程请关闭此窗口并选择设计任务）" | lang}}</p>
             <p><a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="modifyTask(task['id'],task['url'])" class="btn btn-primary">{{"Modify Task Workflow~修改任务流程" | lang}}</a>
                 <a style="margin-top: 5px;" href="javascript:void(0)" v-on:click="invokeTask(task['id'],task['url'])" class="btn btn-primary">{{"Invoke Task~调用任务" | lang}}</a></p>
@@ -125,6 +127,7 @@
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
+            dateFormat: DateFormat,
             gotoHome:function(){
               let url = "";
               if(getUrlParam("lang")=="zh"){

@@ -5,3 +5,4 @@ EasySpider_windows_x64/user_data
 *.tmp
 *.7z*
 config.json
+mysql_config.json

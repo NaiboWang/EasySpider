@@ -18,10 +18,9 @@
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存成功!
     </div>
-    <div id="tipMySQL" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存名不符合MySQL表名规范，请重试！
+    <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
     </div>
-
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
             <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
@@ -37,7 +36,6 @@
         <div style="width: 200px;float:left;overflow: auto">
             <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
                 <div style="padding: 10px;border-radius:10px;font-size: 20px;">工具箱</div>
-<!--                window.resizeTo( screen.availWidth, screen.availHeight );-->
                 <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">保存任务</button>
                  <button type="button" data=1 class="btn btn-outline-primary options">打开网页</button>
                 <button type="button" data=2 class="btn btn-outline-primary options">点击元素</button>
@@ -117,7 +115,6 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
-
                     <p style="margin-top: 10px">
                         <a class="btn btn-primary" data-toggle="collapse" href="#collapseOpenPage" role="button" aria-expanded="false" aria-controls="collapseExample">
                             点此展开/折叠高级操作
@@ -133,7 +130,6 @@
                                       placeholder='key=value形式，每行一个键值对' v-model='nowNode["parameters"]["cookies"]' id="pageCookies" style="font-size: 14px!important;"></textarea>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="elements" v-if="nodeType==2">
@@ -506,7 +502,7 @@
                         <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值（需以return 开头）</option>
                       </select>
 
-                    <div v-if='TClass>0 && TClass <5'>
+                    <div v-if='TClass > 0 && TClass < 5'>
                         <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
@@ -551,6 +547,7 @@
                 <div class="modal-body" style="height:400px;overflow: auto">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
+                    <input id="create_time" type="hidden"></input>
                     <label>任务名称：</label>
                     <input onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
                     <label>任务描述：</label>
@@ -592,9 +589,10 @@
 
 
 </body>
-<script src="FlowChart_CN.js"></script>
-<script src="logic_CN.js"></script>
+
+<script src="FlowChart.js"></script>
 <script src="global.js"></script>
+<script src="logic.js"></script>
 
 <script>
     var navigator = new Vue({

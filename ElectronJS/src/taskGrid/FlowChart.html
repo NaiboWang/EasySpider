@@ -18,8 +18,8 @@
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> Hint: Save Successfully!
     </div>
-    <div id="tip2" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> Tip: Save failed, if you have multiple custom actions, their option names must be set to different names!
+    <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
     </div>
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
@@ -115,6 +115,21 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>Wait time after scrolling (in seconds): </label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
+                    <p style="margin-top: 10px">
+                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseOpenPage" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Click here to expand/collapse advanced operations
+                        </a>
+                    </p>
+                    <div :class="{collapse: true, 'show': nowNode['parameters']['cookies'].length!=0}" id="collapseOpenPage">
+                        <div>
+                            <label>Set Cookies after page loaded: </label>
+                            <p style="margin-bottom: 20px;color:white"><a class="btn btn-primary" @click="getCookies">
+                              Click here to get cookies of current page
+                            </a></p>
+                            <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
+                                      placeholder='key=value, one pair per line' v-model='nowNode["parameters"]["cookies"]' id="pageCookies" style="font-size: 14px!important;"></textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="elements" v-if="nodeType==2">
@@ -221,6 +236,19 @@
                                 <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["afterJSWaitTime"]'></input>
                             </div>
                         </div>
+                        <label>Parameter type conversion (for Excel and Database):</label>
+                        <select v-model='paras.parameters[paraIndex]["paraType"]' class="form-control">
+                            <option value = "text">Text (for single values estimated to exceed 10,000 in length, please choose Large Text)</option>
+                            <option value = "int">Integer (up to 9 digits)</option>
+                            <option value = "double">Floating Number (Decimal)</option>
+                            <option value = "mediumText">Large Text (single value length exceeding 10,000 but less than 1,000,000)</option>
+                            <option value = "datetime">Date Time</option>
+                            <option value = "date">Date</option>
+                            <option value = "time">Time</option>
+                            <option value = "varchar">Small Text (single value length less than 50)</option>
+                            <option value = "longText">Extra Large Text (single value length exceeding 1,000,000)</option>
+                            <option value = "bigInt">Large Integer (more than 9 digits)</option>
+                        </select>
                         <label>Extract Type</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>Text (include child element)</option>
@@ -232,7 +260,8 @@
                             <option :value = 6>Webpage Title</option>
                             <option :value = 7>Element Screenshot</option>
                             <option :value = 8>OCR Results</option>
-                            <option :value = 9>The return value after executing JavaScript script on this element  (start with 'return ')</option>
+                            <option :value = 9>Return value of JavaScript code (for this element), starting with 'return')</option>
+                            <option :value = 12>System command return value</option>
                             <option :value = 10>Selected value of the current select box</option>
                             <option :value = 11>Selected text of the current select box</option>
                         </select>
@@ -263,6 +292,11 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
+                        <label style="margin-top: 15px">Whether to save this field: (Choose 'No' if you only want to treat this field as a variable and not save it):</label>
+                        <select v-model='paras.parameters[paraIndex]["recordASField"]' class="form-control">
+                            <option :value = 1>Yes</option>
+                            <option :value = 0>No</option>
+                        </select>
                         <label>Parameter Description:</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
                         <label>Default value when cannot find this element:</label>
@@ -310,13 +344,15 @@
                 <div class="elements" v-if="nodeType==5">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Action is inside iframe</p>
                     <label>Custom Action Mode</label>
-                    <select v-model='nowNode["parameters"]["codeMode"]' class="form-control">
+                    <select v-model='codeMode' class="form-control">
                         <option value = 0>Execute JavaScript script</option>
                         <option value = 1>Execute operating system-level command</option>
                         <option v-if="nowNode['isInLoop']" value = 2>Execute JavaScript script for the current element inside the loop</option>
+                        <option v-if="nowNode['isInLoop']" value = 3>Exit Current Loop (the "Break" operation)</option>
+
                     </select>
 
-                    <div>
+                    <div v-if='nowNode["parameters"]["codeMode"] < 3'>
                         <label>Code (Use Field["FieldName"] to input the last extracted value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
                         <p style="margin-top: 15px">Whether to record the output/return value of the execution as a field: </p>
@@ -324,6 +360,20 @@
                             <option value = 0>No</option>
                             <option value = 1>Yes</option>
                         </select></p>
+                        <p><label>Convert parameter type to:</label>
+                        <select v-model='paras.parameters[paraIndex]["paraType"]' class="form-control">
+                            <option value = "text">Text (for single values estimated to exceed 10,000 in length, please choose Large Text)</option>
+                            <option value = "int">Integer (up to 9 digits)</option>
+                            <option value = "double">Floating Number (Decimal)</option>
+                            <option value = "mediumText">Large Text (single value length exceeding 10,000 but less than 1,000,000)</option>
+                            <option value = "datetime">Date Time</option>
+                            <option value = "date">Date</option>
+                            <option value = "time">Time</option>
+                            <option value = "varchar">Small Text (single value length less than 50)</option>
+                            <option value = "longText">Extra Large Text (single value length exceeding 1,000,000)</option>
+                            <option value = "bigInt">Large Integer (more than 9 digits)</option>
+                        </select>
+                        </p>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
@@ -403,19 +453,6 @@
                     <label v-if='parseInt(loopType) == 0'>Max Loop time（0 means infinite）:</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
-
-                    <label>Waiting time in seconds after a history record rollback: </label>
-                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
-                    <label>After executed, whether scroll down:</label>
-                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>No Scrolling</option>
-                        <option value = 1>Scroll one screen</option>
-                        <option value = 2>Scroll to the end</option>
-                      </select>
-                    <label>Scroll Times:</label>
-                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
-                    <label>Wait time after scrolling (in seconds):</label>
-                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
                             <p><label>(Advanced Operation) Define loop exit condition using code/script:</label></p>
@@ -432,6 +469,18 @@
                             </div>
                         </div>
                     </div>
+                    <label>Waiting time in seconds after a history record rollback: </label>
+                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+                    <label>After executed, whether scroll down:</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <option value = 0>No Scrolling</option>
+                        <option value = 1>Scroll one screen</option>
+                        <option value = 2>Scroll to the end</option>
+                    </select>
+                    <label>Scroll Times:</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
+                    <label>Wait time after scrolling (in seconds):</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
@@ -452,6 +501,7 @@
                         <option value = 6>Return value of system command</option>
                         <option v-if="nowNode['isInLoop']" value = 7>Return value of JavaScript command for the current loop item</option>
                       </select>
+
                     <div v-if='TClass > 0 && TClass < 5'>
                         <label>Text/Element XPath to Include: <span style="font-size: 30px!important;" title="Relative XPath syntax: starts with /, e.g., if the XPath of the loop item is /html/body/div[1], and you input /*[@id='tab-customer'], the final XPath will be: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" required placeholder="If the current loop contains elements, input the xpath of the relative element (such as '/div[2]/div[1]/img', if written in relative path, it should be written as '/*//img', which means checking whether there exists an 'img' tag among all the descendant elements of the current loop item.)." class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
@@ -468,7 +518,6 @@
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
-
                 </div>
                 <div style="margin-top:5px">
                     <label>Seconds <b>after executed</b> (Can be set to a decimal, such as 0.5):</label>
@@ -495,25 +544,38 @@
                     <h4 class="modal-title" id="myModalLabel">Save Task</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="height:400px;overflow: auto">
                     <input onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
                     <input onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
+                    <input id="create_time" type="hidden"></input>
                     <label>Task Name:</label>
-                    <input onkeydown="inputDelete(event)" required name="serviceName" value="New Crawler Task" id="serviceName" class="form-control"></input>
+                    <input onkeydown="inputDelete(event)" required name="serviceName" value="New Web Scraping Task" id="serviceName" class="form-control"></input>
                     <label>Task Description:</label>
                     <input onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
-                    <label>How many data to save each time (the larger the value, the faster the collection speed, but there is a risk of data loss):</label>
-                    <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
-                    <label>Is the page an extreme anti-crawler website such as Cloudflare:</label>
+                    <label>Export Data Format (Excel/CSV/TXT/Database):</label>
+                    <select id="outputFormat" class="form-control">
+                        <option value = "xlsx">XLSX (EXCEL)</option>
+                        <option value = "csv">CSV</option>
+                        <option value = "txt">TXT</option>
+                        <option value = "mysql">MySQL Database</option>
+                    </select>
+                    <label>Export File Name/Database Table Name (The keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
+                    <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
+                    <label>Is it an extreme anti-scraping website like Cloudflare?</label>
                     <select id="cloudflare" name="cloudflare" class="form-control">
-                        <option value = 0>No</option>
-                        <option value = 1>Yes</option>
+                        <option value=0>No</option>
+                        <option value=1>Yes</option>
                     </select>
-                    <label>Browser simulation type:</label>
+                    <label>Browser Emulation Type:</label>
                     <select id="environment" name="environment" class="form-control">
-                        <option value = 0>Personal Computer</option>
-                        <option value = 1>Mobile (not support on Cloudflare mode)</option>
+                        <option value=0>Desktop</option>
+                        <option value=1>Mobile (Not supported under Cloudflare mode)</option>
                     </select>
+                    <label>Save Data Every N Rows (The larger the value, the faster the scraping speed, but there is a risk of data loss if unexpectedly exited):</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
+                    <label>Maximum Display Length of Data in Console Preview:</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></input>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" id="saveAsButton" class="btn btn-outline-primary">Save as</button>
@@ -527,9 +589,10 @@
 
 
 </body>
+
 <script src="FlowChart.js"></script>
-<script src="logic.js"></script>
 <script src="global.js"></script>
+<script src="logic.js"></script>
 
 <script>
     var navigator = new Vue({

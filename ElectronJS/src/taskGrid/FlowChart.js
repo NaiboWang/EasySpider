@@ -14,6 +14,7 @@ let root = {
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
         wait: 0,
+        waitType: 0,
     },
     isInLoop: false, //是否处于循环内
 };
@@ -26,6 +27,8 @@ let option = 0; //工具箱选项
 let title = "";
 let parameterNum = 1; //记录目前的参数个数
 
+// window.resizeTo( screen.availWidth, screen.availHeight );
+
 //处理逻辑层
 let app = new Vue({
     el: '#app',
@@ -34,13 +37,14 @@ let app = new Vue({
         index: vueData,
         nodeType: 0, // 当前元素的类型
         nowNode: null, // 用来临时存储元素的节点
+        codeMode: 0, //代码模式
         loopType: -1, //点击循环时候用来循环选项
         useLoop: false, //记录是否使用循环内元素
         nowArrow: { "position": -1, "pId": 0, "num": 0 },
         paras: { "parameters": [] }, //提取数据的参数列表
         TClass: -1, //条件分支的条件类别
         paraIndex: 0, //当前参数的index
-        XPaths: "",
+        XPaths: "", //xpath列表
     },
     watch: {
         nowArrow: { //变量发生变化的时候进行一些操作
@@ -65,7 +69,7 @@ let app = new Vue({
                 }
             }
         },
-        loopType: {
+        loopType: { //循环类型发生变化的时候更新参数值
             handler: function(newVal, oldVal) {
                 this.nowNode["parameters"]["loopType"] = newVal;
             }
@@ -85,8 +89,22 @@ let app = new Vue({
                 this.nowNode["parameters"]["paras"] = newVal["parameters"];
             }
         },
+        codeMode: {
+            handler: function(newVal, oldVal) {
+                this.nowNode["parameters"]["codeMode"] = newVal;
+            }
+        }
     },
     methods: {
+        getCookies: function() { //获取cookies
+            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
+            command.onopen = function() {
+                let message = {
+                    type: 7, //消息类型，0代表连接操作
+                };
+                this.send(JSON.stringify(message));
+            };
+        },
         changeXPaths: function (XPaths){
             let result = "";
             for (let i = 0; i < XPaths.length; i++) {
@@ -99,30 +117,35 @@ let app = new Vue({
                 "nodeType": 0,
                 "contentType": 0,
                 "relative": false,
-                "name": "Custom_Field_" + this.nowNode["parameters"]["paras"].length.toString(),
+                "name": LANG("自定义参数_" + this.nowNode["parameters"]["paras"].length.toString(),"Custom_Field_" + this.nowNode["parameters"]["paras"].length.toString()),
                 "desc": "",
                 "extractType": 0,
-                "relativeXPath": "",
+                "relativeXPath": "//body",
+                "recordASField": 1,
                 "allXPaths": [],
                 "exampleValues": [
                     {
                         "num": 0,
-                        "value": "Custom_Value_0"
+                        "value": LANG("自定义值", "Custom_Value")
                     }
                 ],
                 "default": "",
                 "beforeJS": "",
                 "beforeJSWaitTime": 0,
                 "JS": "",
+                "paraType": "text",
                 "JSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
                 "downloadPic": 0
             });
             this.paraIndex = this.nowNode["parameters"]["paras"].length - 1;
+            setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
+            }, 200);
         },
         modifyParas: function(i) { //修改第i个参数
             this.paraIndex = i;
+            console.log(this.paras);
         },
         deleteParas: function(i) { //删除第i个参数
             this.nowNode["parameters"]["paras"].splice(i, 1);
@@ -151,13 +174,13 @@ let app = new Vue({
                 return "OuterHTML";
             }
             if (nodeType == 2) {
-                return "Link Address";
+                return LANG("链接地址", "Link Address");
             } else if (nodeType == 1) {
-                return "Link Text";
+                return LANG("链接文本","Link Text");
             } else if (nodeType == 4) {
-                return "Image Address";
+                return LANG("图片地址","Image Address");
             } else {
-                return "Text";
+                return LANG("文本","Text");
             }
         }
     }
@@ -193,12 +216,18 @@ function newNode(node) {
             <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
     } else if (type == 2) //判断
     {
-        return `<div class="loop clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
+        return LANG(`<div class="loop clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
+                    <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                    <p class="branchAdd" data="${id}">点击此处在最左边增加条件分支</p>
+                    <div class="judge" id = "${id}">
+                    </div></div>
+                    <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`,
+            `<div class="loop clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
                     <p class="branchAdd" data="${id}">Click here to add a new condition to the left most</p>
                     <div class="judge" id = "${id}">
                     </div></div>
-                    <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
+                    <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`);
     } else //判断分支
     {
         return `<div class="branch clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
@@ -209,19 +238,7 @@ function newNode(node) {
     }
 }
 
-function elementMousedown(e) {
-    if (e.button == 2) //右键点击
-    {
-        if (nowNode != null) {
-            nowNode.style.borderColor = "skyblue";
-        }
-        nowNode = this;
-        vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
-        this.style.borderColor = "blue";
-        handleElement(); //处理元素
-    }
-    e.stopPropagation(); //防止冒泡
-}
+
 
 function branchMouseDown(e) {
     if (e.button == 2) //右键点击
@@ -234,7 +251,7 @@ function branchMouseDown(e) {
             parentId: 0,
             type: 3,
             option: 10,
-            title: "Condition",
+            title: LANG("条件分支", "Condition"),
             sequence: [],
             isInLoop: false,
         };
@@ -267,7 +284,7 @@ function branchClick(e) {
         parentId: 0,
         type: 3,
         option: 10,
-        title: "Condition",
+        title: LANG("条件分支", "Condition"),
         sequence: [],
         isInLoop: false,
     };
@@ -277,6 +294,20 @@ function branchClick(e) {
     refresh();
     app._data.nowArrow = { "position": -1, "pId": t["id"], "num": 0 };
     $("#" + t["id"]).click();
+    e.stopPropagation(); //防止冒泡
+}
+
+function elementMousedown(e) {
+    if (e.button == 2) //右键点击
+    {
+        if (nowNode != null) {
+            nowNode.style.borderColor = "skyblue";
+        }
+        nowNode = this;
+        vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
+        this.style.borderColor = "blue";
+        handleElement(); //处理元素
+    }
     e.stopPropagation(); //防止冒泡
 }
 
@@ -304,9 +335,8 @@ function arrowClick(e) {
 function addElement(op, para) {
     option = op;
     if (option == 1) { //打开网页选项
-        title = "Open Page";
-    }
-    else {
+        title = LANG("打开网页", "Open Page");
+    } else {
         title = $(".options")[option - 1].innerHTML; //获取新增操作名称
     }
 
@@ -323,7 +353,7 @@ function toolBoxKernel(e, para = null) {
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if (nowNode.getAttribute("dataType") > 0) {
-            alert("Cannot copy loop, if and condition!");
+            showError(LANG("循环和判断、条件分支不可复制！", "Cannot copy loop, if and condition!"));
             e.stopPropagation(); //防止冒泡
         } else {
             let position = parseInt(nowNode.getAttribute('position'));
@@ -345,7 +375,7 @@ function toolBoxKernel(e, para = null) {
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if ($(nowNode).is(".branch")) {
-            alert("Cannot move condition branch!");
+            showError(LANG("判断分支不可移动！", "Cannot move condition branch!"));
             e.stopPropagation(); //防止冒泡
         } else {
             let position = parseInt(nowNode.getAttribute('position'));
@@ -377,7 +407,7 @@ function toolBoxKernel(e, para = null) {
                 app._data.nowArrow = { "position": nodeList[element[0]]["position"], "pId": nodeList[element[0]]["parentId"], "num": 0 };
                 $("#" + nodeList[element[0]]["id"]).click();
             } else {
-                alert("Cannot move inside self!");
+                showError(LANG("自己不能移动到自己的节点里！", "Cannot move inside self!"));
             }
             e.stopPropagation(); //防止冒泡
         }
@@ -407,7 +437,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 1,
                 type: 3,
                 option: 10,
-                title: "Condition",
+                title: LANG("条件分支", "Condition"),
                 sequence: [],
                 isInLoop: false,
             };
@@ -417,7 +447,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 2,
                 type: 3,
                 option: 10,
-                title: "Condition",
+                title: LANG("条件分支", "Condition"),
                 sequence: [],
                 isInLoop: false,
             };
@@ -462,7 +492,7 @@ $(".options").mousedown(function() {
     option = parseInt(this.getAttribute("data"));
     title = this.innerHTML;
     if (option >= 10 && option <= 12 && (nowNode == null || nowNode.getAttribute("id") == 0)) {
-        alert("No element is selected now!");
+        showError(LANG("目前未选中元素。", "No element selected。"));
     } else if (option == 12) {
         deleteElement();
         $(".options")[12].click();
@@ -537,11 +567,11 @@ function refresh(nowArrowReset = true) {
 
 function deleteElement() {
     if (nowNode.getAttribute("id") == 0) {
-        alert("No element is selected now!"); //root
+        showError(LANG("当前未选中元素!", "No element is selected now!"));
         return;
     }
     // if (nodeList[actionSequence[nowNode.getAttribute("data")]]["option"] == 1) {
-    //     alert("Cannot delete the element of Open Page!");
+    //     showError("打开网页操作不可删除！");
     //     return;
     // }
     let position = parseInt(nowNode.getAttribute('position'));
@@ -575,7 +605,7 @@ document.oncontextmenu = function() {
     //删除元素
 document.onkeydown = function(e) {
     if (nowNode != null && e.keyCode == 46) {
-        // if (confirm("Do you really want to delete the selected operation?")) {
+        // if (confirm("确定要删除元素吗？")) {
             deleteElement();
         // }
     } else { //ctrl+s保存服务
@@ -588,7 +618,7 @@ document.onkeydown = function(e) {
             location.reload();
         } else if (currKey == 123) {
             console.log("打开devtools")
-            let command = new WebSocket("ws://localhost:8084")
+            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
             command.onopen = function() {
                 let message = {
                     type: 6, //消息类型，0代表连接操作
@@ -602,5 +632,6 @@ document.onkeydown = function(e) {
 function inputDelete(e) {
     if (e.keyCode == 46) {
         e.stopPropagation(); //输入框按delete应该正常运行
+        //Electron中如果有showError或者confirm，执行后会卡死输入框，所以最好不要用
     }
 }

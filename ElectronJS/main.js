@@ -93,7 +93,7 @@ function createWindow() {
 
     // and load the index.html of the app.
     // mainWindow.loadFile('src/index.html');
-    mainWindow.loadURL(server_address + '/index.html?user_data_folder=' + config.user_data_folder);
+    mainWindow.loadURL(server_address + '/index.html?user_data_folder=' + config.user_data_folder, { extraHeaders: 'pragma: no-cache\n' });
     // 隐藏菜单栏
     const {Menu} = require('electron');
     Menu.setApplicationMenu(null);
@@ -118,7 +118,7 @@ async function beginInvoke(msg, ws) {
                 url = server_address + `/taskGrid/FlowChart.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address;
             }
             console.log(url);
-            flowchart_window.loadURL(url);
+            flowchart_window.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
         }
         mainWindow.hide();
         // Prints the currently focused window bounds.
@@ -475,7 +475,7 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "", mobile = f
         url = server_address + `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address+ "&mobile=" + mobile.toString();
     }
     // and load the index.html of the app.
-    flowchart_window.loadURL(url);
+    flowchart_window.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
     if(process.platform != "darwin"){
         flowchart_window.hide();
     }
@@ -495,7 +495,7 @@ function handleOpenInvoke(event, lang = "en") {
         url = server_address + `/taskGrid/taskList.html?type=1&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address + "&lang=zh";
     }
     // and load the index.html of the app.
-    window.loadURL(url);
+    window.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
     window.maximize();
     mainWindow.hide();
     window.on('close', function (event) {
