@@ -69,6 +69,12 @@ let app = new Vue({
                 }
             }
         },
+        nowNode:{
+            deep:true,
+            handler: function(newVal, oldVal) {
+                updateUI();
+            }
+        },
         loopType: { //循环类型发生变化的时候更新参数值
             handler: function(newVal, oldVal) {
                 this.nowNode["parameters"]["loopType"] = newVal;
@@ -92,6 +98,11 @@ let app = new Vue({
         codeMode: {
             handler: function(newVal, oldVal) {
                 this.nowNode["parameters"]["codeMode"] = newVal;
+                if(newVal == 3){
+                    this.nowNode["title"] = LANG("退出循环", "Exit Loop");
+                } else {
+                    this.nowNode["title"] = LANG("自定义操作", "Custom Operation");
+                }
             }
         }
     },
