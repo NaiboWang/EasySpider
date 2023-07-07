@@ -152,7 +152,10 @@ class BrowserThread(Thread):
             if para["name"] not in self.outputParameters.keys():
                 self.outputParameters[para["name"]] = ""
                 self.dataNotFoundKeys[para["name"]] = False
-                self.outputParametersTypes.append(para["type"])
+                try:
+                    self.outputParametersTypes.append(para["type"])
+                except:
+                    self.outputParametersTypes.append("text")
                 try:
                     self.outputParametersRecord.append(bool(para["recordASField"]))
                 except:
@@ -900,8 +903,6 @@ class BrowserThread(Thread):
     # 点击元素事件
 
     def clickElement(self, para, loopElement=None, clickPath="", index=0):
-        time.sleep(0.1)  # 点击之前等待0.1秒
-        self.Log("Wait 0.1 second before clicking element")
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
