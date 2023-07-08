@@ -47,10 +47,12 @@ if __name__ == "__main__":
         file_name = f"EasySpider_{easyspider_version}_windows_x64.7z"
         if os.path.exists("./EasySpider_windows_x64/user_data"):
             shutil.rmtree("./EasySpider_windows_x64/user_data")
-        shutil.rmtree("./EasySpider_windows_x64/Data")
-        shutil.rmtree("./EasySpider_windows_x64/config.json")
-        shutil.rmtree("./EasySpider_windows_x64/mysql_config.json")
-        shutil.rmtree("./EasySpider_windows_x64/execution_instances")
+        if os.path.exists("./EasySpider_windows_x64/Data"):
+            shutil.rmtree("./EasySpider_windows_x64/Data")
+        if os.path.exists("./EasySpider_windows_x64/execution_instances"):
+            shutil.rmtree("./EasySpider_windows_x64/execution_instances")
+        os.remove("./EasySpider_windows_x64/config.json")
+        os.remove("./EasySpider_windows_x64/mysql_config.json")
         os.mkdir("./EasySpider_windows_x64/Data")
         os.mkdir("./EasySpider_windows_x64/execution_instances")
         compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
@@ -61,10 +63,12 @@ if __name__ == "__main__":
         file_name = f"EasySpider_{easyspider_version}_windows_x86.7z"
         if os.path.exists("./EasySpider_windows_x86/user_data"):
             shutil.rmtree("./EasySpider_windows_x86/user_data")
-        shutil.rmtree("./EasySpider_windows_x86/Data")
-        shutil.rmtree("./EasySpider_windows_x86/execution_instances")
-        shutil.rmtree("./EasySpider_windows_x86/config.json")
-        shutil.rmtree("./EasySpider_windows_x86/mysql_config.json")
+        if os.path.exists("./EasySpider_windows_x86/Data"):
+            shutil.rmtree("./EasySpider_windows_x86/Data")
+        if os.path.exists("./EasySpider_windows_x86/execution_instances"):
+            shutil.rmtree("./EasySpider_windows_x86/execution_instances")
+        os.remove("./EasySpider_windows_x86/config.json")
+        os.remove("./EasySpider_windows_x86/mysql_config.json")
         os.mkdir("./EasySpider_windows_x86/Data")
         os.mkdir("./EasySpider_windows_x86/execution_instances")
         compress_folder_to_7z("./EasySpider_windows_x64", file_name)
