@@ -80,6 +80,8 @@ function handleAddElement(msg) {
                 app._data["nowNode"]["parameters"]["paras"].push(msg["parameters"][i]);
             }
             app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
+            setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
+            }, 200);
         } else {
             addElement(3, msg);
         }
@@ -106,7 +108,7 @@ function notifyParameterNum(num) {
         from: 1, //0代表从浏览器到流程图，1代表从流程图到浏览器
         message: { "pipe": JSON.stringify({ "type": 0, "value": parameterNum }) } // {}全选{BS}退格
     };
-    window.ws.send(JSON.stringify(message));
+    ws.send(JSON.stringify(message));
 }
 
 
