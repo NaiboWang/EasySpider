@@ -14,6 +14,7 @@ import sys
 import time
 # import keyboard
 import requests
+from urllib.parse import urljoin
 from lxml import etree
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
@@ -1203,6 +1204,9 @@ class BrowserThread(Thread):
                         # 拼接所有文本内容并去掉两边的空白
                         content = ' '.join(result.strip()
                                            for result in content if result.strip())
+                        if p["nodeType"] == 2:
+                            base_url = self.browser.current_url
+                            content = urljoin(base_url, content) # 合并链接相对路径为绝对路径
                     else:
                         content = p["default"]
                         if not self.dataNotFoundKeys[p["name"]]:
