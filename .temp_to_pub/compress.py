@@ -14,8 +14,13 @@ import py7zr
 def compress_folder_to_7z(folder_path, output_file):
     if os.path.exists(output_file):
         os.remove(output_file)
-    with py7zr.SevenZipFile(output_file, 'w') as archive:
-        archive.writeall(folder_path, output_file)
+    # with py7zr.SevenZipFile(output_file, 'w') as archive:
+    #     archive.writeall(folder_path, output_file)
+    # 压缩文件夹
+    try:
+        subprocess.call(["7z", "a", output_file, folder_path])
+    except:
+        subprocess.call(["7za", "a", output_file, folder_path])
 
 def compress_folder_to_7z_split(folder_path, output_file):
     if os.path.exists(output_file):
@@ -54,11 +59,13 @@ if __name__ == "__main__":
             shutil.rmtree("./EasySpider_windows_x64/Data")
         if os.path.exists("./EasySpider_windows_x64/execution_instances"):
             shutil.rmtree("./EasySpider_windows_x64/execution_instances")
-        os.remove("./EasySpider_windows_x64/config.json")
-        os.remove("./EasySpider_windows_x64/mysql_config.json")
+        if os.path.exists("./EasySpider_windows_x64/config.json"):
+            os.remove("./EasySpider_windows_x64/config.json")
+        if os.path.exists("./EasySpider_windows_x64/mysql_config.json"):
+            os.remove("./EasySpider_windows_x64/mysql_config.json")
         os.mkdir("./EasySpider_windows_x64/Data")
         os.mkdir("./EasySpider_windows_x64/execution_instances")
-        compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
+        # compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
         print(f"Compress {file_name} Split successfully!")
         compress_folder_to_7z("./EasySpider_windows_x64", file_name)
         print(f"Compress {file_name} successfully!")
@@ -70,20 +77,28 @@ if __name__ == "__main__":
             shutil.rmtree("./EasySpider_windows_x86/Data")
         if os.path.exists("./EasySpider_windows_x86/execution_instances"):
             shutil.rmtree("./EasySpider_windows_x86/execution_instances")
-        os.remove("./EasySpider_windows_x86/config.json")
-        os.remove("./EasySpider_windows_x86/mysql_config.json")
+        if os.path.exists("./EasySpider_windows_x86/config.json"):
+            os.remove("./EasySpider_windows_x86/config.json")
+        if os.path.exists("./EasySpider_windows_x86/mysql_config.json"):
+            os.remove("./EasySpider_windows_x86/mysql_config.json")
         os.mkdir("./EasySpider_windows_x86/Data")
         os.mkdir("./EasySpider_windows_x86/execution_instances")
-        compress_folder_to_7z("./EasySpider_windows_x64", file_name)
+        compress_folder_to_7z_split("./EasySpider_windows_x86", file_name)
+        print(f"Compress {file_name} Split successfully!")
+        compress_folder_to_7z("./EasySpider_windows_x86", file_name)
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
         file_name = f"EasySpider_{easyspider_version}_Linux_x64.7z"
         if os.path.exists("./EasySpider_Linux_x64/user_data"):
             shutil.rmtree("./EasySpider_Linux_x64/user_data")
-        shutil.rmtree("./EasySpider_Linux_x64/Data")
-        shutil.rmtree("./EasySpider_Linux_x64/execution_instances")
-        shutil.rmtree("./EasySpider_Linux_x64/config.json")
-        shutil.rmtree("./EasySpider_Linux_x64/mysql_config.json")
+        if os.path.exists("./EasySpider_Linux_x64/Data"):
+            shutil.rmtree("./EasySpider_Linux_x64/Data")
+        if os.path.exists("./EasySpider_Linux_x64/execution_instances"):
+            shutil.rmtree("./EasySpider_Linux_x64/execution_instances")
+        if os.path.exists("./EasySpider_Linux_x64/config.json"):
+            os.remove("./EasySpider_Linux_x64/config.json")
+        if os.path.exists("./EasySpider_Linux_x64/mysql_config.json"):
+            os.remove("./EasySpider_Linux_x64/mysql_config.json")
         os.mkdir("./EasySpider_Linux_x64/Data")
         os.mkdir("./EasySpider_Linux_x64/execution_instances")
         # compress_folder_to_7z("./EasySpider_Linux_x64", file_name)
