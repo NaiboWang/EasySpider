@@ -1,6 +1,7 @@
 # 控制流程的暂停和继续
 
 import csv
+import datetime
 import json
 import os
 import time
@@ -228,15 +229,41 @@ class myMySQL:
             print("The data table " + table_name + " already exists.")
         cursor.close()
 
-    def write_to_mysql(self, OUTPUT, record):
+    def write_to_mysql(self, OUTPUT, record, types):
         # 创建一个游标对象
         cursor = self.conn.cursor()
 
-        for row in OUTPUT:
+        for line in OUTPUT:
+            for i in range(len(line)):
+                if types[i] == "int" or types[i] == "bigInt":
+                    try:
+                        line[i] = int(line[i])
+                    except:
+                        line[i] = 0
+                elif types[i] == "double":
+                    try:
+                        line[i] = float(line[i])
+                    except:
+                        line[i] = 0.0
+                elif types[i] == "datetime":
+                    try:
+                        line[i] = datetime.datetime.strptime(line[i], '%Y-%m-%d %H:%M:%S')
+                    except:
+                        line[i] = datetime.datetime.strptime("1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
+                elif types[i] == "date":
+                    try:
+                        line[i] = datetime.datetime.strptime(line[i], '%Y-%m-%d')
+                    except:
+                        line[i] = datetime.datetime.strptime("1970-01-01", '%Y-%m-%d')
+                elif types[i] == "time":
+                    try:
+                        line[i] = datetime.datetime.strptime(line[i], '%H:%M:%S')
+                    except:
+                        line[i] = datetime.datetime.strptime("00:00:00", '%H:%M:%S')
             to_write = []
-            for i in range(len(row)):
+            for i in range(len(line)):
                 if record[i]:
-                    to_write.append(row[i])
+                    to_write.append(line[i])
             # 构造插入数据的 SQL 语句
             sql = f"INSERT INTO "+ self.table_name +" "+self.field_sql+" VALUES ("
             for item in to_write:
@@ -248,7 +275,7 @@ class myMySQL:
                 cursor.execute(sql, to_write)
             except Exception as e:
                 print("Error:", e)
-                # print("Error SQL:", sql)
+                print("Error SQL:", sql, to_write)
                 print("插入数据库错误，请查看以上的错误提示，然后检查数据的类型是否正确，是否文本过长（超过一万的文本类型要设置为大文本）。")
                 print("Inserting database error, please check the above error, and then check whether the data type is correct, whether the text is too long (text type over 10,000 should be set to large text).")
                 print("重新执行任务时，请删除数据库中的数据表" + self.table_name + "，然后再次运行程序。")

@@ -249,6 +249,8 @@
                             <option value = "longText">超大文本（单个值长度超过100万）</option>
                             <option value = "bigInt">大整数（位数超过9位）</option>
                         </select>
+                        <label>元素找不到时的值：</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></input>
                         <label>采集内容类型</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>文本（包括子元素）</option>
@@ -287,7 +289,7 @@
                                 <option :value = 1>是</option>
                             </select>
                         </div>
-<!--                        <label>提取方式</label>-->
+                        <!--                        <label>提取方式</label>-->
 <!--                        <select v-model='paras.parameters[paraIndex]["extractType"]' class="form-control">-->
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
@@ -298,10 +300,7 @@
                             <option :value = 0>否</option>
                         </select>
                         <label>参数描述：</label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></textarea>
-                        <label>元素找不到时的值：</label>
-                        <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
-
+                        <input onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></input>
                     </div>
 
                 </div>
@@ -578,8 +577,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" id="saveAsButton" class="btn btn-outline-primary">另存为</button>
-                    <button type="button" id="saveButton" class="btn btn-primary">保存</button>
+                    <button type="button" id="saveAsButton" style="width: 100px" class="btn btn-outline-primary">另存为</button>
+                    <button type="button" id="saveButton" style="width: 100px" class="btn btn-primary">保存</button>
                 </div>
             </div>
             <!-- /.modal-content -->

@@ -41,7 +41,7 @@ import pytesseract
 from PIL import Image
 # import uuid
 from threading import Thread, Event
-from myChrome import MyChrome
+from myChrome import MyChrome, MyUCChrome
 from utils import check_pause, download_image, get_output_code, isnull, myMySQL, new_line, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
@@ -242,7 +242,7 @@ class BrowserThread(Thread):
                     str(self.id) + "/" + self.saveName + '.xlsx'
                 write_to_excel(file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord)
             elif self.outputFormat == "mysql":
-                self.mysql.write_to_mysql(self.OUTPUT, self.outputParametersRecord)
+                self.mysql.write_to_mysql(self.OUTPUT, self.outputParametersRecord, self.outputParametersTypes)
                 
             self.OUTPUT = []
             self.log = ""
@@ -1473,7 +1473,7 @@ if __name__ == '__main__':
             browser_t = MyChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
-            browser_t = uc.Chrome(
+            browser_t = MyUCChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
             print("Pass Cloudflare Mode")
             print("过Cloudflare验证模式")

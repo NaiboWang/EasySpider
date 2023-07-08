@@ -15,3 +15,5 @@ execution_instances/*
 info.log
 npminstall-debug.log
 mysql_config.json
+EasySpider_en/
+EasySpider_zh/

@@ -101,7 +101,7 @@ let app = new Vue({
                 if(newVal == 3){
                     this.nowNode["title"] = LANG("退出循环", "Exit Loop");
                 } else {
-                    this.nowNode["title"] = LANG("自定义操作", "Custom Operation");
+                    this.nowNode["title"] = LANG("自定义操作", "Custom Action");
                 }
             }
         }

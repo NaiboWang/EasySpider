@@ -242,7 +242,7 @@ class BrowserThread(Thread):
                     str(self.id) + "/" + self.saveName + '.xlsx'
                 write_to_excel(file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord)
             elif self.outputFormat == "mysql":
-                self.mysql.write_to_mysql(self.OUTPUT, self.outputParametersRecord)
+                self.mysql.write_to_mysql(self.OUTPUT, self.outputParametersRecord, self.outputParametersTypes)
                 
             self.OUTPUT = []
             self.log = ""
@@ -1345,19 +1345,19 @@ if __name__ == '__main__':
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
+            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
+            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
         else:
             print("Unsupported platform")
             sys.exit()
@@ -1370,21 +1370,16 @@ if __name__ == '__main__':
     #     # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
     #     driver_path = "./Chrome/chromedriver.exe"
     elif os.path.exists(os.getcwd()+"/../ElectronJS"):
-        if os.getcwd().find("ElectronJS") >= 0:  # 软件dev用
-            print("Finding chromedriver in EasySpider",
-                  os.getcwd())
-            options.binary_location = "chrome_win64/chrome.exe"
-            driver_path = "chrome_win64/chromedriver_win64.exe"
-            options.add_extension("../ElectronJS/XPathHelper.crx")
-        else:  # 直接在executeStage文件夹内使用python easyspider_executestage.py时的路径
-            print("Finding chromedriver in EasySpider",
-                  os.getcwd()+"/ElectronJS")
-            option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
-            driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-            option.add_extension("../ElectronJS/XPathHelper.crx")
+        # 软件dev用
+        print("Finding chromedriver in EasySpider",
+               os.getcwd()+"/ElectronJS")
+        option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+        driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
+        option.add_extension("../ElectronJS/XPathHelper.crx")
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"
+        option.add_extension("XPathHelper.crx")
 
     option.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式

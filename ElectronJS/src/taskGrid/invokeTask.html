@@ -213,7 +213,7 @@
                 <input type="text" class="form-control" v-model="mysql_config_path"></input>
             </div>
         </form>
-        <label>{{"Click the button below to execute the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha (Note: set a waiting time in the task flow for manual intervention): ~如手动输入密码，验证码等（注意任务流程中设定好操作后的等待时间以用来手工干预）：" | lang}}</label>
+        <label style="display: block">{{"Click the button below to execute the task. Click p on the keyboard to pause the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以按p键暂停任务的执行以便" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha: ~如手动输入密码，验证码等。" | lang}}</label>
         <button class="btn btn-primary" v-on:click="localExecuteInstant(false)">{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" |
             lang}}
         </button>
@@ -221,7 +221,7 @@
             lang}}
         </button>
         <!-- <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button> -->
-        <label style="margin-top: 15px">{{"When running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.:~任务执行过程中，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。" | lang}}</label>
+        <label style="margin-top: 15px;display: block">{{"You can also use the XPath Helper extension to test XPaths when executing the task:~执行任务的过程中也可以随时使用XPath Helper扩展来调试XPath。" | lang}}</label>
         <div style="margin-bottom: 10px;">
             <label style="margin-top: 10px;">{{"Execution ID (EID):~执行ID：" | lang}}</label>
             <input class="form-control" v-model="ID"></input>
