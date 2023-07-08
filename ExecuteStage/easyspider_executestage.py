@@ -1147,7 +1147,7 @@ class BrowserThread(Thread):
         try:
             pageHTML = etree.HTML(self.browser.page_source)
         except:
-            pageHTML = ""
+            pageHTML = etree.HTML("")
         if loopElement != "":  # 只在数据在循环中提取时才需要获取循环元素
             try:
                 loopElementOuterHTML = loopElement.get_attribute('outerHTML')
