@@ -1172,22 +1172,15 @@ class BrowserThread(Thread):
                         continue
                     # p["relativeXPath"] = p["relativeXPath"].lower()
                     # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
-                    if p["nodeType"] == 2:
-                        if p["relativeXPath"].find("/@href") >= 0:
-                            xpath = p["relativeXPath"]
-                        else:
-                            xpath = p["relativeXPath"] + "/@href"
+                    # 已经有text()或@href了，不需要再加
+                    if p["relativeXPath"].find("/@href") >= 0 or p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
+                        xpath = p["relativeXPath"]
+                    elif p["nodeType"] == 2:
+                        xpath = p["relativeXPath"] + "/@href"
                     elif p["contentType"] == 1:
-                        # 已经有text()了，不需要再加
-                        if p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
-                            xpath = p["relativeXPath"]
-                        else:
-                            xpath = p["relativeXPath"] + "/text()"
+                        xpath = p["relativeXPath"] + "/text()"
                     elif p["contentType"] == 0:
-                        if p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
-                            xpath = p["relativeXPath"]
-                        else:
-                            xpath = p["relativeXPath"] + "//text()"
+                        xpath = p["relativeXPath"] + "//text()"
                     if p["relative"]:
                         # if p["relativeXPath"] == "":
                         #     content = [loopElementHTML]
