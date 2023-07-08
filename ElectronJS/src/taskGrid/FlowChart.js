@@ -144,11 +144,11 @@ let app = new Vue({
                 "beforeJS": "",
                 "beforeJSWaitTime": 0,
                 "JS": "",
-                "paraType": "text",
                 "JSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "downloadPic": 0
+                "downloadPic": 0,
+                "paraType": "text",
             });
             this.paraIndex = this.nowNode["parameters"]["paras"].length - 1;
             setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部

@@ -42,7 +42,7 @@ from PIL import Image
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome, MyUCChrome
-from utils import check_pause, download_image, get_output_code, isnull, myMySQL, new_line, write_to_csv, write_to_excel
+from utils import check_pause, download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -174,6 +174,11 @@ class BrowserThread(Thread):
                 iframe = node["parameters"]["iframe"]
             except:
                 node["parameters"]["iframe"] = False
+            try:
+                node["parameters"]["xpath"] = lowercase_tags_in_xpath(
+                    node["parameters"]["xpath"])
+            except:
+                pass
             if node["option"] == 1:  # 打开网页操作
                 try:
                     cookies = node["parameters"]["cookies"]
@@ -186,6 +191,10 @@ class BrowserThread(Thread):
                         iframe = para["iframe"]
                     except:
                         para["iframe"] = False
+                    try:
+                        para["relativeXPath"] = lowercase_tags_in_xpath(para["relativeXPath"])
+                    except:
+                        pass
                     if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
                         para["optimizable"] = True
                     else:
@@ -1158,13 +1167,24 @@ class BrowserThread(Thread):
                     if self.browser.iframe_env != p["iframe"]:
                         p["optimizable"] = False
                         continue
-                    p["relativeXPath"] = p["relativeXPath"].lower()
+                    # p["relativeXPath"] = p["relativeXPath"].lower()
+                    # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
                     if p["nodeType"] == 2:
-                        xpath = p["relativeXPath"] + "/@href"
+                        if p["relativeXPath"].find("/@href") >= 0:
+                            xpath = p["relativeXPath"]
+                        else:
+                            xpath = p["relativeXPath"] + "/@href"
                     elif p["contentType"] == 1:
-                        xpath = p["relativeXPath"] + "/text()"
+                        # 已经有text()了，不需要再加
+                        if p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
+                            xpath = p["relativeXPath"]
+                        else:
+                            xpath = p["relativeXPath"] + "/text()"
                     elif p["contentType"] == 0:
-                        xpath = p["relativeXPath"] + "//text()"
+                        if p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
+                            xpath = p["relativeXPath"]
+                        else:
+                            xpath = p["relativeXPath"] + "//text()"
                     if p["relative"]:
                         # if p["relativeXPath"] == "":
                         #     content = [loopElementHTML]
@@ -1214,7 +1234,8 @@ class BrowserThread(Thread):
                 content = ""
                 if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
                     try:
-                        p["relativeXPath"] = p["relativeXPath"].lower()
+                        # p["relativeXPath"] = p["relativeXPath"].lower()
+                        # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
                         if p["relative"]:  # 是否相对xpath
                             if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                                 element = loopElement
