@@ -8,3 +8,4 @@ keyboard
 undetected_chromedriver
 openpyxl
 pymysql
+lxml
