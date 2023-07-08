@@ -8,6 +8,7 @@ import iframe from "./iframe.vue";
 //表现逻辑层的处理
 
 if (window.location.href.indexOf("backEndAddressServiceWrapper") >= 0) {
+    chrome.storage.local.set({ "parameterNum": 1 }); //重置参数索引值
     throw "serviceGrid"; //如果是服务器网页页面，则不执行工具
 }
 

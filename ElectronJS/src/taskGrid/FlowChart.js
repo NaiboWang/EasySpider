@@ -128,7 +128,7 @@ let app = new Vue({
                 "nodeType": 0,
                 "contentType": 0,
                 "relative": false,
-                "name": LANG("自定义参数_" + this.nowNode["parameters"]["paras"].length.toString(),"Custom_Field_" + this.nowNode["parameters"]["paras"].length.toString()),
+                "name": LANG("自定义参数_" + parameterNum.toString(),"Custom_Field_" + parameterNum.toString()),
                 "desc": "",
                 "extractType": 0,
                 "relativeXPath": "//body",
@@ -150,6 +150,7 @@ let app = new Vue({
                 "downloadPic": 0,
                 "paraType": "text",
             });
+            notifyParameterNum(1);
             this.paraIndex = this.nowNode["parameters"]["paras"].length - 1;
             setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);

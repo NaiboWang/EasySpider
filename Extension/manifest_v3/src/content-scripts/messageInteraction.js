@@ -28,7 +28,13 @@ global.ws.onopen = function() {
     };
     this.send(JSON.stringify(message));
 };
-
+global.ws.onmessage = function(evt) {
+    evt = JSON.parse(evt.data);
+    if (evt["type"] == "0") { //0代表更新参数添加索引值
+        chrome.storage.local.set({ "parameterNum": parseInt(evt["value"]) }); //修改值
+        console.log("更新参数添加索引值为：" + evt["value"]);
+    }
+};
 export function input(value) {
     let message = {
         "type": "inputText",

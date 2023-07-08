@@ -28,7 +28,8 @@ if(config.debug){
         process.stderr.write(util.format.apply(null, arguments) + '\n')
     }
 }
-
+let allWindowSockets = [];
+let allWindowScoketNames = [];
 task_server.start(config.webserver_port); //start local server
 let server_address = `${config.webserver_address}:${config.webserver_port}`;
 const websocket_port = 8084; //目前只支持8084端口，写死，因为扩展里面写死了
@@ -296,6 +297,13 @@ async function beginInvoke(msg, ws) {
                 }
             } else {
                 socket_window.send(msg.message.pipe);
+                for(let i in allWindowSockets){
+                    try{
+                        allWindowSockets[i].send(msg.message.pipe);
+                    } catch {
+                        console.log("Cannot send to socket with id: ", allWindowScoketNames[i]);
+                    }
+                }
                 console.log("FROM Flowchart: ", JSON.parse(msg.message.pipe));
             }
         } catch (e) {
@@ -351,6 +359,7 @@ async function beginInvoke(msg, ws) {
 }
 
 const WebSocket = require('ws');
+const {all} = require("express/lib/application");
 let socket_window = null;
 let socket_start = null;
 let socket_flowchart = null;
@@ -381,6 +390,8 @@ wss.on('connection', function (ws) {
                 handle_pairs[msg.message.id] = current_handle;
                 console.log("Set handle_pair for id: ", msg.message.id, " to ", current_handle, ", title is: ", msg.message.title);
                 socket_flowchart.send(JSON.stringify({"type": "title", "data": {"title":msg.message.title}}));
+                allWindowSockets.push(ws);
+                allWindowScoketNames.push(msg.message.id);
                 // console.log("handle_pairs: ", handle_pairs);
             }
         } else if (msg.type == 10) {
@@ -433,6 +444,7 @@ async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
         .build();
     await driver.manage().setTimeouts({implicit: 10000, pageLoad: 10000, script: 10000});
     await driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
+    // await driver.executeScript("localStorage.clear();"); //重置参数数量
     const cdpConnection = await driver.createCDPConnection("page");
     let stealth_path = path.join(__dirname, "stealth.min.js");
     let stealth = fs.readFileSync(stealth_path, 'utf8');
