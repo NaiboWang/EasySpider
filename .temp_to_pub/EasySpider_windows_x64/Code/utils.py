@@ -4,6 +4,7 @@ import csv
 import datetime
 import json
 import os
+import re
 import time
 import uuid
 import keyboard
@@ -11,6 +12,7 @@ from openpyxl import Workbook, load_workbook
 import requests
 from urllib.parse import urlparse
 import pymysql
+from lxml import etree
 
 def is_valid_url(url):
     try:
@@ -19,6 +21,8 @@ def is_valid_url(url):
     except ValueError:
         return False
 
+def lowercase_tags_in_xpath(xpath):
+    return re.sub(r"([A-Z]+)(?=[\[\]//]|$)", lambda x: x.group(0).lower(), xpath)
 
 def check_pause(key, event):
     while True:

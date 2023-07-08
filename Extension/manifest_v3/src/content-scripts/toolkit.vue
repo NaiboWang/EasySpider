@@ -1,7 +1,9 @@
 <template>
   <div id="realcontent">
+<!--    <div id="EasySpiderResizer" style="width: 10px; height: 10px; background-color: black; position: absolute; left: 0; bottom: 0; cursor: ne-resize;"></div>-->
+    <div id="EasySpiderResizer" style="width: 10px; height: 10px; position: absolute; left: 0; top: 0; cursor: nw-resize;"></div>
     <div v-if="lang == 'zh'">
-      <div class="tooldrag">✍操作提示框（可点此拖动）</div>
+      <div class="tooldrag">✍操作台（点此拖动，左上角调整大小）</div>
       <div class="realcontent">
         <div v-if="page==0">
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
@@ -94,7 +96,7 @@
             </div>
           </div>
           <div v-if="valTable.length>0">
-            <div class="toolkitcontain">{{ setWidth("290px") }}
+            <div class="toolkitcontain">
               <table cellSpacing="0" class="toolkittb2">
                 <tbody>
                 <th v-for="(i, index) in list.opp"> <div>{{ i["name"] }}</div> <span v-bind:index="index" v-on:mousedown="removeField" title="删除此字段">×</span> </th>
@@ -115,7 +117,7 @@
             </div>
           </div>
 
-          <div v-if="valTable.length==0&&tname()!='下一页元素'">{{ setWidth("290px") }}</div>
+          <div v-if="valTable.length==0&&tname()!='下一页元素'"></div>
 
           <div v-if="list.nl.length>0"
                style="bottom:12px;position:absolute;color:black!important;left:17px;font-size:13px">
@@ -155,7 +157,7 @@
       </div>
     </div>
     <div v-else-if="lang=='en'">
-      <div class="tooldrag">✍Operation Toolbox (Can drag)</div>
+      <div class="tooldrag">✍Toolbox (Can drag, resize at left corner)</div>
       <div class="realcontent">
         <div v-if="page==0">
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
@@ -255,7 +257,7 @@
           </div>
 
           <div v-if="valTable.length>0">
-            <div class="toolkitcontain">{{ setWidth("350px") }}
+            <div class="toolkitcontain">
               <table cellspacing="0" class="toolkittb2">
                 <tbody>
                 <th v-for="(i, index) in list.opp"><div>{{ i["name"] }}</div> <span v-bind:index="index" v-on:mousedown="removeField" title="Remove this field">×</span> </th>
@@ -275,7 +277,7 @@
             </div>
           </div>
 
-          <div v-if="valTable.length==0&&tname()!='下一页元素'">{{ setWidth("290px") }}</div>
+          <div v-if="valTable.length==0&&tname()!='下一页元素'"></div>
 
           <div v-if="list.nl.length>0"
                style="bottom:12px;position:absolute;color:black!important;left:17px;font-size:13px">
@@ -659,7 +661,7 @@ export default {
       } else if ($(global.nodeList[0]["node"]).contents().filter(function () {
         return this.nodeType === 3;
       }).text().indexOf("下一页") >= 0) {
-        this.setWidth("280px");
+        // this.setWidth("280px");
         return "下一页元素";
       } else if (tag == "A") {
         return "链接";

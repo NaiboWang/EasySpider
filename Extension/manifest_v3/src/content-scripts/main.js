@@ -228,6 +228,63 @@ function generateToolkit() {
             $(document).off('mousemove');
         });
     });
+    // 拖拽右下角改变大小
+    const wrapperToolkit = document.getElementById('wrapperToolkit');
+    const EasySpiderResizer = document.getElementById('EasySpiderResizer');
+
+    let mousedown = false;
+    let startX, startY, startWidth, startHeight;
+
+
+    EasySpiderResizer.addEventListener('mousedown', e => {
+        mousedown = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = wrapperToolkit.offsetWidth;
+        startHeight = wrapperToolkit.offsetHeight;
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', e => {
+        // if the mouse is not pressed, do nothing
+        if (!mousedown) return;
+        let newX = e.clientX;
+        let newY = e.clientY;
+
+        // Update the width: Original width - (current mouse X position - original mouse X position)
+        let newWidth = startWidth - (newX - startX);
+
+        // Update the height: Original height - (current mouse Y position - original mouse Y position)
+        let newHeight = startHeight - (newY - startY);
+
+        // Set the new width, height and left, top of the wrapperToolkit
+
+
+
+        // wrapperToolkit.style.left = `${newX}px`;
+        // wrapperToolkit.style.top = `${newY}px`;
+
+        if (newWidth > 300 && newWidth < 1200) {
+            wrapperToolkit.style.width = `${newWidth}px`;
+            // set the new width of the wrapperToolkit
+        }
+        if (newHeight > 420 && newHeight < 800) {
+            wrapperToolkit.style.height = `${newHeight}px`;
+            // console.log(newHeight)
+            try{
+                let toolkitcontain = document.getElementsByClassName('toolkitcontain')[0];
+                toolkitcontain.style.height = `${newHeight-330}px`;
+            } catch(e){
+
+            }
+            // set the new width of the wrapperToolkit
+        }
+    });
+
+    window.addEventListener('mouseup', e => {
+        // when the mouse is released, stop resizing
+        mousedown = false;
+    });
     timer = setInterval(function() { //时刻监测相应元素是否存在(防止出现如百度一样元素消失重写body的情况)，如果不存在，添加进来
         if (document.body != null && document.getElementsByClassName("tooltips").length == 0) {
             this.clearInterval(); //先取消原来的计时器，再设置新的计时器
