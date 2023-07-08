@@ -65,7 +65,7 @@ if __name__ == "__main__":
             os.remove("./EasySpider_windows_x64/mysql_config.json")
         os.mkdir("./EasySpider_windows_x64/Data")
         os.mkdir("./EasySpider_windows_x64/execution_instances")
-        # compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
+        compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
         print(f"Compress {file_name} Split successfully!")
         compress_folder_to_7z("./EasySpider_windows_x64", file_name)
         print(f"Compress {file_name} successfully!")

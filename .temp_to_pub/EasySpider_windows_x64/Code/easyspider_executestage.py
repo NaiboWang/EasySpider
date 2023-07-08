@@ -1144,7 +1144,10 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        pageHTML = etree.HTML(self.browser.page_source)
+        try:
+            pageHTML = etree.HTML(self.browser.page_source)
+        except:
+            pageHTML = ""
         if loopElement != "":  # 只在数据在循环中提取时才需要获取循环元素
             try:
                 loopElementOuterHTML = loopElement.get_attribute('outerHTML')
