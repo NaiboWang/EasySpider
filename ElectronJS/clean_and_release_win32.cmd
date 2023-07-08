@@ -17,3 +17,5 @@ rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x86\execution_instances
 mkdir ..\.temp_to_pub\EasySpider_windows_x86\execution_instances
 rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x86\Data
 mkdir ..\.temp_to_pub\EasySpider_windows_x86\Data
+del EasySpider_en.crx
+del EasySpider_zh.crx
