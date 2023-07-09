@@ -17,9 +17,13 @@ rm -rf out/EasySpider/resources/app/user_data
 rm -rf ../.temp_to_pub/EasySpider_Linux_x64/EasySpider
 rm out/EasySpider/resources/app/vs_BuildTools.exe
 mv out/EasySpider ../.temp_to_pub/EasySpider_Linux_x64/EasySpider
+rm -rf ../.temp_to_pub/EasySpider_Linux_x64/Code
+mkdir ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+cp ../ExecuteStage/requirements.txt ../.temp_to_pub/EasySpider_Linux_x64/Code
+cp -Rf ../undetected_chromedriver_ES ../.temp_to_pub/EasySpider_Linux_x64/Code
 chmod 777 ../.temp_to_pub/EasySpider_Linux_x64/easy-spider.sh
 
 rm -rf ../.temp_to_pub/EasySpider_Linux_x64/user_data
