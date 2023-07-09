@@ -15,6 +15,8 @@ import time
 import requests
 from urllib.parse import urljoin
 from lxml import etree
+import undetected_chromedriver as uc
+from pynput.keyboard import Key, Listener
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
@@ -29,7 +31,6 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-import undetected_chromedriver as uc
 import random
 # import pandas as pd
 from openpyxl import load_workbook, Workbook
@@ -39,11 +40,10 @@ import os
 from commandline_config import Config
 import pytesseract
 from PIL import Image
-from pynput.keyboard import Key, Listener
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome, MyUCChrome
-from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press, on_release_creator, write_to_csv, write_to_excel
+from utils import check_pause, download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -1327,6 +1327,8 @@ class BrowserThread(Thread):
 
 
 if __name__ == '__main__':
+    from multiprocessing import freeze_support
+    freeze_support() # 防止无限死循环多开
     config = {
         "id": [0],
         "saved_file_name": "",
@@ -1429,6 +1431,9 @@ if __name__ == '__main__':
         option.add_argument(
             f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
         option.add_argument("--profile-directory=Default")
+        options.add_argument(
+            f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
+        options.add_argument("--profile-directory=Default")
 
     if c.headless:
         print("Headless mode")
@@ -1445,7 +1450,7 @@ if __name__ == '__main__':
 
     threads = []
     for i in c.id:
-        print(options)
+        # print(options)
         print("id: ", i)
         if c.read_type == "remote":
             print("remote")
@@ -1506,21 +1511,32 @@ if __name__ == '__main__':
         thread.start()
         # Set the pause operation
         # if sys.platform != "linux": 
+        #     time.sleep(3)
+        #     print("\n\n----------------------------------")
+        #     print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
+        #     print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
+        #     print("----------------------------------\n\n")
         #     Thread(target=check_pause, args=("p", event)).start()
         # else:
         time.sleep(3)
+        press_time = {"duration": 0, "is_pressed": False}
         print("\n\n----------------------------------")
-        print("正在运行任务，按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次按p键。")
-        print("Running task, press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please press 'p' again.")
+        print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
+        print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
         print("----------------------------------\n\n")
         # 使用监听器监听键盘输入
-        with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
-            listener.join()
+        try:
+            with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:
+                listener.join()
+        except:
+            print("您的操作系统不支持暂停功能。")
+            print("Your operating system does not support the pause function.")
             
         
-        
+    # print("线程长度：", len(threads) )
 	
     for thread in threads:
+        print()
         thread.join()
 
     for thread in threads:

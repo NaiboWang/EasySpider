@@ -34,16 +34,16 @@ def on_press_creator(press_time, event):
                     press_time["is_pressed"] = True
                 else: # 按下p键时，判断按下p键的时间是否超过2.5秒
                     duration = time.time() - press_time["duration"]
-                    if duration > 2.5:
+                    if duration > 2:
                         if event._flag == False:
-                            print("任务执行中，按p键暂停执行。")
-                            print("Task is running, press 'p' to pause.")
+                            print("任务执行中，长按p键暂停执行。")
+                            print("Task is running, long press 'p' to pause.")
                             # 设置Event的值为True，使得线程b可以继续执行
                             event.set()
                         else:
                             # 设置Event的值为False，使得线程b暂停执行
-                            print("任务已暂停，按p键继续执行...")
-                            print("Task paused, press 'p' to continue...")
+                            print("任务已暂停，长按p键继续执行...")
+                            print("Task paused, long press 'p' to continue...")
                             event.clear()
                         press_time["duration"] = time.time()
                         press_time["is_pressed"] = False
