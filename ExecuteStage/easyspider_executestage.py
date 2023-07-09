@@ -39,7 +39,6 @@ import os
 from commandline_config import Config
 import pytesseract
 from PIL import Image
-from pynput.keyboard import Key, Listener
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome, MyUCChrome
@@ -1515,6 +1514,7 @@ if __name__ == '__main__':
         print("----------------------------------\n\n")
         # 使用监听器监听键盘输入
         try:
+            from pynput.keyboard import Key, Listener
             with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
                 listener.join()
         except:
