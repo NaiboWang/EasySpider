@@ -8,3 +8,5 @@ EasySpider_windows_x64/user_data
 *.7z*
 config.json
 mysql_config.json
+**/Code
+**/user_data
