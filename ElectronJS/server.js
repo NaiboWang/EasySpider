@@ -75,7 +75,7 @@ exports.getEasySpiderLocation = getEasySpiderLocation;
 FileMimes = JSON.parse(fs.readFileSync(path.join(__dirname,'mime.json')).toString());
 
 const fileServer = express();
-const upload = multer({ dest: 'Data/' });
+const upload = multer({ dest: path.join(getDir(), 'Data/') });
 
 fileServer.use(cors());
 fileServer.post('/excelUpload', upload.single('file'), (req, res) => {
