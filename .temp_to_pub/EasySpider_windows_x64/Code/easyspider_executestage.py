@@ -1370,16 +1370,19 @@ if __name__ == '__main__':
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         else:
             print("Unsupported platform")
             sys.exit()
@@ -1499,7 +1502,7 @@ if __name__ == '__main__':
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
             browser_t = MyUCChrome(
-                options=options, chrome_options=option, executable_path=driver_path)
+                options=options, chrome_options=option, driver_executable_path=driver_path)
             print("Pass Cloudflare Mode")
             print("过Cloudflare验证模式")
         event = Event()
@@ -1529,8 +1532,9 @@ if __name__ == '__main__':
             with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:
                 listener.join()
         except:
-            print("您的操作系统不支持暂停功能。")
-            print("Your operating system does not support the pause function.")
+            pass
+            # print("您的操作系统不支持暂停功能。")
+            # print("Your operating system does not support the pause function.")
             
         
     # print("线程长度：", len(threads) )
