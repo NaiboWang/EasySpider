@@ -9,3 +9,4 @@ undetected_chromedriver
 openpyxl
 pymysql
 lxml
+pynput

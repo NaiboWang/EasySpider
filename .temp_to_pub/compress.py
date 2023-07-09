@@ -88,7 +88,7 @@ if __name__ == "__main__":
         compress_folder_to_7z("./EasySpider_windows_x86", file_name)
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
-        file_name = f"EasySpider_{easyspider_version}_Linux_x64.7z"
+        file_name = f"EasySpider_{easyspider_version}_Linux_x64.tar.xz"
         if os.path.exists("./EasySpider_Linux_x64/user_data"):
             shutil.rmtree("./EasySpider_Linux_x64/user_data")
         if os.path.exists("./EasySpider_Linux_x64/Data"):
@@ -101,7 +101,7 @@ if __name__ == "__main__":
             os.remove("./EasySpider_Linux_x64/mysql_config.json")
         os.mkdir("./EasySpider_Linux_x64/Data")
         os.mkdir("./EasySpider_Linux_x64/execution_instances")
-        # compress_folder_to_7z("./EasySpider_Linux_x64", file_name)
+        subprocess.call(["tar", "-Jcvf", file_name, "./EasySpider_Linux_x64"])
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         pass
