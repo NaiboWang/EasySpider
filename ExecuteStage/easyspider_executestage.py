@@ -39,10 +39,11 @@ import os
 from commandline_config import Config
 import pytesseract
 from PIL import Image
+from pynput.keyboard import Key, Listener
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome, MyUCChrome
-from utils import check_pause, download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press, on_release_creator, write_to_csv, write_to_excel
+from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press, on_release_creator, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -1504,19 +1505,20 @@ if __name__ == '__main__':
         threads.append(thread)
         thread.start()
         # Set the pause operation
-        if sys.platform != "linux": 
-            Thread(target=check_pause, args=("p", event)).start()
-        else:
-            from pynput.keyboard import Key, Listener
-            # 使用监听器监听键盘输入
-            with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
-                listener.join()
-            
-        time.sleep(5)
+        # if sys.platform != "linux": 
+        #     Thread(target=check_pause, args=("p", event)).start()
+        # else:
+        time.sleep(3)
         print("\n\n----------------------------------")
-        print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
+        print("正在运行任务，按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次按p键。")
         print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
         print("----------------------------------\n\n")
+        # 使用监听器监听键盘输入
+        with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
+            listener.join()
+            
+        
+        
 	
     for thread in threads:
         thread.join()
