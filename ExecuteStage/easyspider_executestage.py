@@ -1514,8 +1514,12 @@ if __name__ == '__main__':
         print("Running task, press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please press 'p' again.")
         print("----------------------------------\n\n")
         # 使用监听器监听键盘输入
-        with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
-            listener.join()
+        try:
+            with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
+                listener.join()
+        except:
+            print("您的操作系统不支持暂停功能。")
+            print("Your operating system does not support the pause function.")
             
         
         
