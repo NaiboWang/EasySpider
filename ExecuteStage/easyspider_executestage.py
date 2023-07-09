@@ -1370,16 +1370,19 @@ if __name__ == '__main__':
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         else:
             print("Unsupported platform")
             sys.exit()
