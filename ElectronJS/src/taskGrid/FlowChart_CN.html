@@ -431,12 +431,12 @@
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
                         <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder="循环里的XPath不能用@href或者text()这种写法，只能定位元素不能取属性值，即@href和text()这种写法只在提取数据操作中支持，并且不推荐，建议直接在提取数据操作中选择节点类型和采集内容类型。" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">（测试功能）点此查看其他可能的XPath写法</button></p>
                     </div>
                     <div v-else-if='parseInt(loopType) == 2'>
                         <label>XPath列表：</label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个XPath"  v-model='nowNode["parameters"]["pathList"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个XPath，循环里的XPath不能用@href或者text()这种写法，只能定位元素不能取属性值，即@href和text()这种写法只在提取数据操作中支持，并且不推荐，建议直接在提取数据操作中选择节点类型和采集内容类型。"  v-model='nowNode["parameters"]["pathList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 5'>
                         <label>内容列表（用Field["字段名"]来输入某字段提取到的最新值）：</label>

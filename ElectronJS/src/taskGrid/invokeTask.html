@@ -213,7 +213,7 @@
                 <input type="text" class="form-control" v-model="mysql_config_path"></input>
             </div>
         </form>
-        <label style="display: block">{{"Click the button below to execute the task. Click p on the keyboard to pause the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以按p键暂停任务的执行以便" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha: ~如手动输入密码，验证码等。" | lang}}</label>
+        <label style="display: block">{{"Click the button below to execute the task. Long press p on the keyboard to pause the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以长按p键暂停任务的执行以便" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha: ~如手动输入密码，验证码等。" | lang}}</label>
         <button class="btn btn-primary" v-on:click="localExecuteInstant(false)">{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" |
             lang}}
         </button>

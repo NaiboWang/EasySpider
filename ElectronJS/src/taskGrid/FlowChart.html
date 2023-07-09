@@ -431,7 +431,7 @@
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
                         <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]' placeholder="You cannot use expressions like @href or text() within loops in XPath. You can only locate elements, but cannot fetch attribute values. Declaratives like @href and text() are only supported in data extraction operations. Moreover, it is not recommended to use them. Instead, it's suggested choosing the node type and type of the content to collect directly within data extraction operations."></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">(Testing feature) Click here to view other possible XPath expressions</button></p>
                     </div>
                     <div v-if='parseInt(loopType) == 2'>
@@ -440,7 +440,7 @@
                     </div>
                     <div v-else-if='parseInt(loopType) < 5'>
                         <label>Content List (Use Field["FieldName"] to input the last extracted value of a field):</label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="One text/URL per line" v-model='nowNode["parameters"]["textList"]'></textarea>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="One text/URL per line. You cannot use expressions like @href or text() within loops in XPath. You can only locate elements, but cannot fetch attribute values. Declaratives like @href and text() are only supported in data extraction operations. Moreover, it is not recommended to use them. Instead, it's suggested choosing the node type and type of the content to collect directly within data extraction operations." v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 7'>
                         <label>Code (Use Field["FieldName"] to input the last extracted value of a field):</label>
