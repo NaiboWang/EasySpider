@@ -30,7 +30,7 @@ def on_release_creator(event):
             if key.char == 'p':  # 当按下esc键时，退出监听
                 if event._flag == False:
                     print("任务执行中，按p键暂停执行。")
-                    print("Task is running, long press 'p' to pause.")
+                    print("Task is running, press 'p' to pause.")
                     # 设置Event的值为True，使得线程b可以继续执行
                     event.set()
                 else:
