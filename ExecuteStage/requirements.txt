@@ -5,7 +5,7 @@ pyinstaller
 Pillow
 pytesseract
 keyboard
-undetected_chromedriver
+undetected_chromedriver==3.4.7
 openpyxl
 pymysql
 lxml

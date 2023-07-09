@@ -1502,7 +1502,7 @@ if __name__ == '__main__':
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
             browser_t = MyUCChrome(
-                options=options, chrome_options=option, executable_path=driver_path)
+                options=options, chrome_options=option, driver_executable_path=driver_path)
             print("Pass Cloudflare Mode")
             print("过Cloudflare验证模式")
         event = Event()
