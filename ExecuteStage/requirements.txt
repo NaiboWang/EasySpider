@@ -8,3 +8,4 @@ openpyxl==3.1.2
 pymysql==1.1.0
 lxml==4.9.2
 pynput==1.7.6
+undetected-chromedriver==3.4.7

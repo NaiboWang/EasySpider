@@ -294,7 +294,7 @@ exports.start = function(port = 8074) {
                             const config = {
                                 host: "localhost",
                                 port: 3306,
-                                user: "your_username",
+                                username: "your_username",
                                 password: "your_password",
                                 database: "your_database"
                             };

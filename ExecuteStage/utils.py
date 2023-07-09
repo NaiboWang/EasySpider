@@ -7,7 +7,7 @@ import os
 import re
 import time
 import uuid
-import keyboard
+# import keyboard
 from openpyxl import Workbook, load_workbook
 import requests
 from urllib.parse import urlparse
@@ -75,20 +75,20 @@ def on_release_creator(event, press_time):
     return on_release
 
 
-def check_pause(key, event):
-    while True:
-        if keyboard.is_pressed(key):  # 按下p键，暂停程序
-            if event._flag == False:
-                print("任务执行中，长按p键暂停执行。")
-                print("Task is running, long press 'p' to pause.")
-                # 设置Event的值为True，使得线程b可以继续执行
-                event.set()
-            else:
-                # 设置Event的值为False，使得线程b暂停执行
-                print("任务已暂停，长按p键继续执行...")
-                print("Task paused, press 'p' to continue...")
-                event.clear()
-        time.sleep(1)  # 每秒检查一次
+# def check_pause(key, event):
+#     while True:
+#         if keyboard.is_pressed(key):  # 按下p键，暂停程序
+#             if event._flag == False:
+#                 print("任务执行中，长按p键暂停执行。")
+#                 print("Task is running, long press 'p' to pause.")
+#                 # 设置Event的值为True，使得线程b可以继续执行
+#                 event.set()
+#             else:
+#                 # 设置Event的值为False，使得线程b暂停执行
+#                 print("任务已暂停，长按p键继续执行...")
+#                 print("Task paused, press 'p' to continue...")
+#                 event.clear()
+#         time.sleep(1)  # 每秒检查一次
 
 
 def download_image(url, save_directory):
@@ -223,12 +223,13 @@ class myMySQL:
                 config = json.load(f)
                 host = config["host"]
                 port = config["port"]
-                user = config["user"]
+                user = config["username"]
                 passwd = config["password"]
                 db = config["database"]
-        except:
+        except Exception as e:
             print("读取配置文件失败，请检查配置文件："+config_file+"是否存在。")
             print("Failed to read configuration file, please check if the configuration file: "+config_file+" exists.")
+            print(e)
         try:
             self.conn = pymysql.connect(
             host=host, port=port, user=user, passwd=passwd, db=db)

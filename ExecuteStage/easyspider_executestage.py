@@ -43,7 +43,7 @@ from PIL import Image
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome, MyUCChrome
-from utils import check_pause, download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, write_to_csv, write_to_excel
+from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -1501,6 +1501,9 @@ if __name__ == '__main__':
             browser_t = MyChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
+            if sys.platform == "linux":
+                import ssl
+                ssl._create_default_https_context = ssl._create_unverified_context # 忽略证书验证
             browser_t = MyUCChrome(
                 options=options, chrome_options=option, driver_executable_path=driver_path)
             print("Pass Cloudflare Mode")
