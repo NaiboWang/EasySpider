@@ -1532,8 +1532,9 @@ if __name__ == '__main__':
             with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:
                 listener.join()
         except:
-            print("您的操作系统不支持暂停功能。")
-            print("Your operating system does not support the pause function.")
+            pass
+            # print("您的操作系统不支持暂停功能。")
+            # print("Your operating system does not support the pause function.")
             
         
     # print("线程长度：", len(threads) )
