@@ -29,6 +29,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
+import undetected_chromedriver as uc
 import random
 # import pandas as pd
 from openpyxl import load_workbook, Workbook
@@ -1325,8 +1326,6 @@ class BrowserThread(Thread):
 
 
 if __name__ == '__main__':
-    from multiprocessing import freeze_support
-    freeze_support() # 防止无限死循环多开
     config = {
         "id": [0],
         "saved_file_name": "",
@@ -1493,7 +1492,6 @@ if __name__ == '__main__':
             browser_t = MyChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
-            import undetected_chromedriver as uc
             browser_t = MyUCChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
             print("Pass Cloudflare Mode")
@@ -1524,10 +1522,9 @@ if __name__ == '__main__':
             print("Your operating system does not support the pause function.")
             
         
-    print("线程长度：", len(threads) )
+        
 	
     for thread in threads:
-        print()
         thread.join()
 
     for thread in threads:

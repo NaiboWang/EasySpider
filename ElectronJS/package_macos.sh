@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # This script is used to build.md the package for MacOS.
+cd ../Extension/manifest_v3/
+node package.js
+cd ../../ElectronJS
 rm -rf out
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app
 npm run make
