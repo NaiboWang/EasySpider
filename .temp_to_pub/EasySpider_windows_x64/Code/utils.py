@@ -7,7 +7,7 @@ import os
 import re
 import time
 import uuid
-import keyboard
+# import keyboard
 from openpyxl import Workbook, load_workbook
 import requests
 from urllib.parse import urlparse
@@ -23,21 +23,42 @@ def is_valid_url(url):
 
 def lowercase_tags_in_xpath(xpath):
     return re.sub(r"([A-Z]+)(?=[\[\]//]|$)", lambda x: x.group(0).lower(), xpath)
+    
+def on_release_creator(event):
+    def on_release(key):
+        try:
+            if key.char == 'p':  # 当按下esc键时，退出监听
+                if event._flag == False:
+                    print("任务执行中，按p键暂停执行。")
+                    print("Task is running, long press 'p' to pause.")
+                    # 设置Event的值为True，使得线程b可以继续执行
+                    event.set()
+                else:
+                    # 设置Event的值为False，使得线程b暂停执行
+                    print("任务已暂停，按p键继续执行...")
+                    print("Task paused, press 'p' to continue...")
+                    event.clear()
+        except:
+            pass
+    return on_release
 
-def check_pause(key, event):
-    while True:
-        if keyboard.is_pressed(key):  # 按下p键，暂停程序
-            if event._flag == False:
-                print("任务执行中，长按p键暂停执行。")
-                print("Task is running, long press 'p' to pause.")
-                # 设置Event的值为True，使得线程b可以继续执行
-                event.set()
-            else:
-                # 设置Event的值为False，使得线程b暂停执行
-                print("任务已暂停，长按p键继续执行...")
-                print("Task paused, press 'p' to continue...")
-                event.clear()
-        time.sleep(1)  # 每秒检查一次
+def on_press(key):
+    pass
+
+# def check_pause(key, event):
+#     while True:
+#         if keyboard.is_pressed(key):  # 按下p键，暂停程序
+#             if event._flag == False:
+#                 print("任务执行中，长按p键暂停执行。")
+#                 print("Task is running, long press 'p' to pause.")
+#                 # 设置Event的值为True，使得线程b可以继续执行
+#                 event.set()
+#             else:
+#                 # 设置Event的值为False，使得线程b暂停执行
+#                 print("任务已暂停，长按p键继续执行...")
+#                 print("Task paused, press 'p' to continue...")
+#                 event.clear()
+#         time.sleep(1)  # 每秒检查一次
 
 
 def download_image(url, save_directory):

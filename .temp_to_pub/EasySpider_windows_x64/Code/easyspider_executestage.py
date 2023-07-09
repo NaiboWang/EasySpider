@@ -12,8 +12,8 @@ import sys
 # import base64
 # import hashlib
 import time
-# import keyboard
 import requests
+from urllib.parse import urljoin
 from lxml import etree
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
@@ -39,13 +39,13 @@ import os
 from commandline_config import Config
 import pytesseract
 from PIL import Image
+from pynput.keyboard import Key, Listener
 # import uuid
 from threading import Thread, Event
 from myChrome import MyChrome, MyUCChrome
-from utils import check_pause, download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, write_to_csv, write_to_excel
+from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press, on_release_creator, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
-
 
 class BrowserThread(Thread):
     def __init__(self, browser_t, id, service, version, event, saveName, config):
@@ -1172,22 +1172,15 @@ class BrowserThread(Thread):
                         continue
                     # p["relativeXPath"] = p["relativeXPath"].lower()
                     # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
-                    if p["nodeType"] == 2:
-                        if p["relativeXPath"].find("/@href") >= 0:
-                            xpath = p["relativeXPath"]
-                        else:
-                            xpath = p["relativeXPath"] + "/@href"
+                    # 已经有text()或@href了，不需要再加
+                    if p["relativeXPath"].find("/@href") >= 0 or p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
+                        xpath = p["relativeXPath"]
+                    elif p["nodeType"] == 2:
+                        xpath = p["relativeXPath"] + "/@href"
                     elif p["contentType"] == 1:
-                        # 已经有text()了，不需要再加
-                        if p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
-                            xpath = p["relativeXPath"]
-                        else:
-                            xpath = p["relativeXPath"] + "/text()"
+                        xpath = p["relativeXPath"] + "/text()"
                     elif p["contentType"] == 0:
-                        if p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
-                            xpath = p["relativeXPath"]
-                        else:
-                            xpath = p["relativeXPath"] + "//text()"
+                        xpath = p["relativeXPath"] + "//text()"
                     if p["relative"]:
                         # if p["relativeXPath"] == "":
                         #     content = [loopElementHTML]
@@ -1210,6 +1203,9 @@ class BrowserThread(Thread):
                         # 拼接所有文本内容并去掉两边的空白
                         content = ' '.join(result.strip()
                                            for result in content if result.strip())
+                        if p["nodeType"] == 2:
+                            base_url = self.browser.current_url
+                            content = urljoin(base_url, content) # 合并链接相对路径为绝对路径
                     else:
                         content = p["default"]
                         if not self.dataNotFoundKeys[p["name"]]:
@@ -1508,13 +1504,22 @@ if __name__ == '__main__':
         print("Thread with task id: ", i, " is created")
         threads.append(thread)
         thread.start()
-        Thread(target=check_pause, args=("p", event)).start()
-        time.sleep(5)
+        # Set the pause operation
+        # if sys.platform != "linux": 
+        #     Thread(target=check_pause, args=("p", event)).start()
+        # else:
+        time.sleep(3)
         print("\n\n----------------------------------")
-        print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
+        print("正在运行任务，按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次按p键。")
         print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
         print("----------------------------------\n\n")
-
+        # 使用监听器监听键盘输入
+        with Listener(on_press=on_press, on_release=on_release_creator(event)) as listener:
+            listener.join()
+            
+        
+        
+	
     for thread in threads:
         thread.join()
 
