@@ -16,7 +16,19 @@ Visit the official website of EasySpider: www.easyspider.net
 
 A visual code-free/no-code web crawler/spider, just select the content you want to crawl on the web page and operate according to the prompt box to complete the design and execution of the crawler. At the same time, the software can be executed by command line alone, so it can be easily embedded into other systems.
 
+### 示例1/Example 1
+
+（右键）选中一个大商品块 -> 自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。
+
+(Right click) Select a large product block -> Click the 'Select All' option -> Click the 'Select Child Elements' option -> Click the 'Collect Data' option, you can collect the information of all products, and will be saved by sub-field.
+
 ![animation_zh](media/animation_zh.gif)
+
+### 示例2/Example 2
+
+（右键）选中一个商品标题，同类型标题会被自动匹配，点击“选中全部”选项 -> 点击“采集数据”选项，即可采集到所有商品的标题信息。
+
+(Right Click) Select a product title, the same type of title will be automatically matched, click the 'Select All' option -> Click the 'Collect Data' option, you can collect the title information of all products.
 
 ![animation_en](media/animation_en.gif)
 

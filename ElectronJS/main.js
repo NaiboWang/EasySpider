@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, dialog, ipcMain, screen} = require('electron');
+const {app, BrowserWindow, dialog, ipcMain, screen, session} = require('electron');
 app.commandLine.appendSwitch("--disable-http-cache");
 const {Builder, By, Key, until} = require("selenium-webdriver");
 const chrome = require('selenium-webdriver/chrome');
@@ -520,6 +520,10 @@ function handleOpenInvoke(event, lang = "en") {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+    session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+        details.requestHeaders['Accept-Language'] = 'zh'
+        callback({ cancel: false, requestHeaders: details.requestHeaders })
+    })
     ipcMain.on('start-design', handleOpenBrowser);
     ipcMain.on('start-invoke', handleOpenInvoke);
     createWindow();

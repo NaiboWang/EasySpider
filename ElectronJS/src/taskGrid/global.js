@@ -28,11 +28,44 @@ function getUrlParam(name) {
     return ""; //返回参数值,默认后台地址
 }
 
+// 判断字符串中英文字符的个数哪个多
+function detectLang(str) {
+    let enCount = 0;
+    let cnCount = 0;
+
+    for (let i = 0; i < str.length; i++) {
+        const charCode = str.charCodeAt(i);
+        if ((charCode >= 0x0000) && (charCode <= 0x007F)) {
+            enCount += 1;
+        } else if ((charCode >= 0x4E00) && (charCode <= 0x9FA5)) {
+            cnCount += 1;
+        }
+    }
+
+    if (enCount === cnCount) {
+        return 2;
+    } else if (enCount > cnCount) {
+        return 0;
+    }
+    return 1;
+}
+
 Vue.filter('lang', function (value) {
-    if (getUrlParam("lang") == "zh") {
-        return value.split("~")[1];
+    let value1 = value.split("~")[0];
+    let value2 = value.split("~")[1];
+    let value_zh = "";
+    let value_en = "";
+    if (detectLang(value1) == 1) {
+        value_zh = value1;
+        value_en = value2;
     } else {
-        return value.split("~")[0];
+        value_zh = value2;
+        value_en = value1;
+    }
+    if (getUrlParam("lang") == "zh") {
+        return value_zh;
+    } else {
+        return value_en;
     }
 })
 

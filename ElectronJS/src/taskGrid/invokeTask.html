@@ -177,7 +177,7 @@
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Task Description:~任务描述：" | lang}} {{task["desc"]}}</p>
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"API URL (POST):~API 调用网址（POST）：" |
             lang}} {{backEndAddressServiceWrapper}}/invokeTask?id={{task["id"]}}</p>
-        <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Click here to see how to invoke task by API via POST request: ~点此查看通过POST方式进行API调用的示例代码：" | lang}}<a target="_blank" href="https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example">https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example</a></p>
+        <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Click here to see how to invoke task by API via POST request (Postman or JavaScript): ~点此查看通过POST方式进行API调用的示例（Postman或JS代码）：" | lang}}<a target="_blank" href="https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example">https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example</a></p>
         <p><button class="btn btn-primary" @click="readFromExcel">{{"Read parameters from Excel file~从Excel文件读取输入参数"
             | lang}}
         </button></p>
@@ -365,10 +365,11 @@
                 t.forEach(function (item, index) {
                     para[item.name] = item.value;
                 });
-                $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask", {
-                    id: this.task.id,
+                let message = {
+                    id: this.task.id, //这里写任务ID号，如1
                     paras: JSON.stringify(para)
-                }, function (result) {
+                }
+                $.post(app.$data.backEndAddressServiceWrapper + "/invokeTask", message, function (result) {
                     app.$data.ID = result; //得到返回的ID
                 });
                 // }
