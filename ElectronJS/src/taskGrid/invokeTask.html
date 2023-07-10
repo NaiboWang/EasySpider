@@ -209,7 +209,7 @@
                 <input type="text" class="form-control" v-model="user_data_folder"></input>
             </div>
             <div class="form-group" style="margin-top: 10px" v-if="task.outputFormat=='mysql'">
-                <label>{{"MySQL configuration file Path:~MySQL配置文件路径：" | lang}}</label>
+                <label>{{"MySQL configuration file Path, relative to this folder:~MySQL配置文件路径，路径相对此文件夹：" | lang}} {{config_folder}}</label>
                 <input type="text" class="form-control" v-model="mysql_config_path"></input>
             </div>
         </form>
@@ -485,10 +485,20 @@
     ws.onopen = function () {
         // Web Socket 已连接上，使用 send() 方法发送数据
         console.log("Connected");
-        message = {
+        let message = {
             type: 0, //消息类型，0代表链接操作
             message: {
                 id: 1, //socket id
+            }
+        };
+        this.send(JSON.stringify(message));
+        message = { //显示flowchart
+            type: 5, //消息类型，调用执行程序
+            message: {
+                "id": -1,
+                "user_data_folder": "",
+                "mysql_config_path": "-1",
+                "execute_type": 1,
             }
         };
         this.send(JSON.stringify(message));

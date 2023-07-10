@@ -5,6 +5,7 @@ EasySpider
 EasySpider.app/
 EasySpider_windows_x64/user_data
 *.tmp
+*.tar.gz
 *.7z*
 config.json
 mysql_config.json

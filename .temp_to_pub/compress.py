@@ -45,7 +45,10 @@ def compress_folder_to_7z_split(folder_path, output_file):
     try:
         subprocess.call(["7z", "a", "-v95m", output_file, folder_path])
     except:
-        subprocess.call(["7za", "a", "-v95m", output_file, folder_path])
+        try:
+            subprocess.call(["7za", "a", "-v95m", output_file, folder_path])
+        except:
+            subprocess.call(["7zz", "a", "-v95m", output_file, folder_path])
 
 easyspider_version = "0.3.5"
 
@@ -104,5 +107,11 @@ if __name__ == "__main__":
         subprocess.call(["tar", "-Jcvf", file_name, "./EasySpider_Linux_x64"])
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-        pass
+        file_name = f"EasySpider_{easyspider_version}_MacOS_all_arch.tar.gz"
+        if os.path.exists("./EasySpider_MacOS_all_arch/Data"):
+            shutil.rmtree("./EasySpider_MacOS_all_arch/Data")
+        os.mkdir("./EasySpider_MacOS_all_arch/Data")
+        subprocess.call(["tar", "-zcvf", file_name, "./EasySpider_MacOS_all_arch"])
+        subprocess.call(["7zz", "a", "-v95m", file_name.replace(".tar.gz", ".7z"), file_name, "请继续解压EasySpider_MacOS_all_arch.tar.gz使用.txt"])
+        print(f"Compress {file_name} successfully!")
 

@@ -1,1 +1,1 @@
-python compress.py
+python3 compress.py

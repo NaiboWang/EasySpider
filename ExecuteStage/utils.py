@@ -4,6 +4,7 @@ import csv
 import datetime
 import json
 import os
+import sys
 import re
 import time
 import uuid
@@ -219,6 +220,11 @@ class myMySQL:
     def __init__(self, config_file="mysql_config.json"):
         # 读取配置文件
         try:
+            if sys.platform == "darwin":
+                if config_file.find("./") >= 0:
+                    config_file = config_file.replace("./", "")
+                config_file = os.path.expanduser("~/Library/Application Support/EasySpider/" + config_file)
+            print("MySQL config file path: ", config_file)
             with open(config_file, 'r') as f:
                 config = json.load(f)
                 host = config["host"]

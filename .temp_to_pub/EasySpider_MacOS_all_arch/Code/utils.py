@@ -4,6 +4,7 @@ import csv
 import datetime
 import json
 import os
+import sys
 import re
 import time
 import uuid
@@ -23,27 +24,57 @@ def is_valid_url(url):
 
 def lowercase_tags_in_xpath(xpath):
     return re.sub(r"([A-Z]+)(?=[\[\]//]|$)", lambda x: x.group(0).lower(), xpath)
-    
-def on_release_creator(event):
+
+
+def on_press_creator(press_time, event):
+    def on_press(key):
+        try:
+            if key.char == 'p':
+                if press_time["is_pressed"] == False: # 没按下p键时，记录按下p键的时间
+                    press_time["duration"] = time.time()
+                    press_time["is_pressed"] = True
+                else: # 按下p键时，判断按下p键的时间是否超过2.5秒
+                    duration = time.time() - press_time["duration"]
+                    if duration > 2:
+                        if event._flag == False:
+                            print("任务执行中，长按p键暂停执行。")
+                            print("Task is running, long press 'p' to pause.")
+                            # 设置Event的值为True，使得线程b可以继续执行
+                            event.set()
+                        else:
+                            # 设置Event的值为False，使得线程b暂停执行
+                            print("任务已暂停，长按p键继续执行...")
+                            print("Task paused, long press 'p' to continue...")
+                            event.clear()
+                        press_time["duration"] = time.time()
+                        press_time["is_pressed"] = False
+                    # print("按下p键时间：", press_time["duration"])
+        except:
+            pass
+    return on_press
+
+def on_release_creator(event, press_time):
     def on_release(key):
         try:
-            if key.char == 'p':  # 当按下esc键时，退出监听
-                if event._flag == False:
-                    print("任务执行中，按p键暂停执行。")
-                    print("Task is running, press 'p' to pause.")
-                    # 设置Event的值为True，使得线程b可以继续执行
-                    event.set()
-                else:
-                    # 设置Event的值为False，使得线程b暂停执行
-                    print("任务已暂停，按p键继续执行...")
-                    print("Task paused, press 'p' to continue...")
-                    event.clear()
+            # duration = time.time() - press_time["duration"]
+            # # print("松开p键时间：", time.time(), "Duration: ", duration)
+            # if duration > 2.5 and key.char == 'p':
+            #     if event._flag == False:
+            #         print("任务执行中，按p键暂停执行。")
+            #         print("Task is running, press 'p' to pause.")
+            #         # 设置Event的值为True，使得线程b可以继续执行
+            #         event.set()
+            #     else:
+            #         # 设置Event的值为False，使得线程b暂停执行
+            #         print("任务已暂停，按p键继续执行...")
+            #         print("Task paused, press 'p' to continue...")
+            #         event.clear()
+            #     press_time["duration"] = time.time()
+            press_time["is_pressed"] = False
         except:
             pass
     return on_release
 
-def on_press(key):
-    pass
 
 # def check_pause(key, event):
 #     while True:
@@ -189,16 +220,22 @@ class myMySQL:
     def __init__(self, config_file="mysql_config.json"):
         # 读取配置文件
         try:
+            if sys.platform == "darwin":
+                if config_file.find("./") >= 0:
+                    config_file = config_file.replace("./", "")
+                config_file = os.path.expanduser("~/Library/Application Support/EasySpider/" + config_file)
+            print("MySQL config file path: ", config_file)
             with open(config_file, 'r') as f:
                 config = json.load(f)
                 host = config["host"]
                 port = config["port"]
-                user = config["user"]
+                user = config["username"]
                 passwd = config["password"]
                 db = config["database"]
-        except:
+        except Exception as e:
             print("读取配置文件失败，请检查配置文件："+config_file+"是否存在。")
             print("Failed to read configuration file, please check if the configuration file: "+config_file+" exists.")
+            print(e)
         try:
             self.conn = pymysql.connect(
             host=host, port=port, user=user, passwd=passwd, db=db)
