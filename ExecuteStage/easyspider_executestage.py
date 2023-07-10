@@ -281,7 +281,10 @@ class BrowserThread(Thread):
         except:
             self.Log('Time out after set seconds when scrolling. ')
             self.recordLog('Time out after set seconds when scrolling')
-            self.browser.execute_script('window.stop()')
+            try:
+                self.browser.execute_script('window.stop()')
+            except:
+                pass
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 for i in range(para["scrollCount"]):
                     self.Log("Wait for set second after screen scrolling")
@@ -679,7 +682,10 @@ class BrowserThread(Thread):
                         # 切换历史记录等待：
                         self.Log("Change history back time or:",
                                  node["parameters"]["historyWait"])
-                        self.browser.execute_script('window.stop()')
+                        try:
+                            self.browser.execute_script('window.stop()')
+                        except:
+                            pass
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
@@ -724,7 +730,10 @@ class BrowserThread(Thread):
                         # time.sleep(2)
                         self.Log("Change history back time or:",
                                  node["parameters"]["historyWait"])
-                        self.browser.execute_script('window.stop()')
+                        try:
+                            self.browser.execute_script('window.stop()')
+                        except:
+                            pass
                 except NoSuchElementException:
                     print("Loop element not found: ", path)
                     print("找不到循环元素: ", path)
@@ -997,7 +1006,10 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
             except TimeoutException:
-                self.browser.execute_script('window.stop()')
+                try:
+                    self.browser.execute_script('window.stop()')
+                except:
+                    pass
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
         else:
@@ -1005,7 +1017,10 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
             except TimeoutException:
-                self.browser.execute_script('window.stop()')
+                try:
+                    self.browser.execute_script('window.stop()')
+                except:
+                    pass
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
                 # 如果打开了新窗口，切换到新窗口
@@ -1277,7 +1292,10 @@ class BrowserThread(Thread):
                         self.Log('Time out after set seconds when getting data')
                         self.recordLog(
                             'Time out after set seconds when getting data')
-                        self.browser.execute_script('window.stop()')
+                        try:
+                            self.browser.execute_script('window.stop()')
+                        except:
+                            pass
                         if p["relative"]:  # 是否相对xpath
                             if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                                 element = loopElement
