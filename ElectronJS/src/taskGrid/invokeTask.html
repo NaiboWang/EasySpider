@@ -505,7 +505,7 @@
     };
     ws.onmessage = function(message){
         message = JSON.parse(message.data);
-        app.$data.config_folder = message.config_folder;
+        app.$data.config_folder = message.config_folder.replaceAll("\\","/");
         app.$data.easyspider_location = message.easyspider_location.replace("/EasySpider.app/","");
     }
     ws.onclose = function () {
