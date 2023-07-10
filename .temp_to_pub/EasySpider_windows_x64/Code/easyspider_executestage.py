@@ -15,7 +15,7 @@ import time
 import requests
 from urllib.parse import urljoin
 from lxml import etree
-import undetected_chromedriver as uc
+# import undetected_chromedriver as uc
 from pynput.keyboard import Key, Listener
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
@@ -42,8 +42,10 @@ import pytesseract
 from PIL import Image
 # import uuid
 from threading import Thread, Event
-from myChrome import MyChrome, MyUCChrome
-from utils import check_pause, download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, write_to_csv, write_to_excel
+from myChrome import MyChrome
+if sys.platform != "darwin":
+    from myChrome import MyUCChrome
+from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -279,7 +281,10 @@ class BrowserThread(Thread):
         except:
             self.Log('Time out after set seconds when scrolling. ')
             self.recordLog('Time out after set seconds when scrolling')
-            self.browser.execute_script('window.stop()')
+            try:
+                self.browser.execute_script('window.stop()')
+            except:
+                pass
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 for i in range(para["scrollCount"]):
                     self.Log("Wait for set second after screen scrolling")
@@ -677,7 +682,10 @@ class BrowserThread(Thread):
                         # 切换历史记录等待：
                         self.Log("Change history back time or:",
                                  node["parameters"]["historyWait"])
-                        self.browser.execute_script('window.stop()')
+                        try:
+                            self.browser.execute_script('window.stop()')
+                        except:
+                            pass
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
@@ -722,7 +730,10 @@ class BrowserThread(Thread):
                         # time.sleep(2)
                         self.Log("Change history back time or:",
                                  node["parameters"]["historyWait"])
-                        self.browser.execute_script('window.stop()')
+                        try:
+                            self.browser.execute_script('window.stop()')
+                        except:
+                            pass
                 except NoSuchElementException:
                     print("Loop element not found: ", path)
                     print("找不到循环元素: ", path)
@@ -995,7 +1006,10 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
             except TimeoutException:
-                self.browser.execute_script('window.stop()')
+                try:
+                    self.browser.execute_script('window.stop()')
+                except:
+                    pass
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
         else:
@@ -1003,7 +1017,10 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
             except TimeoutException:
-                self.browser.execute_script('window.stop()')
+                try:
+                    self.browser.execute_script('window.stop()')
+                except:
+                    pass
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
                 # 如果打开了新窗口，切换到新窗口
@@ -1275,7 +1292,10 @@ class BrowserThread(Thread):
                         self.Log('Time out after set seconds when getting data')
                         self.recordLog(
                             'Time out after set seconds when getting data')
-                        self.browser.execute_script('window.stop()')
+                        try:
+                            self.browser.execute_script('window.stop()')
+                        except:
+                            pass
                         if p["relative"]:  # 是否相对xpath
                             if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                                 element = loopElement
@@ -1327,8 +1347,8 @@ class BrowserThread(Thread):
 
 
 if __name__ == '__main__':
-    from multiprocessing import freeze_support
-    freeze_support() # 防止无限死循环多开
+    # from multiprocessing import freeze_support
+    # freeze_support() # 防止无限死循环多开
     config = {
         "id": [0],
         "saved_file_name": "",
@@ -1361,6 +1381,9 @@ if __name__ == '__main__':
         # option.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
         # driver_path = os.getcwd()+ "/chromedriver_mac64"
         print(driver_path)
+        if c.config_folder == "":
+            c.config_folder = os.path.expanduser("~/Library/Application Support/EasySpider/")
+        # print("Config folder for MacOS:", c.config_folder)
     elif os.path.exists(os.getcwd()+"/EasySpider/resources"):  # 打包后的路径
         print("Finding chromedriver in EasySpider",
               os.getcwd()+"/EasySpider")
@@ -1425,6 +1448,7 @@ if __name__ == '__main__':
     try:
         with open(c.config_folder + c.config_file_name, "r", encoding='utf-8') as f:
             config = json.load(f)
+            print("Config file path: " + c.config_folder + c.config_file_name)
             absolute_user_data_folder = config["absolute_user_data_folder"]
             print("\nAbsolute_user_data_folder:",
                   absolute_user_data_folder, "\n")
@@ -1501,10 +1525,15 @@ if __name__ == '__main__':
             browser_t = MyChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
-            browser_t = MyUCChrome(
+            if sys.platform != "darwin":
+                browser_t = MyUCChrome(
                 options=options, chrome_options=option, driver_executable_path=driver_path)
-            print("Pass Cloudflare Mode")
-            print("过Cloudflare验证模式")
+                print("Pass Cloudflare Mode")
+                print("过Cloudflare验证模式")
+            else:
+                print("Not support Cloudflare Mode on MacOS")
+                print("MacOS不支持Cloudflare验证模式")
+                sys.exit()
         event = Event()
         event.set()
         thread = BrowserThread(browser_t, i, service,
