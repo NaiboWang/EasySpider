@@ -8,7 +8,7 @@ const {rootCertificates} = require('tls');
 const {exit} = require('process');
 const path = require('path');
 const fs = require('fs');
-const {exec} = require('child_process');
+const {exec, spawn} = require('child_process');
 const iconPath = path.join(__dirname, 'favicon.ico');
 const task_server = require(path.join(__dirname, 'server.js'));
 const util = require('util');
@@ -333,14 +333,13 @@ async function beginInvoke(msg, ws) {
         // });
 
         let spawn = require("child_process").spawn;
-        if (process.platform != "darwin" && msg.message.execute_type == 1) {
+        if (process.platform != "darwin" && msg.message.execute_type == 1 && msg.message.id != -1) {
             let child_process = spawn(execute_path, parameters);
             child_process.stdout.on('data', function (data) {
                 console.log(data.toString());
             });
-        } else {
-            ws.send(JSON.stringify({"config_folder": task_server.getDir() + "/", "easyspider_location": task_server.getEasySpiderLocation()}));
         }
+        ws.send(JSON.stringify({"config_folder": task_server.getDir() + "/", "easyspider_location": task_server.getEasySpiderLocation()}));
     } else if (msg.type == 6) {
         try{
             flowchart_window.openDevTools();
