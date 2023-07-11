@@ -48,7 +48,7 @@ def get_chrome_version():
         pass
     elif sys.platform == "darwin":
         pass
-    return "115", "115.0.5790.75"
+    return "115"
 
 
 update_version = get_chrome_version()  # 要更新的chromedriver版本
