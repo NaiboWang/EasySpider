@@ -46,6 +46,13 @@ let app = new Vue({
         paraIndex: 0, //当前参数的index
         XPaths: "", //xpath列表
     },
+    mounted: function() {
+        // setTimeout(function () {
+        //     $("#flowchart_graph")[0].scrollTo(0, 10000);
+        //     window.scrollTo(0, 10000);
+        //     console.log("scroll")
+        // }, 500);
+    },
     watch: {
         nowArrow: { //变量发生变化的时候进行一些操作
             deep: true,
@@ -498,6 +505,7 @@ function toolBoxKernel(e, para = null) {
         return t;
     }
     option = 0;
+
 }
 
 $(".options").mousedown(function() {

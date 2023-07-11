@@ -3,7 +3,7 @@
 EasySpider分三部分：
 
 1. 主程序：在`ElectronJS`文件夹下。
-2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作控制台”的代码，打包后的扩展在此目录下的`EasySpider_zh.crx`文件。
+2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作台”的代码，打包后的扩展在此目录下的`EasySpider_zh.crx`文件。
 3. 执行阶段程序：在`ExecuteStage`文件夹下。
 
 此部分为`主程序`的编译说明。
@@ -53,7 +53,7 @@ chrome_linux64/ # for linux x64
 chrome_mac64/ # for mac x64
 ```
 
-然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)，把chromedriver放入刚刚的chrome文件夹内，并更名为下面的格式：
+然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)，把chromedriver放入刚刚的`chrome`文件夹内，并更名为下面的格式：
 
 ```
 chromedriver_win32.exe # for windows x32

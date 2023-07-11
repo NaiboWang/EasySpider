@@ -18,9 +18,9 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 ### 示例1/Example 1
 
-（右键）选中一个大商品块 -> 自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。
+（右键）选中一个大商品块 -> 软件自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。
 
-(Right click) Select a large product block -> Click the 'Select All' option -> Click the 'Select Child Elements' option -> Click the 'Collect Data' option, you can collect the information of all products, and will be saved by sub-field.
+(Right click) Select a large product block -> The software will automatically detect similar blocks -> Click the 'Select All' option -> Click the 'Select Child Elements' option -> Click the 'Collect Data' option, you can collect the information of all products, and will be saved by sub-field.
 
 ![animation_zh](media/animation_zh.gif)
 

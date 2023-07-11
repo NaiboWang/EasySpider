@@ -266,18 +266,40 @@ class BrowserThread(Thread):
         scrollType = int(para["scrollType"])
         try:
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-                for i in range(para["scrollCount"]):
-                    self.Log("Wait for set second after screen scrolling")
-                    body = self.browser.find_element(
-                        By.CSS_SELECTOR, "body", iframe=para["iframe"])
-                    if scrollType == 1:
-                        body.send_keys(Keys.PAGE_DOWN)
-                    elif scrollType == 2:
+                if scrollType == 1 or scrollType == 2:
+                    for i in range(para["scrollCount"]):
+                        self.Log("Wait for set second after screen scrolling")
+                        body = self.browser.find_element(
+                            By.CSS_SELECTOR, "body", iframe=para["iframe"])
+                        if scrollType == 1:
+                            body.send_keys(Keys.PAGE_DOWN)
+                        elif scrollType == 2:
+                            body.send_keys(Keys.END)
+                        try:
+                            time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                        except:
+                            pass
+                elif scrollType == 3:
+                    bodyText = ""
+                    i = 0
+                    while True:
+                        newBodyText = self.browser.page_source
+                        if newBodyText == bodyText:
+                            print("页面已检测不到新内容，停止滚动。")
+                            print("No new content detected on the page, stop scrolling.")
+                            break
+                        else:
+                            bodyText = newBodyText
+                        body = self.browser.find_element(
+                            By.CSS_SELECTOR, "body", iframe=para["iframe"])
                         body.send_keys(Keys.END)
-                    try:
-                        time.sleep(para["scrollWaitTime"])  # 下拉完等待
-                    except:
-                        pass
+                        print("滚动到底部，第", i + 1, "次。")
+                        print("Scroll to the bottom, the", i + 1, "time.")
+                        i = i + 1
+                        try:
+                            time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                        except:
+                            pass
         except:
             self.Log('Time out after set seconds when scrolling. ')
             self.recordLog('Time out after set seconds when scrolling')
@@ -589,9 +611,18 @@ class BrowserThread(Thread):
         if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
             # 无跳转标签页操作
             count = 0  # 执行次数
+            bodyText = "-"
             while True:  # do while循环
                 try:
                     finished = False
+                    newBodyText = self.browser.page_source
+                    if newBodyText == bodyText:  # 如果页面内容无变化
+                        print("页面已检测不到新内容，停止循环。")
+                        print("No new content detected on the page, stop loop.")
+                        finished = True
+                        break
+                    else:
+                        bodyText = newBodyText
                     element = self.browser.find_element(
                         By.XPATH, node["parameters"]["xpath"], iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作

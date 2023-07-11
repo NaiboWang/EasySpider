@@ -55,7 +55,7 @@
                 <div style="text-align: left;margin: 10px;font-size:15px!important">Click button above and then click the flowchart to insert.</div>
             </div>
         </div>
-        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right">
+        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right" id="flowchart_graph">
             <div id="0" class="clk" data="0">
             </div>
             <div style="border-radius: 50%;width: 40px;height: 40px;border:solid black;margin: 5px auto;background-color:lightcyan">
@@ -110,6 +110,7 @@
                         <option value = 0>No scrolling</option>
                         <option value = 1>Scroll one screen</option>
                         <option value = 2>Scroll to the end</option>
+                        <option value = 3>Keep scrolling until the page data does not change</option>
                       </select>
                     <label>Scroll Times (the wait time after scrolling <b>ineffective</b> when the scrolling type is set to <b>no scrolling</b>):</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -155,6 +156,7 @@
                         <option value = 0>No Scrolling</option>
                         <option value = 1>Scroll one screen</option>
                         <option value = 2>Scroll to the end</option>
+                        <option value = 3>Keep scrolling until the page data does not change</option>
                       </select>
                     <label>Scroll Times:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -449,7 +451,7 @@
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
-                    <label v-if='parseInt(loopType) == 0'>Max Loop time（0 means infinite）:</label>
+                    <label v-if='parseInt(loopType) == 0'>Max Loop time (0 means infinite until cannot find the element or page content doesn't change):</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
@@ -475,6 +477,7 @@
                         <option value = 0>No Scrolling</option>
                         <option value = 1>Scroll one screen</option>
                         <option value = 2>Scroll to the end</option>
+                        <option value = 3>Keep scrolling until the page data does not change</option>
                     </select>
                     <label>Scroll Times:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -537,10 +540,10 @@
     </div>
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">Save Task</h4>
+                    <h4 class="modal-title" id="myModalLabel">Save Task (Can press Ctrl + S to open this modal)</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body" style="height:400px;overflow: auto">
@@ -558,7 +561,7 @@
                         <option value = "txt">TXT</option>
                         <option value = "mysql">MySQL Database</option>
                     </select>
-                    <label>Export File Name/Database Table Name (The keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
+                    <label>Export File Name/Database Table Name (Can use ../ to represent relative path to change the file save location,the keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
                     <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
                     <label>Is it an extreme anti-scraping website like Cloudflare (<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">Watch Tutorial</a>)?</label>
                     <select id="cloudflare" name="cloudflare" class="form-control">

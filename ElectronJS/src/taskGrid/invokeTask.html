@@ -24,7 +24,7 @@
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            max-width: 400px;
+            max-width: 600px;
             min-width: 150px;
         }
 
@@ -190,7 +190,7 @@
                     <th style="text-align: center">{{"Parameter Name~参数名称" | lang}}</th>
                     <th style="text-align: center">{{"Invoke Name~调用名称" | lang}}</th>
                     <th style="text-align: center">{{"Parameter Type~参数类型" | lang}}</th>
-                    <th>{{"Parameter Value~参数值" | lang}}</th>
+                    <th>{{"Parameter Value~参数值（如想对多个网页执行此任务，可在“打开网页”操作内填入多行网址）" | lang}}</th>
                 </tr>
 
                 <tr v-for="i in task.inputParameters.length" v-if="task.inputParameters.length>0">
@@ -222,6 +222,7 @@
         </button>
         <!-- <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button> -->
         <label style="margin-top: 15px;display: block">{{"You can also use the XPath Helper extension to test XPaths when executing the task:~执行任务的过程中也可以随时使用XPath Helper扩展来调试XPath。" | lang}}</label>
+        <label style="margin-top: 15px;display: block">{{"如果想进行更复杂的操作，如设置无头模式，设置定时执行等，请使用下方的命令行执行任务选项并配置好命令行参数。~ If you want to perform more complex operations, such as setting headless mode, setting scheduled execution, etc., please use the command line to execute the task and configure the command line parameters below." | lang}}</label>
         <div style="margin-bottom: 10px;">
             <label style="margin-top: 10px;">{{"Execution ID (EID):~执行ID：" | lang}}</label>
             <input class="form-control" v-model="ID"></input>

@@ -3,7 +3,7 @@
 EasySpider分三部分：
 
 1. 主程序：在`ElectronJS`文件夹下。
-2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作控制台”的代码。
+2. 浏览器扩展：在`Extension`文件夹下，为浏览器的“操作台”的代码。
 3. 执行阶段程序：在`ExecuteStage`文件夹下。
 
 此部分为`执行阶段程序`的编译说明。
@@ -20,8 +20,8 @@ This section covers the compilation instructions for the `Execution stage progra
 
 ## 环境构建/Environment Setup
 
-1. 安装python3.6及以上版本并添加至系统环境变量：[https://www.python.org/downloads/](https://www.python.org/downloads/)。
-2. 安装pip3 并添加至系统环境变量（Windows安装python后会自带pip，Linux和MacOS安装方式请自行搜索）。
+1. 安装Python 3.7及以上版本并添加至系统环境变量：[https://www.python.org/downloads/](https://www.python.org/downloads/)。
+2. 安装`pip3`并添加至系统环境变量（Windows安装python后会自带pip，Linux和MacOS安装方式请自行搜索）。
 3. 安装执行阶段需要的依赖库：
    
    ```sh
@@ -30,7 +30,7 @@ This section covers the compilation instructions for the `Execution stage progra
 
 -----
 
-1. Install Python 3.6 or higher version and add it to the system environment variables: [https://www.python.org/downloads/](https://www.python.org/downloads/).
+1. Install Python 3.7 or higher version and add it to the system environment variables: [https://www.python.org/downloads/](https://www.python.org/downloads/).
 2. Install pip3 and add it to the system environment variables. (On Windows, pip is automatically installed with Python. For Linux and macOS, please refer to the appropriate installation instructions).
 3. Install the required dependencies for the execution stage by running:
    

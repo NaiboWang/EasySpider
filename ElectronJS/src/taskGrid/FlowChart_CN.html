@@ -55,7 +55,7 @@
                 <div style="text-align: left;margin: 10px;font-size:15px!important">提示：点击上方操作按钮后点击要放置元素的位置处的箭头，可按取消操作按钮取消。</div>
             </div>
         </div>
-        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right">
+        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right" id="flowchart_graph">
             <div id="0" class="clk" data="0">
             </div>
             <div style="border-radius: 50%;width: 40px;height: 40px;border:solid black;margin: 5px auto;background-color:lightcyan">
@@ -110,8 +110,9 @@
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
+                        <option value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间，等待时间太短容易检测不到新数据）</option>
                     </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
@@ -155,8 +156,9 @@
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
+                        <option value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间，等待时间太短容易检测不到新数据）</option>
                       </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
@@ -449,7 +451,7 @@
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
-                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素为止）：</label>
+                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素或数据变化为止）：</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
@@ -475,8 +477,9 @@
                         <option value = 0>不滚动</option>
                         <option value = 1>向下滚动一屏</option>
                         <option value = 2>滚动到底部</option>
+                        <option value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间，等待时间太短容易检测不到新数据）</option>
                     </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>时<b>无效</b>）：</label>
+                    <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
@@ -537,10 +540,10 @@
     </div>
 
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">保存任务</h4>
+                    <h4 class="modal-title" id="myModalLabel">保存任务（可按Ctrl+S调出此窗口）</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body" style="height:400px;overflow: auto">
@@ -558,7 +561,7 @@
                         <option value = "txt">TXT</option>
                         <option value = "mysql">MySQL数据库</option>
                     </select>
-                    <label>导出文件名/数据库表格名称（名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
+                    <label>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
                     <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
                     <label>是否为Cloudflare等极端反爬网站（<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">查看Cloudflare设计和执行教程</a>）：</label>
                     <select id="cloudflare" name="cloudflare" class="form-control">
