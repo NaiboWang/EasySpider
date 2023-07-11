@@ -175,6 +175,8 @@ if __name__ == "__main__":
                 "./chromedrivers/chromedriver.exe",
                 "./chrome_win64/chromedriver_win64.exe",
             )
+        finally:
+            shutil.rmtree("./chromedrivers")
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
         pass
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
