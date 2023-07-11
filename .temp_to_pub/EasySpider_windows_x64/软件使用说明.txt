@@ -4,7 +4,7 @@
 
 支持Windows 10 x64及以上版本。
 
-Windows 7此请下载Windows的32位版本使用。
+Windows 7任意版本，包括x64和x32版本，以及Windows 10 x32版本请下载Windows的32位版本使用。
 
 视频教程：https://www.bilibili.com/video/BV1th411A7ey/
 

@@ -38,6 +38,20 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
+## 支持作者/Support Author
+
+易采集EasySpider是一款完全免费无广告的开源软件，软件开发和维护全靠作者用爱发电，因此您可以选择支持作者让作者有更多的热情和精力维护此软件，或者您使用了此软件进行了盈利，欢迎您通过下面的方式支持作者：
+
+1. 支付宝账号：naibowang@foxmail.com，也可以扫描下方二维码。
+2. 微信收款：扫描下方二维码。
+3. PayPal账号：naibowang，也可以扫描下方二维码。
+
+Support author at paypal if you like this software, or use it to make profit: naibowang
+
+![QRCodes](media/QRCODES.png)
+
+
+
 ## 文档/Documentation
 
 请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。

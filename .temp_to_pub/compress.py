@@ -73,22 +73,22 @@ if __name__ == "__main__":
         compress_folder_to_7z("./EasySpider_windows_x64", file_name)
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "win32" and platform.architecture()[0] == "32bit":
-        file_name = f"EasySpider_{easyspider_version}_windows_x86.7z"
-        if os.path.exists("./EasySpider_windows_x86/user_data"):
-            shutil.rmtree("./EasySpider_windows_x86/user_data")
-        if os.path.exists("./EasySpider_windows_x86/Data"):
-            shutil.rmtree("./EasySpider_windows_x86/Data")
-        if os.path.exists("./EasySpider_windows_x86/execution_instances"):
-            shutil.rmtree("./EasySpider_windows_x86/execution_instances")
-        if os.path.exists("./EasySpider_windows_x86/config.json"):
-            os.remove("./EasySpider_windows_x86/config.json")
-        if os.path.exists("./EasySpider_windows_x86/mysql_config.json"):
-            os.remove("./EasySpider_windows_x86/mysql_config.json")
-        os.mkdir("./EasySpider_windows_x86/Data")
-        os.mkdir("./EasySpider_windows_x86/execution_instances")
-        compress_folder_to_7z_split("./EasySpider_windows_x86", file_name)
+        file_name = f"EasySpider_{easyspider_version}_windows_x32.7z"
+        if os.path.exists("./EasySpider_windows_x32/user_data"):
+            shutil.rmtree("./EasySpider_windows_x32/user_data")
+        if os.path.exists("./EasySpider_windows_x32/Data"):
+            shutil.rmtree("./EasySpider_windows_x32/Data")
+        if os.path.exists("./EasySpider_windows_x32/execution_instances"):
+            shutil.rmtree("./EasySpider_windows_x32/execution_instances")
+        if os.path.exists("./EasySpider_windows_x32/config.json"):
+            os.remove("./EasySpider_windows_x32/config.json")
+        if os.path.exists("./EasySpider_windows_x32/mysql_config.json"):
+            os.remove("./EasySpider_windows_x32/mysql_config.json")
+        os.mkdir("./EasySpider_windows_x32/Data")
+        os.mkdir("./EasySpider_windows_x32/execution_instances")
+        compress_folder_to_7z_split("./EasySpider_windows_x32", file_name)
         print(f"Compress {file_name} Split successfully!")
-        compress_folder_to_7z("./EasySpider_windows_x86", file_name)
+        compress_folder_to_7z("./EasySpider_windows_x32", file_name)
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
         file_name = f"EasySpider_{easyspider_version}_Linux_x64.tar.xz"

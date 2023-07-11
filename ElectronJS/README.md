@@ -47,7 +47,7 @@ If you already have Chrome installed on your local machine, you can directly exe
 下载一个Chrome：[https://www.google.com/chrome/](https://www.google.com/chrome/)，然后找到Chrome安装后的文件夹，如`C:\Program Files\Google\Chrome\Application`，把这个文件夹拷贝到此`ElectronJS`文件夹内，并按照以下格式更名：
 
 ```
-chrome_win32/ # for windows x86
+chrome_win32/ # for windows x32
 chrome_win64/ # for windows x64
 chrome_linux64/ # for linux x64
 chrome_mac64/ # for mac x64
@@ -56,7 +56,7 @@ chrome_mac64/ # for mac x64
 然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)，把chromedriver放入刚刚的chrome文件夹内，并更名为下面的格式：
 
 ```
-chromedriver_win32.exe # for windows x86
+chromedriver_win32.exe # for windows x32
 chromedriver_win64.exe # for windows x64
 chromedriver_linux64 # for linux x64
 chromedriver_mac64 # for mac x64
@@ -70,7 +70,7 @@ chromedriver_mac64 # for mac x64
 Download a Chrome from the Internet: https://www.google.com/chrome/, and then put them into this folder, with name format of the following:
 
 ```
-chrome_win32/ # for windows x86
+chrome_win32/ # for windows x32
 chrome_win64/ # for windows x64
 chrome_linux64/ # for linux x64
 chrome_mac64/ # for mac x64
@@ -79,7 +79,7 @@ chrome_mac64/ # for mac x64
 Then, download the corresponding chromedriver from the Internet on this page: https://chromedriver.chromium.org/downloads, note the **chromedriver version must match your chrome version!!!** And put them into corresponding chrome folder, with name format of the following:
 
 ```
-chromedriver_win32.exe # for windows x86
+chromedriver_win32.exe # for windows x32
 chromedriver_win64.exe # for windows x64
 chromedriver_linux64 # for linux x64
 chromedriver_mac64 # for mac x64

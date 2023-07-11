@@ -4,7 +4,7 @@ Welcome to promote this software to other friends.
 
 This version is for Windows 10 x64 and above.
 
-The Windows version supports **Windows 10 and above**. If you want to use EasySpider on windows 7, please download the Windows x86 version of EasySpider.
+The Windows version supports **Windows 10 and above**. If you want to use EasySpider on windows 7, please download the Windows x32 version of EasySpider.
 
 Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
 
