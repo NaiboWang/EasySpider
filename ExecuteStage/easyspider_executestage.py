@@ -1221,29 +1221,42 @@ class BrowserThread(Thread):
                     # p["relativeXPath"] = p["relativeXPath"].lower()
                     # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
                     # 已经有text()或@href了，不需要再加
+                    content_type = ""
                     if p["relativeXPath"].find("/@href") >= 0 or p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
-                        xpath = p["relativeXPath"]
+                        content_type = ""
                     elif p["nodeType"] == 2:
-                        xpath = p["relativeXPath"] + "/@href"
+                        content_type = "/@href"
                     elif p["contentType"] == 1:
-                        xpath = p["relativeXPath"] + "/text()"
+                        content_type = "/text()"
                     elif p["contentType"] == 0:
-                        xpath = p["relativeXPath"] + "//text()"
+                        content_type = "//text()"
+                    xpath = p["relativeXPath"] + content_type
                     if p["relative"]:
                         # if p["relativeXPath"] == "":
                         #     content = [loopElementHTML]
                         # else:
                         # 如果字串里有//即子孙查找，则不动语句
                         if p["relativeXPath"].find("//") >= 0:
-                            full_path = "(" + parentPath + \
-                                xpath + ")" + \
-                                "[" + str(index + 1) + "]"
-                            content = pageHTML.xpath(full_path)
+                            if xpath.startswith("/"): 
+                                full_path = "(" + parentPath  + ")" + \
+                                        "[" + str(index + 1) + "]"+ \
+                                        p["relativeXPath"] + content_type
+                            else: # 如果是id()这种形式，不需要包parentPath
+                                full_path = xpath
+                            try:
+                                content = pageHTML.xpath(full_path)
+                            except:
+                                content = []
+                        elif not p["relativeXPath"].startswith("/"): # 如果是id()这种形式，不需要包/html/body
+                            try:
+                                content = loopElementHTML.xpath(xpath)
+                            except:
+                                content = []
                         else:
                             content = loopElementHTML.xpath(
                                 "/html/body/" + loopElementHTML[0][0].tag + xpath)
                     else:
-                        if xpath.find("/body") < 0:
+                        if xpath.find("/body") < 0 and xpath.startswith("/"): # 如果是id()或(//div)[1]这种形式，不需要包/html/body
                             xpath = "/html/body" + xpath
                         content = pageHTML.xpath(xpath)
                     if len(content) > 0:
@@ -1289,9 +1302,12 @@ class BrowserThread(Thread):
                             else:
                                 # 如果字串里有//即子孙查找，则不动语句
                                 if p["relativeXPath"].find("//") >= 0:
-                                    full_path = "(" + parentPath + \
-                                        p["relativeXPath"] + ")" + \
-                                        "[" + str(index + 1) + "]"
+                                    # full_path = "(" + parentPath + \
+                                    #     p["relativeXPath"] + ")" + \
+                                    #     "[" + str(index + 1) + "]"
+                                    full_path = "(" + parentPath + ")" + \
+                                        "[" + str(index + 1) + "]" + \
+                                        p["relativeXPath"]
                                     element = self.browser.find_element(
                                         By.XPATH, full_path, iframe=p["iframe"])
                                 else:
@@ -1462,10 +1478,8 @@ if __name__ == '__main__':
 
     option.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
-    options.add_argument('-ignore-certificate-errors')
-    options.add_argument('-ignore -ssl-errors')
-    option.add_argument('-ignore-certificate-errors')
-    option.add_argument('-ignore -ssl-errors')
+    options.add_argument('log-level=3')  # 隐藏日志
+    option.add_argument('log-level=3')  # 隐藏日志
     # user_data_dir = r''  # 注意没有Default！
 
     # options.add_argument('--user-data-dir='+p)
@@ -1559,8 +1573,6 @@ if __name__ == '__main__':
             if sys.platform != "darwin":
                 browser_t = MyUCChrome(
                 options=options, chrome_options=option, driver_executable_path=driver_path)
-                print("Pass Cloudflare Mode")
-                print("过Cloudflare验证模式")
             else:
                 print("Not support Cloudflare Mode on MacOS")
                 print("MacOS不支持Cloudflare验证模式")
@@ -1587,6 +1599,9 @@ if __name__ == '__main__':
         print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
         print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
         print("----------------------------------\n\n")
+        if cloudflare:
+            print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
+            print("Passing Cloudflare verification mode is sometimes unstable, if you cannot pass the verification, you need to try again every few minutes, or you can change a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
         try:
             with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:

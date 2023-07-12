@@ -451,7 +451,7 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
             service = None
 
         super(Chrome, self).__init__(
-            executable_path=driver_executable_path,
+            executable_path=self.patcher.executable_path,
             port=port,
             options=options,
             service_args=service_args,

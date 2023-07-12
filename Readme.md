@@ -32,6 +32,12 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 ![animation_en](media/animation_en.gif)
 
+### 更多特性/More Features
+
+更多特性请翻到页面底部查看。
+
+More features please scroll to the bottom of this page to view.
+
 ## 下载易采集/Download EasySpider
 
 进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
@@ -143,6 +149,11 @@ At the same time, the software is protected by patent rights. If you want to use
 查看[编译说明](ElectronJS/README.md)。
 
 Refer to [Compilation Instructions](ElectronJS/README.md).
+
+## 支持特性/Supported Features
+
+![pic](media/features_CN.png)
+![pic](media/features_EN.png)
 
 ## 中文界面截图
 

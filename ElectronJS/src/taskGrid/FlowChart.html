@@ -456,7 +456,7 @@
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
-                            <p><label>(Advanced Operation) Define loop exit condition using code/script:</label></p>
+                            <p><label>(Advanced Operation) Define loop exit condition using code/script; or you can add a <b>Custom Action</b>, then select the "Exit Loop" option:</label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value=0>Do not set script (even if a script is written below, it will not be executed)</option>
                                 <option value=1>JavaScript script (start with 'return ')</option>

@@ -451,12 +451,12 @@
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
-                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素或数据变化为止）：</label>
+                    <label v-if='parseInt(loopType) == 0'>最多执行循环次数（0代表无限循环直到找不到元素或检测不到页面内容变化为止）：</label>
                     <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
-                            <p><label>（高级操作）使用代码/脚本定义循环退出条件（也可以在流程中添加自定义操作，然后选择Break选项）： </label></p>
+                            <p><label>（高级操作）使用代码/脚本定义循环退出条件（也可以在流程中添加<b>自定义操作</b>，然后选择<b>退出循环</b>选项）： </label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
                                 <option value = 1>JavaScript脚本返回值（需以return 开头）</option>

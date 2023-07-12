@@ -116,18 +116,24 @@ class Patcher(object):
         #     # -1 being a skip value used later in this block
         #
         p = pathlib.Path(self.data_path)
-        with Lock():
-            files = list(p.rglob("*chromedriver*?"))
-            for file in files:
-                if self.is_binary_patched(file):
-                    self.executable_path = str(file)
-                    return True
+        # with Lock():
+        #     files = list(p.rglob("*chromedriver*?"))
+        #     for file in files:
+        #         if self.is_binary_patched(file):
+        #             self.executable_path = str(file)
+        #             return True
 
         if executable_path:
             self.executable_path = executable_path
             self._custom_exe_path = True
 
         if self._custom_exe_path:
+            file_name, file_extension = os.path.splitext(self.executable_path)
+            # 创建新的文件名
+            new_file = f"{file_name}_uc{file_extension}"
+            if not os.path.exists(new_file):
+                shutil.copy(self.executable_path, new_file)
+            self.executable_path = new_file # 用新的chromedriver
             ispatched = self.is_binary_patched(self.executable_path)
             if not ispatched:
                 return self.patch_exe()
