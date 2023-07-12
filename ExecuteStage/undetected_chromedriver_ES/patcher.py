@@ -141,8 +141,8 @@ class Patcher(object):
             folder_list = [f for f in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, f))]
             numeric_folders = [f for f in folder_list if f[0].isdigit()]
             version = numeric_folders[0].split('.')[0]
-            print(f"\n\n\nCloudflare下需要自行安装浏览器，请确保自己的机器环境已经安装了 {numeric_folders[0].split('.')[0]} 版本的Chrome浏览器（不是软件自带的Chrome浏览器，需要自己安装浏览器且版本号一定要正确），否则程序无法运行！")
-            print("Please make sure that your machine environment has installed the Chrome browser version %s (not the Chrome browser provided by the software, you need to install the browser yourself and the version number must be correct), otherwise the program cannot run!" % numeric_folders[0].split('.')[0])
+            # print(f"\n\n\nCloudflare下需要自行安装浏览器，请确保自己的机器环境已经安装了 {numeric_folders[0].split('.')[0]} 版本的Chrome浏览器（不是软件自带的Chrome浏览器，需要自己安装浏览器且版本号一定要正确），否则程序无法运行！")
+            # print("Please make sure that your machine environment has installed the Chrome browser version %s (not the Chrome browser provided by the software, you need to install the browser yourself and the version number must be correct), otherwise the program cannot run!" % numeric_folders[0].split('.')[0])
             
             if not ispatched:
                 print("Patching chromedriver...")

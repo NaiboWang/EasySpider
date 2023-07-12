@@ -371,6 +371,37 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
             options.binary_location = (
                 browser_executable_path or find_chrome_executable(chrome_version)
             )
+        if not os.path.exists(options.binary_location):
+            time.sleep(5)
+            # 如果没有安装，可以在下面的链接下载安装：https://www.google.com/chrome/beta/
+            print(f"""\n\n\n要想过Cloudflare验证，需要以下目录存在115版本的Chrome Beta版浏览器，注意是Beta版不是正式版：C:\Program Files\Google\Chrome Beta
+                    如果Beta版本不是115，请在软件下载目录中找到Chrome_Beta_115_win64.7z压缩包，然后解压并复制（覆盖）为C:\Program Files\Google\Chrome Beta目录即可。
+                    
+                    请手动关闭此程序，配置完成后重新执行任务。
+                  
+                    """)
+            print("""To pass the Cloudflare verification, you need the following directory to exist in the 115 version of Chrome Beta, note that it is the Beta version not the official version: C:\Program Files\Google\Chrome Beta, 
+                    If the Beta version is not 115, please find the Chrome_Beta_115_win64.7z compressed package in the software download directory, then unzip and copy (overwrite) to the C:\Program Files\Google\Chrome Beta directory.
+                    
+                    Please close this program manually and re-execute the task after the configuration is complete.
+                    
+                    """)
+
+            time.sleep(100)
+        else: 
+            folder_path = os.path.dirname(os.path.abspath(options.binary_location))
+            folder_list = [f for f in os.listdir(folder_path) if os.path.isdir(os.path.join(folder_path, f))]
+            numeric_folders = [f for f in folder_list if f[0].isdigit()]
+            version = numeric_folders[0].split('.')[0]
+            if version != "115":
+                time.sleep(5)
+                print("Chrome Beta版本不是115，请将Chrome Beta的版本替换为115， 方法为下载115版本的Chrome Beta浏览器，然后解压并覆盖C:\Program Files\Google\Chrome Beta目录即可，软件下载目录中有Chrome_Beta_115_win64.7z版本的压缩包，可直接下载后解压替换。")
+                print("Chrome Beta version is not 115, please replace the version of Chrome Beta with 115, the method is to download the 115 version of Chrome Beta browser, then unzip and overwrite the C:\Program Files\Google\Chrome Beta directory, the software download directory has Chrome_Beta_115_win64.7z version of the compressed package, you can download and unzip directly to replace.")
+                print("\n请手动关闭此程序。\n")
+                print("\nPlease close this program manually.\n")
+                time.sleep(100)
+                
+
         
         print("Options Binary Location: ", options.binary_location)
 
@@ -855,7 +886,11 @@ def find_chrome_executable(version):
                     candidates.add(os.sep.join((item, subitem, "chrome.exe")))
     for candidate in candidates:
         if os.path.exists(candidate) and os.access(candidate, os.X_OK):
-            print("\n\n\n软件将会使用以下目录的Chrome浏览器：", os.path.normpath(candidate), "，请检查此浏览器版本是否为" + str(version) + "版本，如果不是将无法运行。")
-            print("The software will use the Chrome browser in the following directory:", os.path.normpath(candidate), "Please check if the version of this browser is version " + str(version) + ", if not, it will not be able to run.\n\n\n")
+            print(f"""\n\n\n要想过Cloudflare验证，需要满足以下条件：
+                  自己的环境已经安装了115版本的Chrome Beta版浏览器，注意是Beta版不是正式版，且浏览器安装路径必须保持不变，在C:\Program Files\Google\Chrome Beta\Application\chrome.exe
+                  如果没有安装，可以在下面的链接下载安装：https://www.google.com/chrome/beta/
+                  软件将会使用以下目录的Chrome Beta浏览器：", {os.path.normpath(candidate)}, "，请检查此浏览器版本是否为 115 版本的Beta浏览器，如果不是将无法运行。""")
+            # print("The software will use the Chrome browser in the following directory:", os.path.normpath(candidate), "Please check if the version of this browser is version " + str(version) + ", if not, it will not be able to run.\n\n\n")
+            print(f"""The software will use the Chrome browser in the following directory: {os.path.normpath(candidate)}, Please check if the version of this browser is version 115, if not, it will not be able to run.\n\n\n""")
             time.sleep(5)
             return os.path.normpath(candidate)

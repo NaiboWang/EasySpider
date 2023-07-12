@@ -44,10 +44,10 @@ function detectLang(str) {
 
     if (enCount === cnCount) {
         return 2;
-    } else if (enCount > cnCount) {
-        return 0;
+    } else if (cnCount>=3) {
+        return 1;
     }
-    return 1;
+    return 0;
 }
 
 Vue.filter('lang', function (value) {

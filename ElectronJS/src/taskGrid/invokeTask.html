@@ -208,6 +208,8 @@
                 <label>{{"User Data Folder (If you want to load the cookie, data and extension(s) from your local browser, please set this folder path, and then cilck the 'Run with (Data Mode)' button to run the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息，插件和cookie，请设置此目录，并点击下方“执行（带用户信息模式）”按钮开始执行任务）：" | lang}}</label>
                 <input type="text" class="form-control" v-model="user_data_folder"></input>
             </div>
+            <p v-if="task['cloudflare']==1">{{`要想过Cloudflare验证，需要以下目录存在115版本的Chrome Beta版浏览器，注意是Beta版不是正式版：C:\\Program Files\\Google\\Chrome Beta。如果Beta版本不是115，请在软件下载目录中找到Chrome_Beta_115_win64.7z压缩包，然后解压并复制（覆盖）为C:\\Program Files\\Google\\Chrome Beta目录即可。~To pass the Cloudflare verification, you need the following directory to exist in the 115 version of Chrome Beta, note that it is the Beta version not the official version: C:\\Program Files\\Google\\Chrome Beta,
+                If the Beta version is not 115, please find the Chrome_Beta_115_win64.7z compressed package in the software download directory, then unzip and copy (overwrite) to the C:\\Program Files\\Google\\Chrome Beta directory.` | lang }}</p>
             <div class="form-group" style="margin-top: 10px" v-if="task.outputFormat=='mysql'">
                 <label>{{"MySQL configuration file Path, relative to this folder:~MySQL配置文件路径，路径相对此文件夹：" | lang}} {{config_folder}}</label>
                 <input type="text" class="form-control" v-model="mysql_config_path"></input>

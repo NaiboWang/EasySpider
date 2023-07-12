@@ -9,7 +9,7 @@ import platform
 import shutil
 import zipfile
 import urllib.request
-import py7zr
+# import py7zr
 
 def compress_folder_to_7z(folder_path, output_file):
     if os.path.exists(output_file):

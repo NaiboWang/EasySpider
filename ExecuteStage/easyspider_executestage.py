@@ -615,13 +615,17 @@ class BrowserThread(Thread):
             while True:  # do while循环
                 try:
                     finished = False
-                    newBodyText = self.browser.page_source
+                    # newBodyText = self.browser.page_source
+                    newBodyText = self.browser.find_element(By.XPATH, "//body").text
                     if newBodyText == bodyText:  # 如果页面内容无变化
                         print("页面已检测不到新内容，停止循环。")
                         print("No new content detected on the page, stop loop.")
                         finished = True
                         break
                     else:
+                        if node["parameters"]["exitCount"] == 0:
+                            print("检测到页面变化，继续循环。")
+                            print("Page changed detected, continue loop.")
                         bodyText = newBodyText
                     element = self.browser.find_element(
                         By.XPATH, node["parameters"]["xpath"], iframe=node["parameters"]["iframe"])
@@ -1577,13 +1581,14 @@ if __name__ == '__main__':
             browser_t = MyChrome(
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
-            if sys.platform != "darwin":
-                options.binary_location = "" # 需要用自己的浏览器
+            if sys.platform == "win32":
+                options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe" # 需要用自己的浏览器
+                # options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # 需要用自己的浏览器
                 browser_t = MyUCChrome(
-                options=options)
+                options=options, driver_executable_path=driver_path)
             else:
-                print("Not support Cloudflare Mode on MacOS")
-                print("MacOS不支持Cloudflare验证模式")
+                print("Cloudflare模式只支持Windows x64平台。")
+                print("Cloudflare Mode only support on Windows x64 platform.")
                 sys.exit()
         event = Event()
         event.set()
@@ -1607,9 +1612,9 @@ if __name__ == '__main__':
         print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
         print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
         print("----------------------------------\n\n")
-        if cloudflare:
-            print("过Cloudflare验证模式有时候会不稳定，请注意观察上方提示的浏览器版本信息是否正确，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
-            print("Passing the Cloudflare verification mode is sometimes unstable. Please pay attention to whether the browser version information prompted above is correct. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
+        # if cloudflare:
+        #     print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
+        #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
         try:
             with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:

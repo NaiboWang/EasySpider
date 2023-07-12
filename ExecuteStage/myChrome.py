@@ -12,6 +12,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
+import sys
+
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -89,11 +91,11 @@ class MyChrome(webdriver.Chrome):
         else:
             return super().find_elements(by=by, value=value)
 
-import sys
-if sys.platform != "darwin": # MacOS不支持Cloudflare
-    ES = 1
-    if ES == 1:
-        import undetected_chromedriver as uc
+# MacOS不支持直接打包带Cloudflare的功能，如果要自己编译运行，可以把这个if去掉，然后配置好浏览器和driver路径
+if sys.platform != "darwin": 
+    ES = True
+    if ES: # 用自己写的ES版本
+        import undetected_chromedriver_ES as uc
     else:
         import undetected_chromedriver as uc
 

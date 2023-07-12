@@ -55,6 +55,10 @@ var app = Vue.createApp({
             this.init = false;
             this.lang = lang;
         },
+        acceptAgreement() {
+            this.step = 0;
+            window.electronAPI.acceptAgreement();
+        },
         startDesign(lang, with_data = false, mobile=false) {
             if (with_data) {
                 console.log(this.user_data_folder)

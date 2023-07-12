@@ -105,14 +105,14 @@ let handle_pairs = {};
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 520,
+        width: 550,
         height: 750,
         webPreferences: {
             preload: path.join(__dirname, 'src/js/preload.js')
         },
         icon: iconPath,
         // frame: false, //取消window自带的关闭最小化等
-        // resizable: false //禁止改变主窗口尺寸
+        resizable: false //禁止改变主窗口尺寸
     })
 
     // and load the index.html of the app.
@@ -126,7 +126,7 @@ function createWindow() {
             app.quit();
         }
     });
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 }
@@ -549,6 +549,10 @@ app.whenReady().then(() => {
     })
     ipcMain.on('start-design', handleOpenBrowser);
     ipcMain.on('start-invoke', handleOpenInvoke);
+    ipcMain.on('accept-agreement', function (event, arg) {
+        config.copyright = 1;
+        fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
+    });
     createWindow();
 
     app.on('activate', function () {
