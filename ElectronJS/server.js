@@ -64,6 +64,7 @@ if(!fs.existsSync(path.join(getDir(), "config.json"))){
                 "webserver_port": 8074,
                 "user_data_folder": "./user_data",
                 "debug": false,
+                "copyright": 0,
                 "mysql_config_path": "./mysql_config.json",
                 "absolute_user_data_folder": "D:\\Document\\Projects\\EasySpider\\ElectronJS\\user_data"
             }

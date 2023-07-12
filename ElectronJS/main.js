@@ -112,12 +112,12 @@ function createWindow() {
         },
         icon: iconPath,
         // frame: false, //取消window自带的关闭最小化等
-        resizable: false //禁止改变主窗口尺寸
+        // resizable: false //禁止改变主窗口尺寸
     })
 
     // and load the index.html of the app.
     // mainWindow.loadFile('src/index.html');
-    mainWindow.loadURL(server_address + '/index.html?user_data_folder=' + config.user_data_folder, { extraHeaders: 'pragma: no-cache\n' });
+    mainWindow.loadURL(server_address + '/index.html?user_data_folder=' + config.user_data_folder+"&copyright=" + config.copyright, { extraHeaders: 'pragma: no-cache\n' });
     // 隐藏菜单栏
     const {Menu} = require('electron');
     Menu.setApplicationMenu(null);
@@ -126,7 +126,7 @@ function createWindow() {
             app.quit();
         }
     });
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
 }

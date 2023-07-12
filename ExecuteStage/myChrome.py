@@ -91,7 +91,11 @@ class MyChrome(webdriver.Chrome):
 
 import sys
 if sys.platform != "darwin": # MacOS不支持Cloudflare
-    import undetected_chromedriver_ES as uc
+    ES = 1
+    if ES == 1:
+        import undetected_chromedriver as uc
+    else:
+        import undetected_chromedriver as uc
 
     class MyUCChrome(uc.Chrome):
 

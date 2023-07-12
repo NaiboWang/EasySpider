@@ -254,7 +254,7 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
             user_multi_procs=user_multi_procs,
         )
         # self.patcher.auto(user_multiprocess = user_multi_num_procs)
-        self.patcher.auto()
+        chrome_version = self.patcher.auto()
 
         # self.patcher = patcher
         if not options:
@@ -369,8 +369,10 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
 
         if not options.binary_location:
             options.binary_location = (
-                browser_executable_path or find_chrome_executable()
+                browser_executable_path or find_chrome_executable(chrome_version)
             )
+        
+        print("Options Binary Location: ", options.binary_location)
 
         self._delay = 3
 
@@ -811,7 +813,7 @@ class Chrome(selenium.webdriver.chrome.webdriver.WebDriver):
             self.service.process.kill()
 
 
-def find_chrome_executable():
+def find_chrome_executable(version):
     """
     Finds the chrome, chrome beta, chrome canary, chromium executable
 
@@ -853,4 +855,7 @@ def find_chrome_executable():
                     candidates.add(os.sep.join((item, subitem, "chrome.exe")))
     for candidate in candidates:
         if os.path.exists(candidate) and os.access(candidate, os.X_OK):
+            print("\n\n\n软件将会使用以下目录的Chrome浏览器：", os.path.normpath(candidate), "，请检查此浏览器版本是否为" + str(version) + "版本，如果不是将无法运行。")
+            print("The software will use the Chrome browser in the following directory:", os.path.normpath(candidate), "Please check if the version of this browser is version " + str(version) + ", if not, it will not be able to run.\n\n\n")
+            time.sleep(5)
             return os.path.normpath(candidate)

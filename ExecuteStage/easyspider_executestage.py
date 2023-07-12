@@ -1437,6 +1437,8 @@ if __name__ == '__main__':
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
+            option.binary_location = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
@@ -1444,12 +1446,15 @@ if __name__ == '__main__':
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
+            option.binary_location = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
+            option.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
             option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
@@ -1469,6 +1474,7 @@ if __name__ == '__main__':
         print("Finding chromedriver in EasySpider",
                os.getcwd()+"/ElectronJS")
         option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+        options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
         driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
         option.add_extension("../ElectronJS/XPathHelper.crx")
     else:
@@ -1478,8 +1484,7 @@ if __name__ == '__main__':
 
     option.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
-    options.add_argument('log-level=3')  # 隐藏日志
-    option.add_argument('log-level=3')  # 隐藏日志
+    
     # user_data_dir = r''  # 注意没有Default！
 
     # options.add_argument('--user-data-dir='+p)
@@ -1541,6 +1546,8 @@ if __name__ == '__main__':
         except:
             cloudflare = 0
         if cloudflare == 0:
+            options.add_argument('log-level=3')  # 隐藏日志
+            option.add_argument('log-level=3')  # 隐藏日志
             options.add_experimental_option("prefs", {
                 # 设置文件下载路径
                 "download.default_directory": "Data/Task_" + str(i),
@@ -1571,8 +1578,9 @@ if __name__ == '__main__':
                 options=options, chrome_options=option, executable_path=driver_path)
         elif cloudflare == 1:
             if sys.platform != "darwin":
+                options.binary_location = "" # 需要用自己的浏览器
                 browser_t = MyUCChrome(
-                options=options, chrome_options=option, driver_executable_path=driver_path)
+                options=options)
             else:
                 print("Not support Cloudflare Mode on MacOS")
                 print("MacOS不支持Cloudflare验证模式")
@@ -1600,8 +1608,8 @@ if __name__ == '__main__':
         print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
         print("----------------------------------\n\n")
         if cloudflare:
-            print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
-            print("Passing Cloudflare verification mode is sometimes unstable, if you cannot pass the verification, you need to try again every few minutes, or you can change a new user information folder and then execute the task.")
+            print("过Cloudflare验证模式有时候会不稳定，请注意观察上方提示的浏览器版本信息是否正确，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
+            print("Passing the Cloudflare verification mode is sometimes unstable. Please pay attention to whether the browser version information prompted above is correct. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
         try:
             with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:

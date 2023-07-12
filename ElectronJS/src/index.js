@@ -24,11 +24,16 @@ var app = Vue.createApp({
             init: true,
             lang: 'zh',
             user_data_folder: getUrlParam("user_data_folder"),
+            copyright: 0,
             step: 0,
             newest_version: '-', // 最新版本号
         }
     },
     mounted() {
+        this.copyright = parseInt(getUrlParam("copyright"));
+        if(this.copyright == 0){
+            this.step = -1;
+        }
         // 发送GET请求获取GitHub的Release API响应
         const request = new XMLHttpRequest();
         request.open('GET', `https://api.github.com/repos/NaiboWang/EasySpider/releases/latest`);

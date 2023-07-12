@@ -55,9 +55,6 @@
 
     <div style="padding: 10px; text-align: center;vertical-align: middle;" v-else>
         <div v-if="lang=='en'">
-            <div v-if="step == -1">
-                TEST
-            </div>
             <div v-if="step == 0">
                 <p style="margin-top: 20px">Hint: Click Button below to start.</p>
 
@@ -128,11 +125,6 @@
             </div>
         </div>
         <div v-else-if="lang=='zh'">
-            <div v-if="step == -1">
-                <h4 style="margin-top: 20px">版权和注意事项声明</h4>
-                <p>请仔细阅读下方有关软件使用和商用付费的说明，并接受使用协议以使用本软件。</p>
-                <textarea class="form-control" style="min-height: 200px;" readonly>
-            </div>
             <div v-if="step == 0">
                 <p style="margin-top: 20px">提示：点击下方按钮开始使用。</p>
 

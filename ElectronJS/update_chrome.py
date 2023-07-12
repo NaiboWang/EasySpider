@@ -51,7 +51,9 @@ def get_chrome_version():
     return "115"
 
 
-update_version = get_chrome_version()  # 要更新的chromedriver版本
+chrome_version = get_chrome_version()  # 要更新的chromedriver版本
+
+print("Detected your chrome version is: ", chrome_version)
 
 chrome_driver_url = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
 win64_chrome_path = "C:\\Program Files\\Google\\Chrome\\Application"
@@ -84,7 +86,7 @@ if __name__ == "__main__":
         versions = versions[::-1] # 倒序排列数组
         for info in versions:
             version = info["version"]
-            if version.find(update_version) >= 0:
+            if version.find(chrome_version) >= 0:
                 downloads = info["downloads"]
                 if "chromedriver" in downloads:
                     print(info["version"])
@@ -93,11 +95,11 @@ if __name__ == "__main__":
     else:
         print("Error: " + response.status_code)
         exit(1)
-    if not driver_downloads and int(update_version) < 115:
-        if update_version not in old_driver_version:
+    if not driver_downloads and int(chrome_version) < 115:
+        if chrome_version not in old_driver_version:
             print("没有可用的chromedriver")
             exit(1)
-        full_version = old_driver_version[update_version]
+        full_version = old_driver_version[chrome_version]
         driver_downloads = [
             {
                 "platform": "linux64",
@@ -120,6 +122,7 @@ if __name__ == "__main__":
                 "url": f"http://chromedriver.storage.googleapis.com/{full_version}/chromedriver_win32.zip",
             },
         ]
+
     if os.path.exists("./chromedrivers"):
         shutil.rmtree("./chromedrivers")
     os.mkdir("./chromedrivers")
@@ -127,7 +130,7 @@ if __name__ == "__main__":
         for download in driver_downloads:
             if download["platform"] == "win64":
                 url = download["url"]
-                print(url)
+                print("ChromeDriver will be downloaded from: ", url)
                 break
         download_and_extract_zip(url, "./chromedrivers")
         if os.path.exists("./chrome_win64"):
@@ -154,7 +157,7 @@ if __name__ == "__main__":
         for download in driver_downloads:
             if download["platform"] == "win32":
                 url = download["url"]
-                print(url)
+                print("ChromeDriver will be downloaded from: ", url)
                 break
         download_and_extract_zip(url, "./chromedrivers")
         if os.path.exists("./chrome_win32"):
@@ -167,13 +170,13 @@ if __name__ == "__main__":
         copy_file("./stealth.min.js", "./chrome_win32/stealth.min.js")
         try:
             copy_file(
-                "./chromedrivers/chromedriver-win64/chromedriver.exe",
-                "./chrome_win64/chromedriver_win64.exe",
+                "./chromedrivers/chromedriver-win32/chromedriver.exe",
+                "./chrome_win32/chromedriver_win32.exe",
             )
         except:
             copy_file(
                 "./chromedrivers/chromedriver.exe",
-                "./chrome_win64/chromedriver_win64.exe",
+                "./chrome_win32/chromedriver_win64.exe",
             )
         finally:
             shutil.rmtree("./chromedrivers")
