@@ -189,6 +189,7 @@
                     <p>
                         <button class="btn btn-primary" v-on:mousedown= 'addPara'>New Field</button>
                     </p>
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>Clear other field existing values before extracting</p>
                     <div class="toolkitcontain">
                         <table class="toolkittb2" cellspacing="0">
                             <tbody>
@@ -251,6 +252,8 @@
                             <option value = "longText">Extra Large Text (single value length exceeding 1,000,000)</option>
                             <option value = "bigInt">Large Integer (more than 9 digits)</option>
                         </select>
+                        <label>Default value when cannot find this element:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
                         <label>Extract Type</label>
                         <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>Text (include child element)</option>
@@ -267,10 +270,8 @@
                             <option :value = 10>Selected value of the current select box</option>
                             <option :value = 11>Selected text of the current select box</option>
                         </select>
-                        <label>Default value when cannot find this element:</label>
-                        <input onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></textarea>
                         <div v-if='paras.parameters[paraIndex]["contentType"] == 9'>
-                            <label>JavaScript Code (Use Field["FieldName"] to input the last extracted value of a field): </label>
+                            <label>JavaScript Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
                                       placeholder='The element should be represented by arguments[0]. Here is an example: return arguments[0].innerText + "US Dollar". This code extracts the innerText of the element and appends "US Dollar"  to it.' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
                             <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
@@ -309,15 +310,20 @@
 
 
                 <div class="elements" v-if="nodeType==4">
-                    <div v-if="nowNode['isInLoop']">
-                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use text inside the Loop (If not checked, the text entered each time will be the text inside the "Input Value" textbox below. If checked, the text set within the loop will be used)</p>
-                    </div>
-                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
-                    <div v-if='!useLoop'>
-                        <label>Input Value (Use Field["FieldName"] to input the last extracted value of a field, Use &lt;enter&gt; or &lt;ENTER&gt; to simulate pressing the Enter key):</label>
-                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
-                    </div>
+                    <p>
+                        <input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>
+                        Use text from the loop (If unchecked, the text entered each time will be the text from the "Input Value" text box below. If checked, it will use the text set within the loop.)
+                    </p>
+                    <p v-if="useLoop">
+                        <label>Index value (0 represents using the entire current loop text. If greater than 0, it represents the text index value separated by "~" within the current loop. For example, if the current loop text value is A~B, index value 1 represents inputting A, 2 represents inputting B, and 0 represents inputting A~B)</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input>
+                    </p>
+                </div>
+
+                <div v-if='!useLoop'>
+                    <label>Input value (Use Field["FieldName"] to input the latest extracted/returned value of a field or custom operation. Use &lt;enter&gt; or &lt;ENTER&gt; to simulate pressing the Enter key):</label>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
+                </div>
 
                     <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
@@ -350,11 +356,11 @@
                         <option value = 1>Execute operating system-level command</option>
                         <option v-if="nowNode['isInLoop']" value = 2>Execute JavaScript script for the current element inside the loop</option>
                         <option v-if="nowNode['isInLoop']" value = 3>Exit Current Loop (the "Break" operation)</option>
-
+                        <option v-if="nowNode['isInLoop']" value = 4>Skip Current Loop (the "Continue" operation)</option>
                     </select>
 
                     <div v-if='nowNode["parameters"]["codeMode"] < 3'>
-                        <label>Code (Use Field["FieldName"] to input the last extracted value of a field): </label>
+                        <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
                         <p style="margin-top: 15px">Whether to record the output/return value of the execution as a field: </p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
@@ -362,7 +368,7 @@
                             <option value = 1>Yes</option>
                         </select></p>
                         <p><label>Convert parameter type to:</label>
-                        <select v-model='paras.parameters[paraIndex]["paraType"]' class="form-control">
+                        <select v-model='nowNode["parameters"]["paraType"]' class="form-control">
                             <option value = "text">Text (for single values estimated to exceed 10,000 in length, please choose Large Text)</option>
                             <option value = "int">Integer (up to 9 digits)</option>
                             <option value = "double">Floating Number (Decimal)</option>
@@ -374,6 +380,13 @@
                             <option value = "longText">Extra Large Text (single value length exceeding 1,000,000)</option>
                             <option value = "bigInt">Large Integer (more than 9 digits)</option>
                         </select>
+                        </p>
+                        <p>
+                            <label>Clear values of other parameters before record as a field:</label>
+                            <select v-model='nowNode["parameters"]["clear"]' class="form-control">
+                                <option :value = 0>No</option>
+                                <option :value = 1>Yes</option>
+                            </select>
                         </p>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
@@ -441,11 +454,11 @@
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["pathList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 5'>
-                        <label>Content List (Use Field["FieldName"] to input the last extracted value of a field):</label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="One text/URL per line. You cannot use expressions like @href or text() within loops in XPath. You can only locate elements, but cannot fetch attribute values. Declaratives like @href and text() are only supported in data extraction operations. Moreover, it is not recommended to use them. Instead, it's suggested choosing the node type and type of the content to collect directly within data extraction operations." v-model='nowNode["parameters"]["textList"]'></textarea>
+                        <label>Content List (Use Field["FieldName"] to input the lastest value of a field):</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="One text/URL per line. Each line is A text/URL, and the text is divided by ~, that is, if the value of A line is A~B, the index value can be set to 1 for A, 2 for B, and 0 for A~B in the input text operation." v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
                     <div v-else-if='parseInt(loopType) < 7'>
-                        <label>Code (Use Field["FieldName"] to input the last extracted value of a field):</label>
+                        <label>Code (Use Field["FieldName"] to input the lastest value of a field):</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="Continue the loop if the command return value is greater than 0 or evaluates to true; otherwise, stop the loop. For example, return document.body.scrollWidth > 1000 is an example of a JavaScript command return value, and python D:/test.py is an example of a system command return value."></textarea>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
@@ -568,6 +581,10 @@
                         <option value=0>No</option>
                         <option value=1>Yes (Only support on Windows x64 platform)</option>
                     </select>
+                    <label>
+                        To modify the input parameters of each operation during execution, read the following Excel (.xlsx) file. Please click the "Read Input Parameters from Excel File" button when calling the task to view the file format:
+                    </label>
+                    <input onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="If left empty, input parameters will not be read from Excel. The file path is relative to the EasySpider folder, e.g., inputs/task1.xlsx"></input>
                     <label>Browser Emulation Type:</label>
                     <select id="environment" name="environment" class="form-control">
                         <option value=0>Desktop</option>

@@ -47,9 +47,8 @@ exec(`wmic os get Caption`, function(error, stdout, stderr) {
 
     if (stdout.includes('Windows 7')) {
         console.log('Windows 7');
-        let sys_version = fs.readFileSync(path.join(__dirname, `sys_version.json`), 'utf8');
-        sys_version = JSON.parse(sys_version);
-        if (sys_version.arch === 'x64') {
+        let sys_arch = config.sys_arch;
+        if (sys_arch === 'x64') {
             dialog.showMessageBoxSync({
                 type: 'error',
                 title: 'Error',

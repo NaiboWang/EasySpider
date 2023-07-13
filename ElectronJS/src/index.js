@@ -18,7 +18,7 @@ function getUrlParam(name) {
     return "";
 }
 
-var app = Vue.createApp({
+let app = Vue.createApp({
     data() {
         return {
             init: true,

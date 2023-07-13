@@ -165,14 +165,17 @@ function addParameters(t) {
         t["parameters"]["afterJS"] = ""; //执行后执行的js
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
     } else if (t.option == 3) { //提取数据
+        t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["paras"] = []; //默认参数列表
     } else if (t.option == 4) { //输入文字
         t["parameters"]["value"] = "";
+        t["parameters"]["index"] = 0; //输入框索引
         t["parameters"]["beforeJS"] = ""; //执行前执行的js
         t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
         t["parameters"]["afterJS"] = ""; //执行后执行的js
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
     } else if(t.option == 5) { //自定义操作
+        t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["codeMode"] = 0; //代码模式，0代表JS, 2代表系统级别
         t["parameters"]["code"] = "";
         t["parameters"]["waitTime"] = 0; //最长等待时间
@@ -433,6 +436,7 @@ function saveService(type) {
             "maxViewLength": parseInt($("#maxViewLength").val()),
             "outputFormat": $("#outputFormat").val(),
             "saveName": $("#saveName").val(),
+            "inputExcel": $("#inputExcel").val(),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

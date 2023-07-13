@@ -65,6 +65,7 @@ if(!fs.existsSync(path.join(getDir(), "config.json"))){
                 "user_data_folder": "./user_data",
                 "debug": false,
                 "copyright": 0,
+                "sys_arch": require('os').arch(),
                 "mysql_config_path": "./mysql_config.json",
                 "absolute_user_data_folder": "D:\\Document\\Projects\\EasySpider\\ElectronJS\\user_data"
             }

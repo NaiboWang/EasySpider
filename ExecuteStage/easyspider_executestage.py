@@ -66,6 +66,7 @@ class BrowserThread(Thread):
         self.OUTPUT = ""
         self.SAVED = False
         self.BREAK = False
+        self.CONTINUE = False
         # 名称设定
         if saveName != "": # 命令行覆盖保存名称
             self.saveName = saveName  # 保存文件的名字
@@ -186,8 +187,13 @@ class BrowserThread(Thread):
                     cookies = node["parameters"]["cookies"]
                 except:
                     node["parameters"]["cookies"] = ""
-            if node["option"] == 3:  # 提取数据操作
+            elif node["option"] == 3:  # 提取数据操作
+                node["parameters"]["recordASField"] = 0
                 paras = node["parameters"]["paras"]
+                try:
+                    clear = node["parameters"]["clear"]
+                except:
+                    node["parameters"]["clear"] = 0
                 for para in paras:
                     try:
                         iframe = para["iframe"]
@@ -197,10 +203,28 @@ class BrowserThread(Thread):
                         para["relativeXPath"] = lowercase_tags_in_xpath(para["relativeXPath"])
                     except:
                         pass
+                    try:
+                        node["parameters"]["recordASField"] += para["recordASField"]
+                    except:
+                        node["parameters"]["recordASField"] += 1
+                    if para["contentType"] == 8:
+                        print("默认的OCR识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
+                        print("If you think the default OCR function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
                     if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
                         para["optimizable"] = True
                     else:
                         para["optimizable"] = False
+            elif node["option"] == 4:  # 输入文字
+                try:
+                    index = node["parameters"]["index"] # 索引值
+                except:
+                    node["parameters"]["index"] = 0
+            elif node["option"] == 5:  # 自定义操作
+                try:
+                    clear = node["parameters"]["clear"]
+                except:
+                    node["parameters"]["clear"] = 0
+            
 
     def run(self):
         # 挨个执行程序
@@ -283,7 +307,8 @@ class BrowserThread(Thread):
                     bodyText = ""
                     i = 0
                     while True:
-                        newBodyText = self.browser.page_source
+                        # newBodyText = self.browser.page_source
+                        newBodyText = self.browser.find_element(By.CSS_SELECTOR, "body", iframe=para["iframe"]).text
                         if newBodyText == bodyText:
                             print("页面已检测不到新内容，停止滚动。")
                             print("No new content detected on the page, stop scrolling.")
@@ -397,6 +422,8 @@ class BrowserThread(Thread):
 
     def customOperation(self, node, loopValue, loopPath, index):
         paras = node["parameters"]
+        if paras["clear"] == 1:
+            self.clearOutputParameters()
         codeMode = int(paras["codeMode"])
         code = paras["code"]
         output = ""
@@ -413,13 +440,15 @@ class BrowserThread(Thread):
                 print("JavaScript execution failed")
         elif codeMode == 3:
             self.BREAK = True
+        elif codeMode == 4:
+            self.CONTINUE = True
         else: # 0 1
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])
         recordASField = bool(paras["recordASField"])
-        if recordASField:
-            print("操作<" + node["title"] + ">的返回值为：" + output)
-            print("The return value of operation <" + node["title"] + "> is: " + output)
+        # if recordASField:
+        # print("操作<" + node["title"] + ">的返回值为：" + output)
+        # print("The return value of operation <" + node["title"] + "> is: " + output)
         self.outputParameters[node["title"]] = output
         if recordASField:
             line = new_line(self.outputParameters, self.maxViewLength, self.outputParametersRecord)
@@ -616,7 +645,8 @@ class BrowserThread(Thread):
                 try:
                     finished = False
                     # newBodyText = self.browser.page_source
-                    newBodyText = self.browser.find_element(By.XPATH, "//body").text
+                    # newBodyText = self.browser.find_element(By.XPATH, "//body").text
+                    newBodyText = self.browser.find_element(By.CSS_SELECTOR, "body", iframe=node["parameters"]["iframe"]).text
                     if newBodyText == bodyText:  # 如果页面内容无变化
                         print("页面已检测不到新内容，停止循环。")
                         print("No new content detected on the page, stop loop.")
@@ -632,7 +662,8 @@ class BrowserThread(Thread):
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(
                             i, element, node["parameters"]["xpath"], 0)
-                        if self.BREAK: # 如果有break操作，下面的操作不执行
+                        if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
+                            self.CONTINUE = False
                             break
                     if self.BREAK: # 如果有break操作，退出循环
                         self.BREAK = False
@@ -692,18 +723,23 @@ class BrowserThread(Thread):
                     for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
                         self.executeNode(i, elements[index],
                                          node["parameters"]["xpath"], index)
-                        if self.BREAK:
+                        if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
+                            self.CONTINUE = False
                             break
                     if self.BREAK:
                         self.BREAK = False
                         break
                     if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
-                        while True:  # 一直关闭窗口直到当前标签页
-                            self.browser.close()  # 关闭使用完的标签页
-                            self.browser.switch_to.window(
-                                self.browser.window_handles[-1])
-                            if self.browser.current_window_handle == thisHandle:
-                                break
+                        try:
+                            while True:  # 一直关闭窗口直到当前标签页
+                                self.browser.close()  # 关闭使用完的标签页
+                                self.browser.switch_to.window(
+                                    self.browser.window_handles[-1])
+                                if self.browser.current_window_handle == thisHandle:
+                                    break
+                        except Exception as e:
+                            print("关闭标签页发生错误：", e)
+                            print("Error occurred while closing tab: ", e)
                     if self.history["index"] != thisHistoryLength and self.history[
                             "handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
                         difference = thisHistoryLength - \
@@ -741,18 +777,23 @@ class BrowserThread(Thread):
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(i, element, path, 0)
-                        if self.BREAK:
+                        if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
+                            self.CONTINUE = False
                             break
                     if self.BREAK:
                         self.BREAK = False
                         break
                     if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
-                        while True:  # 一直关闭窗口直到当前标签页
-                            self.browser.close()  # 关闭使用完的标签页
-                            self.browser.switch_to.window(
-                                self.browser.window_handles[-1])
-                            if self.browser.current_window_handle == thisHandle:
-                                break
+                        try:
+                            while True:  # 一直关闭窗口直到当前标签页
+                                self.browser.close()  # 关闭使用完的标签页
+                                self.browser.switch_to.window(
+                                    self.browser.window_handles[-1])
+                                if self.browser.current_window_handle == thisHandle:
+                                    break
+                        except Exception as e:
+                            print("关闭标签页发生错误：", e)
+                            print("Error occurred while closing tab: ", e)
                     if self.history["index"] != thisHistoryLength and self.history[
                             "handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
                         difference = thisHistoryLength - \
@@ -788,7 +829,8 @@ class BrowserThread(Thread):
                 self.recordLog("input: " + text)
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, text, "", 0)
-                    if self.BREAK:
+                    if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
+                        self.CONTINUE = False
                         break
                 if self.BREAK:
                     self.BREAK = False
@@ -811,7 +853,8 @@ class BrowserThread(Thread):
                 self.recordLog("input: " + url)
                 for i in node["sequence"]:
                     self.executeNode(i, url, "", 0)
-                    if self.BREAK:
+                    if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
+                        self.CONTINUE = False
                         break
                 if self.BREAK:
                     self.BREAK = False
@@ -835,7 +878,8 @@ class BrowserThread(Thread):
                     break
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, code, node["parameters"]["xpath"], 0)
-                    if self.BREAK:
+                    if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
+                        self.CONTINUE = False
                         break
                 if self.BREAK:
                     self.BREAK = False
@@ -850,7 +894,10 @@ class BrowserThread(Thread):
         if len(self.browser.window_handles) > 1:
             self.browser.switch_to.window(
                 self.browser.window_handles[-1])  # 打开网页操作从第1个页面开始
-            self.browser.close()
+            try:
+                self.browser.close()
+            except:
+                pass
         self.browser.switch_to.window(
             self.browser.window_handles[0])  # 打开网页操作从第1个页面开始
         self.history["handle"] = self.browser.current_window_handle
@@ -943,6 +990,13 @@ class BrowserThread(Thread):
                     '<enter>', '', replaced_text, flags=re.IGNORECASE)
             except:
                 replaced_text = value
+            index = para["index"]
+            if index != 0:
+                try:
+                    replaced_text = replaced_text.split("~")[index - 1]
+                except:
+                    print("取值失败，可能是因为取值索引超出范围，将使用整个文本值")
+                    print("Failed to get value, maybe because the index is out of range, will use the entire text value")
             textbox.send_keys(replaced_text)
             if value.lower().find("<enter>") >= 0:
                 textbox.send_keys(Keys.ENTER)
@@ -1155,25 +1209,34 @@ class BrowserThread(Thread):
                 screenshot_stream = io.BytesIO(screenshot)
                 # 使用Pillow库打开截图，并转换为灰度图像
                 image = Image.open(screenshot_stream).convert('L')
-                # 使用Tesseract OCR引擎识别图像中的文本
-                text = pytesseract.image_to_string(image,  lang='chi_sim+eng')
-                content = text
+                # 使用Tesseract OCR引擎识别图像中的文本 
+                content = pytesseract.image_to_string(image,  lang='chi_sim+eng')
             except Exception as e:
-                content = "OCR Error"
-                print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
-                if sys.platform == "win32":
-                    print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
-                elif sys.platform == "darwin":
+                try:
+                    print("识别中文失败，尝试只识别英文")
+                    print("Failed to recognize Chinese, try to recognize English only")
+                    screenshot = element.screenshot_as_png
+                    screenshot_stream = io.BytesIO(screenshot)
+                    # 使用Pillow库打开截图，并转换为灰度图像
+                    image = Image.open(screenshot_stream).convert('L')
+                    # 使用Tesseract OCR引擎识别图像中的文本 
+                    content = pytesseract.image_to_string(image,  lang='eng')
+                except Exception as e:              
+                    content = "OCR Error"
                     print(e)
-                    print(
-                        "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/146044810")
-                elif sys.platform == "linux":
-                    print(e)
-                    print(
-                        "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/420259031")
-                else:
-                    print(e)
-                    print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501\nhttps://www.bilibili.com/video/BV1xz4y1b72D/")
+                    if sys.platform == "win32":
+                        print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501")
+                        print("\nhttps://www.bilibili.com/video/BV1GP411y7u4/")
+                    elif sys.platform == "darwin":
+                        print(
+                            "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/146044810")
+                    elif sys.platform == "linux":
+                        print(
+                            "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/420259031")
+                    else:
+                        print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501")
+                        print("\nhttps://www.bilibili.com/video/BV1GP411y7u4/")
+                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
         elif p["contentType"] == 9:
             content = self.execute_code(
                 2, p["JS"], p["JSWaitTime"], element, iframe=p["iframe"])
@@ -1194,8 +1257,14 @@ class BrowserThread(Thread):
                 content = ""
         return content
 
+    def clearOutputParameters(self):
+        for key in self.outputParameters:
+            self.outputParameters[key] = ""
+
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
+        if para["clear"] == 1:
+            self.clearOutputParameters()
         try:
             pageHTML = etree.HTML(self.browser.page_source)
         except:
@@ -1391,9 +1460,10 @@ class BrowserThread(Thread):
                         continue  # 再出现类似问题直接跳过
                 self.outputParameters[p["name"]] = content
                 self.execute_code(
-                    2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS
-        line = new_line(self.outputParameters, self.maxViewLength, self.outputParametersRecord)
-        self.OUTPUT.append(line)
+                    2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS       
+        if para["recordASField"] > 0:
+            line = new_line(self.outputParameters, self.maxViewLength, self.outputParametersRecord)
+            self.OUTPUT.append(line)
         # rt.end()
 
 

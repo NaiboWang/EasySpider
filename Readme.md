@@ -28,11 +28,11 @@ A visual code-free/no-code web crawler/spider, just select the content you want 
 
 （右键）选中一个商品标题，同类型标题会被自动匹配，点击“选中全部”选项 -> 点击“采集数据”选项，即可采集到所有商品的标题信息。
 
-同时，选中全部后如果选择“循环点击每个元素”选项，即可自动打开每个商品的详情页，然后再采集详情页的信息。
+同时，选中全部后如果选择“循环点击每个元素”选项，即可自动打开每个商品的详情页，然后可以再继续设置采集详情页的信息。
 
 (Right Click) Select a product title, the same type of title will be automatically matched, click the 'Select All' option -> Click the 'Collect Data' option, you can collect the title information of all products.
 
-At the same time, if you select the 'Loop-click every element' option after selecting all, you can automatically open the details page of each product, and then collect the information of the details page.
+At the same time, if you select the 'Loop-click every element' option after selecting all, you can automatically open the details page of each product, and then can set to collect the information of the details page.
 
 ![animation_en](media/animation_en.gif)
 
@@ -96,7 +96,7 @@ Bilibili/B站视频教程:
 
 [如何对元素和网页截图及命令行执行指南](https://www.bilibili.com/video/BV1dV4y1z764/)
 
-[OCR识别元素内容功能](https://www.bilibili.com/video/BV1xz4y1b72D/)
+[OCR识别元素内容功能](https://www.bilibili.com/video/BV1GP411y7u4/)
 
 [如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV18c411K7FH)
 

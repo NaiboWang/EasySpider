@@ -39,7 +39,8 @@
                 <table style="table-layout: auto;" class="table table-hover">
                     <thead>
                         <tr>
-                            <th style="text-align: left">No.</th>
+                            <th style="text-align: center">No.</th>
+                            <th style="text-align: center">ID</th>
                             <th style="text-align: center">{{"Task Name~任务名称" | lang}}</th>
                             <th>{{"URL~网址" | lang}}</th>
                             <th v-bind:colspan="type" style="min-width: 300px">{{"Operations~操作" | lang}}</th>
@@ -47,7 +48,9 @@
                     </thead>
                     <tbody>
                         <tr v-for="i in list.length">
-                            <td style="text-align: left">{{i}}</td>
+                            <td style="text-align: center">{{i}}</td>
+                            <td style="text-align: center">{{list[i-1]["id"]}}</td>
+<!--                            <td style="overflow: hidden;; max-width: 200px;text-align: center">{{list[i-1]["id"]}}</td>-->
                             <td style="overflow: hidden;; max-width: 200px;text-align: center">{{list[i-1]["name"]}}</td>
                             <td style="height: 30px;overflow: hidden; max-width: 200px">{{list[i-1]["url"]}}</td>
                             <td style="text-align: left"><a href="javascript:void(0)" v-on:click="browseTask(list[i-1]['id'])">{{"Task Information~任务信息" | lang}}</a></td>

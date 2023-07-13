@@ -126,6 +126,7 @@
                             </tbody>
                         </table>
                         <label>{{"The 'Invoke Name' is shown at the main table of this page, such as 'urlList_0' is the invoke name of the open page operation.~“调用名称”在本页面的主表格中显示，例如“urlList_0”是“打开网页“操作的调用名称。" | lang}}</label>
+                        <label>{{`对于循环输入文字的参数（loopText）需要配置索引值的情况，即输入文字操作用了相对循环内的索引值，您可以在Excel文件中写同一个参数名写多列，程序将自动合并。 例如，如果想要设置'loopText_1'参数值为"A~B~C"，则Excel文件中可以在第一次循环时的值为'1'，第二次循环时的值为'2'，则在Excel文件中，'loopText'参数的第一列写'1'，第二列写'2'。~For the case that the index value of the loopText parameter needs to be configured, that is, the input text operation uses the index value relative to the loop, you can write multiple columns with the same parameter name in the Excel file, and the program will automatically merge them. For example, the value of the 'loopText' parameter is '1' in the first loop, and the value of the second loop is '2', then in the Excel file, the first column of the 'loopText' parameter is written '1', and the second column is written '2'.` | lang}}</label>
                         <label>{{"You can just put part of the arguments in the Excel file, and the values of the rest of the arguments will be set to default. Example table for this task is:~您可以只在Excel文件中放入部分参数，其余参数值将被设置为默认值。一个针对此任务的表格示例为：" | lang}}</label>
                         <table class="table table-bordered excel">
                             <thead>
