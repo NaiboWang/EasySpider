@@ -65,13 +65,16 @@ function handleAddElement(msg) {
         addElement(7, msg);
     } else if (msg["type"] == "loopMouseMove") {
         addElement(8, msg);
+        msg["xpath"] = ""; //循环移动到单个元素，单个元素的xpath设置为空
         addElement(7, msg);
     } else if (msg["type"] == "loopClickSingle") {
         addElement(8, msg);
+        msg["xpath"] = ""; //循环点击单个元素，单个元素的xpath设置为空
         addElement(2, msg);
         app._data.nowArrow["position"] = -1; //循环点击单个元素，下一个要插入的位置一般在元素上方
     } else if (msg["type"] == "loopClickEvery") {
         addElement(8, msg);
+        msg["xpath"] = ""; //循环点击每个元素，单个元素的xpath设置为空
         addElement(2, msg);
     } else if (msg["type"] == "singleCollect" || msg["type"] == "multiCollectNoPattern") {
         if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果现在节点就是提取数据节点，直接在此节点添加参数，而不是生成一个新的提取数据节点

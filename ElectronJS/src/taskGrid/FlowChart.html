@@ -134,12 +134,12 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==2">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the Loop</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element located by xpath relative to the loop</p>
                     </div>
-                    <p v-if="!useLoop"><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
-                    <div v-if='!useLoop'>
+                    <div>
                         <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
@@ -218,7 +218,7 @@
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPath</p>
                         <p v-if='!paras.parameters[paraIndex]["relative"]'><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["iframe"]'></input>Element is inside iframe</p>
-                        <p>XPATH: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
+                        <p>XPATH (Field["FieldName"] can be used in any XPATHS): <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="If you want to write the XPath relative to the current element in the loop, you can write as *../div[1] which matches the first div child element of the parent of the current element in the loop."></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
                         <p style="margin-top: 10px">
@@ -364,13 +364,15 @@
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>This option is an advanced feature that allows direct manipulation of the running browser using Python code. You can also customize variables in the entire execution environment and perform operations such as modifying and assigning values. Here are some examples:
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+This option is an advanced feature that allows direct manipulation of the running browser using Python code. You can also customize variables in the entire execution environment and perform operations such as modifying and assigning values. Here are some examples:
 1. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").send_keys(Keys.END)` to scroll to the bottom.
 2. Define a global variable: `self.myVar = 1`
 3. Manipulate the above-defined global variable: `self.myVar = self.myVar + 1`
 4. Print the above-defined global variable: `print(self.myVar)`
 If you want to record your custom variable as a field, please select the next option, "Evaluate Python expressions in the execution environment."</pre>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>This option is an advanced feature that allows directly returning the expression value of Python code. Here are some examples:
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+This option is an advanced feature that allows directly returning the expression value of Python code, and in other places, use Field["FieldName"] to represent the return value of this operation.. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text` to return the text on the current page.
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
@@ -430,12 +432,12 @@ Please note that this feature does not support assigning values to variables. In
                 </div>
 
                 <div class="elements" v-if="nodeType==7">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element inside the loop</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element located by xpath relative to the loop</p>
                     </div>
-                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
-                    <div v-if='!useLoop'>
+                    <div>
                         <label>XPath: </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
@@ -474,11 +476,13 @@ Please note that this feature does not support assigning values to variables. In
                     <div v-else-if='parseInt(loopType) < 8'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field):</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="Continue the loop if the command return value is greater than 0 or evaluates to true; otherwise, stop the loop. For example, return document.body.scrollWidth > 1000 is an example of a JavaScript command return value, and python D:/test.py is an example of a system command return value."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='parseInt(loopType) == 7'>Loop based on the expression value of Python code. Here are some examples:
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='parseInt(loopType) == 7'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+Loop based on the expression value of Python code. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
-If the expression returns a value greater than 0 or evaluates to True, the loop continues; otherwise, it stops.</pre>
+If the expression returns a value greater than 0 or evaluates to True, the loop continues; otherwise, it stops.
+                        </pre>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
@@ -544,11 +548,13 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <div v-else-if='TClass > 0 && TClass < 7 || TClass == 8'>
                         <label>Code/Script Content: </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="If the return value is greater than 0 or true, the operations within this branch will be executed; otherwise, they will not be executed. For example: return document.body.scrollWidth > 1000 or python D:/test.py, representing examples of JS command and system command return values."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>Use the expression value of Python code to determine whether a condition is satisfied. Here are some examples:
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+Use the expression value of Python code to determine whether a condition is satisfied. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
-If the expression returns a value greater than 0 or evaluates to True, the operations within this branch will be executed; otherwise, they will be skipped.</pre>
+If the expression returns a value greater than 0 or evaluates to True, the operations within this branch will be executed; otherwise, they will be skipped.
+                        </pre>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>

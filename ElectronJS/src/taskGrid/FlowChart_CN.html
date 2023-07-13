@@ -134,12 +134,12 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==2">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用相对循环内的XPath定位到的元素</p>
                     </div>
-                    <p v-if="!useLoop"><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
-                    <div v-if='!useLoop'>
+                    <div>
                         <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
@@ -218,7 +218,7 @@
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
                         <p v-if='!paras.parameters[paraIndex]["relative"]'><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["iframe"]'></input>元素在iframe内</p>
-                        <p>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
+                        <p>XPath（所有XPath内均写Field["字段名"]表示参数值）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                         <p style="margin-top: 10px">
@@ -370,15 +370,13 @@
 2. 自定义一个全局变量：self.myVar = 1
 3. 操纵上面定义的全局变量：self.myVar = self.myVar + 1
 4. 打印上面定义的全局变量：print(self.myVar)
-如果想要将自己定义的变量作为字段记录，请选择下一个“在执行环境下获得Python表达式值（eval操作）”选项。
-                        </pre>
+如果想要将自己定义的变量作为字段记录，请选择下一个“在执行环境下获得Python表达式值（eval操作）”选项。</pre>
                         <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>请先阅读此说明，再在上方输入框（不是本框）写具体代码。
-此选项为高级功能，可以直接返回Python代码的表达式值，示例：
+此选项为高级功能，可以直接返回Python代码的表达式值，并在其他位置用Field["本操作名称"]表示此操作返回值，示例：
 1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").text即可返回当前页面的文字。
 2. 返回自定义全局变量的值：self.myVar
 3. 返回条件判断的值：self.myVar == 1
-注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下获得Python表达式值（eval操作）”选项。
-                        </pre>
+注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下获得Python表达式值（eval操作）”选项。</pre>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
                             <option :value = 0>否（仍可在任意操作中用Field["操作名"]表示此命令返回值）</option>
@@ -434,12 +432,12 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==7">
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的元素</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用相对循环内的XPath定位的元素</p>
                     </div>
-                    <p v-if='!useLoop'><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
-                    <div v-if='!useLoop'>
+                    <div>
                         <label>XPath： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>

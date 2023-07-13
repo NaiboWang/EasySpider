@@ -513,14 +513,20 @@ class BrowserThread(Thread):
 
     def moveToElement(self, para, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
+        loopPath = replace_field_values(loopPath, self.outputParameters)
+        xpath = replace_field_values(para["xpath"], self.outputParameters)
         if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
-            path = loopPath
+            if xpath == "":
+                path = loopPath
+            else: 
+                path = "(" + loopPath + ")" + \
+                        "[" + str(index + 1) + "]" + \
+                        xpath
+                index = 0 # 如果是相对循环内元素的点击，在定位到元素后，index应该重置为0
             # element = loopElement
         else:
             index = 0
-            path = para["xpath"]  # 不然使用元素定义的xpath
-            # element = self.browser.find_element(
-            # By.XPATH, path, iframe=para["iframe"])
+            path = xpath  # 不然使用元素定义的xpath
         path = replace_field_values(path, self.outputParameters)
         try:
             elements = self.browser.find_elements(
@@ -529,11 +535,11 @@ class BrowserThread(Thread):
             try:
                 ActionChains(self.browser).move_to_element(element).perform()
             except:
-                print("移动鼠标到元素失败:", para["xpath"])
-                print("Failed to move mouse to element:", para["xpath"])
+                print("移动鼠标到元素失败:", xpath)
+                print("Failed to move mouse to element:", xpath)
         except:
-            print("找不到元素:", para["xpath"])
-            print("Cannot find element:", para["xpath"])
+            print("找不到元素:", xpath)
+            print("Cannot find element:", xpath)
 
     # 执行节点关键函数部分
 
@@ -690,16 +696,17 @@ class BrowserThread(Thread):
                     # newBodyText = self.browser.page_source
                     # newBodyText = self.browser.find_element(By.XPATH, "//body").text
                     newBodyText = self.browser.find_element(By.CSS_SELECTOR, "body", iframe=node["parameters"]["iframe"]).text
-                    if newBodyText == bodyText:  # 如果页面内容无变化
-                        print("页面已检测不到新内容，停止循环。")
-                        print("No new content detected on the page, stop loop.")
-                        finished = True
-                        break
-                    else:
-                        if node["parameters"]["exitCount"] == 0:
-                            print("检测到页面变化，继续循环。")
-                            print("Page changed detected, continue loop.")
-                        bodyText = newBodyText
+                    if node["parameters"]["exitCount"] == 0:
+                        if newBodyText == bodyText:  # 如果页面内容无变化
+                            print("页面已检测不到新内容，停止循环。")
+                            print("No new content detected on the page, stop loop.")
+                            finished = True
+                            break
+                        else:
+                            if node["parameters"]["exitCount"] == 0:
+                                print("检测到页面变化，继续循环。")
+                                print("Page changed detected, continue loop.")
+                            bodyText = newBodyText
                     xpath = replace_field_values(
                         node["parameters"]["xpath"], self.outputParameters)
                     element = self.browser.find_element(
@@ -1081,15 +1088,22 @@ class BrowserThread(Thread):
         try:
             # element = self.browser.find_element(
             #     By.XPATH, path, iframe=para["iframe"])
+            clickPath = replace_field_values(clickPath, self.outputParameters)
+            xpath = replace_field_values(para["xpath"], self.outputParameters)
             if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
-                path = clickPath
+                if xpath == "":
+                    path = clickPath
+                else: 
+                    path = "(" + clickPath + ")" + \
+                            "[" + str(index + 1) + "]" + \
+                            xpath
+                    index = 0 # 如果是相对循环内元素的点击，在定位到元素后，index应该重置为0
                 # element = loopElement
             else:
                 index = 0
-                path = para["xpath"]  # 不然使用元素定义的xpath
+                path = xpath  # 不然使用元素定义的xpath
                 # element = self.browser.find_element(
                 #     By.XPATH, path, iframe=para["iframe"])
-            path = replace_field_values(path, self.outputParameters)
             elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
             element = elements[index]
