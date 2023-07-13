@@ -729,7 +729,13 @@ class BrowserThread(Thread):
                     if self.BREAK:
                         self.BREAK = False
                         break
-                    if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
+                    try:
+                        changed_handle = self.browser.current_window_handle != thisHandle
+                    except: # 如果网页被意外关闭了的情况下
+                        self.browser.switch_to.window(
+                                    self.browser.window_handles[-1])
+                        changed_handle = self.browser.window_handles[-1] != thisHandle
+                    if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
                         try:
                             while True:  # 一直关闭窗口直到当前标签页
                                 self.browser.close()  # 关闭使用完的标签页
@@ -783,7 +789,13 @@ class BrowserThread(Thread):
                     if self.BREAK:
                         self.BREAK = False
                         break
-                    if self.browser.current_window_handle != thisHandle:  # 如果执行完一次循环之后标签页的位置发生了变化
+                    try:
+                        changed_handle = self.browser.current_window_handle != thisHandle
+                    except: # 如果网页被意外关闭了的情况下
+                        self.browser.switch_to.window(
+                                    self.browser.window_handles[-1])
+                        changed_handle = self.browser.window_handles[-1] != thisHandle
+                    if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
                         try:
                             while True:  # 一直关闭窗口直到当前标签页
                                 self.browser.close()  # 关闭使用完的标签页
@@ -1479,7 +1491,7 @@ if __name__ == '__main__':
         "read_type": "remote",
         "headless": False,
         "server_address": "http://localhost:8074",
-        "version": "0.3.5",
+        "version": "0.3.6",
     }
     c = Config(config)
     print(c)

@@ -429,7 +429,7 @@ function saveService(type) {
             "links": links,
             "create_time": parseInt(serviceId) == -1 ? new Date().toLocaleString() : $("#create_time").val(),
             "update_time": new Date().toLocaleString(),
-            "version": "0.3.5",
+            "version": "0.3.6",
             "saveThreshold": saveThreshold,
             "cloudflare": cloudflare,
             "environment": environment,
