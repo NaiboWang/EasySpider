@@ -45,7 +45,7 @@ from threading import Thread, Event
 from myChrome import MyChrome
 if sys.platform != "darwin":
     from myChrome import MyUCChrome
-from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, write_to_csv, write_to_excel
+from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -356,13 +356,7 @@ class BrowserThread(Thread):
             max_wait_time = 999999
         # print(codeMode, code)
         # 将value中的Field[""]替换为outputParameters中的键值
-        pattern = r'Field\["([^"]+)"\]'
-        try:
-            replaced_text = re.sub(
-                pattern, lambda match: self.outputParameters.get(match.group(1), ''), code)
-        except:
-            replaced_text = code
-        code = replaced_text
+        code = replace_field_values(code, self.outputParameters)
         if iframe and self.browser.iframe_env == False:
             # 获取所有的 iframe
             self.browser.switch_to.default_content()
@@ -442,6 +436,7 @@ class BrowserThread(Thread):
         max_wait_time = int(paras["waitTime"])
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
+                loopPath = replace_field_values(loopPath, self.outputParameters)
                 elements = self.browser.find_elements(
                     By.XPATH, loopPath, iframe=paras["iframe"])
                 element = elements[index]
@@ -454,7 +449,7 @@ class BrowserThread(Thread):
             self.BREAK = True
         elif codeMode == 4:
             self.CONTINUE = True
-        else: # 0 1
+        else: # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])
         recordASField = bool(paras["recordASField"])
@@ -470,8 +465,9 @@ class BrowserThread(Thread):
         optionMode = int(para["optionMode"])
         optionValue = para["optionValue"]
         try:
+            xpath = replace_field_values(para["xpath"], self.outputParameters)
             dropdown = Select(self.browser.find_element(
-                By.XPATH, para["xpath"], iframe=para["iframe"]))
+                By.XPATH, xpath, iframe=para["iframe"]))
             try:
                 if optionMode == 0:
                     # 获取当前选中的选项索引
@@ -488,13 +484,13 @@ class BrowserThread(Thread):
                 elif optionMode == 3:
                     dropdown.select_by_visible_text(optionValue)
             except:
-                print("切换下拉框选项失败:", para["xpath"],
+                print("切换下拉框选项失败:", xpath,
                       para["optionMode"], para["optionValue"])
                 print("Failed to change drop-down box option:",
-                      para["xpath"], para["optionMode"], para["optionValue"])
+                      xpath, para["optionMode"], para["optionValue"])
         except:
-            print("找不到下拉框元素:", para["xpath"])
-            print("Cannot find drop-down box element:", para["xpath"])
+            print("找不到下拉框元素:", xpath)
+            print("Cannot find drop-down box element:", xpath)
 
     def moveToElement(self, para, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
@@ -506,6 +502,7 @@ class BrowserThread(Thread):
             path = para["xpath"]  # 不然使用元素定义的xpath
             # element = self.browser.find_element(
             # By.XPATH, path, iframe=para["iframe"])
+        path = replace_field_values(path, self.outputParameters)
         try:
             elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
@@ -589,28 +586,33 @@ class BrowserThread(Thread):
                 try:
                     bodyText = self.browser.find_element(
                         By.CSS_SELECTOR, "body", iframe=cnode["parameters"]["iframe"]).text
-                    if bodyText.find(cnode["parameters"]["value"]) >= 0:
+                    value = replace_field_values(
+                        cnode["parameters"]["value"], self.outputParameters)
+                    if bodyText.find(value) >= 0:
                         executeBranchId = i
                         break
                 except:  # 找不到元素下一个条件
                     continue
             elif tType == 2:  # 当前页面包含元素
                 try:
-                    if self.browser.find_element(By.XPATH, cnode["parameters"]["value"], iframe=cnode["parameters"]["iframe"]):
+                    xpath = replace_field_values(cnode["parameters"]["value"], self.outputParameters)
+                    if self.browser.find_element(By.XPATH, xpath, iframe=cnode["parameters"]["iframe"]):
                         executeBranchId = i
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
                     continue
             elif tType == 3:  # 当前循环元素包括文本
                 try:
-                    if loopElement.text.find(cnode["parameters"]["value"]) >= 0:
+                    value = replace_field_values(cnode["parameters"]["value"], self.outputParameters)
+                    if loopElement.text.find(value) >= 0:
                         executeBranchId = i
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
                     continue
             elif tType == 4:  # 当前循环元素包括元素
                 try:
-                    if loopElement.find_element(By.XPATH, cnode["parameters"]["value"][1:]):
+                    xpath = replace_field_values(cnode["parameters"]["value"][1:], self.outputParameters)
+                    if loopElement.find_element(By.XPATH, xpath):
                         executeBranchId = i
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
@@ -672,11 +674,13 @@ class BrowserThread(Thread):
                             print("检测到页面变化，继续循环。")
                             print("Page changed detected, continue loop.")
                         bodyText = newBodyText
+                    xpath = replace_field_values(
+                        node["parameters"]["xpath"], self.outputParameters)
                     element = self.browser.find_element(
-                        By.XPATH, node["parameters"]["xpath"], iframe=node["parameters"]["iframe"])
+                        By.XPATH, xpath, iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(
-                            i, element, node["parameters"]["xpath"], 0)
+                            i, element, xpath, 0)
                         if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
                             self.CONTINUE = False
                             break
@@ -690,14 +694,14 @@ class BrowserThread(Thread):
                 except NoSuchElementException:
                     # except:
                     print("Single loop element not found: ",
-                          node["parameters"]["xpath"])
-                    print("找不到要循环的单个元素: ", node["parameters"]["xpath"])
+                          xpath)
+                    print("找不到要循环的单个元素: ", xpath)
                     self.recordLog(
                         "Single loop element not found: " + node["parameters"]["xpath"])
                     for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                         if node["option"] != 2:
                             self.executeNode(
-                                i, None, node["parameters"]["xpath"], 0)
+                                i, None, xpath, 0)
                     finished = True
                     break  # 如果找不到元素，退出循环
                 finally:
@@ -710,7 +714,7 @@ class BrowserThread(Thread):
                         for i in node["sequence"]:  # 不带点击元素的把剩余的如提取数据的操作执行一遍
                             if node["option"] != 2:
                                 self.executeNode(
-                                    i, None, node["parameters"]["xpath"], 0)
+                                    i, None, xpath, 0)
                         break  # 如果找不到元素，退出循环
                 count = count + 1
                 self.Log("Page: ", count)
@@ -726,18 +730,20 @@ class BrowserThread(Thread):
                         break
         elif int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
             try:
+                xpath = replace_field_values(
+                    node["parameters"]["xpath"], self.outputParameters)
                 elements = self.browser.find_elements(By.XPATH,
-                                                      node["parameters"]["xpath"], iframe=node["parameters"]["iframe"])
+                                                      xpath, iframe=node["parameters"]["iframe"])
                 if len(elements) == 0:
                     print("Loop element not found: ",
-                          node["parameters"]["xpath"])
-                    print("找不到循环元素: ", node["parameters"]["xpath"])
+                          xpath)
+                    print("找不到循环元素: ", xpath)
                     self.recordLog("pathNotFound: " +
                                    node["parameters"]["xpath"])
                 for index in range(len(elements)):
                     for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
                         self.executeNode(i, elements[index],
-                                         node["parameters"]["xpath"], index)
+                                         xpath, index)
                         if self.BREAK or self.CONTINUE: # 如果有break操作，下面的操作不执行
                             self.CONTINUE = False
                             break
@@ -785,8 +791,8 @@ class BrowserThread(Thread):
                         if code <= 0:
                             break
             except NoSuchElementException:
-                print("Loop element not found: ", node["parameters"]["xpath"])
-                print("找不到循环元素: ", node["parameters"]["xpath"])
+                print("Loop element not found: ", xpath)
+                print("找不到循环元素: ", xpath)
                 self.recordLog("pathNotFound: " + node["parameters"]["xpath"])
             except Exception as e:
                 raise
@@ -794,6 +800,7 @@ class BrowserThread(Thread):
             # 千万不要忘了分割！！
             for path in node["parameters"]["pathList"].split("\n"):
                 try:
+                    path = replace_field_values(path, self.outputParameters)
                     element = self.browser.find_element(
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
@@ -853,6 +860,7 @@ class BrowserThread(Thread):
         elif int(node["parameters"]["loopType"]) == 3:  # 固定文本列表
             textList = node["parameters"]["textList"].split("\n")
             for text in textList:
+                text = replace_field_values(text, self.outputParameters)
                 self.recordLog("input: " + text)
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, text, "", 0)
@@ -877,6 +885,7 @@ class BrowserThread(Thread):
             #     if url != "":
             #         urlList.append(url)
             for url in urlList:
+                url = replace_field_values(url, self.outputParameters)
                 self.recordLog("input: " + url)
                 for i in node["sequence"]:
                     self.executeNode(i, url, "", 0)
@@ -941,13 +950,7 @@ class BrowserThread(Thread):
         else:
             url = list(filter(isnull, para["links"].split("\n")))[0]
         # 将value中的Field[""]替换为outputParameters中的键值
-        pattern = r'Field\["([^"]+)"\]'
-        try:
-            replaced_text = re.sub(
-                pattern, lambda match: self.outputParameters.get(match.group(1), ''), url)
-        except:
-            replaced_text = url
-        url = replaced_text
+        url = replace_field_values(url, self.outputParameters)
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
@@ -994,8 +997,9 @@ class BrowserThread(Thread):
         time.sleep(0.1)  # 输入之前等待0.1秒
         self.Log("Wait 0.1 second before input")
         try:
+            xpath = replace_field_values(para["xpath"], self.outputParameters)
             textbox = self.browser.find_element(
-                By.XPATH, para["xpath"], iframe=para["iframe"])
+                By.XPATH, xpath, iframe=para["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
             #     textbox.send_keys(Keys.BACKSPACE)
             self.execute_code(
@@ -1034,13 +1038,12 @@ class BrowserThread(Thread):
                 2, para["afterJS"], para["afterJSWaitTime"], textbox, iframe=para["iframe"])  # 执行后置js
         except:
             print("Cannot find input box element:" +
-                  para["xpath"] + ", please try to set the wait time before executing this operation")
-            print("找不到输入框元素:" + para["xpath"] + "，请尝试在执行此操作前设置等待时间")
+                  xpath + ", please try to set the wait time before executing this operation")
+            print("找不到输入框元素:" + xpath + "，请尝试在执行此操作前设置等待时间")
             self.recordLog("Cannot find input box element:" +
                            para["xpath"] + "Please try to set the wait time before executing this operation")
 
     # 点击元素事件
-
     def clickElement(self, para, loopElement=None, clickPath="", index=0):
         try:
             maxWaitTime = int(para["maxWaitTime"])
@@ -1060,6 +1063,7 @@ class BrowserThread(Thread):
                 path = para["xpath"]  # 不然使用元素定义的xpath
                 # element = self.browser.find_element(
                 #     By.XPATH, path, iframe=para["iframe"])
+            path = replace_field_values(path, self.outputParameters)
             elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
             element = elements[index]
@@ -1293,6 +1297,7 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
+        parentPath = replace_field_values(parentPath, self.outputParameters)
         if para["clear"] == 1:
             self.clearOutputParameters()
         try:
@@ -1317,15 +1322,17 @@ class BrowserThread(Thread):
         for p in para["paras"]:
             if p["optimizable"]:
                 try:
+                    relativeXPath = replace_field_values(
+                        p["relativeXPath"], self.outputParameters)
                     # 只有当前环境不变变化才可以快速提取数据
                     if self.browser.iframe_env != p["iframe"]:
                         p["optimizable"] = False
                         continue
-                    # p["relativeXPath"] = p["relativeXPath"].lower()
-                    # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
+                    # relativeXPath = relativeXPath.lower()
+                    # relativeXPath = lowercase_tags_in_xpath(relativeXPath)
                     # 已经有text()或@href了，不需要再加
                     content_type = ""
-                    if p["relativeXPath"].find("/@href") >= 0 or p["relativeXPath"].find("/text()") >= 0 or p["relativeXPath"].find("::text()") >= 0:
+                    if relativeXPath.find("/@href") >= 0 or relativeXPath.find("/text()") >= 0 or relativeXPath.find("::text()") >= 0:
                         content_type = ""
                     elif p["nodeType"] == 2:
                         content_type = "/@href"
@@ -1333,24 +1340,24 @@ class BrowserThread(Thread):
                         content_type = "/text()"
                     elif p["contentType"] == 0:
                         content_type = "//text()"
-                    xpath = p["relativeXPath"] + content_type
+                    xpath = relativeXPath + content_type
                     if p["relative"]:
-                        # if p["relativeXPath"] == "":
+                        # if relativeXPath == "":
                         #     content = [loopElementHTML]
                         # else:
                         # 如果字串里有//即子孙查找，则不动语句
-                        if p["relativeXPath"].find("//") >= 0:
+                        if relativeXPath.find("//") >= 0:
                             if xpath.startswith("/"): 
                                 full_path = "(" + parentPath  + ")" + \
                                         "[" + str(index + 1) + "]"+ \
-                                        p["relativeXPath"] + content_type
+                                        relativeXPath + content_type
                             else: # 如果是id()这种形式，不需要包parentPath
                                 full_path = xpath
                             try:
                                 content = pageHTML.xpath(full_path)
                             except:
                                 content = []
-                        elif not p["relativeXPath"].startswith("/"): # 如果是id()这种形式，不需要包/html/body
+                        elif not relativeXPath.startswith("/"): # 如果是id()这种形式，不需要包/html/body
                             try:
                                 content = loopElementHTML.xpath(xpath)
                             except:
@@ -1374,51 +1381,53 @@ class BrowserThread(Thread):
                         content = p["default"]
                         if not self.dataNotFoundKeys[p["name"]]:
                             print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                                p["relativeXPath"], p["name"]))
+                                relativeXPath, p["name"]))
                             print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
-                                p["name"], p["relativeXPath"]))
+                                p["name"], relativeXPath))
                             self.dataNotFoundKeys[p["name"]] = True
                             self.recordLog(
-                                'Element %s not found, use default' % p["relativeXPath"])
+                                'Element %s not found, use default' % relativeXPath)
                 except Exception as e:
                     if not self.dataNotFoundKeys[p["name"]]:
                         print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                            p["relativeXPath"], p["name"]))
+                            relativeXPath, p["name"]))
                         print("提取数据操作时，字段名 %s 对应XPath %s 未找到（请查看原因，如是否翻页太快页面元素未加载出来），使用默认值，本字段将不再重复报错" % (
-                            p["name"], p["relativeXPath"]))
+                            p["name"], relativeXPath))
                         self.dataNotFoundKeys[p["name"]] = True
                         self.recordLog(
-                            'Element %s not found, use default' % p["relativeXPath"])
+                            'Element %s not found, use default' % relativeXPath)
                 self.outputParameters[p["name"]] = content
 
         # 对于不能优化的操作，使用selenium执行
         for p in para["paras"]:
             if not p["optimizable"]:
                 content = ""
+                relativeXPath = replace_field_values(
+                        p["relativeXPath"], self.outputParameters)
                 if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
                     try:
-                        # p["relativeXPath"] = p["relativeXPath"].lower()
-                        # p["relativeXPath"] = lowercase_tags_in_xpath(p["relativeXPath"])
+                        # relativeXPath = relativeXPath.lower()
+                        # relativeXPath = lowercase_tags_in_xpath(relativeXPath)
                         if p["relative"]:  # 是否相对xpath
-                            if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                            if relativeXPath == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                                 element = loopElement
                             else:
                                 # 如果字串里有//即子孙查找，则不动语句
-                                if p["relativeXPath"].find("//") >= 0:
+                                if relativeXPath.find("//") >= 0:
                                     # full_path = "(" + parentPath + \
-                                    #     p["relativeXPath"] + ")" + \
+                                    #     relativeXPath + ")" + \
                                     #     "[" + str(index + 1) + "]"
                                     full_path = "(" + parentPath + ")" + \
                                         "[" + str(index + 1) + "]" + \
-                                        p["relativeXPath"]
+                                        relativeXPath
                                     element = self.browser.find_element(
                                         By.XPATH, full_path, iframe=p["iframe"])
                                 else:
                                     element = loopElement.find_element(By.XPATH,
-                                                                       p["relativeXPath"][1:])
+                                                                       relativeXPath[1:])
                         else:
                             element = self.browser.find_element(
-                                By.XPATH, p["relativeXPath"], iframe=p["iframe"])
+                                By.XPATH, relativeXPath, iframe=p["iframe"])
                     except (NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
                         # print(p)
                         try:
@@ -1429,12 +1438,12 @@ class BrowserThread(Thread):
                         try:
                             if not self.dataNotFoundKeys[p["name"]]:
                                 print('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                                    p["relativeXPath"], p["name"]))
+                                    relativeXPath, p["name"]))
                                 print("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
-                                    p["name"], p["relativeXPath"]))
+                                    p["name"], relativeXPath))
                                 self.dataNotFoundKeys[p["name"]] = True
                                 self.recordLog(
-                                    'Element %s not found, use default' % p["relativeXPath"])
+                                    'Element %s not found, use default' % relativeXPath)
                         except:
                             pass
                         continue
@@ -1447,14 +1456,14 @@ class BrowserThread(Thread):
                         except:
                             pass
                         if p["relative"]:  # 是否相对xpath
-                            if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                            if relativeXPath == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                                 element = loopElement
                             else:
                                 element = loopElement.find_element(By.XPATH,
-                                                                   p["relativeXPath"][1:])
+                                                                   relativeXPath[1:])
                         else:
                             element = self.browser.find_element(
-                                By.XPATH, p["relativeXPath"], iframe=p["iframe"])
+                                By.XPATH, relativeXPath, iframe=p["iframe"])
                         # rt.end()
                 else:
                     element = self.browser.find_element(
@@ -1465,28 +1474,28 @@ class BrowserThread(Thread):
                     content = self.get_content(p, element)
                 except StaleElementReferenceException:  # 发生找不到元素的异常后，等待几秒重新查找
                     self.recordLog(
-                        'StaleElementReferenceException: '+p["relativeXPath"])
+                        'StaleElementReferenceException: '+relativeXPath)
                     time.sleep(3)
                     try:
                         if p["relative"]:  # 是否相对xpath
-                            if p["relativeXPath"] == "":  # 相对xpath有时候就是元素本身，不需要二次查找
+                            if relativeXPath == "":  # 相对xpath有时候就是元素本身，不需要二次查找
                                 element = loopElement
                                 self.recordLog(
                                     'StaleElementReferenceException: loopElement')
                             else:
                                 element = loopElement.find_element(By.XPATH,
-                                                                   p["relativeXPath"][1:])
+                                                                   relativeXPath[1:])
                                 self.recordLog(
                                     'StaleElementReferenceException: loopElement+relativeXPath')
                         else:
                             element = self.browser.find_element(
-                                By.XPATH, p["relativeXPath"], iframe=p["iframe"])
+                                By.XPATH, relativeXPath, iframe=p["iframe"])
                             self.recordLog(
                                 'StaleElementReferenceException: relativeXPath')
                         content = self.get_content(p, element)
                     except StaleElementReferenceException:
                         self.recordLog(
-                            'StaleElementReferenceException: '+p["relativeXPath"])
+                            'StaleElementReferenceException: '+relativeXPath)
                         continue  # 再出现类似问题直接跳过
                 self.outputParameters[p["name"]] = content
                 self.execute_code(

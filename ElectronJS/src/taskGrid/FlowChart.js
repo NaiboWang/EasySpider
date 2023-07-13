@@ -105,13 +105,13 @@ let app = new Vue({
         codeMode: {
             handler: function(newVal, oldVal) {
                 this.nowNode["parameters"]["codeMode"] = newVal;
-                if(newVal == 3){
-                    this.nowNode["title"] = LANG("退出循环", "Exit Loop");
-                } else if(newVal == 4){
-                    this.nowNode["title"] = LANG("跳过当前循环", "Skip Loop");
-                } else {
-                    this.nowNode["title"] = LANG("自定义操作", "Custom Action");
-                }
+                // if(newVal == 3){
+                //     this.nowNode["title"] = LANG("退出循环", "Exit Loop");
+                // } else if(newVal == 4){
+                //     this.nowNode["title"] = LANG("跳过当前循环", "Skip Loop");
+                // } else {
+                //     this.nowNode["title"] = LANG("自定义操作", "Custom Action");
+                // }
             }
         }
     },

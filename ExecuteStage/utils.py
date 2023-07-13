@@ -166,6 +166,14 @@ def write_to_csv(file_name, data, record):
             f_csv.writerow(to_write)
         f.close()
 
+def replace_field_values(orginal_text, outputParameters):
+    pattern = r'Field\["([^"]+)"\]'
+    try:
+        replaced_text = re.sub(
+            pattern, lambda match: outputParameters.get(match.group(1), ''), orginal_text)
+    except:
+        replaced_text = orginal_text
+    return replaced_text
 
 def write_to_excel(file_name, data, types, record):
     first = False
