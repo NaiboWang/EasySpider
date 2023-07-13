@@ -399,6 +399,18 @@ class BrowserThread(Thread):
             except:
                 output = ""
                 self.recordLog("JavaScript execution failed")
+        elif int(codeMode) == 5:
+            try:
+                output = exec(code)
+            except Exception as e:
+                print("执行下面的代码时出错:" + code, "，错误为：", e)
+                print("Error executing the following code:" + code, ", error is:", e)
+        elif int(codeMode) == 6:
+            try:
+                output = eval(code)
+            except Exception as e:
+                print("获得下面的代码返回值时出错:" + code, "，错误为：", e)
+                print("Error executing and getting return value the following code:" + code, ", error is:", e)
         elif int(codeMode) == 1:
             self.recordLog("Execute System Call:" + code)
             self.recordLog("执行系统命令:" + code)
@@ -603,7 +615,7 @@ class BrowserThread(Thread):
                         break
                 except:  # 找不到元素或者xpath写错了，下一个条件
                     continue
-            elif tType <= 7:  # JS命令返回值
+            elif tType <= 8:  # JS命令返回值
                 if tType == 5:  # JS命令返回值等于
                     output = self.execute_code(
                         0, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], iframe=cnode["parameters"]["iframe"])
@@ -613,6 +625,9 @@ class BrowserThread(Thread):
                 elif tType == 7:  # 针对当前循环项的JS命令返回值
                     output = self.execute_code(
                         2, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement, iframe=cnode["parameters"]["iframe"])
+                elif tType == 8:  # 针对当前循环项的System命令返回值
+                    output = self.execute_code(
+                        6, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement, iframe=cnode["parameters"]["iframe"])
                 try:
                     if output.find("rue") != -1:  # 如果返回值中包含true
                         code = 1
@@ -877,7 +892,7 @@ class BrowserThread(Thread):
                     code = get_output_code(output)
                     if code <= 0:
                         break
-        elif int(node["parameters"]["loopType"]) <= 6:  # 命令返回值
+        elif int(node["parameters"]["loopType"]) <= 7:  # 命令返回值
             while True:  # do while循环
                 if int(node["parameters"]["loopType"]) == 5:  # JS
                     output = self.execute_code(
@@ -885,6 +900,9 @@ class BrowserThread(Thread):
                 elif int(node["parameters"]["loopType"]) == 6:  # System
                     output = self.execute_code(
                         1, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
+                elif int(node["parameters"]["loopType"]) == 7:  # Python
+                    output = self.execute_code(
+                        6, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
                 code = get_output_code(output)
                 if code <= 0:
                     break

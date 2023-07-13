@@ -189,7 +189,6 @@
                     <p>
                         <button class="btn btn-primary" v-on:mousedown= 'addPara'>新增字段</button>
                     </p>
-                    <p>
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>提取数据前清空其他操作字段已记录的值</p>
                     <div class="toolkitcontain">
                         <table class="toolkittb2" cellspacing="0">
@@ -315,8 +314,9 @@
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
                         <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在循环内设置的文本）</p>
-                        <p v-if="useLoop"><label>索引值（0表示使用整个当前循环的文本，如果大于0则表示当前文本用~来分割开的文本索引取值，即如果当前循环的文本值为A~B，则索引值为1表示输入A，2表示输入B，0表示输入A~B）</label>
-                        <input onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input></p>
+                        <p v-if="useLoop">
+                            <label>索引值（0表示使用整个当前循环的文本，如果大于0则表示当前文本用~来分割开的文本索引取值，即如果当前循环的文本值为A~B，则索引值为1表示输入A，2表示输入B，0表示输入A~B）</label>
+                            <input onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input></p>
                         </p>
                     </div>
 
@@ -357,9 +357,24 @@
                         <option v-if="nowNode['isInLoop']" value = 2>针对当前循环项的JavaScript脚本</option>
                         <option v-if="nowNode['isInLoop']" value = 3>退出当前循环（Break操作）</option>
                         <option v-if="nowNode['isInLoop']" value = 4>跳过当前循环后面的操作（Continue操作）</option>
+                        <option value = 5>在执行环境下运行Python代码（exec操作）</option>
+                        <option value = 6>在执行环境下获得Python表达式值（eval操作）</option>
                     </select>
 
-                    <div v-if='nowNode["parameters"]["codeMode"] < 3'>
+                    <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5'>
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>此选项为高级功能，可以直接用Python代码操纵正在运行中的浏览器，及可以自定义整个执行环境中的变量，并对变量进行修改赋值等操作，示例：
+1. 用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "//body").send_keys(Keys.CONTROL + "t")即可打开一个新标签页。
+2. 自定义一个全局变量：self.myVar = 1
+3. 操纵上面定义的全局变量：self.myVar = self.myVar + 1
+4. 打印上面定义的全局变量：print(self.myVar)
+如果想要将自己定义的变量作为字段记录，请选择下一个“在执行环境下获得Python表达式值（eval操作）”选项。
+                        </pre>
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>此选项为高级功能，可以直接返回Python代码的表达式值，示例：
+1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "//body").text即可返回当前页面的文字。
+2. 返回自定义全局变量的值：self.myVar
+3. 返回条件判断的值：self.myVar == 1
+注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下获得Python表达式值（eval操作）”选项。
+                        </pre>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
@@ -381,7 +396,8 @@
                             <option value = "bigInt">大整数（位数超过9位）</option>
                         </select>
                         </p>
-                        <p><label>记录前清空其他操作字段已记录的值：</label>
+                        <p>
+                            <label>记录前清空其他操作字段已记录的值：</label>
                             <select v-model='nowNode["parameters"]["clear"]' class="form-control">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
@@ -442,6 +458,7 @@
                         <option value = 4>网址列表（多用于循环打开网页）</option>
                         <option value = 5>JavaScript命令返回值（需以return 开头）</option>
                         <option value = 6>系统命令返回值</option>
+                        <option value = 7>执行环境下的Python表达式值（eval操作）</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
                         <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
@@ -456,7 +473,13 @@
                         <label>内容列表（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个文本/网址，用~来分割文字，即如果某行值为A~B，则在输入文字操作中可以设定索引值为1表示输入A，2表示输入B，0表示输入A~B" v-model='nowNode["parameters"]["textList"]'></textarea>
                     </div>
-                    <div v-else-if='parseInt(loopType) < 7'>
+                    <div v-else-if='parseInt(loopType) < 8'>
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap" disabled v-if='parseInt(loopType) == 7'>根据Python代码的表达式值来决定是否循环，示例：
+1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "//body").text=="123"，表示判断当前页面是否为123这个文本。
+2. 返回自定义全局变量的值：self.myVar，如果
+3. 返回条件判断的值：self.myVar == 1
+以上表达式返回值大于0或为真则继续循环，否则停止循环。
+                        </pre>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则继续循环，否则停止循环。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
@@ -514,13 +537,20 @@
                         <option value = 5>JavaScript命令返回值（需以return 开头）</option>
                         <option value = 6>系统命令返回值</option>
                         <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值（需以return 开头）</option>
+                        <option value = 8>执行环境下的Python表达式值（eval操作）</option>
                       </select>
 
                     <div v-if='TClass > 0 && TClass < 5'>
                         <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
-                    <div v-else-if='TClass > 0 && TClass < 7'>
+                    <div v-else-if='TClass > 0 && TClass < 7 || TClass == 8'>
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap" disabled v-if='TClass == 8'>根据Python代码的表达式值来判断条件是否满足，示例：
+1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "//body").text=="123"，表示判断当前页面是否为123这个文本。
+2. 返回自定义全局变量的值：self.myVar，如果
+3. 返回条件判断的值：self.myVar == 1
+以上表达式返回值大于0或为则执行此分支内操作，否则不执行。
+                        </pre>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则执行此分支内操作，否则不执行。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
