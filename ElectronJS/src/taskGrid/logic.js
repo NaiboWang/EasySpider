@@ -437,6 +437,7 @@ function saveService(type) {
             "outputFormat": $("#outputFormat").val(),
             "saveName": $("#saveName").val(),
             "inputExcel": $("#inputExcel").val(),
+            "startFromExit": parseInt($("#startFromExit").val()),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

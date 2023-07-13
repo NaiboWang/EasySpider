@@ -54,6 +54,7 @@ class BrowserThread(Thread):
         Thread.__init__(self)
         self.browser = browser_t
         self.config = config
+        self.totalSteps = 0
         self.id = id
         self.event = event
         try:
@@ -79,7 +80,21 @@ class BrowserThread(Thread):
             os.mkdir("Data/Task_" + str(i))
         if not os.path.exists("Data/Task_" + str(i) + "/" + self.saveName):
             os.mkdir("Data/Task_" + str(i) + "/" + self.saveName)  # 创建保存文件夹用来保存截图
-
+        self.getDataStep = 0
+        self.startSteps = 0
+        try:
+            startFromExit = service["startFromExit"]  # 从上次退出的步骤开始
+            if startFromExit == 1:
+                with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'r', encoding='utf-8-sig') as file_obj:
+                    self.startSteps = int(file_obj.read()) # 读取已执行步数
+        except:
+            pass
+        if self.startSteps != 0:
+            print("此模式下，任务ID", self.id, "将从上次退出的步骤开始执行，之前已采集条数为", self.startSteps, "条。")
+            print("In this mode, task ID", self.id, "will start from the last step, before we already collected", self.startSteps, " items.")
+        else:
+            print("此模式下，任务ID", self.id, "将从头开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
+            print("In this mode, task ID", self.id, "will start from the beginning, if you want to start from the last step, please set the option 'start from the last step' to 'yes' when saving the task.")
         stealth_path = driver_path[:driver_path.find(
             "chromedriver")] + "stealth.min.js"
         with open(stealth_path, 'r') as f:
@@ -266,6 +281,10 @@ class BrowserThread(Thread):
             # 写入日志
             with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
                 file_obj.write(self.log)
+                file_obj.close()
+            # 写入已执行步数
+            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'w', encoding='utf-8-sig') as file_obj:
+                file_obj.write(str(self.totalSteps + 1))
                 file_obj.close()
             # 写入数据
             if self.outputFormat == "csv" or self.outputFormat == "txt":
@@ -536,10 +555,17 @@ class BrowserThread(Thread):
             self.recordLog("Click")
             self.clickElement(node["parameters"], loopValue, loopPath, index)
         elif node["option"] == 3:  # 提取数据
-            self.recordLog("getData")
-            self.getData(node["parameters"], loopValue, node["isInLoop"],
-                         parentPath=loopPath, index=index)
-            self.saveData()
+            # 针对提取数据操作，设置操作开始的步骤，用于不小心关闭后的恢复的增量采集
+            if self.totalSteps >= self.startSteps:
+                self.recordLog("getData")
+                self.getData(node["parameters"], loopValue, node["isInLoop"],
+                            parentPath=loopPath, index=index)
+                self.saveData()
+            else:
+                # self.getDataStep += 1
+                print("跳过第" + str(self.totalSteps) + "次提取数据。")
+                print("Skip the " + str(self.totalSteps) + "th data extraction.")
+            self.totalSteps += 1  # 总步数加一
         elif node["option"] == 4:  # 输入文字
             self.inputInfo(node["parameters"], loopValue)
         elif node["option"] == 5:  # 自定义操作

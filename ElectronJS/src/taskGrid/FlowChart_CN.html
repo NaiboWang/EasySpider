@@ -623,6 +623,11 @@
                     </select>
                     <label>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
                     <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
+                    <label>是否要意外退出并重新执行任务时从上次保存的位置继续执行（已采集条数记录间隔为上面设置的值）：</label>
+                    <select id="startFromExit" name="startFromExit" class="form-control">
+                        <option value = 0>否</option>
+                        <option value = 1>是（需要运行同一个任务ID和固定的文件名，请用命令行执行并指定ID）</option>
+                    </select>
                     <label>控制台预览时数据最大显示长度：</label>
                     <input onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></input>
 

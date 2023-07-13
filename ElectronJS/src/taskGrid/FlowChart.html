@@ -613,8 +613,13 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                         <option value=0>Desktop</option>
                         <option value=1>Mobile (Not supported under Cloudflare mode)</option>
                     </select>
-                    <label>Save Data Every N Rows (The larger the value, the faster the scraping speed, but there is a risk of data loss if unexpectedly exited):</label>
+                    <label>Save Data Every N Rows (Specify N below, the larger the value, the faster the scraping speed, but there is a risk of data loss if unexpectedly exited):</label>
                     <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
+                    <label>Do you want to resume execution from the last saved position when unexpectedly exiting and restarting the task (The record interval of the number of collected items is the value set above)?</label>
+                    <select id="startFromExit" name="startFromExit" class="form-control">
+                        <option value="0">No</option>
+                        <option value="1">Yes (Requires running the same task ID and the same file name, please execute from the command line and specify the ID)</option>
+                    </select>
                     <label>Maximum Display Length of Data in Console Preview:</label>
                     <input onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></input>
 
