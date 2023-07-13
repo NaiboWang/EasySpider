@@ -54,6 +54,7 @@ class BrowserThread(Thread):
         Thread.__init__(self)
         self.browser = browser_t
         self.config = config
+        self.version = version
         self.totalSteps = 0
         self.id = id
         self.event = event
@@ -114,6 +115,7 @@ class BrowserThread(Thread):
         except:
             self.outputFormat = "csv"
         try:
+            self.task_version = service["version"]  # 任务版本
             if service["version"] >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
                 pass
             else:  # 0.3.1以下版本的EasySpider不兼容0.3.1及以上版本的EasySpider
@@ -202,6 +204,11 @@ class BrowserThread(Thread):
                     cookies = node["parameters"]["cookies"]
                 except:
                     node["parameters"]["cookies"] = ""
+            if node["option"] == 2:  # 点击操作
+                if node["parameters"]["useLoop"]:
+                    if self.task_version <= "0.3.5":
+                        node["parameters"]["xpath"] = "" # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
+                        print("您的任务版本号为" + self.task_version + "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             elif node["option"] == 3:  # 提取数据操作
                 node["parameters"]["recordASField"] = 0
                 paras = node["parameters"]["paras"]
@@ -239,6 +246,11 @@ class BrowserThread(Thread):
                     clear = node["parameters"]["clear"]
                 except:
                     node["parameters"]["clear"] = 0
+            elif node["option"] == 7: # 移动到元素
+                if node["parameters"]["useLoop"]:
+                    if self.task_version <= "0.3.5":
+                        node["parameters"]["xpath"] = "" # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
+                        print("您的任务版本号为" + self.task_version + "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             
 
     def run(self):
