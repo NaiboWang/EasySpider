@@ -162,6 +162,7 @@ class BrowserThread(Thread):
             print("MySQL Mode")
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         self.outputParameters = {}
+        self.service = service
         self.outputParametersTypes = []
         self.outputParametersRecord = [] # 字段是否被记录
         self.dataNotFoundKeys = {}  # 记录没有找到数据的key
@@ -186,6 +187,11 @@ class BrowserThread(Thread):
                         self.OUTPUT[0].append(para["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
+        try:
+            self.inputExcel = service["inputExcel"]  # 输入Excel
+        except:
+            self.inputExcel = ""
+        self.readFromExcel()  # 读取Excel获得参数值
 
     # 检测如果没有复杂的操作，优化提取数据流程
     def preprocess(self):
@@ -252,6 +258,61 @@ class BrowserThread(Thread):
                         node["parameters"]["xpath"] = "" # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
                         print("您的任务版本号为" + self.task_version + "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             
+    def readFromExcel(self):
+        if self.inputExcel == "":
+            return 0
+        try:
+            workbook  = load_workbook(self.inputExcel)
+        except:
+            print("读取Excel失败，将会使用默认参数执行任务，请检查文件路径是否正确：", os.path.abspath(self.inputExcel))
+            print("Failed to read Excel, will execute the task with default parameters, please check if the file path is correct: ", os.path.abspath(self.inputExcel))
+            time.sleep(5)
+            return 0
+        
+        sheet_name_list = workbook.sheetnames
+        sheet = workbook[sheet_name_list[0]]
+        data = []
+
+        for row in sheet.iter_rows(values_only=True):
+            data.append(list(row))
+
+        result = list(zip(*data))
+        result_dict = {}
+        for row in result:
+            key = row[0]
+            values = [str(val) for val in row[1:] if val is not None]
+            result_dict.setdefault(key, []).extend([values])
+        
+        data = {}
+        for key, arr in result_dict.items():
+            result = []
+            for cols in zip(*arr):
+                result.append("~".join(cols))
+            data[key] = result
+
+        try:
+            if "urlList_0" in data.keys():
+                self.links = data["urlList_0"]
+        except:
+            pass
+        task = self.service
+        for key, value in data.items():
+            for i in range(len(task["inputParameters"])):
+                if key == task["inputParameters"][i]["name"]:
+                    nodeId = int(task["inputParameters"][i]["nodeId"])
+                    node = task["graph"][nodeId]
+                    value = "\r\n".join(value)
+                    if node["option"] == 1:
+                        node["parameters"]["links"] = value
+                    elif node["option"] == 4:
+                        node["parameters"]["value"] = value
+                    elif node["option"] == 8 and node["parameters"]["loopType"] == 0:
+                        node["parameters"]["exitCount"] = int(value)
+                    elif node["option"] == 8:
+                        node["parameters"]["textList"] = value
+                    break
+        print("已从Excel读取输入参数，覆盖了原有输入参数。")
+        print("Alread read input parameters from Excel and overwrite the original input parameters.")
 
     def run(self):
         # 挨个执行程序

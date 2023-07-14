@@ -126,7 +126,6 @@
                             </tbody>
                         </table>
                         <label>{{"The 'Invoke Name' is shown at the main table of this page, such as 'urlList_0' is the invoke name of the open page operation.~“调用名称”在本页面的主表格中显示，例如“urlList_0”是“打开网页“操作的调用名称。" | lang}}</label>
-                        <label>{{`对于循环输入文字的参数（loopText）需要配置索引值的情况，即输入文字操作用了相对循环内的索引值，您可以在Excel文件中写同一个参数名写多列，程序将自动合并。 例如，如果想要设置'loopText_1'参数值为"A~B~C"，则Excel文件中可以在第一次循环时的值为'1'，第二次循环时的值为'2'，则在Excel文件中，'loopText'参数的第一列写'1'，第二列写'2'。~For the case that the index value of the loopText parameter needs to be configured, that is, the input text operation uses the index value relative to the loop, you can write multiple columns with the same parameter name in the Excel file, and the program will automatically merge them. For example, the value of the 'loopText' parameter is '1' in the first loop, and the value of the second loop is '2', then in the Excel file, the first column of the 'loopText' parameter is written '1', and the second column is written '2'.` | lang}}</label>
                         <label>{{"You can just put part of the arguments in the Excel file, and the values of the rest of the arguments will be set to default. Example table for this task is:~您可以只在Excel文件中放入部分参数，其余参数值将被设置为默认值。一个针对此任务的表格示例为：" | lang}}</label>
                         <table class="table table-bordered excel">
                             <thead>
@@ -156,7 +155,29 @@
                             <tr>
                             </tbody>
                         </table>
-
+                        <label v-if='lang == "zh"' style="width: 95%">对于循环输入文字的参数（loopText）需要配置索引值的情况，即输入文字操作用了相对循环内的索引值，您可以在Excel文件中写同一个参数名写多列，程序将自动合并。 例如，想要设置'loopText_1'参数值两行，分别为"A~B~C"和"D~E~F"，则Excel文件可以这样设置：</label>
+                        <label v-else style="width: 95%"> For parameters that need to configure the index value of the loop text (loopText), that is, the input text operation uses the index value relative to the loop, you can write multiple columns with the same parameter name in the Excel file, and the program will automatically merge. For example, if you want to set the parameter value of 'loopText_1' to two rows, which are "A~B~C" and "D~E~F", the Excel file can be set like this:</label>
+                        <table class="table table-bordered excel" style="text-align: center; font-size: 13px">
+                            <thead>
+                            <tr>
+                                <th scope="col">inputText_1</th>
+                                <th scope="col">inputText_1</th>
+                                <th scope="col">inputText_1</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>A</td>
+                                <td>B</td>
+                                <td>C</td>
+                            </tr>
+                            <tr>
+                                <td>D</td>
+                                <td>E</td>
+                                <td>F</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <!-- /.modal-content -->
@@ -264,6 +285,7 @@
             task: {},
             show: false, //是否渲染
             ID: "",
+            lang: getUrlParam("lang"),
             tip: "The parameter values in the Excel file have been successfully imported into the corresponding field text box~Excel文件中的参数值已成功导入到对应字段文本框中",
             file:null,
             user_data_folder:"",
@@ -343,7 +365,19 @@
                         let inputParameters = app.$data.task.inputParameters;
                         inputParameters.forEach(function (item, index) {
                             if(Object.keys(response).includes(item.name)){
-                                item.value = response[item.name].join("\r\n");
+                                let temp = "";
+                                let tempArray = [];
+                                for (let i = 0; i < response[item.name].length; i++) {
+                                    for(let key of Object.keys(response)){
+                                        if(key.includes(item.name)){
+                                            temp += response[key][i] == undefined? "": response[key][i] + "~";
+                                        }
+                                    }
+                                    temp = temp.substring(0, temp.length - 1); //去掉最后一个~
+                                    tempArray.push(temp);
+                                    temp = "";
+                                }
+                                item.value = tempArray.join("\r\n");
                             }
                         });
                         $("#tipCustom").slideDown(); //提示框
