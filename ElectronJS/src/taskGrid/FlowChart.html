@@ -21,6 +21,9 @@
     <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
     </div>
+    <div id="tipInfo" class="alert alert-info alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="info_message">提示：您加载的任务版本不是最新版，可能出现兼容性问题。</span>
+    </div>
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
             <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
@@ -100,7 +103,8 @@
                     <div v-if='!useLoop'>
 <!--                        <label>url:</label>-->
 <!--                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>-->
-                        <label>Links (one link per line, the entire workflow will be executed as many times as there are lines of links):</label>
+                        <label v-if='nowNode["parameters"]["url"]!="about:blank"'>Links (one link per line, the entire workflow will be executed as many times as there are lines of links):</label>
+                        <label v-else>Link (Only one link can be put here)</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
                     </div>
                     <label>Maximum wait time for page load (in seconds): </label>
@@ -415,20 +419,28 @@ Please note that this feature does not support assigning values to variables. In
 
                 <div class="elements" v-if="nodeType==6">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- Display this element only if inside a loop and the loop contains fixed text -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use index value from within the loop (if unchecked, the setting will be the value of the "Set Value" text box below. If checked, it will use the index value set within the loop's dropdown box.)</p>
+                        <p v-if="useLoop">
+                            <label>Relative index value of the loop value (0 represents using the entire current loop's text. If greater than 0, it represents the value of the text separated by "~" within the current loop. For example, if the current loop's text value is 2~3 and you enter 2 here, it means taking the second item of the text, which is value 3, indicating setting the dropdown box to the third item.)</label>
+                            <input onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input>
+                        </p>
+                    </div>
                     <label>XPath: </label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
-
+                    <div v-if="!useLoop">
                     <p>Option switch Mode</p>
-
-                    <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
-                        <option value=0>Switch to the next option</option>
-                        <option value=1>Switch options by index value</option>
-                        <option value=2>Switch options by option value</option>
-                        <option value=3>Switch options by option text</option>
-                    </select>
-                    <p>Set value (not applicable for "Switch to the next option" mode)</p>
-                    <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
+                        <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
+                            <option value=0>Switch to the next option</option>
+                            <option value=1>Switch options by index (0 is the first option)</option>
+                            <option value=2>Switch options by option value</option>
+                            <option value=3>Switch options by option text</option>
+                        </select>
+                        <p>Set value (not applicable for "Switch to the next option" mode)</p>
+                        <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
+                    </div>
                 </div>
 
                 <div class="elements" v-if="nodeType==7">

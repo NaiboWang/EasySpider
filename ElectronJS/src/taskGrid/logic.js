@@ -184,6 +184,10 @@ function addParameters(t) {
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["recordASField"] = 0; //是否记录脚本输出
         t["parameters"]["paraType"] = "text"; //记录脚本输出的字段索引
+    } else if (t.option == 6) { //切换下拉选项
+        t["parameters"]["optionMode"] = 0; //下拉模式
+        t["parameters"]["optionValue"] = ""; //下拉值
+        t["parameters"]["index"] = 0; //输入框索引
     } else if (t.option == 8) { //循环
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
@@ -281,6 +285,14 @@ function showError(msg, time=4000) {
     }, time);
 }
 
+function showInfo(msg, time=4000) {
+    $("#info_message").text(msg);
+    $("#tipInfo").slideDown(); //提示框
+    let fadeout = setTimeout(function() {
+        $("#tipInfo").slideUp();
+    }, time);
+}
+
 //点击确定按钮时的处理
 $("#confirm").mousedown(updateUI);
 
@@ -300,6 +312,9 @@ if (mobile == "true") {
     $("#environment").val(1);
 }
 
+let serviceInfo = {
+    "version": "0.3.6"
+};
 
 function saveService(type) {
     let serviceId = $("#serviceId").val();
@@ -425,7 +440,7 @@ function saveService(type) {
                 }
             }
         }
-        let serviceInfo = {
+        serviceInfo = {
             "id": parseInt(serviceId),
             "name": serviceName,
             "url": url,
@@ -487,6 +502,9 @@ if (sId != null && sId != -1) //加载任务
             } catch(e){
                 console.log(e);
             }
+        }
+        if(result["version"]!= serviceInfo["version"]){
+            showInfo(LANG("提示：该任务为" + result["version"] + "版本任务，当前版本为" + serviceInfo["version"] + "，可能存在兼容性问题，请按照当前版本指南设计任务流程以避免任务执行不正常。","This task is designed by EasySpider " + result["version"] + ", current version of EasySpider is " + serviceInfo["version"] + ", there may be compatibility issues, please design the task flow according to the current version guide to avoid abnormal task execution."));
         }
         refresh();
     });

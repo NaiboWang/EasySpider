@@ -45,7 +45,7 @@ from threading import Thread, Event
 from myChrome import MyChrome
 if sys.platform != "darwin":
     from myChrome import MyUCChrome
-from utils import download_image, get_output_code, isnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel
+from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
 
@@ -136,7 +136,7 @@ class BrowserThread(Thread):
         except:
             self.save_threshold = 10
         self.links = list(
-            filter(isnull, service["links"].split("\n")))  # 要执行的link的列表
+            filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
         self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt":
@@ -554,8 +554,19 @@ class BrowserThread(Thread):
             self.OUTPUT.append(line)
 
     def switchSelect(self, para, loopValue):
-        optionMode = int(para["optionMode"])
+        optionMode = para["optionMode"]
         optionValue = para["optionValue"]
+        if para["useLoop"]:
+            index = para["index"]
+            if index != 0:
+                try:
+                    optionValue = loopValue.split("~")[index - 1]
+                except:
+                    print("取值失败，可能是因为取值索引超出范围，将使用整个文本值")
+                    print("Failed to get value, maybe because the index is out of range, will use the entire text value")
+            else:
+                optionValue = loopValue
+            optionMode = 1
         try:
             xpath = replace_field_values(para["xpath"], self.outputParameters)
             dropdown = Select(self.browser.find_element(
@@ -985,7 +996,7 @@ class BrowserThread(Thread):
         elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
             # tempList = node["parameters"]["textList"].split("\r\n")
             urlList = list(
-                filter(isnull, node["parameters"]["textList"].split("\n")))  # 去空行
+                filter(isnotnull, node["parameters"]["textList"].split("\n")))  # 去空行
             # urlList = []
             # for url in tempList:
             #     if url != "":
@@ -1053,8 +1064,8 @@ class BrowserThread(Thread):
             # clear output parameters
             for key in self.outputParameters:
                 self.outputParameters[key] = ""
-        else:
-            url = list(filter(isnull, para["links"].split("\n")))[0]
+        else: # 在流程图其他位置设置了打开网页的操作，读取的应该是第一个网址，如打开网页后登录，再打开第二个网页
+            url = list(filter(isnotnull, para["links"].split("\n")))[0]
         # 将value中的Field[""]替换为outputParameters中的键值
         url = replace_field_values(url, self.outputParameters)
         try:

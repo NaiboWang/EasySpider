@@ -139,9 +139,7 @@ def get_output_code(output):
     return code
 
 # 判断字段是否为空
-
-
-def isnull(s):
+def isnotnull(s):
     return len(s) != 0
 
 def new_line(outputParameters, maxViewLength, record):

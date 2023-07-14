@@ -21,6 +21,9 @@
     <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
     </div>
+    <div id="tipInfo" class="alert alert-info alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="info_message">提示：您加载的任务版本不是最新版，可能出现兼容性问题。</span>
+    </div>
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
             <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
@@ -100,7 +103,8 @@
                     <div v-if='!useLoop'>
 <!--                        <label>url:</label>-->
 <!--                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>-->
-                        <label>链接池（每行一个链接，有多少行链接整个任务流程就会被执行多少次）：</label>
+                        <label v-if='nowNode["parameters"]["url"]!="about:blank"'>链接池（每行一个链接，有多少行链接整个任务流程就会被执行多少次）：</label>
+                        <label v-else>链接（这里只能填写一个链接，因为是手动添加的打开网页操作）</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
                     </div>
                     <label>页面加载最长等待时间（秒）：</label>
@@ -313,7 +317,7 @@
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在循环内设置的文本）</p>
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在“文本列表”循环内设置的文本）</p>
                         <p v-if="useLoop">
                             <label>索引值（0表示使用整个当前循环的文本，如果大于0则表示当前文本用~来分割开的文本索引取值，即如果当前循环的文本值为A~B，则索引值为1表示输入A，2表示输入B，0表示输入A~B）</label>
                             <input onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input></p>
@@ -415,20 +419,28 @@
 
                 <div class="elements" v-if="nodeType==6">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
+                    <div v-if="nowNode['isInLoop']">
+                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
+                        <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的索引值（不勾选则输入为下方“设定值”文本框内的内容，勾选后会使用所在“文本列表”循环内设置的下拉框索引值）</p>
+                        <p v-if="useLoop">
+                            <label>相对循环内文本索引值（0表示使用整个当前循环的文本当做索引值，如果大于0则表示当前循环的文本用~来分割开的文本索引取值，即如果当前循环的文本值为2~3，这里填写2，则表示取文本第二项，即取值3，表示设置下拉框为第3项）</label>
+                            <input onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input></p>
+                        </p>
+                    </div>
                     <label>XPath： </label>
                     <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
-
-                    <p>切换模式</p>
-
-                    <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
-                        <option value=0>切换到下一个选项</option>
-                        <option value=1>按索引值切换选项</option>
-                        <option value=2>按选项值切换选项</option>
-                        <option value=3>按选项文本切换选项</option>
-                    </select>
-                    <p>设定值（不适用于切换到下一个选项模式）</p>
-                    <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
+                    <div v-if="!useLoop">
+                        <p>切换模式</p>
+                        <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
+                            <option value=0>切换到下一个选项</option>
+                            <option value=1>按索引值切换选项（第一个选项索引值为0）</option>
+                            <option value=2>按选项值切换选项</option>
+                            <option value=3>按选项文本切换选项</option>
+                        </select>
+                        <p>设定值（不适用于切换到下一个选项模式）</p>
+                        <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
+                    </div>
                 </div>
 
                 <div class="elements" v-if="nodeType==7">
