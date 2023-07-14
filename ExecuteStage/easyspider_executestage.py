@@ -13,8 +13,11 @@ import sys
 # import hashlib
 import time
 import requests
+from ddddocr import DdddOcr
 from urllib.parse import urljoin
 from lxml import etree
+import onnxruntime
+onnxruntime.set_default_logger_severity(3) # 隐藏onnxruntime的日志
 # import undetected_chromedriver as uc
 from pynput.keyboard import Key, Listener
 from selenium.webdriver.chrome.options import Options
@@ -38,7 +41,7 @@ from openpyxl import load_workbook, Workbook
 import csv
 import os
 from commandline_config import Config
-import pytesseract
+# import pytesseract
 from PIL import Image
 # import uuid
 from threading import Thread, Event
@@ -236,8 +239,8 @@ class BrowserThread(Thread):
                     except:
                         node["parameters"]["recordASField"] += 1
                     if para["contentType"] == 8:
-                        print("默认的OCR识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
-                        print("If you think the default OCR function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
+                        print("默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
+                        print("If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
                     if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
                         para["optimizable"] = True
                     else:
@@ -1367,34 +1370,43 @@ class BrowserThread(Thread):
                 screenshot_stream = io.BytesIO(screenshot)
                 # 使用Pillow库打开截图，并转换为灰度图像
                 image = Image.open(screenshot_stream).convert('L')
+                temp_name = "OCR_" + str(time.time()) + ".png"
+                location = "Data/Task_" + str(self.id) + "/" + self.saveName + "/" + temp_name
+                image.save(location)
+                ocr = DdddOcr()
+                with open(location, 'rb') as f:
+                    image_bytes = f.read()
+                content = ocr.classification(image_bytes)
+                os.remove(location)
                 # 使用Tesseract OCR引擎识别图像中的文本 
-                content = pytesseract.image_to_string(image,  lang='chi_sim+eng')
+                # content = pytesseract.image_to_string(image,  lang='chi_sim+eng')
             except Exception as e:
-                try:
-                    print("识别中文失败，尝试只识别英文")
-                    print("Failed to recognize Chinese, try to recognize English only")
-                    screenshot = element.screenshot_as_png
-                    screenshot_stream = io.BytesIO(screenshot)
-                    # 使用Pillow库打开截图，并转换为灰度图像
-                    image = Image.open(screenshot_stream).convert('L')
-                    # 使用Tesseract OCR引擎识别图像中的文本 
-                    content = pytesseract.image_to_string(image,  lang='eng')
-                except Exception as e:              
-                    content = "OCR Error"
-                    print(e)
-                    if sys.platform == "win32":
-                        print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501")
-                        print("\nhttps://www.bilibili.com/video/BV1GP411y7u4/")
-                    elif sys.platform == "darwin":
-                        print(
-                            "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/146044810")
-                    elif sys.platform == "linux":
-                        print(
-                            "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/420259031")
-                    else:
-                        print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501")
-                        print("\nhttps://www.bilibili.com/video/BV1GP411y7u4/")
-                    print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
+                # try:
+                #     print(e)
+                #     print("识别中文失败，尝试只识别英文")
+                #     print("Failed to recognize Chinese, try to recognize English only")
+                #     screenshot = element.screenshot_as_png
+                #     screenshot_stream = io.BytesIO(screenshot)
+                #     # 使用Pillow库打开截图，并转换为灰度图像
+                #     image = Image.open(screenshot_stream).convert('L')
+                #     # 使用Tesseract OCR引擎识别图像中的文本 
+                #     # content = pytesseract.image_to_string(image,  lang='eng')
+                # except Exception as e:              
+                content = "OCR Error"
+                print(e)
+                    # if sys.platform == "win32":
+                    #     print("要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501")
+                    #     print("\nhttps://www.bilibili.com/video/BV1GP411y7u4/")
+                    # elif sys.platform == "darwin":
+                    #     print(
+                    #         "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/146044810")
+                    # elif sys.platform == "linux":
+                    #     print(
+                    #         "注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://zhuanlan.zhihu.com/p/420259031")
+                    # else:
+                    #     print("注意以上错误，要使用OCR识别功能，你需要安装Tesseract-OCR并将其添加到环境变量PATH中（添加后需重启EasySpider）：https://blog.csdn.net/u010454030/article/details/80515501")
+                    #     print("\nhttps://www.bilibili.com/video/BV1GP411y7u4/")
+                    # print("To use OCR, You need to install Tesseract-OCR and add it to the environment variable PATH (need to restart EasySpider after you put in PATH): https://tesseract-ocr.github.io/tessdoc/Installation.html")
         elif p["contentType"] == 9:
             content = self.execute_code(
                 2, p["JS"], p["JSWaitTime"], element, iframe=p["iframe"])
@@ -1642,6 +1654,7 @@ if __name__ == '__main__':
         "read_type": "remote",
         "headless": False,
         "server_address": "http://localhost:8074",
+        "keyboard": True, # 是否监听键盘输入
         "version": "0.3.6",
     }
     c = Config(config)
@@ -1849,13 +1862,14 @@ if __name__ == '__main__':
         #     print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
         #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
-        try:
+    try:
+        if c.keyboard: 
             with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:
                 listener.join()
-        except:
-            pass
-            # print("您的操作系统不支持暂停功能。")
-            # print("Your operating system does not support the pause function.")
+    except:
+        pass
+        # print("您的操作系统不支持暂停功能。")
+        # print("Your operating system does not support the pause function.")
             
         
     # print("线程长度：", len(threads) )

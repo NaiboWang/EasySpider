@@ -7,5 +7,6 @@ pytesseract==0.3.10
 openpyxl==3.1.2
 pymysql==1.1.0
 lxml==4.9.2
+ddddocr==1.0.6
 pynput==1.7.6
 undetected-chromedriver==3.4.7
