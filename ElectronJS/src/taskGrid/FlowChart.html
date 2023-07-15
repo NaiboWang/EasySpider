@@ -105,7 +105,8 @@
 <!--                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>-->
                         <label v-if='nowNode["parameters"]["url"]!="about:blank"'>Links (one link per line, the entire workflow will be executed as many times as there are lines of links):</label>
                         <label v-else>Link (Only one link can be put here)</label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
+                        <textarea v-if='nowNode["parameters"]["url"]!="about:blank"' onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
+                        <input v-else onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["links"]'></input>
                     </div>
                     <label>Maximum wait time for page load (in seconds): </label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>

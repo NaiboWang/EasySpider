@@ -105,7 +105,8 @@
 <!--                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>-->
                         <label v-if='nowNode["parameters"]["url"]!="about:blank"'>链接池（每行一个链接，有多少行链接整个任务流程就会被执行多少次）：</label>
                         <label v-else>链接（这里只能填写一个链接，因为是手动添加的打开网页操作）</label>
-                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
+                        <textarea v-if='nowNode["parameters"]["url"]!="about:blank"' onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
+                        <input v-else onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["links"]'></input>
                     </div>
                     <label>页面加载最长等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
