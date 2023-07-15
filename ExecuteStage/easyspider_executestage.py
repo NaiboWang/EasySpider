@@ -1225,6 +1225,9 @@ class BrowserThread(Thread):
             except:
                 pass
         except Exception as e:
+            print("点击元素失败:" + path, "，请尝试将点击类型改为JavaScript点击后重试。")
+            print("Failed to click element:" + path, ", please try to change the click type to JavaScript Click.")
+            print(e)
             self.Log(e)
             self.recordLog(str(e))
         # 点击后对该元素执行一段JavaScript代码
