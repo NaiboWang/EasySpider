@@ -146,6 +146,9 @@ function addParameters(t) {
         beforeJSWaitTime: 0, //执行前js等待时间
         afterJS: "", //执行后执行的js
         afterJSWaitTime: 0, //执行后js等待时间
+        waitElement: "", //等待元素
+        waitElementTime: 10, //等待元素时间
+        waitElementIframeIndex: 0, //等待元素在第几个iframe中
     }; //公共参数处理
     if (t.option == 1) {
         t["parameters"]["url"] = "about:blank";

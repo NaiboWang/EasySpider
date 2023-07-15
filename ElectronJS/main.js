@@ -85,6 +85,10 @@ let flowchart_window = null;
 let current_handle = null;
 let old_handles = [];
 let handle_pairs = {};
+let socket_window = null;
+let socket_start = null;
+let socket_flowchart = null;
+let invoke_window = null;
 
 // var ffi = require('ffi-napi');
 // var libm = ffi.Library('libm', {
@@ -233,27 +237,7 @@ async function beginInvoke(msg, ws) {
                     break;
                 }
             }
-            // .then(function (element) {
-            //     console.log("element", element, handles);
-            //     element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
-            //         exit = true;
-            //     }, function (error) {
-            //         console.log("error", error);
-            //         len = len - 1;
-            //         if (len == 0) {
-            //             exit = true;
-            //         }
-            //     }
-            // );
         }
-        // let handles = driver.getAllWindowHandles();
-        // driver.switchTo().window(handles[handles.length - 1]);
-        // driver.findElement(By.xpath(msg.message.xpath)).sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
-        // robot.keyTap("a", "control");
-        // robot.keyTap("backspace");
-        // robot.typeString(keyInfo);
-        // robot.keyTap("shift");
-        // robot.keyTap("shift");
     } else if (msg.type == 3) {
         try {
             if (msg.from == 0) {
@@ -368,6 +352,11 @@ async function beginInvoke(msg, ws) {
         } catch {
             console.log("open devtools error");
         }
+        try{
+            invoke_window.openDevTools();
+        } catch {
+            console.log("open devtools error");
+        }
     } else if (msg.type == 7) {
         // 获得当前页面Cookies
         try{
@@ -383,9 +372,6 @@ async function beginInvoke(msg, ws) {
 
 const WebSocket = require('ws');
 const {all} = require("express/lib/application");
-let socket_window = null;
-let socket_start = null;
-let socket_flowchart = null;
 let wss = new WebSocket.Server({port: websocket_port});
 wss.on('connection', function (ws) {
     ws.on('message', async function (message, isBinary) {
@@ -521,7 +507,7 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "", mobile = f
 }
 
 function handleOpenInvoke(event, lang = "en") {
-    const window = new BrowserWindow({icon: iconPath});
+    invoke_window = new BrowserWindow({icon: iconPath});
     let url = "";
     language = lang;
     if (lang == "en") {
@@ -530,10 +516,10 @@ function handleOpenInvoke(event, lang = "en") {
         url = server_address + `/taskGrid/taskList.html?type=1&wsport=${websocket_port}&backEndAddressServiceWrapper=` + server_address + "&lang=zh";
     }
     // and load the index.html of the app.
-    window.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
-    window.maximize();
+    invoke_window.loadURL(url, { extraHeaders: 'pragma: no-cache\n' });
+    invoke_window.maximize();
     mainWindow.hide();
-    window.on('close', function (event) {
+    invoke_window.on('close', function (event) {
         mainWindow.show();
     });
 }

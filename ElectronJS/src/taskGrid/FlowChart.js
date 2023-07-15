@@ -625,31 +625,7 @@ document.oncontextmenu = function() {
         return false;
     } //屏蔽右键菜单
     //删除元素
-document.onkeydown = function(e) {
-    if (nowNode != null && e.keyCode == 46) {
-        // if (confirm("确定要删除元素吗？")) {
-            deleteElement();
-        // }
-    } else { //ctrl+s保存服务
-        let currKey = 0;
-        currKey = e.keyCode || e.which || e.charCode;
-        if (currKey == 83 && (e.ctrlKey || e.metaKey)) {
-            $('#save').click();
-            return true;
-        } else if (currKey == 116) {
-            location.reload();
-        } else if (currKey == 123) {
-            console.log("打开devtools")
-            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
-            command.onopen = function() {
-                let message = {
-                    type: 6, //消息类型，0代表连接操作
-                };
-                this.send(JSON.stringify(message));
-            };
-        }
-    }
-}
+
 
 function inputDelete(e) {
     if (e.keyCode == 46) {
