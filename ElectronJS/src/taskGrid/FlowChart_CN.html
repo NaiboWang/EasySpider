@@ -271,11 +271,12 @@
                             <option :value = 8>OCR识别文字</option>
                             <option :value = 9>（针对该元素的）JavaScript代码返回值（需以return 开头）</option>
                             <option :value = 12>系统命令返回值</option>
+                            <option :value = 13>执行环境下的Python表达式值（eval操作）</option>
                             <option :value = 10>当前选择框选中的选项值</option>
                             <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
-                        <div v-if='paras.parameters[paraIndex]["contentType"] == 9 || paras.parameters[paraIndex]["contentType"] == 12'>
-                            <label>JavaScript代码（也可以不针对该元素，直接写return JS代码即可）/系统命令代码：</label>
+                        <div v-if='paras.parameters[paraIndex]["contentType"] == 9 || paras.parameters[paraIndex]["contentType"] >= 12'>
+                            <label>JavaScript（也可以不针对该元素，直接写return JS代码即可）/系统命令/Python代码：</label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
                                       placeholder='如要针对该元素，则该元素用arguments[0]来表示，示例：return arguments[0].innerText + "美元"，即实现了提取该元素innerText并后面加“美元”的功能；不然直接如写return new Date().toString()即可获得当前时间戳。' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
                             <label>最长等待脚本执行时间（0代表无限等待）： </label>

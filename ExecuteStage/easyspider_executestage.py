@@ -1415,6 +1415,8 @@ class BrowserThread(Thread):
                 2, p["JS"], p["JSWaitTime"], element, iframe=p["iframe"])
         elif p["contentType"] == 12: # 系统命令返回值
             content = self.execute_code(1, p["JS"], p["JSWaitTime"])
+        elif p["contentType"] == 13: # eval返回值
+            content = self.execute_code(6, p["JS"], p["JSWaitTime"])
         elif p["contentType"] == 10:  # 下拉框选中的值
             try:
                 select_element = Select(element)

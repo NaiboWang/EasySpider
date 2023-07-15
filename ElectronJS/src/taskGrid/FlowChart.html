@@ -271,11 +271,12 @@
                             <option :value = 8>OCR Results</option>
                             <option :value = 9>Return value of JavaScript code (for this element), starting with 'return')</option>
                             <option :value = 12>System command return value</option>
+                            <option :value = 13>Value of a Python expression (the "eval" operation)</option>
                             <option :value = 10>Selected value of the current select box</option>
                             <option :value = 11>Selected text of the current select box</option>
                         </select>
-                        <div v-if='paras.parameters[paraIndex]["contentType"] == 9'>
-                            <label>JavaScript Code (Use Field["FieldName"] to input the lastest value of a field): </label>
+                        <div v-if='paras.parameters[paraIndex]["contentType"] == 9 || paras.parameters[paraIndex]["contentType"] >= 12'>
+                            <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                             <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
                                       placeholder='The element should be represented by arguments[0]. Here is an example: return arguments[0].innerText + "US Dollar". This code extracts the innerText of the element and appends "US Dollar"  to it.' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
                             <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
