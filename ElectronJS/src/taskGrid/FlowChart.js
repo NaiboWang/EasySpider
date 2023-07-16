@@ -235,14 +235,14 @@ function newNode(node) {
                     <p>${title}</p>
                 </div>
             </div>
-            <p class="arrow" position=${node["position"]} data = "${id}" pId=${node["parentId"]}>↓</p></div>`;
+            <p class="arrow" draggable="true" position=${node["position"]} data = "${id}" pId=${node["parentId"]}>↓</p></div>`;
     } else if (type == 1) //循环
     {
         return `<div class="loop clk" data="${id}" draggable="true" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
              <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
-                <p class="arrow" position=-1 data = "${id}" pId=${id}>↓</p>
+                <p class="arrow" draggable="true" position=-1 data = "${id}" pId=${id}>↓</p>
             </div>
-            <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
+            <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
     } else if (type == 2) //判断
     {
         return LANG(`<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
@@ -250,18 +250,18 @@ function newNode(node) {
                     <p class="branchAdd" data="${id}">点击此处在最左边增加条件分支</p>
                     <div class="judge" id = "${id}">
                     </div></div>
-                    <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`,
+                    <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`,
             `<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
                     <p class="branchAdd" data="${id}">Click here to add a new condition to the left most</p>
                     <div class="judge" id = "${id}">
                     </div></div>
-                    <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`);
+                    <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`);
     } else //判断分支
     {
         return `<div class="branch clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
-                    <p data = "${id}" class="arrow" position=-1 pId=${id}>↓</p>
+                    <p data = "${id}" class="arrow" draggable="true" position=-1 pId=${id}>↓</p>
                     <div id = "${id}">
                     </div></div>`;
     }
@@ -531,11 +531,6 @@ $(".options").mousedown(function() {
     }
 });
 
-function elementDragStart(e) {
-    // e.preventDefault();
-    // nowNode = this;
-}
-
 function arrowDragOver(e) {
     e.preventDefault();
     app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
@@ -556,6 +551,12 @@ function elementDragEnd(e) {
     toolBoxKernel.call(this, e);
 }
 
+function arrowDragEnd(e) {
+    option = 13; //调整锚点操作
+    toolBoxKernel.call(this, e);
+    e.stopPropagation();
+}
+
 function bindEvents() {
     // 清空原来的listener然后再添加新的listener
     //以下绑定了左右键的行为
@@ -565,8 +566,6 @@ function bindEvents() {
         rule.addEventListener('mousedown', elementMousedown);
         rule.removeEventListener('click', elementClick);
         rule.addEventListener('click', elementClick);
-        rule.removeEventListener('dragstart', elementDragStart);
-        rule.addEventListener('dragstart', elementDragStart);
         rule.removeEventListener('dragend', elementDragEnd);
         rule.addEventListener('dragend', elementDragEnd);
     }
@@ -578,6 +577,8 @@ function bindEvents() {
         rule.addEventListener('mousedown', arrowMouseDown);
         rule.removeEventListener('dragover', arrowDragOver);
         rule.addEventListener('dragover', arrowDragOver);
+        rule.removeEventListener('dragend', arrowDragEnd);
+        rule.addEventListener('dragend', arrowDragEnd);
     }
     let branch = document.getElementsByClassName('branchAdd');
     for (let i = 0, rule; rule = branch[i++];) {
