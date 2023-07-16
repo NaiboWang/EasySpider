@@ -581,12 +581,12 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                 </div>
                 <div style="margin-top:5px">
                     <label>Wait for the following elements to appear <b>before</b> executing:</label>
-                    <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 30px" v-model='nowNode["parameters"]["waitElement"]'
+                    <textarea onkeydown="inputDelete(event)" class="form-control" style="min-height: 30px" v-model='list.nl[index.nowNodeIndex]["parameters"]["waitElement"]'
                               placeholder="Enter the XPath of the element to wait for, leave blank to skip waiting"></textarea>
                     <label style="margin-top:5px">In which iframe is the element located? Set to 0 if the element is not inside an iframe:</label>
-                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['waitElementIframeIndex']" type="number" required></input>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="list.nl[index.nowNodeIndex]['parameters']['waitElementIframeIndex']" type="number" required></input>
                     <label style="margin-top:5px">Maximum waiting time for element appearance (in seconds):</label>
-                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['waitElementTime']" type="number" required></input>
+                    <input onkeydown="inputDelete(event)" class="form-control" v-model.number="list.nl[index.nowNodeIndex]['parameters']['waitElementTime']" type="number" required></input>
                     <label style="margin-top:5px">Wait seconds <b>after</b> execution (can set decimal values, e.g., 0.5):</label>
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
                     <label>Wait Type</label>

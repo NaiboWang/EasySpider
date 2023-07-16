@@ -13,8 +13,16 @@ let root = {
         tabIndex: 0,
         useLoop: false, //是否使用循环中的元素
         xpath: "", //xpath
-        wait: 0,
-        waitType: 0,
+        iframe: false, //是否在iframe中
+        wait: 0, //执行后等待
+        waitType: 0, //等待类型，0代表固定时间，1代表随机等待
+        beforeJS: "", //执行前执行的js
+        beforeJSWaitTime: 0, //执行前js等待时间
+        afterJS: "", //执行后执行的js
+        afterJSWaitTime: 0, //执行后js等待时间
+        waitElement: "", //等待元素
+        waitElementTime: 10, //等待元素时间
+        waitElementIframeIndex: 0, //等待元素在第几个iframe中
     },
     isInLoop: false, //是否处于循环内
 };
@@ -222,7 +230,7 @@ function newNode(node) {
     type = node["type"];
     if (type == 0) //顺序
     {
-        return `<div class="sequence"><div class="node clk" data="${id}" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
+        return `<div class="sequence"><div class="node clk" draggable="true" data="${id}" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
                 <div >
                     <p>${title}</p>
                 </div>
@@ -230,20 +238,20 @@ function newNode(node) {
             <p class="arrow" position=${node["position"]} data = "${id}" pId=${node["parentId"]}>↓</p></div>`;
     } else if (type == 1) //循环
     {
-        return `<div class="loop clk" data="${id}" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
+        return `<div class="loop clk" data="${id}" draggable="true" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
              <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
                 <p class="arrow" position=-1 data = "${id}" pId=${id}>↓</p>
             </div>
             <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
     } else if (type == 2) //判断
     {
-        return LANG(`<div class="loop clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
+        return LANG(`<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
                     <p class="branchAdd" data="${id}">点击此处在最左边增加条件分支</p>
                     <div class="judge" id = "${id}">
                     </div></div>
                     <p class="arrow" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`,
-            `<div class="loop clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
+            `<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
                     <p class="branchAdd" data="${id}">Click here to add a new condition to the left most</p>
                     <div class="judge" id = "${id}">
@@ -434,6 +442,8 @@ function toolBoxKernel(e, para = null) {
         }
     } else if (option > 0) { //新增操作
         let l = nodeList.length;
+        let nt = null;
+        let nt2 = null;
         let t = {
             id: 0,
             index: l,
@@ -452,7 +462,7 @@ function toolBoxKernel(e, para = null) {
         {
             t["type"] = 2;
             // 增加两个分支
-            let nt = {
+            nt = {
                 id: 0,
                 parentId: 0,
                 index: l + 1,
@@ -462,7 +472,7 @@ function toolBoxKernel(e, para = null) {
                 sequence: [],
                 isInLoop: false,
             };
-            let nt2 = {
+            nt2 = {
                 id: 0,
                 parentId: 0,
                 index: l + 2,
@@ -521,6 +531,31 @@ $(".options").mousedown(function() {
     }
 });
 
+function elementDragStart(e) {
+    // e.preventDefault();
+    // nowNode = this;
+}
+
+function arrowDragOver(e) {
+    e.preventDefault();
+    app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
+    // console.log("dragover", app._data.nowArrow, nowNode);
+}
+
+function elementDragEnd(e) {
+    // e.preventDefault();
+    // console.log("dragend");
+    if (nowNode != null) {
+        nowNode.style.borderColor = "skyblue";
+    }
+    nowNode = this;
+    vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
+    this.style.borderColor = "blue";
+    handleElement(); //处理元素
+    option = 10; //剪切元素操作
+    toolBoxKernel.call(this, e);
+}
+
 function bindEvents() {
     // 清空原来的listener然后再添加新的listener
     //以下绑定了左右键的行为
@@ -530,6 +565,10 @@ function bindEvents() {
         rule.addEventListener('mousedown', elementMousedown);
         rule.removeEventListener('click', elementClick);
         rule.addEventListener('click', elementClick);
+        rule.removeEventListener('dragstart', elementDragStart);
+        rule.addEventListener('dragstart', elementDragStart);
+        rule.removeEventListener('dragend', elementDragEnd);
+        rule.addEventListener('dragend', elementDragEnd);
     }
     let arr = document.getElementsByClassName('arrow');
     for (let i = 0, rule; rule = arr[i++];) {
@@ -537,6 +576,8 @@ function bindEvents() {
         rule.addEventListener('click', arrowClick);
         rule.removeEventListener('mousedown', arrowMouseDown);
         rule.addEventListener('mousedown', arrowMouseDown);
+        rule.removeEventListener('dragover', arrowDragOver);
+        rule.addEventListener('dragover', arrowDragOver);
     }
     let branch = document.getElementsByClassName('branchAdd');
     for (let i = 0, rule; rule = branch[i++];) {
