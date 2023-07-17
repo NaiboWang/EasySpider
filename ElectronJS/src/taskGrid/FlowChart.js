@@ -549,10 +549,17 @@ function elementDragEnd(e) {
     handleElement(); //处理元素
     option = 10; //剪切元素操作
     toolBoxKernel.call(this, e);
+    e.stopPropagation();
 }
 
 function arrowDragEnd(e) {
     option = 13; //调整锚点操作
+    toolBoxKernel.call(this, e);
+    e.stopPropagation();
+}
+
+function optionDragEnd(e) {
+    option = this.getAttribute("data");
     toolBoxKernel.call(this, e);
     e.stopPropagation();
 }
@@ -586,6 +593,11 @@ function bindEvents() {
         rule.addEventListener('click', branchClick);
         rule.removeEventListener('mousedown', branchMouseDown);
         rule.addEventListener('mousedown', branchMouseDown);
+    }
+    let options = document.getElementsByClassName("options");
+    for (let i = 0, rule; rule = options[i++];) {
+        rule.removeEventListener('dragend', optionDragEnd);
+        rule.addEventListener('dragend', optionDragEnd);
     }
 }
 
