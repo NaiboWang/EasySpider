@@ -569,7 +569,7 @@ function arrowDragEnd(e) {
 }
 
 function optionDragEnd(e) {
-    option = this.getAttribute("data");
+    option = parseInt(this.getAttribute("data"));
     toolBoxKernel.call(this, e);
     e.stopPropagation();
 }
