@@ -329,6 +329,11 @@ function branchClick(e) {
 function elementMousedown(e) {
     if (e.button == 2) //右键点击
     {
+        try{
+            document.getElementById("contextMenu").remove();
+        } catch {
+
+        }
         if (nowNode != null) {
             nowNode.style.borderColor = "skyblue";
         }
@@ -342,6 +347,11 @@ function elementMousedown(e) {
 
 //元素点击事件
 function elementClick(e) {
+    try{
+        document.getElementById("contextMenu").remove();
+    } catch (e) {
+
+    }
     if (nowNode != null) {
         nowNode.style.borderColor = "skyblue";
     }
@@ -429,10 +439,10 @@ function toolBoxKernel(e, para = null) {
                 {
                     position2--;
                 }
-                console.log(element);
+                // console.log(element);
                 nodeList[actionSequence[pId2]]["sequence"].splice(position2 + 1, 0, element[0]); //在相应位置添加新元素
                 refresh(); //重新渲染页面
-                console.log(nodeList[element[0]]);
+                // console.log(nodeList[element[0]]);
                 app._data.nowArrow = { "position": nodeList[element[0]]["position"], "pId": nodeList[element[0]]["parentId"], "num": 0 };
                 $("#" + nodeList[element[0]]["id"]).click();
             } else {
@@ -642,7 +652,7 @@ function refresh(nowArrowReset = true) {
 }
 
 function deleteElement() {
-    if (nowNode.getAttribute("id") == 0) {
+    if (nowNode == null || nowNode.getAttribute("id") == 0) {
         showError(LANG("当前未选中元素!", "No element is selected now!"));
         return;
     }
@@ -676,7 +686,26 @@ function deleteElement() {
 }
 
 document.oncontextmenu = function() {
-        return false;
+        // 创建一个包含删除选项的右键菜单
+        let contextMenu = document.createElement("div");
+        contextMenu.id = "contextMenu";
+        contextMenu.innerHTML = `<div>${LANG("删除元素", "Delete Element")}`;
+
+        // 设置右键菜单的样式
+        contextMenu.style.position = "absolute";
+        contextMenu.style.left = event.clientX + "px";
+        contextMenu.style.top = event.clientY + "px";
+        contextMenu.style.width = LANG("140px", "180px");
+
+        // 添加删除元素的功能
+        contextMenu.addEventListener("click", function() {
+            // myElement.remove(); // 删除元素
+            deleteElement();
+            contextMenu.remove(); // 删除右键菜单
+        });
+
+        // 将右键菜单添加到文档中
+        document.body.appendChild(contextMenu);
     } //屏蔽右键菜单
     //删除元素
 

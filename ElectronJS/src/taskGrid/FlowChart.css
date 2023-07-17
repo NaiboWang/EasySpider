@@ -8,6 +8,26 @@
       margin-top: 10px;
   }
 
+  #contextMenu {
+      position: absolute;
+      background-color: white;
+      padding: 3px!important;
+      text-align: center;
+      border: 1px solid darkblue;
+      border-radius: 3px;
+      /*width: 120px;*/
+  }
+
+  #contextMenu div{
+      height: 30px;
+      padding-top: 2px;
+  }
+
+  #contextMenu div:hover {
+      background-color: rgba(211,211,211,0.4) !important;
+      cursor: pointer;
+  }
+
   label{
       margin-left: 2px;
   }
