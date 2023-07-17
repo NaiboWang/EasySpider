@@ -171,3 +171,15 @@
 .toolkitcontain .toolkittb4 {
     position: absolute;
 }
+
+#closeButton {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.05;
+}
+#closeButton:hover {
+  opacity: 1.0;
+}

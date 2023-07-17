@@ -32,9 +32,9 @@ global.tdiv.style.width = "3000px";
 global.tdiv.style.height = "3000px";
 global.tdiv.style.pointerEvents = "none";
 
-var mousemovebind = false; //如果出现元素默认绑定了mousemove事件导致匹配不到元素的时候，开启第二种模式获得元素
+let mousemovebind = false; //如果出现元素默认绑定了mousemove事件导致匹配不到元素的时候，开启第二种模式获得元素
 
-var toolkit = document.createElement("div");
+let toolkit = document.createElement("div");
 toolkit.classList = "tooltips"; //添加样式
 // @ts-ignore
 // if(isInIframe()){
@@ -44,7 +44,7 @@ toolkit.setAttribute("id", "wrapperToolkit");
 // }
 
 
-var tooltips = false; //标记鼠标是否在提示框上
+let tooltips = false; //标记鼠标是否在提示框上
 
 //右键菜单屏蔽
 document.oncontextmenu = () => false;
@@ -54,12 +54,12 @@ document.addEventListener("mousemove", function() {
     }
 
     //如果鼠标在元素框内则点击和选中失效
-    var x = event.clientX;
-    var y = event.clientY;
-    var divx1 = toolkit.offsetLeft;
-    var divy1 = toolkit.offsetTop;
-    var divx2 = toolkit.offsetLeft + toolkit.offsetWidth;
-    var divy2 = toolkit.offsetTop + toolkit.offsetHeight;
+    let x = event.clientX;
+    let y = event.clientY;
+    let divx1 = toolkit.offsetLeft;
+    let divy1 = toolkit.offsetTop;
+    let divx2 = toolkit.offsetLeft + toolkit.offsetWidth;
+    let divy2 = toolkit.offsetTop + toolkit.offsetHeight;
     if (x >= divx1 && x <= divx2 && y >= divy1 && y <= divy2) {
         tooltips = true;
         return;
@@ -174,7 +174,7 @@ toolkit.addEventListener("mousedown", function(e) { e.stopPropagation(); }); //�
 document.body.append(global.div); //默认如果toolkit不存在则div和tdiv也不存在
 document.body.append(global.tdiv);
 document.body.append(toolkit);
-var timer;
+let timer;
 
 
 
@@ -299,3 +299,7 @@ function generateToolkit() {
 //Vue元素
 generateToolkit();
 
+let closeButton = document.getElementById("closeButton");
+closeButton.addEventListener("click", function() {
+    toolkit.style.display = "none"; // 隐藏元素
+});

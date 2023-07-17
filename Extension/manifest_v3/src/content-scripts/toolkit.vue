@@ -2,6 +2,7 @@
   <div id="realcontent">
 <!--    <div id="EasySpiderResizer" style="width: 10px; height: 10px; background-color: black; position: absolute; left: 0; bottom: 0; cursor: ne-resize;"></div>-->
     <div id="EasySpiderResizer" style="width: 10px; height: 10px; position: absolute; left: 0; top: 0; cursor: nw-resize;"></div>
+    <span id="closeButton">&#x2716;</span>
     <div v-if="lang == 'zh'">
       <div class="tooldrag">✍操作台（点此拖动，左上角调整大小）</div>
       <div class="realcontent">

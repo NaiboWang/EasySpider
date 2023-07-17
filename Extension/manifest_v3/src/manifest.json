@@ -4,7 +4,6 @@
     "description": "EasySpider's chrome extension",
     "author": "Naibo Wang",
     "manifest_version": 3,
-    "persistent": true,
     "action": {
         "default_icon": {
             "16": "assets/icon-16.png",
