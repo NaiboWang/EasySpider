@@ -562,6 +562,13 @@ function elementDragEnd(e) {
     e.stopPropagation();
 }
 
+function arrowDblClick(e) {
+    option = 13; //调整锚点操作
+    app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
+    toolBoxKernel.call(this, e);
+    e.stopPropagation();
+}
+
 function arrowDragEnd(e) {
     option = 13; //调整锚点操作
     toolBoxKernel.call(this, e);
@@ -592,6 +599,8 @@ function bindEvents() {
         rule.addEventListener('click', arrowClick);
         rule.removeEventListener('mousedown', arrowMouseDown);
         rule.addEventListener('mousedown', arrowMouseDown);
+        rule.removeEventListener('dblclick', arrowDblClick);
+        rule.addEventListener('dblclick', arrowDblClick);
         rule.removeEventListener('dragover', arrowDragOver);
         rule.addEventListener('dragover', arrowDragOver);
         rule.removeEventListener('dragend', arrowDragEnd);
