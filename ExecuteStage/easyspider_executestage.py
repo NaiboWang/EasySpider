@@ -711,7 +711,7 @@ class BrowserThread(Thread):
                                    waitElement, ", will continue to execute.")
                 self.print_and_log(e)
             self.recordLog("Wait element not found")
-        self.recordLog("Execute node:", node["title"])
+        self.recordLog("执行操作/Execute node:", node["title"])
         # 根据不同选项执行不同操作
         if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
             for i in node["sequence"]:  # 从根节点开始向下读取
@@ -835,6 +835,9 @@ class BrowserThread(Thread):
         # rt.end()
         if executeBranchId != 0:
             self.executeNode(executeBranchId, loopElement, clickPath, index)
+        else:
+            self.recordLog(
+                "判断条件内所有条件分支的条件都不满足/None of the conditions in the judgment condition are met")
 
     # 对循环的处理
     def loopExecute(self, node, loopValue, clickPath="", index=0):
