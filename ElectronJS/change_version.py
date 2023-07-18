@@ -30,7 +30,7 @@ def update_file_version(file_path, new_version, key="当前版本/Current Versio
             file.write(line)
 
 
-version = "0.3.6"
+version = "0.5.0"
 
 # py html js
 
@@ -41,9 +41,6 @@ if __name__ == "__main__":
 
     file_path = "./src/taskGrid/logic.js"
     update_file_version(file_path, version, key='"version": "')
-
-#     file_path = "./src/taskGrid/logic.js"
-#     update_file_version(file_path, version, key='"version": "')
 
     file_path = "../ExecuteStage/easyspider_executestage.py"
     update_file_version(file_path, version, key='"version": "')
