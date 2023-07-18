@@ -455,6 +455,7 @@ function saveService(type) {
             "cloudflare": cloudflare,
             "environment": environment,
             "maxViewLength": parseInt($("#maxViewLength").val()),
+            "recordLog": parseInt($("#recordLog").val()),
             "outputFormat": $("#outputFormat").val(),
             "saveName": $("#saveName").val(),
             "inputExcel": $("#inputExcel").val(),

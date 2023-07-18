@@ -56,6 +56,10 @@ class BrowserThread(Thread):
     def __init__(self, browser_t, id, service, version, event, saveName, config):
         Thread.__init__(self)
         self.logs = io.StringIO()
+        try:
+            self.log = bool(service["recordLog"])
+        except:
+            self.log = True
         self.browser = browser_t
         self.config = config
         self.version = version
@@ -280,6 +284,7 @@ class BrowserThread(Thread):
                         node["parameters"]["xpath"] = ""
                         self.print_and_log("您的任务版本号为" + self.task_version +
                                            "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+        self.print_and_log("预处理完成|Preprocess completed")
 
     def readFromExcel(self):
         if self.inputExcel == "":
@@ -338,7 +343,7 @@ class BrowserThread(Thread):
                     break
         self.print_and_log("已从Excel读取输入参数，覆盖了原有输入参数。")
         self.print_and_log(
-            "Alread read input parameters from Excel and overwrite the original input parameters.")
+            "Already read input parameters from Excel and overwrite the original input parameters.")
 
     def run(self):
         # 挨个执行程序
@@ -359,31 +364,27 @@ class BrowserThread(Thread):
             self.mysql.close()
 
     def recordLog(self, *args, **kwargs):
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         print(now + ":", *args, file=self.logs, **kwargs)
 
     # 定义一个自定义的 print 函数，它将内容同时打印到屏幕和文件中
     def print_and_log(self, *args, **kwargs):
-        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         # 将内容打印到屏幕
         print(*args, **kwargs)
 
         # 将内容写入文件
         print(now + ":", *args, file=self.logs, **kwargs)
 
-    # @atexit.register
-    # def clean(self):
-    #     self.saveData(exit=True)
-    #     self.browser.quit()
-    #     sys.exit(0)
-
     def saveData(self, exit=False):
         # 每save_threshold条保存一次
         if exit == True or len(self.OUTPUT) >= self.save_threshold:
             # 写入日志
-            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
-                file_obj.write(self.logs.getvalue())
-                file_obj.close()
+            # self.recordLog("持久化存储数据/Persistently store data")
+            if self.log:
+                with open("Data/Task_" + str(self.id) + "/" + self.saveName + '.log', 'a', encoding='utf-8-sig') as file_obj:
+                    file_obj.write(self.logs.getvalue())
+                    file_obj.close()
             # 写入已执行步数
             with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'w', encoding='utf-8-sig') as file_obj:
                 file_obj.write(str(self.totalSteps + 1))
@@ -418,8 +419,6 @@ class BrowserThread(Thread):
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 if scrollType == 1 or scrollType == 2:
                     for i in range(para["scrollCount"]):
-                        self.recordLog(
-                            "Wait for set second after screen scrolling.")
                         body = self.browser.find_element(
                             By.CSS_SELECTOR, "body", iframe=para["iframe"])
                         if scrollType == 1:
@@ -430,6 +429,9 @@ class BrowserThread(Thread):
                             time.sleep(para["scrollWaitTime"])  # 下拉完等待
                         except:
                             pass
+                        self.print_and_log("向下滚动，第", i + 1, "次。")
+                        self.print_and_log(
+                            "Scroll down, the", i + 1, "time.")
                 elif scrollType == 3:
                     bodyText = ""
                     i = 0
@@ -535,6 +537,8 @@ class BrowserThread(Thread):
         elif int(codeMode) == 5:
             try:
                 output = exec(code)
+                self.recordLog("执行下面的代码:" + code)
+                self.recordLog("Execute the following code:" + code)
             except Exception as e:
                 self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", e)
                 self.print_and_log("Error executing the following code:" +
@@ -542,6 +546,9 @@ class BrowserThread(Thread):
         elif int(codeMode) == 6:
             try:
                 output = eval(code)
+                self.recordLog("获得下面的代码返回值:" + code)
+                self.recordLog(
+                    "Get the return value of the following code:" + code)
             except Exception as e:
                 self.print_and_log("获得下面的代码返回值时出错:" + code, "，错误为：", e)
                 self.print_and_log(
@@ -589,8 +596,10 @@ class BrowserThread(Thread):
                 self.print_and_log("JavaScript execution failed")
         elif codeMode == 3:
             self.BREAK = True
+            self.recordLog("跳出循环|Break the loop")
         elif codeMode == 4:
             self.CONTINUE = True
+            self.recordLog("跳过本次循环|Skip this loop")
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])
@@ -638,6 +647,7 @@ class BrowserThread(Thread):
                     dropdown.select_by_value(optionValue)
                 elif optionMode == 3:
                     dropdown.select_by_visible_text(optionValue)
+                # self.recordLog("切换到下拉框选项|Change to drop-down box option:", xpath)
             except:
                 self.print_and_log("切换下拉框选项失败:", xpath,
                                    para["optionMode"], para["optionValue"])
@@ -670,6 +680,7 @@ class BrowserThread(Thread):
             element = elements[index]
             try:
                 ActionChains(self.browser).move_to_element(element).perform()
+                # self.recordLog("移动到元素|Move to element:", path)
             except:
                 self.print_and_log("移动鼠标到元素失败:", xpath)
                 self.print_and_log("Failed to move mouse to element:", xpath)
@@ -711,7 +722,7 @@ class BrowserThread(Thread):
                                    waitElement, ", will continue to execute.")
                 self.print_and_log(e)
             self.recordLog("Wait element not found")
-        self.recordLog("执行操作/Execute node:", node["title"])
+        self.recordLog("执行节点|Execute node:", node["title"])
         # 根据不同选项执行不同操作
         if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
             for i in node["sequence"]:  # 从根节点开始向下读取
@@ -837,7 +848,7 @@ class BrowserThread(Thread):
             self.executeNode(executeBranchId, loopElement, clickPath, index)
         else:
             self.recordLog(
-                "判断条件内所有条件分支的条件都不满足/None of the conditions in the judgment condition are met")
+                "判断条件内所有条件分支的条件都不满足|None of the conditions in the judgment condition are met")
 
     # 对循环的处理
     def loopExecute(self, node, loopValue, clickPath="", index=0):
@@ -883,6 +894,7 @@ class BrowserThread(Thread):
                             bodyText = newBodyText
                     xpath = replace_field_values(
                         node["parameters"]["xpath"], self.outputParameters)
+                    # self.recordLog("循环元素|Loop element:", xpath)
                     element = self.browser.find_element(
                         By.XPATH, xpath, iframe=node["parameters"]["iframe"])
                     for i in node["sequence"]:  # 挨个执行操作
@@ -896,8 +908,6 @@ class BrowserThread(Thread):
                         finished = True
                         break
                     finished = True
-                    self.recordLog(
-                        "Click: " + node["parameters"]["xpath"])
                 except NoSuchElementException:
                     # except:
                     self.print_and_log("Single loop element not found: ",
@@ -936,6 +946,7 @@ class BrowserThread(Thread):
                     node["parameters"]["xpath"], self.outputParameters)
                 elements = self.browser.find_elements(By.XPATH,
                                                       xpath, iframe=node["parameters"]["iframe"])
+                # self.recordLog("循环元素|Loop element:", xpath)
                 if len(elements) == 0:
                     self.print_and_log("Loop element not found: ",
                                        xpath)
@@ -1003,6 +1014,7 @@ class BrowserThread(Thread):
                     path = replace_field_values(path, self.outputParameters)
                     element = self.browser.find_element(
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
+                    # self.recordLog("循环元素|Loop element:", path)
                     for i in node["sequence"]:  # 挨个执行操作
                         self.executeNode(i, element, path, 0)
                         if self.BREAK or self.CONTINUE:  # 如果有break操作，下面的操作不执行
@@ -1061,6 +1073,7 @@ class BrowserThread(Thread):
             textList = node["parameters"]["textList"].split("\n")
             for text in textList:
                 text = replace_field_values(text, self.outputParameters)
+                # self.recordLog("当前循环文本|Current loop text:", text)
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, text, "", 0)
                     if self.BREAK or self.CONTINUE:  # 如果有break操作，下面的操作不执行
@@ -1085,7 +1098,7 @@ class BrowserThread(Thread):
             #         urlList.append(url)
             for url in urlList:
                 url = replace_field_values(url, self.outputParameters)
-                self.recordLog("Input: " + url)
+                # self.recordLog("当前循环网址|Current loop url:", url)
                 for i in node["sequence"]:
                     self.executeNode(i, url, "", 0)
                     if self.BREAK or self.CONTINUE:  # 如果有break操作，下面的操作不执行
@@ -1166,7 +1179,7 @@ class BrowserThread(Thread):
                     cookie_dict = {'name': name, 'value': value}
                     # 加载 cookie
                     self.browser.add_cookie(cookie_dict)
-            self.print_and_log('Loading page: ' + url)
+            self.print_and_log('加载页面|Loading page: ' + url)
         except TimeoutException:
             self.print_and_log(
                 'Time out after set seconds when loading page: ' + url)
@@ -1191,7 +1204,6 @@ class BrowserThread(Thread):
     # 键盘输入事件
     def inputInfo(self, para, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
-        self.recordLog("Wait 0.1 second before input")
         try:
             xpath = replace_field_values(para["xpath"], self.outputParameters)
             textbox = self.browser.find_element(
@@ -1231,6 +1243,8 @@ class BrowserThread(Thread):
             textbox.send_keys(replaced_text)
             if value.lower().find("<enter>") >= 0:
                 textbox.send_keys(Keys.ENTER)
+            self.recordLog("输入文字|Input text: " +
+                           replaced_text + " to " + xpath)
             self.execute_code(
                 2, para["afterJS"], para["afterJSWaitTime"], textbox, iframe=para["iframe"])  # 执行后置js
         except:
@@ -1289,6 +1303,7 @@ class BrowserThread(Thread):
                 script = 'var result = document.evaluate(`' + path + \
                     '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
                 self.browser.execute_script(script, str(index))  # 用js的点击方法
+            # self.recordLog("点击元素|Click element: " + path)
         except TimeoutException:
             self.print_and_log(
                 'Time out after set seconds when loading clicked page')
@@ -1506,6 +1521,7 @@ class BrowserThread(Thread):
     def clearOutputParameters(self):
         for key in self.outputParameters:
             self.outputParameters[key] = ""
+        self.recordLog("清空输出参数|Clear output parameters")
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
@@ -1711,7 +1727,6 @@ class BrowserThread(Thread):
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
-        # rt.end()
 
 
 if __name__ == '__main__':
