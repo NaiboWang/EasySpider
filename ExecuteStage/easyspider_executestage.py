@@ -68,7 +68,6 @@ class BrowserThread(Thread):
             now = datetime.now()
             # 将时间格式化为精确到秒的字符串
             self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S")
-        self.log = ""
         self.OUTPUT = ""
         self.SAVED = False
         self.BREAK = False
@@ -176,7 +175,6 @@ class BrowserThread(Thread):
         self.outputParametersTypes = []
         self.outputParametersRecord = []  # 字段是否被记录
         self.dataNotFoundKeys = {}  # 记录没有找到数据的key
-        self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
         for para in service["outputParameters"]:  # 初始化输出参数
@@ -384,7 +382,6 @@ class BrowserThread(Thread):
         if exit == True or len(self.OUTPUT) >= self.save_threshold:
             # 写入日志
             with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_log.txt', 'a', encoding='utf-8-sig') as file_obj:
-                file_obj.write(self.log)
                 file_obj.write(self.logs.getvalue())
                 file_obj.close()
             # 写入已执行步数
@@ -408,7 +405,8 @@ class BrowserThread(Thread):
                     self.OUTPUT, self.outputParametersRecord, self.outputParametersTypes)
 
             self.OUTPUT = []
-            self.log = ""
+            self.logs.truncate(0)  # 清空日志
+            self.logs.seek(0)  # 清空日志
 
     def scrollDown(self, para, rt=""):
         try:
@@ -713,21 +711,18 @@ class BrowserThread(Thread):
                                    waitElement, ", will continue to execute.")
                 self.print_and_log(e)
             self.recordLog("Wait element not found")
-
+        self.recordLog("Execute node:", node["title"])
         # 根据不同选项执行不同操作
         if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
             for i in node["sequence"]:  # 从根节点开始向下读取
                 self.executeNode(i, loopValue, loopPath, index)
         elif node["option"] == 1:  # 打开网页操作
-            self.recordLog("OpenPage")
             self.openPage(node["parameters"], loopValue)
         elif node["option"] == 2:  # 点击元素
-            self.recordLog("Click")
             self.clickElement(node["parameters"], loopValue, loopPath, index)
         elif node["option"] == 3:  # 提取数据
             # 针对提取数据操作，设置操作开始的步骤，用于不小心关闭后的恢复的增量采集
             if self.totalSteps >= self.startSteps:
-                self.recordLog("GetData")
                 self.getData(node["parameters"], loopValue, node["isInLoop"],
                              parentPath=loopPath, index=index)
                 self.saveData()
@@ -747,10 +742,8 @@ class BrowserThread(Thread):
         elif node["option"] == 7:  # 鼠标移动到元素上
             self.moveToElement(node["parameters"], loopValue, loopPath, index)
         elif node["option"] == 8:  # 循环
-            self.recordLog("Loop")
             self.loopExecute(node, loopValue, loopPath, index)  # 执行循环
         elif node["option"] == 9:  # 条件分支
-            self.recordLog("Judge")
             self.judgeExecute(node, loopValue, loopPath, index)
 
         # 执行完之后进行等待
