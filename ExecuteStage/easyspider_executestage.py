@@ -1516,6 +1516,12 @@ class BrowserThread(Thread):
                 content = select_element.first_selected_option.text
             except:
                 content = ""
+        elif p["contentType"] == 14: # 元素属性值
+            attribute_name = p["JS"]
+            try:
+                content = element.get_attribute(attribute_name)
+            except:
+                content = ""
         return content
 
     def clearOutputParameters(self):
