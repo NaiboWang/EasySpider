@@ -1563,7 +1563,7 @@ class BrowserThread(Thread):
                     if relativeXPath.find("/@href") >= 0 or relativeXPath.find("/text()") >= 0 or relativeXPath.find("::text()") >= 0:
                         content_type = ""
                     elif p["nodeType"] == 2:
-                        content_type = "/@href"
+                        content_type = "//@href"
                     elif p["contentType"] == 1:
                         content_type = "/text()"
                     elif p["contentType"] == 0:
