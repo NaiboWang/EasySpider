@@ -381,7 +381,17 @@ This option is an advanced feature that allows direct manipulation of the runnin
 2. Define a global variable: `self.myVar = 1`
 3. Manipulate the above-defined global variable: `self.myVar = self.myVar + 1`
 4. Print the above-defined global variable: `print(self.myVar)`
-If you want to record your custom variable as a field, please select the next option, "Evaluate Python expressions in the execution environment."</pre>
+
+If you want to record your custom variable as a field, please select the next option, "Evaluate Python expressions in the execution environment."
+
+If you want to import and use a third-party library that the program itself does not carry, you need to first use tools such as pip to install this library locally, and then add the path of the installed library before import, like:
+(1) In the system command line execute the following command to install the library:
+pip install emotlib
+(2) Write the following code in the code box:
+sys.path.append("D:/Python38/Lib/site-packages") # Assume emotlib library exists in this path
+import emotlib # Now you can use emotlib library
+print(emotlib.emoji()) # Use one of its functions.
+</pre>
                         <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>Please read the instructions first and then write the specific code in the input box above (not in this box).
 This option is an advanced feature that allows directly returning the expression value of Python code, and in other places, use Field["FieldName"] to represent the return value of this operation.. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text` to return the text on the current page.
