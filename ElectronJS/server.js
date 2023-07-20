@@ -22,8 +22,8 @@ function travel(dir,callback){
 }
 function compare(p){ //这是比较函数
     return function(m,n){
-        var a = m[p];
-        var b = n[p];
+        let a = m[p];
+        let b = n[p];
         return b - a; //降序
     }
 }
@@ -217,9 +217,9 @@ exports.start = function(port = 8074) {
                 res.write(JSON.stringify(output));
                 res.end();
             } else if (pathName == "/queryTask") {
-                var params = url.parse(req.url, true).query;
+                let params = url.parse(req.url, true).query;
                 try {
-                    var tid = parseInt(params.id);
+                    let tid = parseInt(params.id);
                     const data = fs.readFileSync(path.join(getDir(), `tasks/${tid}.json`), 'utf8');
                     // parse JSON string to JSON object
                     res.write(data);
@@ -229,9 +229,9 @@ exports.start = function(port = 8074) {
                     res.end();
                 }
             } else if (pathName == "/queryExecutionInstance") {
-                var params = url.parse(req.url, true).query;
+                let params = url.parse(req.url, true).query;
                 try {
-                    var tid = parseInt(params.id);
+                    let tid = parseInt(params.id);
                     const data = fs.readFileSync(path.join(getDir(), `execution_instances/${tid}.json`), 'utf8');
                     // parse JSON string to JSON object
                     res.write(data);
@@ -244,7 +244,7 @@ exports.start = function(port = 8074) {
                 res.write("Hello World!", 'utf8');
                 res.end();
             } else if(pathName == "/deleteTask"){
-                var params = url.parse(req.url, true).query;
+                let params = url.parse(req.url, true).query;
                 try {
                     let tid = parseInt(params.id);
                     let data = fs.readFileSync(path.join(getDir(), `tasks/${tid}.json`), 'utf8');

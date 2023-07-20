@@ -15,12 +15,14 @@ from urllib.parse import urlparse
 import pymysql
 from lxml import etree
 
+
 def is_valid_url(url):
     try:
         result = urlparse(url)
         return all([result.scheme, result.netloc])
     except ValueError:
         return False
+
 
 def lowercase_tags_in_xpath(xpath):
     return re.sub(r"([A-Z]+)(?=[\[\]//]|$)", lambda x: x.group(0).lower(), xpath)
@@ -30,10 +32,10 @@ def on_press_creator(press_time, event):
     def on_press(key):
         try:
             if key.char == 'p':
-                if press_time["is_pressed"] == False: # 没按下p键时，记录按下p键的时间
+                if press_time["is_pressed"] == False:  # 没按下p键时，记录按下p键的时间
                     press_time["duration"] = time.time()
                     press_time["is_pressed"] = True
-                else: # 按下p键时，判断按下p键的时间是否超过2.5秒
+                else:  # 按下p键时，判断按下p键的时间是否超过2.5秒
                     duration = time.time() - press_time["duration"]
                     if duration > 2:
                         if event._flag == False:
@@ -52,6 +54,7 @@ def on_press_creator(press_time, event):
         except:
             pass
     return on_press
+
 
 def on_release_creator(event, press_time):
     def on_release(key):
@@ -139,8 +142,11 @@ def get_output_code(output):
     return code
 
 # 判断字段是否为空
+
+
 def isnotnull(s):
     return len(s) != 0
+
 
 def new_line(outputParameters, maxViewLength, record):
     line = []
@@ -153,6 +159,7 @@ def new_line(outputParameters, maxViewLength, record):
     print("")
     return line
 
+
 def write_to_csv(file_name, data, record):
     with open(file_name, 'a', encoding='utf-8-sig', newline="") as f:
         f_csv = csv.writer(f)
@@ -164,6 +171,7 @@ def write_to_csv(file_name, data, record):
             f_csv.writerow(to_write)
         f.close()
 
+
 def replace_field_values(orginal_text, outputParameters):
     pattern = r'Field\["([^"]+)"\]'
     try:
@@ -172,6 +180,7 @@ def replace_field_values(orginal_text, outputParameters):
     except:
         replaced_text = orginal_text
     return replaced_text
+
 
 def write_to_excel(file_name, data, types, record):
     first = False
@@ -186,7 +195,7 @@ def write_to_excel(file_name, data, types, record):
         first = True
     # 追加数据到工作表
     for line in data:
-        if not first: # 如果不是第一行，需要转换数据类型
+        if not first:  # 如果不是第一行，需要转换数据类型
             for i in range(len(line)):
                 if types[i] == "int" or types[i] == "bigInt":
                     try:
@@ -209,9 +218,6 @@ def write_to_excel(file_name, data, types, record):
     wb.save(file_name)
 
 
-
-
-
 class Time:
     def __init__(self, type1=""):
         self.t = int(round(time.time() * 1000))
@@ -229,7 +235,8 @@ class myMySQL:
             if sys.platform == "darwin":
                 if config_file.find("./") >= 0:
                     config_file = config_file.replace("./", "")
-                config_file = os.path.expanduser("~/Library/Application Support/EasySpider/" + config_file)
+                config_file = os.path.expanduser(
+                    "~/Library/Application Support/EasySpider/" + config_file)
             print("MySQL config file path: ", config_file)
             with open(config_file, 'r') as f:
                 config = json.load(f)
@@ -239,18 +246,20 @@ class myMySQL:
                 passwd = config["password"]
                 db = config["database"]
         except Exception as e:
-            print("读取配置文件失败，请检查配置文件："+config_file+"是否存在。")
-            print("Failed to read configuration file, please check if the configuration file: "+config_file+" exists.")
+            print("读取配置文件失败，请检查配置文件："+config_file+"是否存在，或配置信息是否有误。")
+            print("Failed to read configuration file, please check if the configuration file: " +
+                  config_file+" exists, or if the configuration information is incorrect.")
             print(e)
         try:
             self.conn = pymysql.connect(
-            host=host, port=port, user=user, passwd=passwd, db=db)
+                host=host, port=port, user=user, passwd=passwd, db=db)
             print("成功连接到数据库。")
             print("Successfully connected to the database.")
         except:
             print("连接数据库失败，请检查配置文件是否正确。")
-            print("Failed to connect to the database, please check if the configuration file is correct.")
-    
+            print(
+                "Failed to connect to the database, please check if the configuration file is correct.")
+
     def create_table(self, table_name, parameters):
         self.table_name = table_name
         self.field_sql = "("
@@ -259,7 +268,8 @@ class myMySQL:
         cursor.execute("SHOW TABLES LIKE '%s'" % table_name)
         result = cursor.fetchone()
 
-        sql = "CREATE TABLE " + table_name + " (_id INT AUTO_INCREMENT PRIMARY KEY, "
+        sql = "CREATE TABLE " + table_name + \
+            " (_id INT AUTO_INCREMENT PRIMARY KEY, "
         for item in parameters:
             if item["recordASField"]:
                 name = item['name']
@@ -315,25 +325,32 @@ class myMySQL:
                         line[i] = 0.0
                 elif types[i] == "datetime":
                     try:
-                        line[i] = datetime.datetime.strptime(line[i], '%Y-%m-%d %H:%M:%S')
+                        line[i] = datetime.datetime.strptime(
+                            line[i], '%Y-%m-%d %H:%M:%S')
                     except:
-                        line[i] = datetime.datetime.strptime("1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
+                        line[i] = datetime.datetime.strptime(
+                            "1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
                 elif types[i] == "date":
                     try:
-                        line[i] = datetime.datetime.strptime(line[i], '%Y-%m-%d')
+                        line[i] = datetime.datetime.strptime(
+                            line[i], '%Y-%m-%d')
                     except:
-                        line[i] = datetime.datetime.strptime("1970-01-01", '%Y-%m-%d')
+                        line[i] = datetime.datetime.strptime(
+                            "1970-01-01", '%Y-%m-%d')
                 elif types[i] == "time":
                     try:
-                        line[i] = datetime.datetime.strptime(line[i], '%H:%M:%S')
+                        line[i] = datetime.datetime.strptime(
+                            line[i], '%H:%M:%S')
                     except:
-                        line[i] = datetime.datetime.strptime("00:00:00", '%H:%M:%S')
+                        line[i] = datetime.datetime.strptime(
+                            "00:00:00", '%H:%M:%S')
             to_write = []
             for i in range(len(line)):
                 if record[i]:
                     to_write.append(line[i])
             # 构造插入数据的 SQL 语句
-            sql = f"INSERT INTO "+ self.table_name +" "+self.field_sql+" VALUES ("
+            sql = f"INSERT INTO " + self.table_name + \
+                " "+self.field_sql+" VALUES ("
             for item in to_write:
                 sql += "%s, "
             # 移除最后的逗号并添加闭合的括号
@@ -347,14 +364,15 @@ class myMySQL:
                 print("插入数据库错误，请查看以上的错误提示，然后检查数据的类型是否正确，是否文本过长（超过一万的文本类型要设置为大文本）。")
                 print("Inserting database error, please check the above error, and then check whether the data type is correct, whether the text is too long (text type over 10,000 should be set to large text).")
                 print("重新执行任务时，请删除数据库中的数据表" + self.table_name + "，然后再次运行程序。")
-                print("When re-executing the task, please delete the data table " + self.table_name + " in the database, and then run the program again.")
+                print("When re-executing the task, please delete the data table " +
+                      self.table_name + " in the database, and then run the program again.")
 
         # 提交到数据库执行
         self.conn.commit()
 
         # 关闭游标和连接
         cursor.close()
-    
+
     def close(self):
         self.conn.close()
         print("成功关闭数据库。")
