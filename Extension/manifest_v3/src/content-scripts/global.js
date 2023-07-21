@@ -171,7 +171,7 @@ export function addEl() {
             }
         }
         if (exist) { //存在在readylist就全选中
-            readyToList(global.step);
+            readyToList(global.step, false);
             if (global.app._data.selectedDescendents) {
                 handleDescendents(); //如果之前有选中子元素，新加入的节点又则这里也需要重新选择子元素
             }
@@ -240,6 +240,7 @@ export function handleElement() {
             generateMultiParameters();
         } else {
             generateParameters(0);
+            console.log("HandleElement generate parameters");
         }
     } else if (global.nodeList.length == 1) {
         findRelated(); //寻找和元素相关的元素
@@ -310,9 +311,11 @@ function parameterName(value){
 export function generateParameters(type, linktext = true, linkhref = true) {
     clearParameters(false);
     let n = 1;
-    chrome.storage.local.get({ parameterNum: 1 }, function(items) {
+    console.log("generateParameters for " + global.nodeList.length + " nodes");
+    chrome.storage.local.get('parameterNum',  function(items) {
         let at = parseInt(new Date().getTime());
         n = items.parameterNum;
+        console.log("Storage get parameterNum: ",  items , n);
         let ndPath = "";
         let ndAllXPaths = [];
         for (let num = 0; num < global.nodeList.length; num++) {
@@ -468,9 +471,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
         console.log("generateParameters:", at2, at, at2 - at);
         generateValTable();
         console.log(global.outputParameters);
-
     });
-
 }
 
 //根据nodelist列表内的元素生成参数列表
@@ -1015,6 +1016,7 @@ export function readyToList(step, dealparameters = true) {
     clearReady();
     if (dealparameters) { //防止出现先选中子元素再选中全部失效的问题
         generateParameters(0); //根据nodelist列表内的元素生成参数列表，0代表纯文本
+        console.log("Deal Parameters");
     }
 
 }
