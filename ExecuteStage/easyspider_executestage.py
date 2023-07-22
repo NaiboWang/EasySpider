@@ -1071,6 +1071,9 @@ class BrowserThread(Thread):
                         break
         elif int(node["parameters"]["loopType"]) == 3:  # 固定文本列表
             textList = node["parameters"]["textList"].split("\n")
+            if len(textList) == 1:  # 如果固定文本列表只有一行，现在就可以替换变量
+                textList = replace_field_values(
+                    node["parameters"]["textList"], self.outputParameters).split("\n")
             for text in textList:
                 text = replace_field_values(text, self.outputParameters)
                 # self.recordLog("当前循环文本|Current loop text:", text)
@@ -1092,6 +1095,9 @@ class BrowserThread(Thread):
             # tempList = node["parameters"]["textList"].split("\r\n")
             urlList = list(
                 filter(isnotnull, node["parameters"]["textList"].split("\n")))  # 去空行
+            if len(urlList) == 1:  # 如果固定网址列表只有一行，现在就可以替换变量
+                urlList = replace_field_values(
+                    node["parameters"]["textList"], self.outputParameters).split("\n")
             # urlList = []
             # for url in tempList:
             #     if url != "":
@@ -1516,7 +1522,7 @@ class BrowserThread(Thread):
                 content = select_element.first_selected_option.text
             except:
                 content = ""
-        elif p["contentType"] == 14: # 元素属性值
+        elif p["contentType"] == 14:  # 元素属性值
             attribute_name = p["JS"]
             try:
                 content = element.get_attribute(attribute_name)
