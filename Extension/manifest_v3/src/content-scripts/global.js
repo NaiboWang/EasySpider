@@ -240,7 +240,6 @@ export function handleElement() {
             generateMultiParameters();
         } else {
             generateParameters(0);
-            console.log("HandleElement generate parameters");
         }
     } else if (global.nodeList.length == 1) {
         findRelated(); //寻找和元素相关的元素
@@ -311,11 +310,9 @@ function parameterName(value){
 export function generateParameters(type, linktext = true, linkhref = true) {
     clearParameters(false);
     let n = 1;
-    console.log("generateParameters for " + global.nodeList.length + " nodes");
     chrome.storage.local.get('parameterNum',  function(items) {
-        let at = parseInt(new Date().getTime());
+        // let at = parseInt(new Date().getTime());
         n = items.parameterNum;
-        console.log("Storage get parameterNum: ",  items , n);
         let ndPath = "";
         let ndAllXPaths = [];
         for (let num = 0; num < global.nodeList.length; num++) {
@@ -467,8 +464,8 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                 }
             }
         }
-        let at2 = parseInt(new Date().getTime());
-        console.log("generateParameters:", at2, at, at2 - at);
+        // let at2 = parseInt(new Date().getTime());
+        // console.log("generateParameters:", at2, at, at2 - at);
         generateValTable();
         console.log(global.outputParameters);
     });
@@ -480,7 +477,7 @@ export function generateMultiParameters() {
     clearParameters(false);
     let n = 1;
     chrome.storage.local.get({ parameterNum: 1 }, function(items) {
-        let at = parseInt(new Date().getTime());
+        // let at = parseInt(new Date().getTime());
         n = items.parameterNum;
         let nd, ndText, ndPath, pname, ndAllXPaths;
         for (let num = 0; num < global.nodeList.length; num++) {
@@ -559,8 +556,8 @@ export function generateMultiParameters() {
             }
         }
         // console.log(global.outputParameters);
-        let at2 = parseInt(new Date().getTime());
-        console.log("generateMultiParameters", at2, at, at2 - at);
+        // let at2 = parseInt(new Date().getTime());
+        // console.log("generateMultiParameters", at2, at, at2 - at);
         generateValTable(false);
     });
 
@@ -570,7 +567,7 @@ export function generateMultiParameters() {
 export function handleDescendents(mode = 0) {
     let n = 1;
     chrome.storage.local.get({ parameterNum: 1 }, function(items) {
-        let at = parseInt(new Date().getTime());
+        // let at = parseInt(new Date().getTime());
         n = items.parameterNum;
         clearParameters(); //清除原来的参数列表
         global.app._data.selectedDescendents = true;
@@ -606,7 +603,7 @@ export function handleDescendents(mode = 0) {
             }
             // 将共有元素集合转换为数组
             let commonXPathList = Array.from(commonXPaths);
-            console.log(commonXPathList);
+            // console.log(commonXPathList);
             let hash = {}; //记录index和数组位置的对应关系
             for (let num = 0; num < global.nodeList.length; num++) {
                 let tnode = global.nodeList[num]["node"];
@@ -645,7 +642,7 @@ export function handleDescendents(mode = 0) {
                             });
                             nd.style.boxShadow = global.boxShadowColor;
                         }
-                        console.log("Hash", hash);
+                        // console.log("Hash", hash);
                         if (num == 0) { //从第二个节点开始，只插入那些不在参数列表中的元素，根据xpath进行寻址
                             //如果当前节点除了子元素外仍然有其他文字或者该元素是图片/表单项，加入子元素节点
                             if (ndText != "" || nd.tagName == "IMG" || nd.tagName == "INPUT" || nd.tagName == "A") {
@@ -915,8 +912,8 @@ export function handleDescendents(mode = 0) {
                 }
             }
         }
-        let at2 = parseInt(new Date().getTime());
-        console.log("选中子元素", at2, at, at2 - at);
+        // let at2 = parseInt(new Date().getTime());
+        // console.log("选中子元素", at2, at, at2 - at);
         generateValTable();
     });
 
@@ -942,7 +939,7 @@ export function generateValTable(multiline = true) {
         paraValues.push(tValues);
     }
     global.app._data.valTable = paraValues;
-    console.log("生成参数表格", paraValues);
+    // console.log("生成参数表格", paraValues);
 }
 
 // 选中第一个节点，自动寻找同类节点
@@ -951,7 +948,7 @@ export function generateValTable(multiline = true) {
 // 如果没有，则恢复原状，然后试试倒数第二个：/div[1]/div[2]/div/a[1]
 // 直到找到第一个变多的节点或者追溯到根节点为止
 export function findRelated() {
-    let at = parseInt(new Date().getTime());
+    // let at = parseInt(new Date().getTime());
     let testPath = global.nodeList[0]["xpath"].replace("//iframe","").split("/").splice(1); //分离xpath成 ["html","body","div[0]"]这样子
     let nodeNameList = [];
     let nodeIndexList = [];
@@ -982,8 +979,8 @@ export function findRelated() {
             break;
         }
     }
-    let at2 = parseInt(new Date().getTime());
-    console.log("findRelated：", at2, at, at2 - at);
+    // let at2 = parseInt(new Date().getTime());
+    // console.log("findRelated：", at2, at, at2 - at);
 }
 
 
@@ -1016,7 +1013,6 @@ export function readyToList(step, dealparameters = true) {
     clearReady();
     if (dealparameters) { //防止出现先选中子元素再选中全部失效的问题
         generateParameters(0); //根据nodelist列表内的元素生成参数列表，0代表纯文本
-        console.log("Deal Parameters");
     }
 
 }
@@ -1041,7 +1037,7 @@ export function combineXpath(nameList, indexList) {
 // 最终转换为：
 // /html/body/div[3]/div[1]/div[1]/div[1]/div[3]/div/div[3]/a
 export function relatedTest() {
-    let at = new Date().getTime()
+    // let at = new Date().getTime()
     let testList = [];
     let testpath = "";
     for (let i = 0; i < global.nodeList.length; i++) {
@@ -1081,7 +1077,7 @@ export function relatedTest() {
     console.log("finalPath:", finalPath, "element:", element);
     global.app.$data.nowPath = finalPath; //标记此元素xpath
     pushToReadyList(finalPath);
-    let at2 = parseInt(new Date().getTime());
-    console.log("手动：", at2, at, at2 - at);
+    // let at2 = parseInt(new Date().getTime());
+    // console.log("手动：", at2, at, at2 - at);
     return 50; //先返回给默认码
 }
