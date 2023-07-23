@@ -82,8 +82,8 @@ class BrowserThread(Thread):
         now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         self.saveName = self.saveName.replace("current_time", now)
 
-        self.print_and_log("Save Name for task ID", i, "is:", self.saveName)
         self.print_and_log("任务ID", i, "的保存文件名为:", self.saveName)
+        self.print_and_log("Save Name for task ID", i, "is:", self.saveName)
         if not os.path.exists("Data/Task_" + str(i)):
             os.mkdir("Data/Task_" + str(i))
         if not os.path.exists("Data/Task_" + str(i) + "/" + self.saveName):
@@ -990,7 +990,7 @@ class BrowserThread(Thread):
                         # else:
                         # time.sleep(2)
                         # 切换历史记录等待：
-                        self.recordLog("Change history back time or: " +
+                        self.recordLog("Change history back time or: ", 
                                        node["parameters"]["historyWait"])
                         try:
                             self.browser.execute_script('window.stop()')
@@ -1051,7 +1051,7 @@ class BrowserThread(Thread):
                         time.sleep(node["parameters"]["historyWait"])
                         # else:
                         # time.sleep(2)
-                        self.recordLog("Change history back time or: " +
+                        self.recordLog("Change history back time or: ",
                                        node["parameters"]["historyWait"])
                         try:
                             self.browser.execute_script('window.stop()')
