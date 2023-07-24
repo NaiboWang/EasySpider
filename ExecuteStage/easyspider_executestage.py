@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # import atexit
-from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel
+from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -152,27 +152,24 @@ class BrowserThread(Thread):
             filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
         self.OUTPUT = []  # 采集的数据
         self.writeMode = 1  # 写入模式，0为新建，1为追加
-        if self.outputFormat == "csv" or self.outputFormat == "txt":
+        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
             if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
                 self.OUTPUT.append([])  # 添加表头
                 self.writeMode = 0
-        elif self.outputFormat == "xlsx":
-            if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.xlsx'):
-                self.OUTPUT.append([])  # 添加表头
-                self.writeMode = 0
+        elif self.outputFormat == "json":
+            self.writeMode = 3 # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
             self.mysql.create_table(self.saveName, service["outputParameters"])
             self.writeMode = 2
-        if self.writeMode == 1:
-            self.print_and_log("追加模式")
-            self.print_and_log("Append Mode")
-        elif self.writeMode == 0:
-            self.print_and_log("新建模式")
-            self.print_and_log("New Mode")
+        if self.writeMode == 0:
+            self.print_and_log("新建模式|Create Mode")
+        elif self.writeMode == 1:
+            self.print_and_log("追加模式|Append Mode")
         elif self.writeMode == 2:
-            self.print_and_log("MySQL模式")
-            self.print_and_log("MySQL Mode")
+            self.print_and_log("MySQL模式|MySQL Mode")
+        elif self.writeMode == 3:
+            self.print_and_log("JSON模式|JSON Mode")
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         self.outputParameters = {}
         self.service = service
@@ -401,6 +398,10 @@ class BrowserThread(Thread):
                     str(self.id) + "/" + self.saveName + '.xlsx'
                 write_to_excel(
                     file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord)
+            elif self.outputFormat == "json":
+                file_name = "Data/Task_" + \
+                    str(self.id) + "/" + self.saveName + '.json'
+                write_to_json(file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord, self.outputParameters.keys())
             elif self.outputFormat == "mysql":
                 self.mysql.write_to_mysql(
                     self.OUTPUT, self.outputParametersRecord, self.outputParametersTypes)
@@ -1395,7 +1396,7 @@ class BrowserThread(Thread):
                 except:
                     downloadPic = 0
                 if downloadPic == 1:
-                    download_image(content, "Data/Task_" +
+                    download_image(self, content, "Data/Task_" +
                                    str(self.id) + "/" + self.saveName + "/")
             else:  # 普通节点
                 content = element.text
@@ -1420,7 +1421,7 @@ class BrowserThread(Thread):
                 except:
                     downloadPic = 0
                 if downloadPic == 1:
-                    download_image(content, "Data/Task_" +
+                    download_image(self, content, "Data/Task_" +
                                    str(self.id) + "/" + self.saveName + "/")
             else:
                 command = 'var arr = [];\

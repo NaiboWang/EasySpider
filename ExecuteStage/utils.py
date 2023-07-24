@@ -95,7 +95,7 @@ def on_release_creator(event, press_time):
 #         time.sleep(1)  # 每秒检查一次
 
 
-def download_image(url, save_directory):
+def download_image(browser, url, save_directory):
     # 定义浏览器头信息
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -120,15 +120,15 @@ def download_image(url, save_directory):
             with open(save_path, 'wb') as file:
                 file.write(response.content)
 
-            print("图片已成功下载到:", save_path)
-            print("The image has been successfully downloaded to:", save_path)
+            browser.print_and_log("图片已成功下载到:", save_path)
+            browser.print_and_log("The image has been successfully downloaded to:", save_path)
         else:
-            print("下载图片失败，请检查此图片链接是否有效:", url)
-            print(
+            browser.print_and_log("下载图片失败，请检查此图片链接是否有效:", url)
+            browser.print_and_log(
                 "Failed to download image, please check if this image link is valid:", url)
     else:
-        print("下载图片失败，请检查此图片链接是否有效:", url)
-        print("Failed to download image, please check if this image link is valid:", url)
+        browser.print_and_log("下载图片失败，请检查此图片链接是否有效:", url)
+        browser.print_and_log("Failed to download image, please check if this image link is valid:", url)
 
 
 def get_output_code(output):
@@ -181,6 +181,41 @@ def replace_field_values(orginal_text, outputParameters):
         replaced_text = orginal_text
     return replaced_text
 
+
+def write_to_json(file_name, data, types, record, keys):
+    keys = list(keys)
+    # Prepare empty list for data
+    data_to_write = []
+    # Tranform data and append to list
+    for line in data:
+        to_write = {}
+        for i in range(len(line)):
+            if types[i] == "int" or types[i] == "bigInt":
+                try:
+                    line[i] = int(line[i])
+                except:
+                    line[i] = 0
+            elif types[i] == "double":
+                try:
+                    line[i] = float(line[i])
+                except:
+                    line[i] = 0.0
+            if record[i]:
+                 to_write.update({keys[i]: line[i]})
+        data_to_write.append(to_write)
+    
+    try:
+        # read data from JSON
+        with open(file_name, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
+    except:
+        json_data = []
+
+    json_data.extend(data_to_write)
+    
+    # write data to JSON
+    with open(file_name, 'w', encoding='utf-8') as f:
+        json.dump(json_data, f, ensure_ascii=False)
 
 def write_to_excel(file_name, data, types, record):
     first = False
