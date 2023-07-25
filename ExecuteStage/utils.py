@@ -101,34 +101,39 @@ def download_image(browser, url, save_directory):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
     if is_valid_url(url):
-        # 发送 GET 请求获取图片数据
-        response = requests.get(url, headers=headers)
+        try:
+            # 发送 GET 请求获取图片数据
+            response = requests.get(url, headers=headers)
 
-        # 检查响应状态码是否为成功状态
-        if response.status_code == requests.codes.ok:
-            # 提取文件名
-            file_name = url.split('/')[-1].split("?")[0]
+            # 检查响应状态码是否为成功状态
+            if response.status_code == requests.codes.ok:
+                # 提取文件名
+                file_name = url.split('/')[-1].split("?")[0]
 
-            # 生成唯一的新文件名
-            new_file_name = file_name + '_' + \
-                str(uuid.uuid4()) + '_' + file_name
+                # 生成唯一的新文件名
+                new_file_name = file_name + '_' + \
+                    str(uuid.uuid4()) + '_' + file_name
 
-            # 构建保存路径
-            save_path = os.path.join(save_directory, new_file_name)
+                # 构建保存路径
+                save_path = os.path.join(save_directory, new_file_name)
 
-            # 保存图片到本地
-            with open(save_path, 'wb') as file:
-                file.write(response.content)
+                # 保存图片到本地
+                with open(save_path, 'wb') as file:
+                    file.write(response.content)
 
-            browser.print_and_log("图片已成功下载到:", save_path)
-            browser.print_and_log("The image has been successfully downloaded to:", save_path)
-        else:
-            browser.print_and_log("下载图片失败，请检查此图片链接是否有效:", url)
-            browser.print_and_log(
-                "Failed to download image, please check if this image link is valid:", url)
+                browser.print_and_log("图片已成功下载到:", save_path)
+                browser.print_and_log(
+                    "The image has been successfully downloaded to:", save_path)
+            else:
+                browser.print_and_log("下载图片失败，请检查此图片链接是否有效:", url)
+                browser.print_and_log(
+                    "Failed to download image, please check if this image link is valid:", url)
+        except Exception as e:
+            browser.print_and_log("下载图片失败|Error downloading image: ", e)
     else:
         browser.print_and_log("下载图片失败，请检查此图片链接是否有效:", url)
-        browser.print_and_log("Failed to download image, please check if this image link is valid:", url)
+        browser.print_and_log(
+            "Failed to download image, please check if this image link is valid:", url)
 
 
 def get_output_code(output):
@@ -201,9 +206,9 @@ def write_to_json(file_name, data, types, record, keys):
                 except:
                     line[i] = 0.0
             if record[i]:
-                 to_write.update({keys[i]: line[i]})
+                to_write.update({keys[i]: line[i]})
         data_to_write.append(to_write)
-    
+
     try:
         # read data from JSON
         with open(file_name, 'r', encoding='utf-8') as f:
@@ -212,10 +217,11 @@ def write_to_json(file_name, data, types, record, keys):
         json_data = []
 
     json_data.extend(data_to_write)
-    
+
     # write data to JSON
     with open(file_name, 'w', encoding='utf-8') as f:
         json.dump(json_data, f, ensure_ascii=False)
+
 
 def write_to_excel(file_name, data, types, record):
     first = False

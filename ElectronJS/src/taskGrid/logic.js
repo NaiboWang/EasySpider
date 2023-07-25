@@ -38,6 +38,24 @@ ws.onmessage = function(evt) {
     }
 };
 
+function changeOutputFormat(para){
+    try{
+        for(let i=0;i<para["parameters"].length;i++) {
+            let exampleValue = para["parameters"][i]["exampleValues"][0]["value"];
+            let len = exampleValue.length;
+            if (len > 20000) {
+                if($("#outputFormat").val() == "xlsx") {
+                    $("#outputFormat").val("csv"); //如果有一个参数的示例值长度超过20000，就默认输出为csv
+                    showInfo(LANG("示例值长度超过16000，超出Excel单个单元格存储限制，已自动切换保存为csv格式。", "The length of the example value exceeds 16000, and the csv save format has been automatically switched."));
+                }
+                break;
+            }
+        }
+    } catch(e){
+        console.log(e);
+    }
+}
+
 function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["default"] = ""; //找不到元素时候的默认值
     msg["parameters"][i]["paraType"] = "text"; //参数类型
@@ -82,16 +100,19 @@ function handleAddElement(msg) {
                 changeGetDataParameters(msg, i);
                 app._data["nowNode"]["parameters"]["paras"].push(msg["parameters"][i]);
             }
+            changeOutputFormat(msg);
             app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
             setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);
         } else {
             addElement(3, msg);
+            changeOutputFormat(msg);
         }
         notifyParameterNum(msg["parameters"].length); //通知浏览器端参数的个数变化
     } else if (msg["type"] == "multiCollectWithPattern") {
         addElement(8, msg);
         addElement(3, msg);
+        changeOutputFormat(msg);
         notifyParameterNum(msg["parameters"].length); //通知浏览器端参数的个数变化
     } else if(msg["type"] == "GetCookies"){
         for(let node of nodeList){
