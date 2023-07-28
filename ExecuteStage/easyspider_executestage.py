@@ -41,7 +41,7 @@ from urllib.parse import urljoin
 from lxml import etree
 import onnxruntime
 onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
-# import undetected_chromedriver as uc
+import undetected_chromedriver as uc
 # import pandas as pd
 # import numpy
 # import pytesseract
@@ -116,7 +116,7 @@ class BrowserThread(Thread):
         self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
                                      'source': js})  # TMALL 反扒
         WebDriverWait(self.browser, 10)
-        self.browser.get('about:blank')
+        # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
         try:
             self.maxViewLength = service["maxViewLength"]  # 最大显示长度
@@ -729,7 +729,8 @@ class BrowserThread(Thread):
             for i in node["sequence"]:  # 从根节点开始向下读取
                 self.executeNode(i, loopValue, loopPath, index)
         elif node["option"] == 1:  # 打开网页操作
-            self.openPage(node["parameters"], loopValue)
+            if not (nodeId == 1 and self.service["cloudflare"] == 1):
+                self.openPage(node["parameters"], loopValue)
         elif node["option"] == 2:  # 点击元素
             self.clickElement(node["parameters"], loopValue, loopPath, index)
         elif node["option"] == 3:  # 提取数据
@@ -1938,9 +1939,14 @@ if __name__ == '__main__':
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器
+                # options.add_argument("--auto-open-devtools-for-tabs") 
                 # options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # 需要用自己的浏览器
-                browser_t = MyUCChrome(
-                    options=options, driver_executable_path=driver_path)
+                browser_t = MyUCChrome(options=options, driver_executable_path=driver_path)
+                links = list(filter(isnotnull, service["links"].split("\n")))
+                browser_t.execute_script('window.open("'+ links[0] +'","_blank");') # open page in new tab
+                time.sleep(5) # wait until page has loaded
+                browser_t.switch_to.window(browser_t.window_handles[1]) # switch to new tab
+                # browser_t = uc.Chrome()
             else:
                 print("Cloudflare模式只支持Windows x64平台。")
                 print(
