@@ -1,15 +1,29 @@
 import json
 import os
 import re
+import subprocess
 import sys
 import requests
 import platform
 import shutil
 import zipfile
 import urllib.request
-import winreg
+if sys.platform == "win32":
+    import winreg
 import re
 
+def get_processor_info():
+    if os.uname().sysname == 'Darwin':
+        processor_info = subprocess.check_output(['sysctl', '-n', 'machdep.cpu.brand_string']).strip()
+        processor_info = str(processor_info)
+        if 'Intel' in processor_info:
+            return 'Intel'
+        elif 'Apple' in processor_info:
+            return 'Apple'
+        else:
+            return 'Unknown'
+    else:
+        return 'This method is only implemented for macOS.'
 
 def download_and_extract_zip(url, destination_folder):
     # 下载ZIP文件
@@ -34,6 +48,7 @@ def copy_folder(source_folder, destination_folder):
 
 
 def get_chrome_version():
+    version = "115"
     if sys.platform == "win32":
         version_re = re.compile(r"^[1-9]\d*\.\d*.\d*")
         try:
@@ -44,12 +59,8 @@ def get_chrome_version():
             return version_re.findall(_v)[0][:3]
         except WindowsError as e:
             print("check Chrome failed:{}".format(e))
-    elif sys.platform == "linux":
-        pass
-    elif sys.platform == "darwin":
-        pass
-    return "115"
-
+    else:
+        return version
 
 chrome_version = get_chrome_version()  # 要更新的chromedriver版本
 
@@ -58,7 +69,7 @@ print("Detected your chrome version is: ", chrome_version)
 chrome_driver_url = "https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json"
 win64_chrome_path = "C:\\Program Files\\Google\\Chrome\\Application"
 win32_chrome_path = "C:\\Program Files\\Google\\Chrome\\Application"
-mac_chrome_path = "/Applications/Google Chrome.app/Contents/MacOS"
+mac_chrome_path = "/Applications/Google Chrome.app"
 linux_chrome_path = "/opt/google/chrome"
 old_driver_version = {
     "100":"100.0.4896.60",
@@ -183,6 +194,35 @@ if __name__ == "__main__":
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
         pass
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-        pass
+        processor = get_processor_info()
+        if processor == "Intel":
+            driver_arch = "mac-x64"
+        elif processor == "Apple":
+            driver_arch = "mac-arm64"
+        for download in driver_downloads:
+            if download["platform"] == driver_arch:
+                url = download["url"]
+                print("ChromeDriver will be downloaded from: ", url)
+                break
+        download_and_extract_zip(url, "./chromedrivers")
+        if os.path.exists("./chrome_mac64.app"):
+            shutil.rmtree("./chrome_mac64.app")
+        # copy_folder(mac_chrome_path, "./chrome_mac64.app")
+        subprocess.call(["cp", "-R", mac_chrome_path, "./chrome_mac64.app"])
+        try:
+            copy_file(
+                "./chromedrivers/chromedriver-%s/chromedriver" % driver_arch,
+                "./chromedriver_mac64",
+            )
+        except:
+            copy_file(
+                "./chromedrivers/chromedriver",
+                "./chromedriver_mac64",
+            )
+        finally:
+            shutil.rmtree("./chromedrivers")
+        os.chmod("./chromedriver_mac64", 0o755)
+        os.chmod("./chrome_mac64.app", 0o555)
+        os.chmod("./chrome_mac64.app/Contents/MacOS/Google Chrome", 0o555)
 
     print("Done and don't forget to generate executestage EXEcutable program!")
