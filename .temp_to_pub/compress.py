@@ -11,6 +11,19 @@ import zipfile
 import urllib.request
 # import py7zr
 
+def get_processor_info():
+    if os.uname().sysname == 'Darwin':
+        processor_info = subprocess.check_output(['sysctl', '-n', 'machdep.cpu.brand_string']).strip()
+        processor_info = str(processor_info)
+        if 'Intel' in processor_info:
+            return 'Intel'
+        elif 'Apple' in processor_info:
+            return 'Apple'
+        else:
+            return 'Unknown'
+    else:
+        return 'This method is only implemented for macOS.'
+
 def compress_folder_to_7z(folder_path, output_file):
     if os.path.exists(output_file):
         os.remove(output_file)
@@ -107,10 +120,14 @@ if __name__ == "__main__":
         subprocess.call(["tar", "-Jcvf", file_name, "./EasySpider_Linux_x64"])
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-        file_name = f"EasySpider_{easyspider_version}_MacOS_all_arch.tar.gz"
-        if os.path.exists("./EasySpider_MacOS_all_arch/Data"):
-            shutil.rmtree("./EasySpider_MacOS_all_arch/Data")
-        os.mkdir("./EasySpider_MacOS_all_arch/Data")
+        arch = get_processor_info()
+        if arch == "Intel":
+            file_name = f"EasySpider_{easyspider_version}_MacOS_Intel_Chip.tar.gz"
+        else:
+            file_name = f"EasySpider_{easyspider_version}_MacOS_Apple_Arm_Chip.tar.gz"
+            if os.path.exists("./EasySpider_MacOS_all_arch/Data"):
+                shutil.rmtree("./EasySpider_MacOS_all_arch/Data")
+            os.mkdir("./EasySpider_MacOS_all_arch/Data")
         subprocess.call(["tar", "-zcvf", file_name, "./EasySpider_MacOS_all_arch"])
         subprocess.call(["7zz", "a", "-v95m", file_name.replace(".tar.gz", ".7z"), file_name, "请继续解压EasySpider_MacOS_all_arch.tar.gz使用.txt"])
         print(f"Compress {file_name} successfully!")
