@@ -1746,6 +1746,9 @@ class BrowserThread(Thread):
 if __name__ == '__main__':
     # from multiprocessing import freeze_support
     # freeze_support() # 防止无限死循环多开
+    
+    # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
+    # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
     config = {
         "id": [0],
         "saved_file_name": "",
