@@ -22,7 +22,7 @@ This section covers the compilation instructions for the `main program`.
 
 请记住，每当EasySpider扩展程序和执行程序更新时，都要更新`EasySpider.crx`和`easyspider_executestage`文件。
 
-Remember to update EasySpider.crx everytime the extension updates.
+Remember to update the `EasySpider.crx` and `easyspider_executestage` files whenever the EasySpider extension and execution program are updated.
 
 ## 环境构建/Environment Setup
 
