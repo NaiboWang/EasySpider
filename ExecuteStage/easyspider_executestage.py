@@ -417,6 +417,10 @@ class BrowserThread(Thread):
             pass
         scrollType = int(para["scrollType"])
         try:
+            para["scrollCount"] = int(para["scrollCount"])
+        except:
+            para["scrollCount"] = 1
+        try:
             if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
                 if scrollType == 1 or scrollType == 2:
                     for i in range(para["scrollCount"]):
