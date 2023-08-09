@@ -94,7 +94,7 @@ Bilibili/B站视频教程:
 
 [如何自定义循环和判断条件 - 第一弹](https://www.bilibili.com/video/BV1Ys4y1z777/)
 
-[如何对元素和网页截图及命令行执行指南](https://www.bilibili.com/video/BV1dV4y1z764/)
+[如何对元素和网页截图及命令行执行指南](https://www.bilibili.com/video/BV1ch4y1E7cn/)
 
 [OCR识别元素内容功能](https://www.bilibili.com/video/BV1GP411y7u4/)
 
