@@ -577,7 +577,12 @@ class BrowserThread(Thread):
                 self.print_and_log(e)  # 打印异常信息
                 self.recordLog("Command execution failed")
                 self.recordLog("命令执行失败")
-        return str(output)
+        try:
+            output = str(output)
+        except:
+            output = "无法转换为字符串|Unable to convert to string"
+            self.print_and_log("无法转换为字符串|Unable to convert to string", output)
+        return output
 
     def customOperation(self, node, loopValue, loopPath, index):
         paras = node["parameters"]
