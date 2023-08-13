@@ -711,7 +711,7 @@ class BrowserThread(Thread):
                 waitElement = replace_field_values(
                     node["parameters"]["waitElement"], self.outputParameters)
                 waitElementTime = float(node["parameters"]["waitElementTime"])
-                waitElementIframeIndex = node["parameters"]["waitElementInIframe"]
+                waitElementIframeIndex = node["parameters"]["waitElementIframeIndex"]
                 self.print_and_log("等待元素出现:", waitElement)
                 self.print_and_log(
                     "Waiting for element to appear:", waitElement)
@@ -730,7 +730,7 @@ class BrowserThread(Thread):
                 self.print_and_log("等待元素出现超时：", waitElement, "，将继续执行。")
                 self.print_and_log("Timeout waiting for element to appear:",
                                    waitElement, ", will continue to execute.")
-                self.print_and_log(e)
+                self.recordLog(e)
             self.recordLog("Wait element not found")
         self.recordLog("执行节点|Execute node:", node["title"])
         # 根据不同选项执行不同操作
