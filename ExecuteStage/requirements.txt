@@ -8,4 +8,5 @@ pymysql==1.1.0
 lxml==4.9.2
 ddddocr==1.0.6
 pynput==1.7.6
+onnxruntime==1.14.0
 undetected-chromedriver==3.4.7
