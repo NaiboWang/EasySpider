@@ -502,7 +502,7 @@ class BrowserThread(Thread):
             max_wait_time = 999999
         # self.print_and_log(codeMode, code)
         # 将value中的Field[""]替换为outputParameters中的键值
-        code = replace_field_values(code, self.outputParameters)
+        code = replace_field_values(code, self.outputParameters, self)
         if iframe and self.browser.iframe_env == False:
             # 获取所有的 iframe
             self.browser.switch_to.default_content()
@@ -595,7 +595,7 @@ class BrowserThread(Thread):
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
                 loopPath = replace_field_values(
-                    loopPath, self.outputParameters)
+                    loopPath, self.outputParameters, self)
                 elements = self.browser.find_elements(
                     By.XPATH, loopPath, iframe=paras["iframe"])
                 element = elements[index]
@@ -639,7 +639,7 @@ class BrowserThread(Thread):
                 optionValue = loopValue
             optionMode = 1
         try:
-            xpath = replace_field_values(para["xpath"], self.outputParameters)
+            xpath = replace_field_values(para["xpath"], self.outputParameters, self)
             dropdown = Select(self.browser.find_element(
                 By.XPATH, xpath, iframe=para["iframe"]))
             try:
@@ -669,8 +669,8 @@ class BrowserThread(Thread):
 
     def moveToElement(self, para, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
-        loopPath = replace_field_values(loopPath, self.outputParameters)
-        xpath = replace_field_values(para["xpath"], self.outputParameters)
+        loopPath = replace_field_values(loopPath, self.outputParameters, self)
+        xpath = replace_field_values(para["xpath"], self.outputParameters, self)
         if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             if xpath == "":
                 path = loopPath
@@ -683,7 +683,7 @@ class BrowserThread(Thread):
         else:
             index = 0
             path = xpath  # 不然使用元素定义的xpath
-        path = replace_field_values(path, self.outputParameters)
+        path = replace_field_values(path, self.outputParameters, self)
         try:
             elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
@@ -709,7 +709,7 @@ class BrowserThread(Thread):
         try:
             if node["parameters"]["waitElement"] != "":
                 waitElement = replace_field_values(
-                    node["parameters"]["waitElement"], self.outputParameters)
+                    node["parameters"]["waitElement"], self.outputParameters, self)
                 waitElementTime = float(node["parameters"]["waitElementTime"])
                 waitElementIframeIndex = node["parameters"]["waitElementIframeIndex"]
                 self.print_and_log("等待元素出现:", waitElement)
@@ -798,7 +798,7 @@ class BrowserThread(Thread):
                     bodyText = self.browser.find_element(
                         By.CSS_SELECTOR, "body", iframe=cnode["parameters"]["iframe"]).text
                     value = replace_field_values(
-                        cnode["parameters"]["value"], self.outputParameters)
+                        cnode["parameters"]["value"], self.outputParameters, self)
                     if bodyText.find(value) >= 0:
                         executeBranchId = i
                         break
@@ -807,7 +807,7 @@ class BrowserThread(Thread):
             elif tType == 2:  # 当前页面包含元素
                 try:
                     xpath = replace_field_values(
-                        cnode["parameters"]["value"], self.outputParameters)
+                        cnode["parameters"]["value"], self.outputParameters, self)
                     if self.browser.find_element(By.XPATH, xpath, iframe=cnode["parameters"]["iframe"]):
                         executeBranchId = i
                         break
@@ -816,7 +816,7 @@ class BrowserThread(Thread):
             elif tType == 3:  # 当前循环元素包括文本
                 try:
                     value = replace_field_values(
-                        cnode["parameters"]["value"], self.outputParameters)
+                        cnode["parameters"]["value"], self.outputParameters, self)
                     if loopElement.text.find(value) >= 0:
                         executeBranchId = i
                         break
@@ -825,7 +825,7 @@ class BrowserThread(Thread):
             elif tType == 4:  # 当前循环元素包括元素
                 try:
                     xpath = replace_field_values(
-                        cnode["parameters"]["value"][1:], self.outputParameters)
+                        cnode["parameters"]["value"][1:], self.outputParameters, self)
                     if loopElement.find_element(By.XPATH, xpath):
                         executeBranchId = i
                         break
@@ -904,7 +904,7 @@ class BrowserThread(Thread):
                                 "Page changed detected, continue loop.")
                             bodyText = newBodyText
                     xpath = replace_field_values(
-                        node["parameters"]["xpath"], self.outputParameters)
+                        node["parameters"]["xpath"], self.outputParameters, self)
                     # self.recordLog("循环元素|Loop element:", xpath)
                     element = self.browser.find_element(
                         By.XPATH, xpath, iframe=node["parameters"]["iframe"])
@@ -954,7 +954,7 @@ class BrowserThread(Thread):
         elif int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
             try:
                 xpath = replace_field_values(
-                    node["parameters"]["xpath"], self.outputParameters)
+                    node["parameters"]["xpath"], self.outputParameters, self)
                 elements = self.browser.find_elements(By.XPATH,
                                                       xpath, iframe=node["parameters"]["iframe"])
                 # self.recordLog("循环元素|Loop element:", xpath)
@@ -1022,7 +1022,7 @@ class BrowserThread(Thread):
             # 千万不要忘了分割！！
             for path in node["parameters"]["pathList"].split("\n"):
                 try:
-                    path = replace_field_values(path, self.outputParameters)
+                    path = replace_field_values(path, self.outputParameters, self)
                     element = self.browser.find_element(
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
                     # self.recordLog("循环元素|Loop element:", path)
@@ -1084,9 +1084,9 @@ class BrowserThread(Thread):
             textList = node["parameters"]["textList"].split("\n")
             if len(textList) == 1:  # 如果固定文本列表只有一行，现在就可以替换变量
                 textList = replace_field_values(
-                    node["parameters"]["textList"], self.outputParameters).split("\n")
+                    node["parameters"]["textList"], self.outputParameters, self).split("\n")
             for text in textList:
-                text = replace_field_values(text, self.outputParameters)
+                text = replace_field_values(text, self.outputParameters, self)
                 # self.recordLog("当前循环文本|Current loop text:", text)
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, text, "", 0)
@@ -1108,13 +1108,13 @@ class BrowserThread(Thread):
                 filter(isnotnull, node["parameters"]["textList"].split("\n")))  # 去空行
             if len(urlList) == 1:  # 如果固定网址列表只有一行，现在就可以替换变量
                 urlList = replace_field_values(
-                    node["parameters"]["textList"], self.outputParameters).split("\n")
+                    node["parameters"]["textList"], self.outputParameters, self).split("\n")
             # urlList = []
             # for url in tempList:
             #     if url != "":
             #         urlList.append(url)
             for url in urlList:
-                url = replace_field_values(url, self.outputParameters)
+                url = replace_field_values(url, self.outputParameters, self)
                 # self.recordLog("当前循环网址|Current loop url:", url)
                 for i in node["sequence"]:
                     self.executeNode(i, url, "", 0)
@@ -1179,7 +1179,7 @@ class BrowserThread(Thread):
         else:  # 在流程图其他位置设置了打开网页的操作，读取的应该是第一个网址，如打开网页后登录，再打开第二个网页
             url = list(filter(isnotnull, para["links"].split("\n")))[0]
         # 将value中的Field[""]替换为outputParameters中的键值
-        url = replace_field_values(url, self.outputParameters)
+        url = replace_field_values(url, self.outputParameters, self)
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
@@ -1222,7 +1222,7 @@ class BrowserThread(Thread):
     def inputInfo(self, para, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
-            xpath = replace_field_values(para["xpath"], self.outputParameters)
+            xpath = replace_field_values(para["xpath"], self.outputParameters, self)
             textbox = self.browser.find_element(
                 By.XPATH, xpath, iframe=para["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
@@ -1281,8 +1281,8 @@ class BrowserThread(Thread):
         try:
             # element = self.browser.find_element(
             #     By.XPATH, path, iframe=para["iframe"])
-            clickPath = replace_field_values(clickPath, self.outputParameters)
-            xpath = replace_field_values(para["xpath"], self.outputParameters)
+            clickPath = replace_field_values(clickPath, self.outputParameters, self)
+            xpath = replace_field_values(para["xpath"], self.outputParameters, self)
             if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 if xpath == "":
                     path = clickPath
@@ -1548,7 +1548,7 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        parentPath = replace_field_values(parentPath, self.outputParameters)
+        parentPath = replace_field_values(parentPath, self.outputParameters, self)
         if para["clear"] == 1:
             self.clearOutputParameters()
         try:
@@ -1574,7 +1574,7 @@ class BrowserThread(Thread):
             if p["optimizable"]:
                 try:
                     relativeXPath = replace_field_values(
-                        p["relativeXPath"], self.outputParameters)
+                        p["relativeXPath"], self.outputParameters, self)
                     # 只有当前环境不变变化才可以快速提取数据
                     if self.browser.iframe_env != p["iframe"]:
                         p["optimizable"] = False
@@ -1653,7 +1653,7 @@ class BrowserThread(Thread):
             if not p["optimizable"]:
                 content = ""
                 relativeXPath = replace_field_values(
-                    p["relativeXPath"], self.outputParameters)
+                    p["relativeXPath"], self.outputParameters, self)
                 if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
                     try:
                         # relativeXPath = relativeXPath.lower()

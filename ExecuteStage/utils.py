@@ -177,11 +177,20 @@ def write_to_csv(file_name, data, record):
         f.close()
 
 
-def replace_field_values(orginal_text, outputParameters):
+def eval_repl(matchobj):
+     print(matchobj.group(1))
+     return str(eval(matchobj.group(1), globals(), locals()))
+
+
+
+def replace_field_values(orginal_text, outputParameters, browser=None):
     pattern = r'Field\["([^"]+)"\]'
     try:
         replaced_text = re.sub(
             pattern, lambda match: outputParameters.get(match.group(1), ''), orginal_text)
+        if replaced_text.find("EVAL") != -1: # 如果返回值中包含EVAL
+            replaced_text = replaced_text.replace("self.", "browser.")
+            replaced_text = re.sub(r'EVAL\("(.*?)"\)', lambda match: str(eval(match.group(1))), replaced_text)
     except:
         replaced_text = orginal_text
     return replaced_text
