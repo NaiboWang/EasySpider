@@ -398,7 +398,7 @@ print(emotlib.emoji()) # 使用其中的函数。
 1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").text即可返回当前页面的文字。
 2. 返回自定义全局变量的值：self.myVar
 3. 返回条件判断的值：self.myVar == 1
-注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下获得Python表达式值（eval操作）”选项。</pre>
+注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下运行Python代码（exec操作）”选项。</pre>
                         <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
                             <option :value = 0>否（仍可在任意操作中用Field["操作名"]表示此命令返回值）</option>
