@@ -1,0 +1,225 @@
+Server has started.
+server_address: http://localhost:8074
+x64
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chromedriver_win64.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chrome.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\execute.bat
+win32
+Server listening on http://localhost:8075
+Not Windows 7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+2.json
+3.json
+4.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 17,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 17,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [17] --server_address http://localhost:8074 --user_data 0    )  else (start chrome_win64/easyspider_executestage.exe --id [17] --server_address http://localhost:8074 --user_data 0    ) 
+
+Server has started.
+server_address: http://localhost:8074
+x64
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chromedriver_win64.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chrome.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\execute.bat
+win32
+Server listening on http://localhost:8075
+Not Windows 7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+2.json
+3.json
+4.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 19,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 19,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [19] --server_address http://localhost:8074 --user_data 0    )  else (start chrome_win64/easyspider_executestage.exe --id [19] --server_address http://localhost:8074 --user_data 0    ) 
+
+Server has started.
+server_address: http://localhost:8074
+x64
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chromedriver_win64.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chrome.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\execute.bat
+win32
+Server listening on http://localhost:8075
+Not Windows 7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+3.json
+4.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 26,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 26,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [26] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [26] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [26] --server_address http://localhost:8074 --user_data 0    ) ) 
+
