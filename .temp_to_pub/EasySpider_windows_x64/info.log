@@ -223,3 +223,225 @@ cd ../
  start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [26] --server_address http://localhost:8074 --user_data 0    
 )  else (start chrome_win64/easyspider_executestage.exe --id [26] --server_address http://localhost:8074 --user_data 0    ) ) 
 
+Server has started.
+server_address: http://localhost:8074
+x64
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chromedriver_win64.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chrome.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\execute.bat
+win32
+Server listening on http://localhost:8075
+Not Windows 7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 0 } }
+set socket_window
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C99099946', title: 'Start' } }
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C82841500', title: 'New Task' } }
+Set handle_pair for id:  C99099946  to  C7971446D4E508FF193373A8C34CDEB7 , title is:  Start
+Set handle_pair for id:  C82841500  to  C7971446D4E508FF193373A8C34CDEB7 , title is:  New Task
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: '{"type":"openPage","url":"https://www.jd.com","links":"https://www.jd.com"}'
+  }
+}
+FROM Browser:  {
+  type: 'openPage',
+  url: 'https://www.jd.com',
+  links: 'https://www.jd.com'
+}
+Iframe: undefined
+
+
+GET A MESSAGE:  { type: 1, message: { id: -1 } }
+Window {
+  id: 4654266,
+  processId: 57316,
+  path: 'D:\\Documents\\Projects\\EasySpider\\.temp_to_pub\\EasySpider_windows_x64\\EasySpider\\resources\\app\\chrome_win64\\chrome.exe'
+}
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C33177600', title: '京东全球版-专业的综合网上购物商城' } }
+Set handle_pair for id:  C33177600  to  C7971446D4E508FF193373A8C34CDEB7 , title is:  京东全球版-专业的综合网上购物商城
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: '{"type":"loopClickEvery","id":"C33177600","history":4,"tabIndex":-1,"xpath":"/html/body/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/a","allXPaths":"","useLoop":true,"iframe":false,"loopType":1}'
+  }
+}
+FROM Browser:  {
+  type: 'loopClickEvery',
+  id: 'C33177600',
+  history: 4,
+  tabIndex: -1,
+  xpath: '/html/body/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div/a',
+  allXPaths: '',
+  useLoop: true,
+  iframe: false,
+  loopType: 1
+}
+Iframe: false
+handles [ 'C7971446D4E508FF193373A8C34CDEB7' ]
+C33177600 C7971446D4E508FF193373A8C34CDEB7
+current_handle C7971446D4E508FF193373A8C34CDEB7
+switch to handle:  C7971446D4E508FF193373A8C34CDEB7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C8210475', title: '手机通讯频道' } }
+Set handle_pair for id:  C8210475  to  C7971446D4E508FF193373A8C34CDEB7 , title is:  手机通讯频道
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: `{"type":"singleClick","id":"C8210475","history":5,"tabIndex":-1,"useLoop":false,"iframe":false,"xpath":"/html/body","allXPaths":["/html/body","//body[contains(., '')]","/html/body"]}`
+  }
+}
+FROM Browser:  {
+  type: 'singleClick',
+  id: 'C8210475',
+  history: 5,
+  tabIndex: -1,
+  useLoop: false,
+  iframe: false,
+  xpath: '/html/body',
+  allXPaths: [ '/html/body', "//body[contains(., '')]", '/html/body' ]
+}
+Iframe: false
+handles [ 'C7971446D4E508FF193373A8C34CDEB7' ]
+C8210475 C7971446D4E508FF193373A8C34CDEB7
+current_handle C7971446D4E508FF193373A8C34CDEB7
+switch to handle:  C7971446D4E508FF193373A8C34CDEB7
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: `{"type":"singleCollect","history":5,"tabIndex":-1,"iframe":false,"parameters":[{"nodeType":0,"contentType":0,"relative":false,"name":"参数1_文本","desc":"","extractType":0,"relativeXPath":"/html/body","allXPaths":["/html/body","//body[contains(., '')]","/html/body"],"exampleValues":[{"num":0,"value":"\\n  \\n  \\n  \\n    \\n      \\n        京东首页\\n        \\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t海外 \\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t北京上海天津重庆河北山西河南辽宁吉林黑龙江内蒙古江苏山东安徽浙江福建湖北湖南广东广西江西四川海南贵州云南西藏陕西甘肃青海宁夏新疆港澳台湾钓鱼岛海外 \\t\\t\\t\\t \\t\\t\\t\\t \\t\\t\\t\\t   \\t\\t\\t\\t  地区专享版本 \\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t中國港澳 \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t中國台灣 \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t京东全球 \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t   \\t\\t\\t\\t \\t\\t\\t\\t \\t\\t\\t\\t   \\t\\t\\t\\t  Available Sites \\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t\\tGlobal Site \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t\\tСайт России \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t\\tSitus Indonesia \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t\\tSitio de España \\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t\\t   \\t\\t\\t\\t\\t\\t  เว็บไซต์ประเทศไทย \\t\\t\\t\\t\\t\\t \\t\\t\\t\\t\\t \\t\\t\\t\\t   \\t\\t\\t\\t \\t\\t\\t\\t\\t\\n      \\n      \\n        你好，请登录  免费注册\\n        \\n        \\n          \\n            我的订单\\n          \\n        \\n        \\n        \\n          \\n            我的京东\\n          \\n          \\n        \\n        \\n        \\n          \\n            京东会员\\n          \\n        \\n        \\n        \\n          \\n            企业采购\\n          \\n        \\n        \\n        \\n          \\n            客户服务\\n          \\n          \\n        \\n        \\n        \\n          \\n            网站导航\\n          \\n          \\n        \\n        \\n        \\n          \\n            手机京东\\n          \\n        \\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\t\\n      网站无障碍\\n      \\n    \\n  \\n  \\n  \\n  \\n\\n  \\n  \\n    \\n    (function (window) {\\n      window.data = window.data || {}\\n      window.data['cms_header'] = {\\n        setting: [{\\"NAME\\":\\"手机\\",\\"URL\\":\\"//\\",\\"ANCHOR\\":\\"\\",\\"property\\":\\"\\",\\"CUSTOM1\\":\\"#050505\\",\\"CUSTOM2\\":\\"\\",\\"CUSTOM3\\":\\"\\"}]\\n      }\\n    })(window)\\n    \\n    \\n    #search-2014 .text {border-color: #050505;}#search-2014 .button {background: #050505;}  京东  手机   全部分类◇            搜索      >0 我的购物车      \\n    \\n\\n    \\n\\n    \\n      \\n    顶通组件占位手机分类热门推荐苹果华为荣耀小米vivoOPPO运营商手机卡营业厅充话费配件充电器数据线手机壳贴膜移动电源创意配件热门分类全部手机5G手机苹果 iPhone 11iPhone XS Max华为Mate40 Pro 4Gnova 8 Pro 无充Nova8SE 乐活版Mate 40 RSNova 9P50 Pro 4G华为智选手机荣耀荣耀V30 PRO荣耀30 Pro荣耀X10 Max荣耀Play4 Pro小米小米10Redmi K30vivoS10 ProX60Y70t iQOO 8 iQOO Neo5  iQOO Z3OPPOReno 6OPPO K9 Find X3品牌中国移动中国联通中国电信精选店铺京东通信北京移动广东移动宽带专区50M300M优选品牌Anker罗马仕品胜倍思绿联亿色毕亚兹斯泰克热卖爆款移动电源原装充电器散热背夹扩展坞苹果数据线氮化镓Type C信号放大器手游周边王者荣耀手机散热器吃鸡神器弯头线游戏手柄王座同屏器新奇好物氮化镓PD快充双向快充创意配件配件频道海量配件低至9.包邮机身存储16GB8GB4GB分辨率全高清FHD+高清HD+屏幕尺寸5.0英寸及以下5.0～5.49英寸5.5～5.99英寸6.0～6.24英寸有新机游戏手机手机营业厅手机好店以旧换新企业购热卖推荐人气新品限时特惠配件专区飞利浦（PHILIPS）真无线领夹麦克风小蜜蜂收音器直播vlog拍视频采访话筒设备手机通用DLM3540C￥199.00JBL音乐唱将KMC600无线麦克风蓝牙话筒音响一体麦克风全民/K歌 儿童K歌宝话筒家庭ktv玫瑰金￥599.00声阔Soundcore超能小彩蛋 LifeP3主动降噪真无线TWS入耳式蓝牙耳机适用苹果/华为/小米手机蓝30H续航版￥399.00漫步者（EDIFIER）W820NB经典版 头戴蓝牙主动降噪耳机 金标认证 手机电脑笔记本耳机 七夕情人节礼物 云岩白￥269.00\\n  \\n  \\n\\n  \\n  \\n  \\n\\n  \\n\\n  \\n  \\n  window.pageConfig = window.pageConfig || {}\\n  window.pageConfig.o2JSConfig = {\\n    useTplInJs: true,\\n    pathRule: function (path) {\\n      return '//static.360buyimg.com/mtd/pc/cms' + '/floors/' + path + '.min.js'\\n    }\\n  }\\n  \\n  seajs.use(['//static.360buyimg.com/mtd/pc/base/1.0.1/channel.js'])\\n  \\n  seajs.use(['//wl.jd.com/wl.js'])\\n  \\n  \\n  \\n  !(function () {\\n    var testObject = {}\\n    if (!(Object.setPrototypeOf || testObject.__proto__)) {\\n      var nativeGetPrototypeOf = Object.getPrototypeOf\\n      Object.getPrototypeOf = function (object) {\\n        return object.__proto__ || nativeGetPrototypeOf.call(Object, object)\\n      }\\n    }\\n  })()\\n  \\n  \\n  \\n  \\n  \\n  \\n    // nerv-create-class 用 'nervjs'\\n    window.nervjs = Nerv\\n    // nerv-create-class\\n    !(function(t,e){\\"object\\"==typeof exports&&\\"undefined\\"!=typeof module?module.exports=e(require(\\"nervjs\\")):\\"function\\"==typeof define&&define.amd?define([\\"nervjs\\"],e):t.NervCreateClass=e(t.nervjs)})(this,(function(t){\\"use strict\\";function e(t){return t===undefined||null===t}function n(){}function r(t){return\\"function\\"==typeof t}function o(t){return t===undefined}function i(t,n){for(var r in n)e(n[r])||(t[r]=n[r]);return t}function a(t){for(var e in t){var n=t[e];\\"function\\"!=typeof n||n.__bound||1===g[e]||((t[e]=n.bind(t)).__bound=!0)}}function c(t,e){void 0===e&&(e={});for(var n=0,r=t.length;n<r;n++){var o=t[n];o.mixins&&c(o.mixins,e);for(var i in o)o.hasOwnProperty(i)&&\\"function\\"==typeof o[i]&&(e[i]||(e[i]=[])).push(o[i])}return e}function s(t,e){return function(){for(var n,r=arguments,i=this,a=0,c=t.length;a<c;a++){var s=t[a].apply(i,r);e?n=e(n,s):o(s)||(n=s)}return n}}function u(t,e){if(!o(e)){t||(t={});for(var n in e)if(e.hasOwnProperty(n)){if(t.hasOwnProperty(n))throw new Error(\\"Mixins return duplicate key \\"+n+\\" in their return values\\");t[n]=e[n]}}return t}function f(t,e,n){var r=o(e[t])?n:n.concat(e[t]);e[t]=\\"getDefaultProps\\"===t||\\"getInitialState\\"===t||\\"getChildContext\\"===t?s(r,u):s(r)}function p(t,e){for(var n in e)if(e.hasOwnProperty(n)){var o=e[n],i=\\"getDefaultProps\\"===n?t:t.prototype;r(o[0])?f(n,i,o):i[n]=o}}var h;!(function(t){t[t.Text=1]=\\"Text\\",t[t.Node=2]=\\"Node\\",t[t.Composite=4]=\\"Composite\\",t[t.Void=16]=\\"Void\\",t[t.Portal=32]=\\"Portal\\"})(h||(h={}));var l=(function(){var t;if(void 0!==l)t=l;else if(\\"undefined\\"!=typeof self)t=self;else try{t=Function(\\"return this\\")()}catch(e){throw new Error(\\"global object is unavailable in this environment\\")}return t})(),d=\\"undefined\\"!=typeof window,v={createElement:n,createElementNS:n,createTextNode:n},m=d?document:v;d&&navigator.platform&&/mac/i.test(navigator.platform)&&/^((?!chrome|android).)*safari/i.test(navigator.userAgent),r(m.createAttributeNS);Object.is=Object.is||function(t,e){return t===e?0!==t||1/t==1/e:t!==t&&e!==e};var y=function(){this.cache=[],this.size=0};y.prototype.set=function(t,e){var n=this,r=this.cache.length;if(!r)return this.cache.push({k:t,v:e}),void(this.size+=1);for(var o=0;o<r;o++){var i=n.cache[o];if(i.k===t)return void(i.v=e)}this.cache.push({k:t,v:e}),this.size+=1},y.prototype.get=function(t){var e=this,n=this.cache.length;if(n)for(var r=0;r<n;r++){var o=e.cache[r];if(o.k===t)return o.v}},y.prototype.has=function(t){var e=this,n=this.cache.length;if(!n)return!1;for(var r=0;r<n;r++)if(e.cache[r].k===t)return!0;return!1},y.prototype[\\"delete\\"]=function(t){for(var e=this,n=this.cache.length,r=0;r<n;r++)if(e.cache[r].k===t)return e.cache.splice(r,1),e.size-=1,!0;return!1},y.prototype.clear=function(){var t=this,e=this.cache.length;if(this.size=0,e)for(;e;)t.cache.pop(),e--};var g={constructor:1,render:1,shouldComponentUpdate:1,componentWillUpdate:1,componentWillReceiveProps:1,componentDidUpdate:1,componentWillMount:1,componentDidMount:1,componentWillUnmount:1,componentDidUnmount:1,getDerivedStateFromProps:1};return function(e){var n=(function(t){function e(e,n){t.call(this,e,n),a(this),this.getInitialState&&(this.state=this.getInitialState())}return t&&(e.__proto__=t),e.prototype=Object.create(t&&t.prototype),e.prototype.constructor=e,e.prototype.replaceState=function(t,e){this.setState(t,e)},e.prototype.isMounted=function(){return!this.dom},e})(t.Component);return n.displayName=e.displayName||\\"Component\\",n.propTypes=e.propTypes,n.mixins=e.mixins&&c(e.mixins),n.getDefaultProps=e.getDefaultProps,i(n.prototype,e),e.statics&&i(n,e.statics),e.mixins&&p(n,c(e.mixins)),n.defaultProps=o(n.getDefaultProps)?undefined:n.getDefaultProps(),n}}));\\n    // 节流\\n    function throttle (func, wait) {\\n      var timeout, context, args, result;\\n      var previous = 0;\\n\\n      var later = function() {\\n        previous = +new Date();\\n        timeout = null;\\n        func.apply(context, args)\\n      };\\n\\n      var throttled = function() {\\n        var now = +new Date();\\n        var remaining = wait - (now - previous);\\n        context = this;\\n        args = arguments;\\n        if (remaining <= 0 || remaining > wait) {\\n          if (timeout) {\\n            clearTimeout(timeout);\\n            timeout = null;\\n          }\\n          previous = now;\\n          func.apply(context, args);\\n        } else if (!timeout) {\\n          timeout = setTimeout(later, remaining);\\n        }\\n      };\\n      return throttled;\\n    }\\n    // Context\\n    var LingAtomScrollContext = Nerv.createContext({\\n      scrollTop: 0,\\n      windowHeight: 0,\\n      bodyHeight: 0\\n    })\\n  \\n  \\n  \\n  \\n    \\n  \\n    \\n  \\n    \\n  \\n    \\n  \\n    \\n  \\n    \\n  \\n  \\n    function genComponentElement (type, props, children) {\\n      \\n      return Nerv.createElement(\\n        Lc[type] ? Lc[type].component : 'div',\\n        props,\\n        children\\n      )\\n      \\n    }\\n  \\n  \\n    window.Lc = window.Lc || {}\\n    Lc['Page'] = { component: 'div' }\\n  \\n  \\n    function EventEmitter () {\\n      var eventEmitterPool = {}\\n      var eventEmitter = {\\n        on: function (eventName, handler) {\\n          eventEmitterPool[eventName] = eventEmitterPool[eventName] || []\\n          eventEmitterPool[eventName].push(handler)\\n        },\\n        trigger: function (eventName) {\\n          var handlers = eventEmitterPool[eventName] || []\\n          var args = Array.prototype.slice.call(arguments, 1)\\n          for (var i = 0; i < handlers.length; i++) {\\n            handlers[i].apply(this, args)\\n          }\\n        },\\n        off: function (eventName, handler) {\\n          if (!eventEmitterPool[eventName]) return\\n          if (!handler) {\\n            eventEmitterPool[eventName] = []\\n            return\\n          }\\n          var handlers = eventEmitterPool[eventName] || []\\n          for (var i = 0; i < handlers.length; i++) {\\n       `... 9044 more characters
+  }
+}
+FROM Browser:  {
+  type: 'singleCollect',
+  history: 5,
+  tabIndex: -1,
+  iframe: false,
+  parameters: [
+    {
+      nodeType: 0,
+      contentType: 0,
+      relative: false,
+      name: '参数1_文本',
+      desc: '',
+      extractType: 0,
+      relativeXPath: '/html/body',
+      allXPaths: [Array],
+      exampleValues: [Array],
+      unique_index: 'omeox2zzv8llhnebfs',
+      iframe: false
+    }
+  ]
+}
+Iframe: false
+
+
+GET A MESSAGE:  { type: 3, from: 1, message: { pipe: '{"type":0,"value":2}' } }
+FROM Flowchart:  { type: 0, value: 2 }
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+3.json
+4.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 28,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 28,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [28] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [28] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [28] --server_address http://localhost:8074 --user_data 0    ) ) 
+

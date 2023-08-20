@@ -150,7 +150,7 @@ if __name__ == "__main__":
         for folder in os.listdir("./chrome_win64"):
             if folder[0].isdigit() and os.path.isdir("./chrome_win64/"+folder):
                 shutil.rmtree("./chrome_win64/"+folder+"/Installer") # 删除Installer文件夹
-        copy_file("./execute.bat", "./chrome_win64/execute.bat")
+        copy_file("./execute_win64.bat", "./chrome_win64/execute.bat")
         copy_file("./stealth.min.js", "./chrome_win64/stealth.min.js")
         try:
             copy_file(
@@ -177,7 +177,7 @@ if __name__ == "__main__":
         for folder in os.listdir("./chrome_win32"):
             if folder[0].isdigit() and os.path.isdir("./chrome_win32/"+folder):
                 shutil.rmtree("./chrome_win32/"+folder+"/Installer") # 删除Installer文件夹
-        copy_file("./execute.bat", "./chrome_win32/execute.bat")
+        copy_file("./execute_win32.bat", "./chrome_win32/execute.bat")
         copy_file("./stealth.min.js", "./chrome_win32/stealth.min.js")
         try:
             copy_file(

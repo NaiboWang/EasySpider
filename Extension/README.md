@@ -1,4 +1,4 @@
-# 环境编译说明/Environment Compilation Instruction
+# 环境编译说明|Environment Compilation Instruction
 
 EasySpider分三部分：
 
@@ -18,7 +18,20 @@ EasySpider is divided into three parts:
 
 This section covers the compilation instructions for the `Browser extension`, **all commands in this section are executed in the `manifest_v3` folder**, i.e., you need to `cd manifest_v3` first.
 
-## 环境构建/Environment Setup
+## 建议编译顺序|Suggested Compilation Order
+
+1. 编译浏览器扩展，否则在主程序执行时会提示找不到`EasySpider_zh.crx`的错误。
+2. 编译主程序，此时主程序可以正常运行，但无法执行任务，只能设计任务。
+3. 编译执行阶段程序，否则无法执行程序，只能设计程序。
+
+-----
+
+1. Compile the browser extension, otherwise an error will be prompted when the main program is executed that `EasySpider_en.crx` cannot be found.
+2. Compile the main program, at this time the main program can run normally, but can not execute the task, can only design the task.
+3. Compile the execution stage program, otherwise the program cannot be executed, can only design the program.
+
+
+## 环境构建|Environment Setup
 
 1. 安装`NodeJS`：[https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)。
 2. 运行下面的命令来安装依赖：
@@ -36,7 +49,7 @@ npm install
 npm install
 ```
 
-## 热加载扩展/Hot reload the extension
+## 热加载扩展|Hot reload the extension
 
 执行下面的命令来热加载扩展：
 
@@ -56,7 +69,7 @@ npm run dev
 
 Open a Chrome browser window, then enter `chrome://extensions/` in the browser address bar. On the opened page, open the `Developer mode` in the upper right corner, click `Load unpacked` and select the `manifest_v3/dist` folder to load the extension.
 
-## 打包扩展/Package the extension
+## 打包扩展|Package the extension
 
 执行下面的命令来打包扩展：
 
