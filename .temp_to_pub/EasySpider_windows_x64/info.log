@@ -445,3 +445,176 @@ cd ../
  start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [28] --server_address http://localhost:8074 --user_data 0    
 )  else (start chrome_win64/easyspider_executestage.exe --id [28] --server_address http://localhost:8074 --user_data 0    ) ) 
 
+Server has started.
+server_address: http://localhost:8074
+x64
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chromedriver_win64.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chrome.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\execute.bat
+win32
+Server listening on http://localhost:8075
+Not Windows 7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 0 } }
+set socket_window
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C1391855', title: 'Start' } }
+Set handle_pair for id:  C1391855  to  82F895FF7DA09A31865D372B371F747F , title is:  Start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C23790568', title: 'New Task' } }
+Set handle_pair for id:  C23790568  to  82F895FF7DA09A31865D372B371F747F , title is:  New Task
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: '{"type":"openPage","url":"https://grouper.ieee.org/groups/802/1/files/public/docs2018/","links":"https://grouper.ieee.org/groups/802/1/files/public/docs2018/"}'
+  }
+}
+FROM Browser:  {
+  type: 'openPage',
+  url: 'https://grouper.ieee.org/groups/802/1/files/public/docs2018/',
+  links: 'https://grouper.ieee.org/groups/802/1/files/public/docs2018/'
+}
+Iframe: undefined
+
+
+GET A MESSAGE:  { type: 1, message: { id: -1 } }
+Window {
+  id: 10361598,
+  processId: 82352,
+  path: 'D:\\Documents\\Projects\\EasySpider\\.temp_to_pub\\EasySpider_windows_x64\\EasySpider\\resources\\app\\chrome_win64\\chrome.exe'
+}
+
+
+GET A MESSAGE:  {
+  type: 0,
+  message: {
+    id: 'C33457954',
+    title: 'Index of /groups/802/1/files/public/docs2018'
+  }
+}
+Set handle_pair for id:  C33457954  to  82F895FF7DA09A31865D372B371F747F , title is:  Index of /groups/802/1/files/public/docs2018
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: `{"type":"singleClick","id":"C33457954","history":4,"tabIndex":-1,"useLoop":false,"iframe":false,"xpath":"/html/body/pre[1]/a[6]","allXPaths":["/html/body/pre[1]/a[6]","//a[contains(., '60802-Bai-')]","/html/body/pre/a[last()-541]"]}`
+  }
+}
+FROM Browser:  {
+  type: 'singleClick',
+  id: 'C33457954',
+  history: 4,
+  tabIndex: -1,
+  useLoop: false,
+  iframe: false,
+  xpath: '/html/body/pre[1]/a[6]',
+  allXPaths: [
+    '/html/body/pre[1]/a[6]',
+    "//a[contains(., '60802-Bai-')]",
+    '/html/body/pre/a[last()-541]'
+  ]
+}
+Iframe: false
+handles [ '82F895FF7DA09A31865D372B371F747F' ]
+C33457954 82F895FF7DA09A31865D372B371F747F
+current_handle 82F895FF7DA09A31865D372B371F747F
+switch to handle:  82F895FF7DA09A31865D372B371F747F
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C81368640', title: '' } }
+Set handle_pair for id:  C81368640  to  82F895FF7DA09A31865D372B371F747F , title is:  
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+3.json
+4.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 29,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 29,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [29] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [29] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [29] --server_address http://localhost:8074 --user_data 0    ) ) 
+

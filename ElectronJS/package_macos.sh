@@ -23,5 +23,6 @@ cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_MacOS_a
 cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp ../ExecuteStage/requirements.txt ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
+cp ../ExecuteStage/Readme.md ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp -Rf ../ExecuteStage/undetected_chromedriver_ES ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp -Rf ../ExecuteStage/.vscode ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
