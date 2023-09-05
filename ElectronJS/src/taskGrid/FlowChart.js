@@ -454,6 +454,31 @@ function toolBoxKernel(e, para = null) {
         let l = nodeList.length;
         let nt = null;
         let nt2 = null;
+        if (option == 2 || option == 7) { //点击元素或移动到元素操作的名称更改
+            let l = 6;
+            if(option == 2){
+                title = LANG("点击", "Click ");
+            } else {
+                title = LANG("移动到", "Move to ");
+                l = 5;
+            }
+            content = para["content"];
+            let str = content.trim();
+            if (str == "") {
+                title += LANG("元素", "Element");
+            } else {
+                if(window.location.href.indexOf("_CN") != -1){ //中文
+                    if (str.length > l) {
+                        str = str.substring(0, l) + "...";
+                    }
+                } else { //英文
+                    if (str.length > l + 7) {
+                        str = str.substring(0, l + 7) + "...";
+                    }
+                }
+                title += str;
+            }
+        }
         let t = {
             id: 0,
             index: l,
@@ -704,7 +729,7 @@ document.oncontextmenu = function() {
         contextMenu.style.position = "absolute";
         contextMenu.style.left = event.clientX + "px";
         contextMenu.style.top = event.clientY + "px";
-        contextMenu.style.width = LANG("180px", "220px");
+        contextMenu.style.width = LANG("180px", "250px");
 
         // 添加删除元素的功能
         contextMenu.addEventListener("dblclick", function() {

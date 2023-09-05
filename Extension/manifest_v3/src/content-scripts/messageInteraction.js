@@ -69,6 +69,7 @@ export function sendSingleClick() {
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
         "iframe": global.iframe,
+        "content": global.nodeList[0]["node"].innerText,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
@@ -107,6 +108,7 @@ export function sendMouseMove(){
         "tabIndex": -1,
         "useLoop": false, //是否使用循环内元素
         "iframe": global.iframe,
+        "content": global.nodeList[0]["node"].innerText,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
     };
@@ -125,6 +127,7 @@ export function sendLoopMouseMove(){
         "tabIndex": -1,
         "xpath": "", //默认值设置为空
         "allXPaths": "",
+        "content": "",
         "useLoop": true, //是否使用循环内元素
         "iframe": global.iframe,
         "loopType": 1, //循环类型，1为不固定元素列表
@@ -231,6 +234,7 @@ export function sendLoopClickSingle(name) {
         "tabIndex": -1,
         "useLoop": true, //是否使用循环内元素
         "iframe": global.iframe,
+        "content": global.nodeList[0]["node"].innerText,
         "xpath": readXPath(global.nodeList[0]["node"], 0),
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
         "loopType": 0, //循环类型，0为单个元素
@@ -256,6 +260,7 @@ export function sendLoopClickEvery() {
         "tabIndex": -1,
         "xpath": "", //默认值设置为空
         "allXPaths": "",
+        "content": "",
         "useLoop": true, //是否使用循环内元素
         "iframe": global.iframe,
         "loopType": 1, //循环类型，1为不固定元素列表
