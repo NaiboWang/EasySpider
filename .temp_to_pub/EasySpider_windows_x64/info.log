@@ -1,0 +1,706 @@
+Server has started.
+server_address: http://localhost:8074
+x64
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chromedriver_win64.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\chrome.exe D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64\EasySpider\resources\app\chrome_win64\execute.bat
+win32
+Server listening on http://localhost:8075
+Not Windows 7
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 0 } }
+set socket_window
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C91060802', title: 'Start' } }
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C42837719', title: 'New Task' } }
+Set handle_pair for id:  C91060802  to  DE25B0D62688DC2CEAA4858701D1C25A , title is:  Start
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: '{"type":"openPage","url":"https://www.jd.com","links":"https://www.jd.com"}'
+  }
+}
+FROM Browser:  {
+  type: 'openPage',
+  url: 'https://www.jd.com',
+  links: 'https://www.jd.com'
+}
+Iframe: undefined
+
+
+GET A MESSAGE:  { type: 1, message: { id: -1 } }
+Window {
+  id: 26086070,
+  processId: 138328,
+  path: 'D:\\Documents\\Projects\\EasySpider\\.temp_to_pub\\EasySpider_windows_x64\\EasySpider\\resources\\app\\chrome_win64\\chrome.exe'
+}
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C73544475', title: '京东全球版-专业的综合网上购物商城' } }
+Set handle_pair for id:  C42837719  to  DE25B0D62688DC2CEAA4858701D1C25A , title is:  New Task
+Set handle_pair for id:  C73544475  to  DE25B0D62688DC2CEAA4858701D1C25A , title is:  京东全球版-专业的综合网上购物商城
+
+
+GET A MESSAGE:  {
+  type: 3,
+  from: 0,
+  message: {
+    pipe: `{"type":"singleCollect","history":4,"tabIndex":-1,"iframe":false,"parameters":[{"nodeType":0,"contentType":0,"relative":false,"name":"参数1_文本","desc":"","extractType":0,"relativeXPath":"/html/body/div[6]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]","allXPaths":["/html/body/div[6]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]","//div[contains(., '/手机/数码')]","//DIV[@class='LeftSide_menu_item__SBMWC LeftSide_text_space__2UhbG LeftSide_menu_hover__OCHiO']","/html/body/div[last()-5]/div/div[last()-4]/div/div[last()-2]/div/div/div/div[last()-1]/div[last()-12]"],"exampleValues":[{"num":0,"value":"/手机/数码"}],"unique_index":"16i23xj4p54lm5zgdca","iframe":false}]}`
+  }
+}
+FROM Browser:  {
+  type: 'singleCollect',
+  history: 4,
+  tabIndex: -1,
+  iframe: false,
+  parameters: [
+    {
+      nodeType: 0,
+      contentType: 0,
+      relative: false,
+      name: '参数1_文本',
+      desc: '',
+      extractType: 0,
+      relativeXPath: '/html/body/div[6]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]',
+      allXPaths: [Array],
+      exampleValues: [Array],
+      unique_index: '16i23xj4p54lm5zgdca',
+      iframe: false
+    }
+  ]
+}
+Iframe: false
+
+
+GET A MESSAGE:  { type: 3, from: 1, message: { pipe: '{"type":0,"value":2}' } }
+FROM Flowchart:  { type: 0, value: 2 }
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+29.json
+3.json
+30.json
+31.json
+32.json
+33.json
+34.json
+35.json
+36.json
+37.json
+38.json
+39.json
+4.json
+40.json
+41.json
+42.json
+43.json
+44.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 45,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 45,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [45] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [45] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [45] --server_address http://localhost:8074 --user_data 0    ) ) 
+
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+29.json
+3.json
+30.json
+31.json
+32.json
+33.json
+34.json
+35.json
+36.json
+37.json
+38.json
+39.json
+4.json
+40.json
+41.json
+42.json
+43.json
+44.json
+45.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 46,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 46,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [46] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [46] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [46] --server_address http://localhost:8074 --user_data 0    ) ) 
+
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+29.json
+3.json
+30.json
+31.json
+32.json
+33.json
+34.json
+35.json
+36.json
+37.json
+38.json
+39.json
+4.json
+40.json
+41.json
+42.json
+43.json
+44.json
+45.json
+46.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 47,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 47,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [47] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [47] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [47] --server_address http://localhost:8074 --user_data 0    ) ) 
+
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+29.json
+3.json
+30.json
+31.json
+32.json
+33.json
+34.json
+35.json
+36.json
+37.json
+38.json
+39.json
+4.json
+40.json
+41.json
+42.json
+43.json
+44.json
+45.json
+46.json
+47.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 48,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 48,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [48] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [48] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [48] --server_address http://localhost:8074 --user_data 0    ) ) 
+
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+29.json
+3.json
+30.json
+31.json
+32.json
+33.json
+34.json
+35.json
+36.json
+37.json
+38.json
+39.json
+4.json
+40.json
+41.json
+42.json
+43.json
+44.json
+45.json
+46.json
+47.json
+48.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 49,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 49,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [49] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [49] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [49] --server_address http://localhost:8074 --user_data 0    ) ) 
+
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: -1,
+    user_data_folder: '',
+    mysql_config_path: '-1',
+    execute_type: 1
+  }
+}
+{
+  id: -1,
+  user_data_folder: '',
+  mysql_config_path: '-1',
+  execute_type: 1
+}
+0.json
+1.json
+10.json
+11.json
+12.json
+13.json
+14.json
+15.json
+16.json
+17.json
+18.json
+19.json
+2.json
+20.json
+21.json
+22.json
+23.json
+24.json
+25.json
+26.json
+27.json
+28.json
+29.json
+3.json
+30.json
+31.json
+32.json
+33.json
+34.json
+35.json
+36.json
+37.json
+38.json
+39.json
+4.json
+40.json
+41.json
+42.json
+43.json
+44.json
+45.json
+46.json
+47.json
+48.json
+49.json
+5.json
+6.json
+7.json
+8.json
+9.json
+
+
+GET A MESSAGE:  {
+  type: 5,
+  message: {
+    id: 50,
+    user_data_folder: '',
+    mysql_config_path: './mysql_config.json',
+    execute_type: 1
+  }
+}
+{
+  id: 50,
+  user_data_folder: '',
+  mysql_config_path: './mysql_config.json',
+  execute_type: 1
+}
+
+D:\Documents\Projects\EasySpider\.temp_to_pub\EasySpider_windows_x64>if exist EasySpider (start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [50] --server_address http://localhost:8074 --user_data 0    )  else (if exist resources (
+cd ../  
+ start EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [50] --server_address http://localhost:8074 --user_data 0    
+)  else (start chrome_win64/easyspider_executestage.exe --id [50] --server_address http://localhost:8074 --user_data 0    ) ) 
+
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 0 } }
+set socket_window
+
+
+GET A MESSAGE:  { type: 0, message: { id: 1 } }
+set socket_start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C33333281', title: 'Start' } }
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C71067632', title: 'Task Information' } }
+Set handle_pair for id:  C33333281  to  C16928DEB37478FE68A811407561BFB2 , title is:  Start
+
+
+GET A MESSAGE:  { type: 0, message: { id: 2 } }
+set socket_flowchart
+
+
+GET A MESSAGE:  { type: 0, message: { id: 'C91491330', title: '设计流程' } }
+Set handle_pair for id:  C71067632  to  C16928DEB37478FE68A811407561BFB2 , title is:  Task Information
+Set handle_pair for id:  C91491330  to  C16928DEB37478FE68A811407561BFB2 , title is:  设计流程
+
+
+GET A MESSAGE:  { type: 6 }
+open devtools error

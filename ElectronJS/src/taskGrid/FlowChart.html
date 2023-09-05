@@ -381,10 +381,11 @@ This option is an advanced feature that allows direct manipulation of the runnin
 2. Define a global variable: `self.myVar = 1`
 3. Manipulate the above-defined global variable: `self.myVar = self.myVar + 1`
 4. Print the above-defined global variable: `print(self.myVar)`
+5. Assign the value of a custom variable to the value extracted from a field: `self.myVar = self.outputParameters["Field Name"]`
 
 If you want to record your custom variable as a field, please select the next option, "Get value of a Python expression (the "eval" operation)"
 
-If you want to import and use a third-party library that the program itself does not carry, you need to first use tools such as pip to install this library locally, and then add the path of the installed library before import, like:
+6. If you want to import and use a third-party library that the program itself does not carry, you need to first use tools such as pip to install this library locally, and then add the path of the installed library before import, like:
 (1) In the system command line execute the following command to install the library:
 pip install emotlib
 (2) Write the following code in the code box:
@@ -397,6 +398,7 @@ This option is an advanced feature that allows directly returning the expression
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text` to return the text on the current page.
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
+4. Determining whether the value extracted from a certain field is equal to the value of a certain variable: self.outputParameters["field name"] == self.myVar
 Please note that this feature does not support assigning values to variables. In other words, you cannot write something like `self.myVar = 1`. If you want to perform assignment operations, please select the previous option, "Run Python code on current environment (the "exec" operation)"</pre>
                         <p style="margin-top: 15px">Whether to record the output/return value of the execution as a field: </p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
@@ -510,6 +512,7 @@ Loop based on the expression value of Python code. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
+4. Determining whether the value extracted from a certain field is equal to the value of a certain variable: self.outputParameters["field name"] == self.myVar
 If the expression returns a value greater than 0 or evaluates to True, the loop continues; otherwise, it stops.
                         </pre>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
@@ -582,6 +585,7 @@ Use the expression value of Python code to determine whether a condition is sati
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
+4. Determining whether the value extracted from a certain field is equal to the value of a certain variable: self.outputParameters["field name"] == self.myVar
 If the expression returns a value greater than 0 or evaluates to True, the operations within this branch will be executed; otherwise, they will be skipped.
                         </pre>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
