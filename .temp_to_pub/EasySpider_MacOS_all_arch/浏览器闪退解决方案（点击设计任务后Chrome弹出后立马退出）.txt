@@ -3,7 +3,7 @@
 MacOS版本的软件有一个问题可能存在,即软件所调用的Chrome软件会在打开后经常性自动更新,但软件所依赖的Chromedriver版本并不会随着chrome自动更新,从而导致软件打不开chrome的问题。
 检查Chrome版本的方式为：进入EasySpider软件内部，即右键软件“显示包内容”，然后进入Contents/Resources/app文件夹内,手动双击打开chrome_mac64软件打开chrome，然后打开设置->关于Chrome来查看Chrome版本是否和手动打开chromedriver_mac64后显示的版本相同。
 
-如果不是，请自行到以下网址下载对应自己当前chrome版本的macOS版本的chromedriver：https://chromedriver.chromium.org/downloads，并将chromedriver文件放在上面提到的Contents/Resources/app文件夹内，更名并替换掉“chromedriver_mac64”文件即可使软件恢复正常使用。
+如果不是，请自行到以下网址下载对应自己当前chrome版本的macOS版本的chromedriver：https://googlechromelabs.github.io/chrome-for-testing，并将chromedriver文件放在上面提到的Contents/Resources/app文件夹内，更名并替换掉“chromedriver_mac64”文件即可使软件恢复正常使用。
 
 如果使用过程中发现其他问题，请到Github Issues页面提issue。
 
