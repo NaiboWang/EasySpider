@@ -467,7 +467,8 @@ function toolBoxKernel(e, para = null) {
             if (str == "") {
                 title += LANG("元素", "Element");
             } else {
-                if(window.location.href.indexOf("_CN") != -1){ //中文
+                let lang = detectLang(str);
+                if(lang == 1){ //中文
                     if (str.length > l) {
                         str = str.substring(0, l) + "...";
                     }
