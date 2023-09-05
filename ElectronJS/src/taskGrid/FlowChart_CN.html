@@ -195,6 +195,7 @@
                         <button class="btn btn-primary" v-on:mousedown= 'addPara'>新增字段</button>
                     </p>
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>提取数据前清空其他操作字段已记录的值</p>
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["newLine"]'></input>此提取数据操作后生成新数据行 <span style="font-size: 30px!important;" title="取消勾选则适用于不想每次提取操作都生成一个新行的场景">☺</span></p>
                     <div class="toolkitcontain">
                         <table class="toolkittb2" cellspacing="0">
                             <tbody>
@@ -426,6 +427,13 @@ print(emotlib.emoji()) # 使用其中的函数。
                             <select v-model='nowNode["parameters"]["clear"]' class="form-control">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
+                            </select>
+                        </p>
+                        <p>
+                            <label>此提取数据操作后生成新数据行：</label>
+                            <select v-model='nowNode["parameters"]["newLine"]' class="form-control">
+                                <option :value = 1>是</option>
+                                <option :value = 0>否</option>
                             </select>
                         </p>
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>

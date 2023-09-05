@@ -195,6 +195,7 @@
                         <button class="btn btn-primary" v-on:mousedown= 'addPara'>New Field</button>
                     </p>
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>Clear other field existing values before extracting</p>
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["newLine"]'></input>This operation will generate a new row of data: </p>
                     <div class="toolkitcontain">
                         <table class="toolkittb2" cellspacing="0">
                             <tbody>
@@ -424,6 +425,13 @@ Please note that this feature does not support assigning values to variables. In
                             <select v-model='nowNode["parameters"]["clear"]' class="form-control">
                                 <option :value = 0>No</option>
                                 <option :value = 1>Yes</option>
+                            </select>
+                        </p>
+                        <p>
+                            <label>This operation will generate a new row of data: </label>
+                            <select v-model='nowNode["parameters"]["newLine"]' class="form-control">
+                                <option :value = 1>Yes</option>
+                                <option :value = 0>No</option>
                             </select>
                         </p>
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>

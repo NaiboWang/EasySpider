@@ -193,6 +193,7 @@ function addParameters(t) {
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
     } else if (t.option == 3) { //提取数据
         t["parameters"]["clear"] = 0; //清空其他字段数据
+        t["parameters"]["newLine"] = 1; //生成新行
         t["parameters"]["paras"] = []; //默认参数列表
     } else if (t.option == 4) { //输入文字
         t["parameters"]["value"] = "";
@@ -203,6 +204,7 @@ function addParameters(t) {
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
     } else if(t.option == 5) { //自定义操作
         t["parameters"]["clear"] = 0; //清空其他字段数据
+        t["parameters"]["newLine"] = 1; //生成新行
         t["parameters"]["codeMode"] = 0; //代码模式，0代表JS, 2代表系统级别
         t["parameters"]["code"] = "";
         t["parameters"]["waitTime"] = 0; //最长等待时间

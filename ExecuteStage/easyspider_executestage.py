@@ -242,6 +242,10 @@ class BrowserThread(Thread):
                     clear = node["parameters"]["clear"]
                 except:
                     node["parameters"]["clear"] = 0
+                try:
+                    newLine = node["parameters"]["newLine"]
+                except:
+                    node["parameters"]["newLine"] = 1
                 for para in paras:
                     try:
                         iframe = para["iframe"]
@@ -274,6 +278,10 @@ class BrowserThread(Thread):
                     clear = node["parameters"]["clear"]
                 except:
                     node["parameters"]["clear"] = 0
+                try:
+                    newLine = node["parameters"]["newLine"]
+                except:
+                    node["parameters"]["newLine"] = 1
             elif node["option"] == 7:  # 移动到元素
                 if node["parameters"]["useLoop"]:
                     if self.task_version <= "0.3.5":
@@ -618,7 +626,7 @@ class BrowserThread(Thread):
         # self.print_and_log("操作<" + node["title"] + ">的返回值为：" + output)
         # self.print_and_log("The return value of operation <" + node["title"] + "> is: " + output)
         self.outputParameters[node["title"]] = output
-        if recordASField:
+        if recordASField and paras["newLine"]:
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
@@ -1746,7 +1754,7 @@ class BrowserThread(Thread):
                 self.outputParameters[p["name"]] = content
                 self.execute_code(
                     2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS
-        if para["recordASField"] > 0:
+        if para["recordASField"] > 0 and para["newLine"]:
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)

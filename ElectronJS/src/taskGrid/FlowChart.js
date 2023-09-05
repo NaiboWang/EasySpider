@@ -698,16 +698,16 @@ document.oncontextmenu = function() {
         // 创建一个包含删除选项的右键菜单
         let contextMenu = document.createElement("div");
         contextMenu.id = "contextMenu";
-        contextMenu.innerHTML = `<div>${LANG("删除元素", "Delete Element")}`;
+        contextMenu.innerHTML = `<div>${LANG("删除元素（双击）", "Delete Element (Double Click)")}`;
 
         // 设置右键菜单的样式
         contextMenu.style.position = "absolute";
         contextMenu.style.left = event.clientX + "px";
         contextMenu.style.top = event.clientY + "px";
-        contextMenu.style.width = LANG("140px", "180px");
+        contextMenu.style.width = LANG("180px", "220px");
 
         // 添加删除元素的功能
-        contextMenu.addEventListener("click", function() {
+        contextMenu.addEventListener("dblclick", function() {
             // myElement.remove(); // 删除元素
             deleteElement();
             contextMenu.remove(); // 删除右键菜单

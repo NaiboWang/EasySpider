@@ -290,19 +290,22 @@ class myMySQL:
             print("MySQL config file path: ", config_file)
             with open(config_file, 'r') as f:
                 config = json.load(f)
-                host = config["host"]
-                port = config["port"]
-                user = config["username"]
-                passwd = config["password"]
-                db = config["database"]
+                self.host = config["host"]
+                self.port = config["port"]
+                self.user = config["username"]
+                self.passwd = config["password"]
+                self.db = config["database"]
         except Exception as e:
             print("读取配置文件失败，请检查配置文件："+config_file+"是否存在，或配置信息是否有误。")
             print("Failed to read configuration file, please check if the configuration file: " +
                   config_file+" exists, or if the configuration information is incorrect.")
             print(e)
+        self.connect()
+        
+    def connect(self):
         try:
             self.conn = pymysql.connect(
-                host=host, port=port, user=user, passwd=passwd, db=db)
+                host=self.host, port=self.port, user=self.user, passwd=self.passwd, db=self.db)
             print("成功连接到数据库。")
             print("Successfully connected to the database.")
         except:
@@ -408,6 +411,13 @@ class myMySQL:
             # 执行 SQL 语句
             try:
                 cursor.execute(sql, to_write)
+            except pymysql.OperationalError as e:
+                print("Error:", e)
+                print("Try to reconnect to the database...")
+                self.connect()
+                cursor = self.conn.cursor() # 重新创建游标对象
+                cursor.execute(sql, to_write) # 重新执行SQL语句
+                # self.write_to_mysql(OUTPUT, record, types)
             except Exception as e:
                 print("Error:", e)
                 print("Error SQL:", sql, to_write)
