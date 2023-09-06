@@ -27,7 +27,7 @@
         "@electron-forge/maker-rpm": "^6.0.5",
         "@electron-forge/maker-squirrel": "^6.0.5",
         "@electron-forge/maker-zip": "^6.0.5",
-        "electron": "^20.0.1"
+        "electron": "^22.3.21"
     },
     "repository": "https://github.com/NaiboWang/EasySpider",
     "dependencies": {
