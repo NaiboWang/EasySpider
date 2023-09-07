@@ -364,7 +364,7 @@
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Action is inside iframe</p>
                     <label>Custom Action Mode</label>
                     <select v-model='codeMode' class="form-control">
-                        <option value = 0>Execute JavaScript script</option>
+                        <option value = 0>Execute JavaScript script (Start with "return " if you want to get return value)</option>
                         <option value = 1>Execute operating system-level command</option>
                         <option v-if="nowNode['isInLoop']" value = 2>Execute JavaScript script for the current element inside the loop</option>
                         <option v-if="nowNode['isInLoop']" value = 3>Exit Current Loop (the "Break" operation)</option>

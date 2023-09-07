@@ -365,7 +365,7 @@
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
                     <label>自定义执行模式</label>
                     <select v-model='codeMode' class="form-control">
-                        <option value = 0>执行一段JavaScript脚本</option>
+                        <option value = 0>执行一段JavaScript脚本（如要获得返回值则需以return 开头）</option>
                         <option value = 1>执行一段操作系统级别命令</option>
                         <option v-if="nowNode['isInLoop']" value = 2>针对当前循环项的JavaScript脚本</option>
                         <option v-if="nowNode['isInLoop']" value = 3>退出当前循环（Break操作）</option>
