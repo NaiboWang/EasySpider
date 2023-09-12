@@ -2,4 +2,14 @@ Due to the complex security settings of MacOS, the issue of being unable to open
 
 https://github.com/NaiboWang/EasySpider/wiki/MacOS-Guide
 
+For the Arm version, if it shows "the package is damaged", you need to use the following command to modify the package attributes:
+
+xattr -cr Your EasySpider.app file path
+ 
+For example:
+
+xattr -cr /Users/username/Downloads/EasySpider_MacOS_all_arch/EasySpider.app
+ 
+Then try to open it again.
+
 File access permissions must be granted, microphone permissions are not necessary at all, and the author is not sure why microphone permissions are being requested, so they can be declined.

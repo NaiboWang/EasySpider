@@ -1,3 +1,13 @@
 由于MacOS复杂的安全性设置，初次打开软件会显示未验证开发者从而不允许打开的问题，请参考以下视频来查看MacOS版本如何打开软件和执行任务：https://www.bilibili.com/video/BV1WL411h71r
 
+对于Arm版本，如果显示“包已损坏”，则需要使用下面的命令修改包属性：
+
+xattr -cr 你的EasySpider.app文件路径
+
+如：
+
+Xattr -cr /Users/用户名/Downloads/EasySpider_MacOS_all_arch/EasySpider.app
+
+然后再次尝试打开。
+
 文件访问权限必须给，麦克风权限完全用不到，作者也不清楚为什么会需要麦克风，因此可以拒绝。

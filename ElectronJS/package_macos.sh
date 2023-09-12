@@ -7,8 +7,8 @@ cd ../../ElectronJS
 rm -rf out
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app
 npm run make
-unzip out/make/zip/darwin/x64/EasySpider-darwin-x64* -d ../.temp_to_pub/EasySpider_MacOS_all_arch/
-# mv out/EasySpider-darwin-x64/EasySpider.app ../.temp_to_pub/EasySpider_MacOS_all_arch/
+unzip out/make/zip/darwin/*64/EasySpider-darwin* -d ../.temp_to_pub/EasySpider_MacOS_all_arch/
+# mv out/EasySpider-darwin-*64/EasySpider.app ../.temp_to_pub/EasySpider_MacOS_all_arch/
 rm ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/VS_BuildTools.exe
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/chrome_win64
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/chromedrivers
