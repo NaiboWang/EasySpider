@@ -6,7 +6,7 @@ xattr -cr 你的EasySpider.app文件路径
 
 如：
 
-Xattr -cr /Users/用户名/Downloads/EasySpider_MacOS_all_arch/EasySpider.app
+xattr -cr /Users/用户名/Downloads/EasySpider_MacOS_all_arch/EasySpider.app
 
 然后再次尝试打开。
 
