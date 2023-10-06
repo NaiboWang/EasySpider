@@ -78,35 +78,35 @@ Bilibili/B站视频教程:
 
 [设置页面向下滚动](https://www.bilibili.com/video/BV1G14y1o7Qa/)
 
-[如何无代码可视化的爬取需要登录才能爬的网站 - 知乎网站案例](https://www.bilibili.com/video/BV1HV4y1r7v8)
+[如何无代码可视化的爬取需要登录才能爬的网站 - 知乎网站案例](https://www.bilibili.com/video/BV1BN411t71C/)
 
-[实战采集汽车网文章内容并下载文章内图片](https://www.bilibili.com/video/BV1RW4y197ih/)
+[实战采集汽车网文章内容并下载文章内图片](https://www.bilibili.com/video/BV14u4y1x7S5/)
 
-[定时执行任务+选中子元素多种模式+将提取值作为变量输入](https://www.bilibili.com/video/BV14V4y1m7iL/)
+[定时执行任务+选中子元素多种模式+将提取值作为变量输入](https://www.bilibili.com/video/BV1N94y1a7Lp/)
 
-[【重要】自定义条件判断之使用循环项内的JS命令返回值 - 第二弹](https://www.bilibili.com/video/BV1mu411x7Nn/)
+[【重要】自定义条件判断之使用循环项内的JS命令返回值 - 第二弹](https://www.bilibili.com/video/BV18C4y1V7J7/)
 
-[流程图执行逻辑解析 - 58同城房源描述采集案例](https://www.bilibili.com/video/BV1YL411z7uW)
+[流程图执行逻辑解析 - 58同城房源描述采集案例](https://www.bilibili.com/video/BV14N4y1o73Y/)
 
-[MacOS系统设计和执行eBay网站爬虫任务教程](https://www.bilibili.com/video/BV1WL411h71r)
+[MacOS系统设计和执行eBay网站爬虫任务教程](https://www.bilibili.com/video/BV1E34y137fT/)
 
-[如何执行自己写的JS代码和系统代码 （自定义操作）](https://www.bilibili.com/video/BV1qs4y1z7Hc/)
+[如何执行自己写的JS代码和系统代码 （自定义操作）](https://www.bilibili.com/video/BV1UH4y1f7BM/)
 
-[如何自定义循环和判断条件 - 第一弹](https://www.bilibili.com/video/BV1Ys4y1z777/)
+[如何自定义循环和判断条件 - 第一弹](https://www.bilibili.com/video/BV18w411a77e/)
 
 [如何对元素和网页截图及命令行执行指南](https://www.bilibili.com/video/BV1ch4y1E7cn/)
 
-[OCR识别元素内容功能](https://www.bilibili.com/video/BV1GP411y7u4/)
+[OCR识别元素内容功能（常用于文字验证码）](https://www.bilibili.com/video/BV1GP411y7u4/)
 
-[如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV18c411K7FH)
+[如何爬需要输入验证码的网站](https://www.bilibili.com/video/BV1Rw411C7Hs/)
 
-[如何切换IP池和使用隧道IP - 打开详情页采集案例](https://www.bilibili.com/video/BV1KT411t79n)
+[如何切换IP池和使用隧道IP - 打开详情页采集案例](https://www.bilibili.com/video/BV1zw411w7BN/)
 
-[如何同时执行多个任务（并行多开）](https://www.bilibili.com/video/BV13c411G7LE/)
+[如何同时执行多个任务（并行多开）](https://www.bilibili.com/video/BV1Dj411b77M/)
 
 [Python代码运算后的结果作为文本框的输入](https://www.bilibili.com/video/BV1kF411R7VJ/)
 
-[实例 - 反人类网站文章采集和代码调试](https://www.bilibili.com/video/BV11W4y1D71t/)
+[实例 - 反人类网站文章采集和代码调试](https://www.bilibili.com/video/BV1XH4y1Z78i/)
 
 [写入MySQL数据库教程](https://www.bilibili.com/video/BV1os4y1679S/)
 

@@ -8,7 +8,7 @@ xattr -cr Your EasySpider.app file path
  
 For example:
 
-xattr -cr /Users/username/Downloads/EasySpider_MacOS_all_arch/EasySpider.app
+xattr -cr /Users/your_username/Downloads/EasySpider_MacOS_all_arch/EasySpider.app
  
 Then try to open it again.
 
