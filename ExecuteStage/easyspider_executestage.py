@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # import atexit
+import undetected_chromedriver as uc
 from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
@@ -41,7 +42,6 @@ from urllib.parse import urljoin
 from lxml import etree
 import onnxruntime
 onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
-import undetected_chromedriver as uc
 # import pandas as pd
 # import numpy
 # import pytesseract
@@ -157,7 +157,7 @@ class BrowserThread(Thread):
                 self.OUTPUT.append([])  # 添加表头
                 self.writeMode = 0
         elif self.outputFormat == "json":
-            self.writeMode = 3 # JSON模式无需判断是否存在文件
+            self.writeMode = 3  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
             self.mysql.create_table(self.saveName, service["outputParameters"])
@@ -409,7 +409,8 @@ class BrowserThread(Thread):
             elif self.outputFormat == "json":
                 file_name = "Data/Task_" + \
                     str(self.id) + "/" + self.saveName + '.json'
-                write_to_json(file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord, self.outputParameters.keys())
+                write_to_json(file_name, self.OUTPUT, self.outputParametersTypes,
+                              self.outputParametersRecord, self.outputParameters.keys())
             elif self.outputFormat == "mysql":
                 self.mysql.write_to_mysql(
                     self.OUTPUT, self.outputParametersRecord, self.outputParametersTypes)
@@ -647,7 +648,8 @@ class BrowserThread(Thread):
                 optionValue = loopValue
             optionMode = 1
         try:
-            xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+            xpath = replace_field_values(
+                para["xpath"], self.outputParameters, self)
             dropdown = Select(self.browser.find_element(
                 By.XPATH, xpath, iframe=para["iframe"]))
             try:
@@ -678,7 +680,8 @@ class BrowserThread(Thread):
     def moveToElement(self, para, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
         loopPath = replace_field_values(loopPath, self.outputParameters, self)
-        xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+        xpath = replace_field_values(
+            para["xpath"], self.outputParameters, self)
         if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             if xpath == "":
                 path = loopPath
@@ -873,8 +876,11 @@ class BrowserThread(Thread):
     def loopExecute(self, node, loopValue, clickPath="", index=0):
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
         thisHandle = self.browser.current_window_handle  # 记录本次循环内的标签页的ID
-        thisHistoryLength = self.browser.execute_script(
-            'return history.length')  # 记录本次循环内的history的length
+        try:
+            thisHistoryLength = self.browser.execute_script(
+                'return history.length')  # 记录本次循环内的history的length
+        except:
+            thisHistoryLength = 0
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
         if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
@@ -1009,7 +1015,7 @@ class BrowserThread(Thread):
                         # else:
                         # time.sleep(2)
                         # 切换历史记录等待：
-                        self.recordLog("Change history back time or: ", 
+                        self.recordLog("Change history back time or: ",
                                        node["parameters"]["historyWait"])
                         try:
                             self.browser.execute_script('window.stop()')
@@ -1030,7 +1036,8 @@ class BrowserThread(Thread):
             # 千万不要忘了分割！！
             for path in node["parameters"]["pathList"].split("\n"):
                 try:
-                    path = replace_field_values(path, self.outputParameters, self)
+                    path = replace_field_values(
+                        path, self.outputParameters, self)
                     element = self.browser.find_element(
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
                     # self.recordLog("循环元素|Loop element:", path)
@@ -1224,13 +1231,17 @@ class BrowserThread(Thread):
                     "return history.length")
             except:
                 self.history["index"] = 0
+        except Exception as e:
+            self.print_and_log("History Length Error")
+            self.history["index"] = 0
         self.scrollDown(para)  # 控制屏幕向下滚动
 
     # 键盘输入事件
     def inputInfo(self, para, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
-            xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+            xpath = replace_field_values(
+                para["xpath"], self.outputParameters, self)
             textbox = self.browser.find_element(
                 By.XPATH, xpath, iframe=para["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
@@ -1289,8 +1300,10 @@ class BrowserThread(Thread):
         try:
             # element = self.browser.find_element(
             #     By.XPATH, path, iframe=para["iframe"])
-            clickPath = replace_field_values(clickPath, self.outputParameters, self)
-            xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+            clickPath = replace_field_values(
+                clickPath, self.outputParameters, self)
+            xpath = replace_field_values(
+                para["xpath"], self.outputParameters, self)
             if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 if xpath == "":
                     path = clickPath
@@ -1375,6 +1388,9 @@ class BrowserThread(Thread):
                     pass
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
+            except Exception as e:
+                self.print_and_log("History Length Error")
+                self.history["index"] = 0
         else:
             try:
                 self.history["index"] = self.browser.execute_script(
@@ -1387,6 +1403,9 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
                 # 如果打开了新窗口，切换到新窗口
+            except Exception as e:
+                self.print_and_log("History Length Error")
+                self.history["index"] = 0
         self.scrollDown(para)  # 根据参数配置向下滚动
         # rt.end()
 
@@ -1556,7 +1575,8 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        parentPath = replace_field_values(parentPath, self.outputParameters, self)
+        parentPath = replace_field_values(
+            parentPath, self.outputParameters, self)
         if para["clear"] == 1:
             self.clearOutputParameters()
         try:
@@ -1762,8 +1782,8 @@ class BrowserThread(Thread):
 
 if __name__ == '__main__':
     from multiprocessing import freeze_support
-    freeze_support() # 防止无限死循环多开
-    
+    freeze_support()  # 防止无限死循环多开
+
     # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
     # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
     config = {
@@ -1959,13 +1979,17 @@ if __name__ == '__main__':
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器
-                # options.add_argument("--auto-open-devtools-for-tabs") 
+                # options.add_argument("--auto-open-devtools-for-tabs")
                 # options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # 需要用自己的浏览器
-                browser_t = MyUCChrome(options=options, driver_executable_path=driver_path)
+                browser_t = MyUCChrome(
+                    options=options, driver_executable_path=driver_path)
                 links = list(filter(isnotnull, service["links"].split("\n")))
-                browser_t.execute_script('window.open("'+ links[0] +'","_blank");') # open page in new tab
-                time.sleep(5) # wait until page has loaded
-                browser_t.switch_to.window(browser_t.window_handles[1]) # switch to new tab
+                # open page in new tab
+                browser_t.execute_script(
+                    'window.open("' + links[0] + '","_blank");')
+                time.sleep(5)  # wait until page has loaded
+                browser_t.switch_to.window(
+                    browser_t.window_handles[1])  # switch to new tab
                 # browser_t = uc.Chrome()
             else:
                 print("Cloudflare模式只支持Windows x64平台。")
