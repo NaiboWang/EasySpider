@@ -116,6 +116,11 @@ class BrowserThread(Thread):
         self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
                                      'source': js})  # TMALL 反扒
         WebDriverWait(self.browser, 10)
+        self.browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+        path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id))
+        self.paramss = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': path}}
+
+        self.browser.execute("send_command", self.paramss) # 下载地址改变
         # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
         try:
@@ -619,6 +624,9 @@ class BrowserThread(Thread):
         elif codeMode == 4:
             self.CONTINUE = True
             self.recordLog("跳过本次循环|Skip this loop")
+        elif codeMode == 7: # 暂停程序执行
+            self.event.clear()
+            self.print_and_log("任务已暂停，长按p键继续执行...|Task paused, long press 'p' to continue...")
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])
@@ -1948,9 +1956,11 @@ if __name__ == '__main__':
         if cloudflare == 0:
             options.add_argument('log-level=3')  # 隐藏日志
             option.add_argument('log-level=3')  # 隐藏日志
+            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(i))
+            print("Data path:", path)
             options.add_experimental_option("prefs", {
                 # 设置文件下载路径
-                "download.default_directory": "Data/Task_" + str(i),
+                "download.default_directory": path,
                 "download.prompt_for_download": False,  # 禁止下载提示框
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,
@@ -1963,7 +1973,7 @@ if __name__ == '__main__':
             })
             option.add_experimental_option("prefs", {
                 # 设置文件下载路径
-                "download.default_directory": "Data/Task_" + str(i),
+                "download.default_directory": path,
                 "download.prompt_for_download": False,  # 禁止下载提示框
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,

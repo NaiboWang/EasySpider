@@ -247,13 +247,13 @@ function newNode(node) {
     {
         return LANG(`<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
-                    <p class="branchAdd" data="${id}">点击此处在最左边增加条件分支</p>
+                    <p class="branchAdd" data="${id}">点击此处在最右边增加条件分支</p>
                     <div class="judge" id = "${id}">
                     </div></div>
                     <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`,
             `<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
                     <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
-                    <p class="branchAdd" data="${id}">Click here to add a new condition to the left most</p>
+                    <p class="branchAdd" data="${id}">Click here to add a new condition to the right most</p>
                     <div class="judge" id = "${id}">
                     </div></div>
                     <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`);
@@ -268,31 +268,6 @@ function newNode(node) {
 }
 
 
-
-function branchMouseDown(e) {
-    if (e.button == 2) //右键点击
-    {
-        let judgeId = this.getAttribute('data');
-        let l = nodeList.length;
-        let t = {
-            index: l,
-            id: 0,
-            parentId: 0,
-            type: 3,
-            option: 10,
-            title: LANG("条件分支", "Condition"),
-            sequence: [],
-            isInLoop: false,
-        };
-        addParameters(t)
-        nodeList.push(t);
-        nodeList[actionSequence[judgeId]]["sequence"].splice(0, 0, t.index);
-        refresh();
-        app._data.nowArrow = { "position": -1, "pId": t["id"], "num": 0 };
-        $("#" + t["id"]).click();
-    }
-    e.stopPropagation(); //防止冒泡
-}
 
 function arrowMouseDown(e) {
     if (e.button == 2) //右键点击
@@ -313,13 +288,14 @@ function branchClick(e) {
         parentId: 0,
         type: 3,
         option: 10,
-        title: LANG("条件分支", "Condition"),
+        title: LANG("条件分支"+(nodeList[actionSequence[judgeId]]["sequence"].length+1).toString(), "Condition "+(l+1).toString()),
         sequence: [],
         isInLoop: false,
     };
     addParameters(t);
     nodeList.push(t);
-    nodeList[actionSequence[judgeId]]["sequence"].splice(0, 0, t.index);
+    // nodeList[actionSequence[judgeId]]["sequence"].splice(0, 0, t.index); //开头插入
+    nodeList[actionSequence[judgeId]]["sequence"].push(t.index); //结尾插入
     refresh();
     app._data.nowArrow = { "position": -1, "pId": t["id"], "num": 0 };
     $("#" + t["id"]).click();
@@ -504,7 +480,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 1,
                 type: 3,
                 option: 10,
-                title: LANG("条件分支", "Condition"),
+                title: LANG("条件分支1", "Condition 1"),
                 sequence: [],
                 isInLoop: false,
             };
@@ -514,7 +490,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 2,
                 type: 3,
                 option: 10,
-                title: LANG("条件分支", "Condition"),
+                title: LANG("条件分支2", "Condition 2"),
                 sequence: [],
                 isInLoop: false,
             };
@@ -636,8 +612,6 @@ function bindEvents() {
     for (let i = 0, rule; rule = branch[i++];) {
         rule.removeEventListener('click', branchClick);
         rule.addEventListener('click', branchClick);
-        rule.removeEventListener('mousedown', branchMouseDown);
-        rule.addEventListener('mousedown', branchMouseDown);
     }
     let options = document.getElementsByClassName("options");
     for (let i = 0, rule; rule = options[i++];) {
@@ -720,26 +694,81 @@ function deleteElement() {
     nowNode = null; //取消选择
 }
 
-document.oncontextmenu = function() {
+document.oncontextmenu = function(e) {
         // 创建一个包含删除选项的右键菜单
         let contextMenu = document.createElement("div");
         contextMenu.id = "contextMenu";
-        contextMenu.innerHTML = `<div>${LANG("删除元素（双击）", "Delete Element (Double Click)")}`;
+        contextMenu.innerHTML = `<div>${LANG("试运行","Test Run")}</div>
+        <div>${LANG("复制元素","Copy Element")}</div>
+        <div>${LANG("剪切元素","Move Element")}</div>
+        <div>${LANG("删除元素（双击）", "Delete Element (Double Click)")}</div>`;
+
+    if (nowNode.getAttribute("datatype") == 3) { //如果删掉的是条件分支的话
+        contextMenu.innerHTML += `<div>${LANG("前移","Move Up")}</div>
+<div>${LANG("后移","Move Down")}</div>`;
+        // Add 前移 functionality
+        contextMenu.children[4].addEventListener('click', function () {
+            let conditionId = parseInt(nowNode.getAttribute('pid'));
+            let position = parseInt(nowNode.getAttribute('position'));
+            if(position > 0){
+                nodeList[actionSequence[conditionId]]["sequence"][position] = nodeList[actionSequence[conditionId]]["sequence"][position - 1];
+                nodeList[actionSequence[conditionId]]["sequence"][position - 1] = actionSequence[parseInt(nowNode.getAttribute('data'))];
+                refresh();
+                app._data.nowArrow = { "position": -1, "pId": 0, "num": 0 };
+                $("#0").click();
+                e.stopPropagation(); //防止冒泡
+            }
+        });
+
+        // Add 后移 functionality
+        contextMenu.children[5].addEventListener('click', function () {
+            let conditionId = parseInt(nowNode.getAttribute('pid'));
+            let position = parseInt(nowNode.getAttribute('position'));
+            if(position < nodeList[actionSequence[conditionId]]["sequence"].length - 1){
+                nodeList[actionSequence[conditionId]]["sequence"][position] = nodeList[actionSequence[conditionId]]["sequence"][position + 1];
+                nodeList[actionSequence[conditionId]]["sequence"][position + 1] = actionSequence[parseInt(nowNode.getAttribute('data'))];
+                refresh();
+                app._data.nowArrow = { "position": -1, "pId": 0, "num": 0 };
+                $("#0").click();
+                e.stopPropagation(); //防止冒泡
+            }
+        });
+    }
 
         // 设置右键菜单的样式
         contextMenu.style.position = "absolute";
+        contextMenu.style.backgroundColor = "rgb(248, 249, 250)";
         contextMenu.style.left = event.clientX + "px";
         contextMenu.style.top = event.clientY + "px";
         contextMenu.style.width = LANG("180px", "250px");
 
         // 添加删除元素的功能
-        contextMenu.addEventListener("dblclick", function() {
+        contextMenu.children[3].addEventListener("dblclick", function() {
             // myElement.remove(); // 删除元素
             deleteElement();
             contextMenu.remove(); // 删除右键菜单
         });
 
-        // 将右键菜单添加到文档中
+        // Add Test Run functionality
+        contextMenu.children[0].addEventListener('click', function () {
+
+        });
+
+        // Add copy functionality
+        contextMenu.children[1].addEventListener('click', function () {
+            option = 11; //复制元素操作
+            showInfo(LANG("复制成功，请点击流程图中相应位置箭头以粘贴操作。", "Copy successfully, please click the arrow in the flow chart to paste."));
+            contextMenu.remove(); // Remove the context menu
+        });
+
+        // Add cut functionality
+        contextMenu.children[2].addEventListener('click', function () {
+            option = 10; //剪切元素操作
+            showInfo(LANG("剪切成功，请点击流程图中相应位置箭头以粘贴操作。", "Cut successfully, please click the arrow in the flow chart to paste."));
+            contextMenu.remove(); // Remove the context menu
+        });
+
+    // 将右键菜单添加到文档中
         document.body.appendChild(contextMenu);
     } //屏蔽右键菜单
     //删除元素

@@ -371,9 +371,13 @@
                         <option v-if="nowNode['isInLoop']" value = 4>Skip Current Loop (the "Continue" operation)</option>
                         <option value = 5>Run Python code on current environment (the "exec" operation)</option>
                         <option value = 6>Get value of a Python expression (the "eval" operation)</option>
+                        <option value = 7>Pause program execution (such as when the captcha box appears)</option>
                     </select>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 7'>
+                        <label>This operation can pause program execution, such as when a captcha box appears, and it will not continue until you manually press and hold the p key.</label>
+                    </div>
 
-                    <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5'>
+                    <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
                         <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>Please read the instructions first and then write the specific code in the input box above (not in this box).

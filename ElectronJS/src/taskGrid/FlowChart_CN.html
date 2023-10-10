@@ -372,9 +372,12 @@
                         <option v-if="nowNode['isInLoop']" value = 4>跳过当前循环后面的操作（Continue操作）</option>
                         <option value = 5>在执行环境下运行Python代码（exec操作）</option>
                         <option value = 6>在执行环境下获得Python表达式值（eval操作）</option>
+                        <option value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
                     </select>
-
-                    <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5'>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 7'>
+                        <label>此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘p键后才继续执行。</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>请先阅读此说明，再在上方输入框（不是本框）写具体代码。
