@@ -1955,7 +1955,11 @@ if __name__ == '__main__':
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,
                 "download.extensions_to_open": "applications/pdf",
-                "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
+                "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
+                "safebrowsing_for_trusted_sources_enabled": False,
+                "safebrowsing.enabled": False,
+                'safebrowsing.disable_download_protection': True,
+                'profile.default_content_settings.popups': 0,
             })
             option.add_experimental_option("prefs", {
                 # 设置文件下载路径
@@ -1964,7 +1968,12 @@ if __name__ == '__main__':
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,
                 "download.extensions_to_open": "applications/pdf",
-                "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
+                "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
+                "safebrowsing_for_trusted_sources_enabled": False,
+                "safebrowsing.enabled": False,
+                'safebrowsing.enabled': False,
+                'safebrowsing.disable_download_protection': True,
+                'profile.default_content_settings.popups': 0,
             })
             try:
                 if service["environment"] == 1:
