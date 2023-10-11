@@ -153,8 +153,11 @@ class BrowserThread(Thread):
             self.save_threshold = service["saveThreshold"]  # 保存最低阈值
         except:
             self.save_threshold = 10
-        self.links = list(
-            filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
+        try:
+            self.links = list(
+                filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
+        except:
+            self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
         self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
