@@ -48,7 +48,7 @@ More features please scroll to the bottom of this page to view.
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
-## 支持作者/Support Author
+<!-- ## 支持作者/Support Author
 
 易采集EasySpider是一款完全免费无广告的开源软件，软件开发和维护全靠作者用爱发电，因此您可以选择支持作者让作者有更多的热情和精力维护此软件，或者您使用了此软件进行了盈利，欢迎您通过下面的方式支持作者：
 
@@ -58,7 +58,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 Support author at paypal if you like this software, or use it to make profit: naibowang
 
-![QRCodes](media/QRCODES.png)
+![QRCodes](media/QRCODES.png) -->
 
 
 
