@@ -694,7 +694,7 @@ function deleteElement() {
     nowNode = null; //取消选择
 }
 
-document.oncontextmenu = function(e) {
+document.getElementById("flowchart_graph").oncontextmenu = function(e) {
         // 创建一个包含删除选项的右键菜单
         let contextMenu = document.createElement("div");
         contextMenu.id = "contextMenu";
