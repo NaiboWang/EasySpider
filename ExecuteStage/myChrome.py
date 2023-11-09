@@ -37,19 +37,21 @@ class MyChrome(webdriver.Chrome):
             except Exception as e:
                 print(e)
             find_element = False
-            # 遍历所有的 iframe 并点击里面的元素
+            # 遍历所有的 iframe 并查找里面的元素
             for iframe in iframes:
                 # 切换到 iframe
                 super().switch_to.default_content()
                 super().switch_to.frame(iframe)
                 self.iframe_env = True
                 try:
-                    # 在 iframe 中查找并点击元素
+                    # 在 iframe 中查找元素
                     # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
                     element = super().find_element(by=by, value=value)
                     find_element = True
                 except NoSuchElementException as e:
                     print(f"No such element found in the iframe: {str(e)}")
+                except Exception as e:
+                    print(f"Exception: {str(e)}")
                 # 完成操作后切回主文档
                 # super().switch_to.default_content()
                 if find_element:
@@ -68,14 +70,14 @@ class MyChrome(webdriver.Chrome):
             # 获取所有的 iframe
             iframes = super().find_elements(By.CSS_SELECTOR, "iframe")
             find_element = False
-            # 遍历所有的 iframe 并点击里面的元素
+            # 遍历所有的 iframe 并找到里面的元素
             for iframe in iframes:
                 # 切换到 iframe
                 try:
                     super().switch_to.default_content()
                     super().switch_to.frame(iframe)
                     self.iframe_env = True
-                    # 在 iframe 中查找并点击元素
+                    # 在 iframe 中查找元素
                     # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
                     elements = super().find_elements(by=by, value=value)
                     if len(elements) > 0:
@@ -86,6 +88,8 @@ class MyChrome(webdriver.Chrome):
                         return elements
                 except NoSuchElementException as e:
                     print(f"No such element found in the iframe: {str(e)}")
+                except Exception as e:
+                    print(f"Exception: {str(e)}")
             if not find_element:
                 raise NoSuchElementException
         else:
@@ -117,19 +121,21 @@ if sys.platform != "darwin":
                 except Exception as e:
                     print(e)
                 find_element = False
-                # 遍历所有的 iframe 并点击里面的元素
+                # 遍历所有的 iframe 并找到里面的元素
                 for iframe in iframes:
                     # 切换到 iframe
                     super().switch_to.default_content()
                     super().switch_to.frame(iframe)
                     self.iframe_env = True
                     try:
-                        # 在 iframe 中查找并点击元素
+                        # 在 iframe 中查找元素
                         # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
                         element = super().find_element(by=by, value=value)
                         find_element = True
                     except NoSuchElementException as e:
                         print(f"No such element found in the iframe: {str(e)}")
+                    except Exception as e:
+                        print(f"Exception: {str(e)}")
                     # 完成操作后切回主文档
                     # super().switch_to.default_content()
                     if find_element:
@@ -148,14 +154,14 @@ if sys.platform != "darwin":
                 # 获取所有的 iframe
                 iframes = super().find_elements(By.CSS_SELECTOR, "iframe")
                 find_element = False
-                # 遍历所有的 iframe 并点击里面的元素
+                # 遍历所有的 iframe 并查找里面的元素
                 for iframe in iframes:
                     # 切换到 iframe
                     try:
                         super().switch_to.default_content()
                         super().switch_to.frame(iframe)
                         self.iframe_env = True
-                        # 在 iframe 中查找并点击元素
+                        # 在 iframe 中查找元素
                         # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
                         elements = super().find_elements(by=by, value=value)
                         if len(elements) > 0:
@@ -166,6 +172,8 @@ if sys.platform != "darwin":
                             return elements
                     except NoSuchElementException as e:
                         print(f"No such element found in the iframe: {str(e)}")
+                    except Exception as e:
+                        print(f"Exception: {str(e)}")
                 if not find_element:
                     raise NoSuchElementException
             else:
