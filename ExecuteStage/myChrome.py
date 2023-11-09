@@ -48,8 +48,8 @@ class MyChrome(webdriver.Chrome):
                     # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
                     element = super().find_element(by=by, value=value)
                     find_element = True
-                except:
-                    print("No such element found in the iframe")
+                except NoSuchElementException as e:
+                    print(f"No such element found in the iframe: {str(e)}")
                 # 完成操作后切回主文档
                 # super().switch_to.default_content()
                 if find_element:
@@ -84,8 +84,8 @@ class MyChrome(webdriver.Chrome):
                     # super().switch_to.default_content()
                     if find_element:
                         return elements
-                except:
-                    print("No such element found in the iframe")
+                except NoSuchElementException as e:
+                    print(f"No such element found in the iframe: {str(e)}")
             if not find_element:
                 raise NoSuchElementException
         else:
@@ -128,8 +128,8 @@ if sys.platform != "darwin":
                         # 在这个例子中，我们查找 XPath 为 '//div[1]' 的元素
                         element = super().find_element(by=by, value=value)
                         find_element = True
-                    except:
-                        print("No such element found in the iframe")
+                    except NoSuchElementException as e:
+                        print(f"No such element found in the iframe: {str(e)}")
                     # 完成操作后切回主文档
                     # super().switch_to.default_content()
                     if find_element:
@@ -164,8 +164,8 @@ if sys.platform != "darwin":
                         # super().switch_to.default_content()
                         if find_element:
                             return elements
-                    except:
-                        print("No such element found in the iframe")
+                    except NoSuchElementException as e:
+                        print(f"No such element found in the iframe: {str(e)}")
                 if not find_element:
                     raise NoSuchElementException
             else:
