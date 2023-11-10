@@ -39,6 +39,8 @@ class MyChrome(webdriver.Chrome):
             find_element = False
             # 遍历所有的 iframe 并点击里面的元素
             for iframe in iframes:
+                if not iframe.is_displayed():
+                    continue
                 # 切换到 iframe
                 super().switch_to.default_content()
                 super().switch_to.frame(iframe)
@@ -70,6 +72,8 @@ class MyChrome(webdriver.Chrome):
             find_element = False
             # 遍历所有的 iframe 并点击里面的元素
             for iframe in iframes:
+                if not iframe.is_displayed():
+                    continue
                 # 切换到 iframe
                 try:
                     super().switch_to.default_content()
@@ -119,6 +123,8 @@ if sys.platform != "darwin":
                 find_element = False
                 # 遍历所有的 iframe 并点击里面的元素
                 for iframe in iframes:
+                    if not iframe.is_displayed():
+                        continue
                     # 切换到 iframe
                     super().switch_to.default_content()
                     super().switch_to.frame(iframe)
@@ -150,6 +156,8 @@ if sys.platform != "darwin":
                 find_element = False
                 # 遍历所有的 iframe 并点击里面的元素
                 for iframe in iframes:
+                    if not iframe.is_displayed():
+                        continue
                     # 切换到 iframe
                     try:
                         super().switch_to.default_content()
