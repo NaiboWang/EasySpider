@@ -280,49 +280,30 @@ class Time:
 
 class myMySQL:
     def __init__(self, config_file="mysql_config.json"):
-        # 读取配置文件
-        try:
-            if sys.platform == "darwin":
-                if config_file.find("./") >= 0:
-                    config_file = config_file.replace("./", "")
-                config_file = os.path.expanduser(
-                    "~/Library/Application Support/EasySpider/" + config_file)
-            print("MySQL config file path: ", config_file)
-            with open(config_file, 'r') as f:
-                config = json.load(f)
-                self.host = config["host"]
-                self.port = config["port"]
-                self.user = config["username"]
-                self.passwd = config["password"]
-                self.db = config["database"]
-        except Exception as e:
-            print("读取配置文件失败，请检查配置文件："+config_file+"是否存在，或配置信息是否有误。")
-            print("Failed to read configuration file, please check if the configuration file: " +
-                  config_file+" exists, or if the configuration information is incorrect.")
-            print(e)
-        self.connect()
-        
-    def connect(self):
-        try:
-            self.conn = pymysql.connect(
-                host=self.host, port=self.port, user=self.user, passwd=self.passwd, db=self.db)
-            print("成功连接到数据库。")
-            print("Successfully connected to the database.")
-        except:
-            print("连接数据库失败，请检查配置文件是否正确。")
-            print(
-                "Failed to connect to the database, please check if the configuration file is correct.")
+        if sys.platform == "darwin":
+            if config_file.find("./") >= 0:
+                config_file = config_file.replace("./", "")
+            config_file = os.path.expanduser("~/Library/Application Support/EasySpider/" + config_file)
+        print("MySQL config file path: ", config_file)
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+            host = config["host"]
+            port = config["port"]
+            user = config["username"]
+            passwd = config["password"]
+            db = config["database"]
+        self.conn = pymysql.connect(host=host, port=port, user=user, passwd=passwd, db=db)
+        self.cursor = self.conn.cursor()
+        self.table_name: str = ''
+        self.field_sql: str = '('
 
     def create_table(self, table_name, parameters):
         self.table_name = table_name
-        self.field_sql = "("
-        cursor = self.conn.cursor()
         # 检查表是否存在
-        cursor.execute("SHOW TABLES LIKE '%s'" % table_name)
-        result = cursor.fetchone()
+        self.cursor.execute(f'SHOW TABLES LIKE {table_name}')
+        result = self.cursor.fetchone()
 
-        sql = "CREATE TABLE " + table_name + \
-            " (_id INT AUTO_INCREMENT PRIMARY KEY, "
+        sql = f'CREATE TABLE {table_name} (_id INT AUTO_INCREMENT PRIMARY KEY, '
         for item in parameters:
             if item["recordASField"]:
                 name = item['name']
@@ -354,70 +335,59 @@ class myMySQL:
         # 如果表不存在，创建它
         if not result:
             # 执行SQL命令
-            cursor.execute(sql)
+            self.cursor.execute(sql)
         else:
-            print("数据表" + table_name + "已存在。")
-            print("The data table " + table_name + " already exists.")
-        cursor.close()
+            print(f'数据表 {table_name} 已存在')
+            print(f'The data table {table_name} already exists.')
 
-    def write_to_mysql(self, OUTPUT, record, types):
-        # 创建一个游标对象
-        cursor = self.conn.cursor()
-
-        for line in OUTPUT:
-            for i in range(len(line)):
+    def write_to_mysql(self, output: list, record: list, types: list):
+        for lines in output:
+            for i in range(len(lines)):
                 if types[i] == "int" or types[i] == "bigInt":
                     try:
-                        line[i] = int(line[i])
-                    except:
-                        line[i] = 0
+                        lines[i] = int(lines[i])
+                    except Exception as e:
+                        print(str(e))
+                        lines[i] = 0
                 elif types[i] == "double":
                     try:
-                        line[i] = float(line[i])
-                    except:
-                        line[i] = 0.0
+                        lines[i] = float(lines[i])
+                    except Exception as e:
+                        print(str(e))
+                        lines[i] = 0.0
                 elif types[i] == "datetime":
                     try:
-                        line[i] = datetime.datetime.strptime(
-                            line[i], '%Y-%m-%d %H:%M:%S')
-                    except:
-                        line[i] = datetime.datetime.strptime(
-                            "1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
+                        lines[i] = datetime.datetime.strptime(lines[i], '%Y-%m-%d %H:%M:%S')
+                    except Exception as e:
+                        print(str(e))
+                        lines[i] = datetime.datetime.strptime("1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
                 elif types[i] == "date":
                     try:
-                        line[i] = datetime.datetime.strptime(
-                            line[i], '%Y-%m-%d')
-                    except:
-                        line[i] = datetime.datetime.strptime(
-                            "1970-01-01", '%Y-%m-%d')
+                        lines[i] = datetime.datetime.strptime(lines[i], '%Y-%m-%d')
+                    except Exception as e:
+                        print(str(e))
+                        lines[i] = datetime.datetime.strptime("1970-01-01", '%Y-%m-%d')
                 elif types[i] == "time":
                     try:
-                        line[i] = datetime.datetime.strptime(
-                            line[i], '%H:%M:%S')
-                    except:
-                        line[i] = datetime.datetime.strptime(
-                            "00:00:00", '%H:%M:%S')
+                        lines[i] = datetime.datetime.strptime(lines[i], '%H:%M:%S')
+                    except Exception as e:
+                        print(str(e))
+                        lines[i] = datetime.datetime.strptime("00:00:00", '%H:%M:%S')
+
             to_write = []
-            for i in range(len(line)):
-                if record[i]:
-                    to_write.append(line[i])
+            for index, line in enumerate(lines):
+                if record[index]:
+                    to_write.append(line)
+
             # 构造插入数据的 SQL 语句
-            sql = f"INSERT INTO " + self.table_name + \
-                " "+self.field_sql+" VALUES ("
-            for item in to_write:
+            sql = f'INSERT INTO {self.table_name} {self.field_sql} VALUES ('
+            for _ in to_write:
                 sql += "%s, "
             # 移除最后的逗号并添加闭合的括号
             sql = sql.rstrip(', ') + ")"
             # 执行 SQL 语句
             try:
-                cursor.execute(sql, to_write)
-            except pymysql.OperationalError as e:
-                print("Error:", e)
-                print("Try to reconnect to the database...")
-                self.connect()
-                cursor = self.conn.cursor() # 重新创建游标对象
-                cursor.execute(sql, to_write) # 重新执行SQL语句
-                # self.write_to_mysql(OUTPUT, record, types)
+                self.cursor.execute(sql, to_write)
             except Exception as e:
                 print("Error:", e)
                 print("Error SQL:", sql, to_write)
@@ -430,10 +400,13 @@ class myMySQL:
         # 提交到数据库执行
         self.conn.commit()
 
-        # 关闭游标和连接
-        cursor.close()
-
     def close(self):
+        self.cursor.close()
         self.conn.close()
         print("成功关闭数据库。")
         print("Successfully closed the database.")
+
+    def __del__(self):
+        self.cursor.close()
+        self.conn.close()
+        print("Successfully closed the database in __del__")
