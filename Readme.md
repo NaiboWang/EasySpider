@@ -131,9 +131,15 @@ This software is for learning and communication only. **It is strictly forbidden
 
 For the crawler operations of government and military websites, **the author will not answer any questions** in order to avoid violating relevant national laws, regulations and policies.
 
-同时，软件受到专利权保护，如要用于商业用途，如使用软件进行盈利接单，出售采集到的数据等，请联系[杭州天勤知识产权代理有限公司](http://www.tqip.com/)进行专利授权等付费操作。
+同时，软件受到专利权保护，如要用于商业用途，如使用软件进行盈利接单，出售采集到的数据，或将软件集成到自己的系统中等，请邮件联系作者：naibowang@foxmail.com
 
-At the same time, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, etc., please contact [Hangzhou Tianqin Intellectual Property Agency Co., Ltd.](http://www.tqip.com/) for patent authorization and other paid operations.
+Meanwhile, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, or integrating the software into your own system, please contact the author by email: naibowang@foxmail.com
+
+<!-- [杭州天勤知识产权代理有限公司](http://www.tqip.com/)进行专利授权等付费操作。 -->
+
+<!-- At the same time, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, etc., please contact [Hangzhou Tianqin Intellectual Property Agency Co., Ltd.](http://www.tqip.com/) for patent authorization and other paid operations. -->
+
+
 
 ## 答疑QQ群
 
