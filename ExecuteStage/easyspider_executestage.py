@@ -337,7 +337,7 @@ class BrowserThread(Thread):
             if "urlList_0" in data.keys():
                 self.links = data["urlList_0"]
         except:
-            pass
+            self.links = "about:blank"
         task = self.service
         for key, value in data.items():
             for i in range(len(task["inputParameters"])):
@@ -987,7 +987,8 @@ class BrowserThread(Thread):
                     self.print_and_log("Loop element not found: ",
                                        xpath)
                     self.print_and_log("找不到循环元素: ", xpath)
-                for index in range(len(elements)):
+                index = 0
+                while index < len(elements):
                     for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
                         self.executeNode(i, elements[index],
                                          xpath, index)
@@ -1033,16 +1034,22 @@ class BrowserThread(Thread):
                         except:
                             pass
                     if self.browser.current_url.startswith("data:"):
-                        self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                        try:
+                            self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                        except: # 超时的情况下
+                            pass
                         time.sleep(2)
                         elements = self.browser.find_elements(By.XPATH,
                                                       xpath, iframe=node["parameters"]["iframe"])
+                        if index > 0:
+                            index -= 1 # 如果是data:开头的网址，就要重试一次
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
                         code = get_output_code(output)
                         if code <= 0:
                             break
+                    index = index + 1
             except NoSuchElementException:
                 self.print_and_log("Loop element not found: ", xpath)
                 self.print_and_log("找不到循环元素: ", xpath)
@@ -1050,7 +1057,11 @@ class BrowserThread(Thread):
                 raise
         elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
             # 千万不要忘了分割！！
-            for path in node["parameters"]["pathList"].split("\n"):
+            paths = node["parameters"]["pathList"].split("\n")
+            # for path in node["parameters"]["pathList"].split("\n"):
+            index = 0
+            while index < len(paths):
+                path = paths[index]
                 try:
                     path = replace_field_values(
                         path, self.outputParameters, self)
@@ -1100,10 +1111,15 @@ class BrowserThread(Thread):
                         except:
                             pass
                     if self.browser.current_url.startswith("data:"):
-                        self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                        try:
+                            self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                        except: # 超时的情况下
+                            pass
                         time.sleep(2)
                         elements = self.browser.find_elements(By.XPATH,
                                                       xpath, iframe=node["parameters"]["iframe"])
+                        if index > 0:
+                            index -= 1 # 如果是data:开头的网址，就要重试一次
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
                     self.print_and_log("找不到循环元素: ", path)
@@ -1116,6 +1132,7 @@ class BrowserThread(Thread):
                     code = get_output_code(output)
                     if code <= 0:
                         break
+                index = index + 1
         elif int(node["parameters"]["loopType"]) == 3:  # 固定文本列表
             textList = node["parameters"]["textList"].split("\n")
             if len(textList) == 1:  # 如果固定文本列表只有一行，现在就可以替换变量

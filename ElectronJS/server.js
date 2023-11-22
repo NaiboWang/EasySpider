@@ -323,8 +323,11 @@ exports.start = function(port = 8074) {
                 task = JSON.parse(task);
                 try{
                     task["links"] = data["urlList_0"];
-                }catch(error){
-                    console.log(error);
+                    if (tasks["links"] == undefined) {
+                        task["links"] = "about:blank";
+                    }
+                } catch(error) {
+                    task["links"] = "about:blank";
                 }
                 for (const [key, value] of Object.entries(data)) {
                     for (let i = 0; i < task["inputParameters"].length; i++) {

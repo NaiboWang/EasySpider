@@ -359,7 +359,7 @@ function saveService(type) {
         let outputNames = [];
         let inputIndex = 0;
         let outputIndex = 0;
-        let links = ""; //记录所有的link
+        let links = "about:blank"; //记录所有的link
         let containJudge = false; //是否含有判断语句
         let saveThreshold = parseInt($("#saveThreshold").val());
         let cloudflare = parseInt($("#cloudflare").val());
