@@ -1032,6 +1032,9 @@ class BrowserThread(Thread):
                             self.browser.execute_script('window.stop()')
                         except:
                             pass
+                    if self.browser.current_url.startswith("data:"):
+                        self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                        time.sleep(2)
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
@@ -1094,6 +1097,9 @@ class BrowserThread(Thread):
                             self.browser.execute_script('window.stop()')
                         except:
                             pass
+                    if self.browser.current_url.startswith("data:"):
+                        self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                        time.sleep(2)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
                     self.print_and_log("找不到循环元素: ", path)
