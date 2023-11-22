@@ -894,6 +894,7 @@ class BrowserThread(Thread):
             thisHistoryLength = 0
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
+        thisHitoryURL = self.browser.current_url
         if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
             # 无跳转标签页操作
             count = 0  # 执行次数
@@ -1033,14 +1034,19 @@ class BrowserThread(Thread):
                             self.browser.execute_script('window.stop()')
                         except:
                             pass
+                    ti = 0
                     if self.browser.current_url.startswith("data:"):
-                        try:
-                            self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
-                        except: # 超时的情况下
-                            pass
+                        while self.browser.current_url != thisHitoryURL: # 如果执行完一次循环之后网址发生了变化
+                            try:
+                                self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                            except: # 超时的情况下
+                                pass
+                            ti += 1
+                            if self.browser.current_url == thisHitoryURL or ti > thisHistoryLength: # 如果执行完一次循环之后网址发生了变化
+                                break
                         time.sleep(2)
                         elements = self.browser.find_elements(By.XPATH,
-                                                      xpath, iframe=node["parameters"]["iframe"])
+                                                    xpath, iframe=node["parameters"]["iframe"])
                         if index > 0:
                             index -= 1 # 如果是data:开头的网址，就要重试一次
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
@@ -1110,14 +1116,29 @@ class BrowserThread(Thread):
                             self.browser.execute_script('window.stop()')
                         except:
                             pass
+                    # if self.browser.current_url.startswith("data:"):
+                    #     try:
+                    #         self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                    #     except: # 超时的情况下
+                    #         pass
+                    #     time.sleep(2)
+                    #     elements = self.browser.find_elements(By.XPATH,
+                    #                                   xpath, iframe=node["parameters"]["iframe"])
+                    #     if index > 0:
+                    #         index -= 1 # 如果是data:开头的网址，就要重试一次
+                    ti = 0
                     if self.browser.current_url.startswith("data:"):
-                        try:
-                            self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
-                        except: # 超时的情况下
-                            pass
+                        while self.browser.current_url != thisHitoryURL: # 如果执行完一次循环之后网址发生了变化
+                            try:
+                                self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
+                            except: # 超时的情况下
+                                pass
+                            ti += 1
+                            if self.browser.current_url == thisHitoryURL or ti > thisHistoryLength: # 如果执行完一次循环之后网址发生了变化
+                                break
                         time.sleep(2)
                         elements = self.browser.find_elements(By.XPATH,
-                                                      xpath, iframe=node["parameters"]["iframe"])
+                                                    xpath, iframe=node["parameters"]["iframe"])
                         if index > 0:
                             index -= 1 # 如果是data:开头的网址，就要重试一次
                 except NoSuchElementException:
