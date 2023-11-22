@@ -438,7 +438,12 @@ function toolBoxKernel(e, para = null) {
                 title = LANG("移动到", "Move to ");
                 l = 5;
             }
-            content = para["content"];
+            try {
+                content = para["content"];
+            } catch{
+                content = LANG("元素", " Element");
+            }
+
             let str = content.trim();
             if (str == "") {
                 title += LANG("元素", "Element");
