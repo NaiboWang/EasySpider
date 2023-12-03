@@ -63,7 +63,7 @@ def compress_folder_to_7z_split(folder_path, output_file):
         except:
             subprocess.call(["7zz", "a", "-v95m", output_file, folder_path])
 
-easyspider_version = "0.5.0"
+easyspider_version = "0.6.0"
 
 if __name__ == "__main__":
 
@@ -81,8 +81,8 @@ if __name__ == "__main__":
             os.remove("./EasySpider_windows_x64/mysql_config.json")
         os.mkdir("./EasySpider_windows_x64/Data")
         os.mkdir("./EasySpider_windows_x64/execution_instances")
-        compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
-        print(f"Compress {file_name} Split successfully!")
+        # compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
+        # print(f"Compress {file_name} Split successfully!")
         compress_folder_to_7z("./EasySpider_windows_x64", file_name)
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "win32" and platform.architecture()[0] == "32bit":
@@ -99,8 +99,8 @@ if __name__ == "__main__":
             os.remove("./EasySpider_windows_x32/mysql_config.json")
         os.mkdir("./EasySpider_windows_x32/Data")
         os.mkdir("./EasySpider_windows_x32/execution_instances")
-        compress_folder_to_7z_split("./EasySpider_windows_x32", file_name)
-        print(f"Compress {file_name} Split successfully!")
+        # compress_folder_to_7z_split("./EasySpider_windows_x32", file_name)
+        # print(f"Compress {file_name} Split successfully!")
         compress_folder_to_7z("./EasySpider_windows_x32", file_name)
         print(f"Compress {file_name} successfully!")
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
@@ -129,6 +129,6 @@ if __name__ == "__main__":
                 shutil.rmtree("./EasySpider_MacOS_all_arch/Data")
             os.mkdir("./EasySpider_MacOS_all_arch/Data")
         subprocess.call(["tar", "-zcvf", file_name, "./EasySpider_MacOS_all_arch"])
-        subprocess.call(["7zz", "a", "-v95m", file_name.replace(".tar.gz", ".7z"), file_name, "请继续解压EasySpider_MacOS_all_arch.tar.gz使用.txt"])
+        # subprocess.call(["7zz", "a", "-v95m", file_name.replace(".tar.gz", ".7z"), file_name, "请继续解压EasySpider_MacOS_all_arch.tar.gz使用.txt"])
         print(f"Compress {file_name} successfully!")
 

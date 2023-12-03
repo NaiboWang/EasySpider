@@ -96,8 +96,8 @@ if __name__ == "__main__":
         versions = json.loads(response.content)["versions"]
         versions = versions[::-1] # 倒序排列数组
         for info in versions:
-            version = info["version"]
-            if version.find(chrome_version) >= 0:
+            version = info["version"].split(".")[0]
+            if version.find(chrome_version) == 0:
                 downloads = info["downloads"]
                 if "chromedriver" in downloads:
                     print(info["version"])

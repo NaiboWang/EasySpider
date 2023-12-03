@@ -188,9 +188,9 @@ def replace_field_values(orginal_text, outputParameters, browser=None):
     try:
         replaced_text = re.sub(
             pattern, lambda match: outputParameters.get(match.group(1), ''), orginal_text)
-        if replaced_text.find("EVAL") != -1: # 如果返回值中包含EVAL
+        if re.search(r'eval(', replaced_text, re.IGNORECASE): # 如果返回值中包含EVAL
             replaced_text = replaced_text.replace("self.", "browser.")
-            replaced_text = re.sub(r'EVAL\("(.*?)"\)', lambda match: str(eval(match.group(1))), replaced_text)
+            replaced_text = re.sub(r'eval\("(.*?)"\)', lambda match: str(eval(match.group(1))), replaced_text, flags=re.IGNORECASE)
     except:
         replaced_text = orginal_text
     return replaced_text

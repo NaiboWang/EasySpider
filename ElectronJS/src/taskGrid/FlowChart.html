@@ -195,7 +195,7 @@
                         <button class="btn btn-primary" v-on:mousedown= 'addPara'>New Field</button>
                     </p>
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>Clear other field existing values before extracting</p>
-                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["newLine"]'></input>This operation will generate a new row of data: </p>
+                    <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["newLine"]'></input>This operation will generate a new row of data <span style="font-size: 30px!important;" title="If unchecked, it will use the same row of data as the previous operation. If checked, it will generate a new row of data.">☺</span> </p>
                     <div class="toolkitcontain">
                         <table class="toolkittb2" cellspacing="0">
                             <tbody>

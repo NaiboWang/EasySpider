@@ -1855,7 +1855,7 @@ if __name__ == '__main__':
         "headless": False,
         "server_address": "http://localhost:8074",
         "keyboard": True,  # 是否监听键盘输入
-        "version": "0.5.0",
+        "version": "0.6.0",
     }
     c = Config(config)
     print(c)
@@ -1965,6 +1965,10 @@ if __name__ == '__main__':
         options.add_argument(
             f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
         options.add_argument("--profile-directory=Default")
+        print("正在使用带用户信息浏览器模式，注意此模式同一个用户信息目录只能同时运行一个浏览器实例，如果需要多开请复制用户信息目录并载入复制的目录地址，具体请参考程序多开文档：https://github.com/NaiboWang/EasySpider/wiki/Run-multiple-tasks-in-parallel")
+        print("Using browser with user data, please note that only one browser instance can be run at the same time with the same user data directory, if you need to run multiple instances, please copy the user data directory and load the copied directory address, please refer to the program multiple open document for details: https://github.com/NaiboWang/EasySpider/wiki/Run-multiple-tasks-in-parallel")
+        print("如果报错Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally，说明有之前运行的Chrome实例没有正常关闭，请关闭之前打开的所有Chrome实例后再运行程序即可。")
+        print("If you get an error Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally, it means that there is a Chrome instance that was not closed properly before, please close all Chrome instances that were opened before running the program.")
 
     if c.headless:
         print("Headless mode")

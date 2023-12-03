@@ -30,7 +30,7 @@ def update_file_version(file_path, new_version, key="当前版本/Current Versio
             file.write(line)
 
 
-version = "0.5.0"
+version = "0.6.0"
 
 # py html js
 
