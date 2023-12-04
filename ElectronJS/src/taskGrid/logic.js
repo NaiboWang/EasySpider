@@ -191,6 +191,7 @@ function addParameters(t) {
         t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
         t["parameters"]["afterJS"] = ""; //执行后执行的js
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
+        t["parameters"]["alertHandleType"] = 0; //弹窗处理类型，1代表确认，2代表取消
     } else if (t.option == 3) { //提取数据
         t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["newLine"] = 1; //生成新行
@@ -288,6 +289,14 @@ function modifyParameters(t, para) {
         t["parameters"]["allXPaths"] = para["allXPaths"];
         if (para["nextPage"]) { //循环点击下一页的情况下
             t["title"] = LANG("循环点击下一页", "Loop click next page");
+        } else if (para["type"] == "loopClickSingle") { //循环点击单个元素
+            t["title"] = LANG("循环点击单个元素", "Loop click single element");
+        } else if (para["type"] == "loopClickEvery") { //循环点击每个元素
+            t["title"] = LANG("循环点击每个元素", "Loop click every element");
+        } else if (para["type"] == "loopMouseMove") { //循环移动到单个元素
+            t["title"] = LANG("循环移动到每个元素", "Loop move to every element");
+        } else if (para["type"] == "multiCollectWithPattern"){
+            t["title"] = LANG("循环采集数据", "Loop collect data");
         } else {
             t["title"] = LANG("循环", "Loop");
         }
@@ -475,14 +484,16 @@ function saveService(type) {
             "update_time": new Date().toLocaleString(),
             "version": "0.6.0",
             "saveThreshold": saveThreshold,
-            "cloudflare": cloudflare,
+            // "cloudflare": cloudflare,
             "environment": environment,
+            "maximizeWindow": parseInt($("#maximizeWindow").val()),
             "maxViewLength": parseInt($("#maxViewLength").val()),
             "recordLog": parseInt($("#recordLog").val()),
             "outputFormat": $("#outputFormat").val(),
             "saveName": $("#saveName").val(),
             "inputExcel": $("#inputExcel").val(),
             "startFromExit": parseInt($("#startFromExit").val()),
+            "pauseKey": $("#pauseKey").val(),
             "containJudge": containJudge,
             "desc": serviceDescription,
             "inputParameters": inputParameters,

@@ -1,5 +1,8 @@
 {
     "python.analysis.extraPaths": [
         "./code"
-    ]
+    ],
+    "[python]": {
+        "editor.defaultFormatter": null
+    }
 }

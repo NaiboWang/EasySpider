@@ -30,7 +30,7 @@ nodeList.push(root);
 let queue = new Array();
 let actionSequence = new Array(); //存储图结构，每个元素为在nodelist里面的索引值，下面的id和pid根据此数组进行索引，然后再在nodelist里找
 let nowNode = null; //存储现在所在的节点
-let vueData = { nowNodeIndex: 0 }; //存储目前所在节点的索引号,不能直接使用变量而需要用对象包起来
+let vueData = {nowNodeIndex: 0}; //存储目前所在节点的索引号,不能直接使用变量而需要用对象包起来
 let option = 0; //工具箱选项
 let title = "";
 let parameterNum = 1; //记录目前的参数个数
@@ -41,20 +41,20 @@ let parameterNum = 1; //记录目前的参数个数
 let app = new Vue({
     el: '#app',
     data: {
-        list: { nl: nodeList },
+        list: {nl: nodeList},
         index: vueData,
         nodeType: 0, // 当前元素的类型
         nowNode: null, // 用来临时存储元素的节点
         codeMode: 0, //代码模式
         loopType: -1, //点击循环时候用来循环选项
         useLoop: false, //记录是否使用循环内元素
-        nowArrow: { "position": -1, "pId": 0, "num": 0 },
-        paras: { "parameters": [] }, //提取数据的参数列表
+        nowArrow: {"position": -1, "pId": 0, "num": 0},
+        paras: {"parameters": []}, //提取数据的参数列表
         TClass: -1, //条件分支的条件类别
         paraIndex: 0, //当前参数的index
         XPaths: "", //xpath列表
     },
-    mounted: function() {
+    mounted: function () {
         // setTimeout(function () {
         //     $("#flowchart_graph")[0].scrollTo(0, 10000);
         //     window.scrollTo(0, 10000);
@@ -64,7 +64,7 @@ let app = new Vue({
     watch: {
         nowArrow: { //变量发生变化的时候进行一些操作
             deep: true,
-            handler: function(newVal, oldVal) {
+            handler: function (newVal, oldVal) {
                 let arrlist = document.getElementsByClassName("arrow");
                 if (oldVal != null) {
                     for (let i = 0; i < arrlist.length; i++) {
@@ -84,34 +84,34 @@ let app = new Vue({
                 }
             }
         },
-        nowNode:{
-            deep:true,
-            handler: function(newVal, oldVal) {
+        nowNode: {
+            deep: true,
+            handler: function (newVal, oldVal) {
                 updateUI();
             }
         },
         loopType: { //循环类型发生变化的时候更新参数值
-            handler: function(newVal, oldVal) {
+            handler: function (newVal, oldVal) {
                 this.nowNode["parameters"]["loopType"] = newVal;
             }
         },
         TClass: {
-            handler: function(newVal, oldVal) {
+            handler: function (newVal, oldVal) {
                 this.nowNode["parameters"]["class"] = newVal;
             }
         },
         useLoop: {
-            handler: function(newVal, oldVal) {
+            handler: function (newVal, oldVal) {
                 this.nowNode["parameters"]["useLoop"] = newVal;
             }
         },
         paras: {
-            handler: function(newVal, oldVal) {
+            handler: function (newVal, oldVal) {
                 this.nowNode["parameters"]["paras"] = newVal["parameters"];
             }
         },
         codeMode: {
-            handler: function(newVal, oldVal) {
+            handler: function (newVal, oldVal) {
                 this.nowNode["parameters"]["codeMode"] = newVal;
                 // if(newVal == 3){
                 //     this.nowNode["title"] = LANG("退出循环", "Exit Loop");
@@ -124,28 +124,28 @@ let app = new Vue({
         }
     },
     methods: {
-        getCookies: function() { //获取cookies
-            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
-            command.onopen = function() {
+        getCookies: function () { //获取cookies
+            let command = new WebSocket("ws://localhost:" + getUrlParam("wsport"))
+            command.onopen = function () {
                 let message = {
                     type: 7, //消息类型，0代表连接操作
                 };
                 this.send(JSON.stringify(message));
             };
         },
-        changeXPaths: function (XPaths){
+        changeXPaths: function (XPaths) {
             let result = "";
             for (let i = 0; i < XPaths.length; i++) {
                 result += XPaths[i] + "\n";
             }
             this.XPaths = result;
         },
-        addPara: function() { //添加参数
+        addPara: function () { //添加参数
             this.nowNode["parameters"]["paras"].push({
                 "nodeType": 0,
                 "contentType": 0,
                 "relative": false,
-                "name": LANG("自定义参数_" + parameterNum.toString(),"Custom_Field_" + parameterNum.toString()),
+                "name": LANG("自定义参数_" + parameterNum.toString(), "Custom_Field_" + parameterNum.toString()),
                 "desc": "",
                 "extractType": 0,
                 "relativeXPath": "//body",
@@ -169,34 +169,35 @@ let app = new Vue({
             });
             notifyParameterNum(1);
             this.paraIndex = this.nowNode["parameters"]["paras"].length - 1;
-            setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
+            setTimeout(function () {
+                $("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);
         },
-        modifyParas: function(i) { //修改第i个参数
+        modifyParas: function (i) { //修改第i个参数
             this.paraIndex = i;
             console.log(this.paras);
         },
-        deleteParas: function(i) { //删除第i个参数
+        deleteParas: function (i) { //删除第i个参数
             this.nowNode["parameters"]["paras"].splice(i, 1);
             //如果参数删除完了，就把提取数据也删掉
             if (this.nowNode["parameters"]["paras"].length == 0) {
                 deleteElement();
             }
         },
-        upParas: function(i) { //上移第i个参数
+        upParas: function (i) { //上移第i个参数
             if (i != 0) {
                 let t = this.nowNode["parameters"]["paras"].splice(i, 1)[0];
                 this.nowNode["parameters"]["paras"].splice(i - 1, 0, t);
             }
         },
-        downParas: function(i) { //下移第i个参数
+        downParas: function (i) { //下移第i个参数
             if (i != this.nowNode["parameters"]["paras"].length - 1) {
                 let t = this.nowNode["parameters"]["paras"].splice(i, 1)[0];
                 this.nowNode["parameters"]["paras"].splice(i + 1, 0, t);
             }
         },
 
-        getType: function(nodeType, contentType) { //根据类型得到字段名称
+        getType: function (nodeType, contentType) { //根据类型得到字段名称
             if (contentType == 2) {
                 return "InnerHTML";
             } else if (contentType == 3) {
@@ -205,11 +206,11 @@ let app = new Vue({
             if (nodeType == 2) {
                 return LANG("链接地址", "Link Address");
             } else if (nodeType == 1) {
-                return LANG("链接文本","Link Text");
+                return LANG("链接文本", "Link Text");
             } else if (nodeType == 4) {
-                return LANG("图片地址","Image Address");
+                return LANG("图片地址", "Image Address");
             } else {
-                return LANG("文本","Text");
+                return LANG("文本", "Text");
             }
         }
     }
@@ -268,16 +269,16 @@ function newNode(node) {
 }
 
 
-
 function arrowMouseDown(e) {
     if (e.button == 2) //右键点击
     {
         if (option != 0) {
-            app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
+            app._data.nowArrow = {"position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0};
         }
         toolBoxKernel(e);
     }
 }
+
 //增加分支点击事件
 function branchClick(e) {
     let judgeId = this.getAttribute('data');
@@ -288,7 +289,7 @@ function branchClick(e) {
         parentId: 0,
         type: 3,
         option: 10,
-        title: LANG("条件分支"+(nodeList[actionSequence[judgeId]]["sequence"].length+1).toString(), "Condition "+(l+1).toString()),
+        title: LANG("条件分支" + (nodeList[actionSequence[judgeId]]["sequence"].length + 1).toString(), "Condition " + (l + 1).toString()),
         sequence: [],
         isInLoop: false,
     };
@@ -297,7 +298,7 @@ function branchClick(e) {
     // nodeList[actionSequence[judgeId]]["sequence"].splice(0, 0, t.index); //开头插入
     nodeList[actionSequence[judgeId]]["sequence"].push(t.index); //结尾插入
     refresh();
-    app._data.nowArrow = { "position": -1, "pId": t["id"], "num": 0 };
+    app._data.nowArrow = {"position": -1, "pId": t["id"], "num": 0};
     $("#" + t["id"]).click();
     e.stopPropagation(); //防止冒泡
 }
@@ -305,7 +306,7 @@ function branchClick(e) {
 function elementMousedown(e) {
     if (e.button == 2) //右键点击
     {
-        try{
+        try {
             document.getElementById("contextMenu").remove();
         } catch {
 
@@ -323,7 +324,7 @@ function elementMousedown(e) {
 
 //元素点击事件
 function elementClick(e) {
-    try{
+    try {
         document.getElementById("contextMenu").remove();
     } catch (e) {
 
@@ -341,7 +342,7 @@ function elementClick(e) {
 //箭头点击事件
 function arrowClick(e) {
     if (option != 0) {
-        app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
+        app._data.nowArrow = {"position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0};
     }
     toolBoxKernel(e);
 }
@@ -382,7 +383,7 @@ function toolBoxKernel(e, para = null) {
             let pId2 = app._data.nowArrow['pId'];
             nodeList[actionSequence[pId2]]["sequence"].splice(position2 + 1, 0, t.index); //在相应位置添加新元素
             refresh(); //重新渲染页面
-            app._data.nowArrow = { "position": t["position"], "pId": t["parentId"], "num": 0 };
+            app._data.nowArrow = {"position": t["position"], "pId": t["parentId"], "num": 0};
             $("#" + t["id"]).click(); //复制后点击复制后的元素
             e.stopPropagation(); //防止冒泡
         }
@@ -419,7 +420,11 @@ function toolBoxKernel(e, para = null) {
                 nodeList[actionSequence[pId2]]["sequence"].splice(position2 + 1, 0, element[0]); //在相应位置添加新元素
                 refresh(); //重新渲染页面
                 // console.log(nodeList[element[0]]);
-                app._data.nowArrow = { "position": nodeList[element[0]]["position"], "pId": nodeList[element[0]]["parentId"], "num": 0 };
+                app._data.nowArrow = {
+                    "position": nodeList[element[0]]["position"],
+                    "pId": nodeList[element[0]]["parentId"],
+                    "num": 0
+                };
                 $("#" + nodeList[element[0]]["id"]).click();
             } else {
                 showError(LANG("自己不能移动到自己的节点里！", "Cannot move inside self!"));
@@ -432,7 +437,7 @@ function toolBoxKernel(e, para = null) {
         let nt2 = null;
         if (option == 2 || option == 7) { //点击元素或移动到元素操作的名称更改
             let l = 6;
-            if(option == 2){
+            if (option == 2) {
                 title = LANG("点击", "Click ");
             } else {
                 title = LANG("移动到", "Move to ");
@@ -440,7 +445,7 @@ function toolBoxKernel(e, para = null) {
             }
             try {
                 content = para["content"];
-            } catch{
+            } catch {
                 content = LANG("元素", " Element");
             }
 
@@ -449,7 +454,7 @@ function toolBoxKernel(e, para = null) {
                 title += LANG("元素", "Element");
             } else {
                 let lang = detectLang(str);
-                if(lang == 1){ //中文
+                if (lang == 1) { //中文
                     if (str.length > l) {
                         str = str.substring(0, l) + "...";
                     }
@@ -511,18 +516,18 @@ function toolBoxKernel(e, para = null) {
         nodeList[actionSequence[pId]]["sequence"].splice(position + 1, 0, t.index); //在相应位置添加新元素
         refresh(); //重新渲染页面
         //下面是确定添加元素之后下一个要插入的节点的位置
-        app._data.nowArrow = { "position": t["position"], "pId": t["parentId"], "num": 0 };
+        app._data.nowArrow = {"position": t["position"], "pId": t["parentId"], "num": 0};
         addParameters(t); //增加选项的默认参数
         if (para != null) {
             modifyParameters(t, para);
         }
         if (option == 8) //循环情况下应插入在循环里面
         {
-            app._data.nowArrow = { "position": -1, "pId": t["id"], "num": 0 };
+            app._data.nowArrow = {"position": -1, "pId": t["id"], "num": 0};
             $("#" + t["id"]).click();
         } else if (option == 9) //判断插入到第一个判断条件中
         {
-            app._data.nowArrow = { "position": -1, "pId": nt["id"], "num": 0 };
+            app._data.nowArrow = {"position": -1, "pId": nt["id"], "num": 0};
             $("#" + nt["id"]).click();
         } else {
             $("#" + t["id"]).click();
@@ -537,7 +542,7 @@ function toolBoxKernel(e, para = null) {
 
 }
 
-$(".options").mousedown(function() {
+$(".options").mousedown(function () {
     option = parseInt(this.getAttribute("data"));
     title = this.innerHTML;
     if (option >= 10 && option <= 12 && (nowNode == null || nowNode.getAttribute("id") == 0)) {
@@ -550,7 +555,7 @@ $(".options").mousedown(function() {
 
 function arrowDragOver(e) {
     e.preventDefault();
-    app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
+    app._data.nowArrow = {"position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0};
     // console.log("dragover", app._data.nowArrow, nowNode);
 }
 
@@ -571,7 +576,7 @@ function elementDragEnd(e) {
 
 function arrowDblClick(e) {
     option = 13; //调整锚点操作
-    app._data.nowArrow = { "position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0 };
+    app._data.nowArrow = {"position": this.getAttribute('position'), "pId": this.getAttribute('pId'), "num": 0};
     toolBoxKernel.call(this, e);
     e.stopPropagation();
 }
@@ -655,7 +660,7 @@ function refresh(nowArrowReset = true) {
     }
     if (nowArrowReset) //如果要重置锚点位置
     {
-        app._data.nowArrow = { "position": nodeList[0].sequence.length - 1, "pId": 0, "num": 0 }; //设置默认要添加的位置是元素流程最开头处
+        app._data.nowArrow = {"position": nodeList[0].sequence.length - 1, "pId": 0, "num": 0}; //设置默认要添加的位置是元素流程最开头处
     }
     //第一个元素不渲染
     for (let i = 1; i < actionSequence.length; i++) {
@@ -694,32 +699,32 @@ function deleteElement() {
         pId = nowNode.parentNode.parentNode.getAttribute('pId');
         position = nowNode.parentNode.parentNode.getAttribute('position');
     }
-    app.$data.nowArrow = { position: position - 1, "pId": pId, "num": 0 }; //删除元素后锚点跳转到当前元素的上一个节点
+    app.$data.nowArrow = {position: position - 1, "pId": pId, "num": 0}; //删除元素后锚点跳转到当前元素的上一个节点
     refresh(false); //重新渲染页面
     nowNode = null; //取消选择
 }
 
-document.getElementById("flowchart_graph").oncontextmenu = function(e) {
-        // 创建一个包含删除选项的右键菜单
-        let contextMenu = document.createElement("div");
-        contextMenu.id = "contextMenu";
-        contextMenu.innerHTML = `<div>${LANG("试运行","Test Run")}</div>
-        <div>${LANG("复制元素","Copy Element")}</div>
-        <div>${LANG("剪切元素","Move Element")}</div>
+document.getElementById("flowchart_graph").oncontextmenu = function (e) {
+    // 创建一个包含删除选项的右键菜单
+    let contextMenu = document.createElement("div");
+    contextMenu.id = "contextMenu";
+    contextMenu.innerHTML = `<div>${LANG("试运行", "Test Run")}</div>
+        <div>${LANG("复制元素", "Copy Element")}</div>
+        <div>${LANG("剪切元素", "Move Element")}</div>
         <div>${LANG("删除元素（双击）", "Delete Element (Double Click)")}</div>`;
 
     if (nowNode.getAttribute("datatype") == 3) { //如果删掉的是条件分支的话
-        contextMenu.innerHTML += `<div>${LANG("前移","Move Up")}</div>
-<div>${LANG("后移","Move Down")}</div>`;
+        contextMenu.innerHTML += `<div>${LANG("前移", "Move Up")}</div>
+<div>${LANG("后移", "Move Down")}</div>`;
         // Add 前移 functionality
         contextMenu.children[4].addEventListener('click', function () {
             let conditionId = parseInt(nowNode.getAttribute('pid'));
             let position = parseInt(nowNode.getAttribute('position'));
-            if(position > 0){
+            if (position > 0) {
                 nodeList[actionSequence[conditionId]]["sequence"][position] = nodeList[actionSequence[conditionId]]["sequence"][position - 1];
                 nodeList[actionSequence[conditionId]]["sequence"][position - 1] = actionSequence[parseInt(nowNode.getAttribute('data'))];
                 refresh();
-                app._data.nowArrow = { "position": -1, "pId": 0, "num": 0 };
+                app._data.nowArrow = {"position": -1, "pId": 0, "num": 0};
                 $("#0").click();
                 e.stopPropagation(); //防止冒泡
             }
@@ -729,54 +734,54 @@ document.getElementById("flowchart_graph").oncontextmenu = function(e) {
         contextMenu.children[5].addEventListener('click', function () {
             let conditionId = parseInt(nowNode.getAttribute('pid'));
             let position = parseInt(nowNode.getAttribute('position'));
-            if(position < nodeList[actionSequence[conditionId]]["sequence"].length - 1){
+            if (position < nodeList[actionSequence[conditionId]]["sequence"].length - 1) {
                 nodeList[actionSequence[conditionId]]["sequence"][position] = nodeList[actionSequence[conditionId]]["sequence"][position + 1];
                 nodeList[actionSequence[conditionId]]["sequence"][position + 1] = actionSequence[parseInt(nowNode.getAttribute('data'))];
                 refresh();
-                app._data.nowArrow = { "position": -1, "pId": 0, "num": 0 };
+                app._data.nowArrow = {"position": -1, "pId": 0, "num": 0};
                 $("#0").click();
                 e.stopPropagation(); //防止冒泡
             }
         });
     }
 
-        // 设置右键菜单的样式
-        contextMenu.style.position = "absolute";
-        contextMenu.style.backgroundColor = "rgb(248, 249, 250)";
-        contextMenu.style.left = event.clientX + "px";
-        contextMenu.style.top = event.clientY + "px";
-        contextMenu.style.width = LANG("180px", "250px");
+    // 设置右键菜单的样式
+    contextMenu.style.position = "absolute";
+    contextMenu.style.backgroundColor = "rgb(248, 249, 250)";
+    contextMenu.style.left = event.clientX + "px";
+    contextMenu.style.top = event.clientY + "px";
+    contextMenu.style.width = LANG("180px", "250px");
 
-        // 添加删除元素的功能
-        contextMenu.children[3].addEventListener("dblclick", function() {
-            // myElement.remove(); // 删除元素
-            deleteElement();
-            contextMenu.remove(); // 删除右键菜单
-        });
+    // 添加删除元素的功能
+    contextMenu.children[3].addEventListener("dblclick", function () {
+        // myElement.remove(); // 删除元素
+        deleteElement();
+        contextMenu.remove(); // 删除右键菜单
+    });
 
-        // Add Test Run functionality
-        contextMenu.children[0].addEventListener('click', function () {
+    // Add Test Run functionality
+    contextMenu.children[0].addEventListener('click', function () {
 
-        });
+    });
 
-        // Add copy functionality
-        contextMenu.children[1].addEventListener('click', function () {
-            option = 11; //复制元素操作
-            showInfo(LANG("复制成功，请点击流程图中相应位置箭头以粘贴操作。", "Copy successfully, please click the arrow in the flow chart to paste."));
-            contextMenu.remove(); // Remove the context menu
-        });
+    // Add copy functionality
+    contextMenu.children[1].addEventListener('click', function () {
+        option = 11; //复制元素操作
+        showInfo(LANG("复制成功，请点击流程图中相应位置箭头以粘贴操作。", "Copy successfully, please click the arrow in the flow chart to paste."));
+        contextMenu.remove(); // Remove the context menu
+    });
 
-        // Add cut functionality
-        contextMenu.children[2].addEventListener('click', function () {
-            option = 10; //剪切元素操作
-            showInfo(LANG("剪切成功，请点击流程图中相应位置箭头以粘贴操作。", "Cut successfully, please click the arrow in the flow chart to paste."));
-            contextMenu.remove(); // Remove the context menu
-        });
+    // Add cut functionality
+    contextMenu.children[2].addEventListener('click', function () {
+        option = 10; //剪切元素操作
+        showInfo(LANG("剪切成功，请点击流程图中相应位置箭头以粘贴操作。", "Cut successfully, please click the arrow in the flow chart to paste."));
+        contextMenu.remove(); // Remove the context menu
+    });
 
     // 将右键菜单添加到文档中
-        document.body.appendChild(contextMenu);
-    } //屏蔽右键菜单
-    //删除元素
+    document.body.appendChild(contextMenu);
+} //屏蔽右键菜单
+//删除元素
 
 
 function inputDelete(e) {

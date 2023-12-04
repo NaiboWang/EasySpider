@@ -123,7 +123,7 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
                     <p style="margin-top: 10px">
                         <a class="btn btn-primary" data-toggle="collapse" href="#collapseOpenPage" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠高级操作
+                            点此展开/折叠自定义操作
                         </a>
                     </p>
                     <div :class="{collapse: true, 'show': nowNode['parameters']['cookies'].length!=0}" id="collapseOpenPage">
@@ -167,9 +167,15 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
+                    <label>点击元素后如有弹窗出现，弹窗处理方式：</label>
+                    <p><select v-model='nowNode["parameters"]["alertHandleType"]' class="form-control">
+                        <option :value = 0>无弹窗</option>
+                        <option :value = 1>接受弹窗（点击弹窗确定按钮）</option>
+                        <option :value = 2>拒绝弹窗（点击弹窗取消按钮，仅限Confirm弹框）</option>
+                    </select></p>
                     <p style="margin-top: 10px">
                         <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠高级操作
+                            点此展开/折叠自定义操作
                         </a>
                     </p>
                     <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
@@ -229,7 +235,7 @@
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                点此展开/折叠高级操作
+                                点此展开/折叠自定义操作
                             </a>
                         </p>
                         <div :class="{collapse: true, 'show': paras.parameters[paraIndex]['beforeJS'].length!=0 || paras.parameters[paraIndex]['afterJS'].length!=0}" id="elementAdvanced">
@@ -289,7 +295,6 @@
                             <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["JSWaitTime"]'></input>
                         </div>
-
                         <label>节点类型</label>
                         <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
                             <option :value = 0>普通节点</option>
@@ -343,7 +348,7 @@
                     <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     <p style="margin-top: 10px">
                         <a class="btn btn-primary" data-toggle="collapse" href="#inputAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠高级操作
+                            点此展开/折叠自定义操作
                         </a>
                     </p>
                     <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="inputAdvanced">
@@ -373,9 +378,13 @@
                         <option value = 5>在执行环境下运行Python代码（exec操作）</option>
                         <option value = 6>在执行环境下获得Python表达式值（eval操作）</option>
                         <option value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
+                        <option value = 8>刷新页面</option>
                     </select>
                     <div v-if='nowNode["parameters"]["codeMode"] == 7'>
-                        <label>此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘p键后才继续执行。</label>
+                        <label>此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘自定义暂停/继续快捷键（默认：p键）后才继续执行。</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 8'>
+                        <label>此操作可以刷新当前页面。</label>
                     </div>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
@@ -537,7 +546,7 @@ print(emotlib.emoji()) # 使用其中的函数。
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
-                            <p><label>（高级操作）使用代码/脚本定义循环退出条件（也可以在流程中添加<b>自定义操作</b>，然后选择<b>退出循环</b>选项）： </label></p>
+                            <p><label>（自定义操作）使用代码/脚本定义循环退出条件（也可以在流程中添加<b>自定义操作</b>，然后选择<b>退出循环</b>选项）： </label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
                                 <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
                                 <option value = 1>JavaScript脚本返回值（需以return 开头）</option>
@@ -661,17 +670,22 @@ print(emotlib.emoji()) # 使用其中的函数。
                     </select>
                     <label>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
                     <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
-                    <label>是否为Cloudflare等极端反爬网站（<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">查看Cloudflare设计和执行教程</a>）：</label>
-                    <select id="cloudflare" name="cloudflare" class="form-control">
-                        <option value = 0>否</option>
-                        <option value = 1>是（只支持Windows x64系统）</option>
-                    </select>
+<!--                    <label>是否为Cloudflare等极端反爬网站（<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">查看Cloudflare设计和执行教程</a>）：</label>-->
+<!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->
+<!--                        <option value = 0>否</option>-->
+<!--                        <option value = 1>是（只支持Windows x64系统）</option>-->
+<!--                    </select>-->
                     <label>执行时通过读取以下Excel（.xlsx）文件来修改各个操作的输入参数，文件格式请在调用任务时点击“从Excel文件读取输入参数”按钮查看：</label>
                     <input onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="为空则不从Excel读取输入参数，文件路径相对于EasySpider文件夹，如inputs/task1.xlsx"></input>
                     <label>浏览器模拟类型：</label>
                     <select id="environment" name="environment" class="form-control">
                         <option value = 0>电脑端</option>
                         <option value = 1>手机端（Cloudflare模式下不支持）</option>
+                    </select>
+                    <label>是否最大化浏览器窗口：</label>
+                    <select id="maximizeWindow" name="maximizeWindow" class="form-control">
+                        <option value = 0>否</option>
+                        <option value = 1>是</option>
                     </select>
                     <label>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
                     <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
@@ -687,6 +701,8 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <option value = 1>是</option>
                         <option value = 0>否</option>
                     </select>
+                    <label>任务暂停/继续快捷键：</label>
+                    <input onkeydown="inputDelete(event)" type="text" value="p" id="pauseKey" class="form-control"></input>
 
                 </div>
                 <div class="modal-footer">

@@ -167,6 +167,12 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>Wait time after scrolling (in seconds):</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
+                    <label>Way to handle pop-up windows after clicking:</label>
+                    <p><select v-model='nowNode["parameters"]["alertHandleType"]' class="form-control">
+                        <option :value = 0>No pop-up window</option>
+                        <option :value = 1>Accept pop-up window</option>
+                        <option :value = 2>Reject pop-up window (only for Confirm pop-up window)</option>
+                    </select></p>
                     <p style="margin-top: 10px">
                         <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                             Click here to expand/collapse advanced operations
@@ -324,7 +330,7 @@
                 <div class="elements" v-if="nodeType==4">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Element is inside iframe</p>
                     <div v-if="nowNode['isInLoop']">
-
+                        <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use text from the loop (If unchecked, the text entered each time will be the text from the "Input Value" text box below. If checked, it will use the text set within the loop.)</p>
                     <p v-if="useLoop">
                         <label>Index value (0 represents using the entire current loop text. If greater than 0, it represents the text index value separated by "~" within the current loop. For example, if the current loop text value is A~B, index value 1 represents inputting A, 2 represents inputting B, and 0 represents inputting A~B)</label>
@@ -372,11 +378,14 @@
                         <option value = 5>Run Python code on current environment (the "exec" operation)</option>
                         <option value = 6>Get value of a Python expression (the "eval" operation)</option>
                         <option value = 7>Pause program execution (such as when the captcha box appears)</option>
+                        <option value = 8>Refresh page</option>
                     </select>
                     <div v-if='nowNode["parameters"]["codeMode"] == 7'>
-                        <label>This operation can pause program execution, such as when a captcha box appears, and it will not continue until you manually press and hold the p key.</label>
+                        <label>This operation can pause program execution, such as when a captcha box appears, and it will not continue until you manually press and hold the pause/continue shortcut key (default: key p).</label>
                     </div>
-
+                    <div v-if='nowNode["parameters"]["codeMode"] == 8'>
+                        <label>This operation can refresh the current page.</label>
+                    </div>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
@@ -404,6 +413,7 @@ This option is an advanced feature that allows directly returning the expression
 2. Return the value of a custom global variable: `self.myVar`
 3. Return the result of a conditional statement: `self.myVar == 1`
 4. Determining whether the value extracted from a certain field is equal to the value of a certain variable: self.outputParameters["field name"] == self.myVar
+
 Please note that this feature does not support assigning values to variables. In other words, you cannot write something like `self.myVar = 1`. If you want to perform assignment operations, please select the previous option, "Run Python code on current environment (the "exec" operation)"</pre>
                         <p style="margin-top: 15px">Whether to record the output/return value of the execution as a field: </p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
@@ -660,17 +670,22 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     </select>
                     <label>Export File Name/Database Table Name (Can use ../ to represent relative path to change the file save location,the keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
                     <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
-                    <label>Is it an extreme anti-scraping website like Cloudflare (<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">Watch Tutorial</a>)?</label>
-                    <select id="cloudflare" name="cloudflare" class="form-control">
-                        <option value=0>No</option>
-                        <option value=1>Yes (Only support on Windows x64 platform)</option>
-                    </select>
+<!--                    <label>Is it an extreme anti-scraping website like Cloudflare (<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">Watch Tutorial</a>)?</label>-->
+<!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->
+<!--                        <option value=0>No</option>-->
+<!--                        <option value=1>Yes (Only support on Windows x64 platform)</option>-->
+<!--                    </select>-->
                     <label>To modify the input parameters of each operation during execution, read the following Excel (.xlsx) file. Please click the "Read Input Parameters from Excel File" button when calling the task to view the file format:</label>
                     <input onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="If left empty, input parameters will not be read from Excel. The file path is relative to the EasySpider folder, e.g., inputs/task1.xlsx"></input>
                     <label>Browser Emulation Type:</label>
                     <select id="environment" name="environment" class="form-control">
                         <option value=0>Desktop</option>
                         <option value=1>Mobile (Not supported under Cloudflare mode)</option>
+                    </select>
+                    <label>Whether to maximize the browser window:</label>
+                    <select id="maximizeWindow" name="maximizeWindow" class="form-control">
+                        <option value = 0>No</option>
+                        <option value = 1>Yes</option>
                     </select>
                     <label>Save Data Every N Rows (Specify N below, the larger the value, the faster the scraping speed, but there is a risk of data loss if unexpectedly exited):</label>
                     <input onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
@@ -686,6 +701,8 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                         <option value = 1>Yes</option>
                         <option value = 0>No</option>
                     </select>
+                    <label>Pause/Continue Task Shortcut Key:</label>
+                    <input onkeydown="inputDelete(event)" type="text" value="p" id="pauseKey" class="form-control"></input>
 
                 </div>
                 <div class="modal-footer">

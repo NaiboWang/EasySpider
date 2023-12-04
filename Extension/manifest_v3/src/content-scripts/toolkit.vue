@@ -18,6 +18,7 @@
             <p style="color:black; margin-top: 10px">● 鼠标移动到笑脸☺查看操作提示。</p>
             <p style="color:black; margin-top: 10px">● 鼠标移动到元素上后，请<strong>右键</strong>点击或者按<strong>F7</strong>键选中页面元素。
             </p>
+            <p style="color:black; margin-top: 10px">● 如果此操作台把页面元素挡住了，可以点击此操作台右下角的×按钮键关闭操作台。</p>
             <p style="color:black; margin-top: 10px">● 通过鼠标左键进行点击时，页面也会有反应，但左键点击发生的操作不会被记录在任务流程中；同理，如果想输入文本框但并不想将动作记录，可以鼠标移动到文本框，并按键盘的<strong>F9</strong>进行输入。
             </p>
             <p style="color:black; margin-top: 10px">● 如果不小心左键点选了元素导致页面跳转，直接后退或者切换回标签页即可。</p>
@@ -172,6 +173,8 @@
             <p style="color:black">● Mouse move to smiling face ☺ to see operation help.</p>
             <p style="color:black">● When your mouse moves to the element, please <strong>right-click</strong> your
               mouse button or press <strong>F7</strong> on the keyboard to select it.</p>
+            <p style="color:black">● If this toolbox blocks the page element, you can click the × button in the
+              lower right corner of this toolbox to close it.</p>
             <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also respond, but this click operation will not be recorded in the task flow. Similarly, if you want to input in a text box but do not want the action to be recorded , you can move the mouse to the text box and press <strong>F9</strong> on the keyboard to input.</p>
             <p style="color:black; margin-top: 10px">● If you accidentally left-click on an element and cause the page to jump, simply go back or switch back to the tab.</p>
             <p style="color:black; margin-top: 10px">● After the operation is completed, such as if no "Collect Data" operation is added in the task flowchart after clicking "Confirm Collect", just <strong> retry </strong> again.</p>
