@@ -31,7 +31,7 @@ def lowercase_tags_in_xpath(xpath):
 def on_press_creator(press_time, event):
     def on_press(key):
         try:
-            if key.char == 'p':
+            if key.char == press_time["pause_key"]:
                 if press_time["is_pressed"] == False:  # 没按下p键时，记录按下p键的时间
                     press_time["duration"] = time.time()
                     press_time["is_pressed"] = True
@@ -39,14 +39,14 @@ def on_press_creator(press_time, event):
                     duration = time.time() - press_time["duration"]
                     if duration > 2:
                         if event._flag == False:
-                            print("任务执行中，长按p键暂停执行。")
-                            print("Task is running, long press 'p' to pause.")
+                            print("任务执行中，长按" + press_time["pause_key"] + "键暂停执行。")
+                            print("Task is running, long press '" + press_time["pause_key"] + "' to pause.")
                             # 设置Event的值为True，使得线程b可以继续执行
                             event.set()
                         else:
                             # 设置Event的值为False，使得线程b暂停执行
-                            print("任务已暂停，长按p键继续执行...")
-                            print("Task paused, long press 'p' to continue...")
+                            print("任务已暂停，长按" + press_time["pause_key"] + "键继续执行...")
+                            print("Task paused, long press '" + press_time["pause_key"] + "' to continue...")
                             event.clear()
                         press_time["duration"] = time.time()
                         press_time["is_pressed"] = False
@@ -176,25 +176,35 @@ def write_to_csv(file_name, data, record):
             f_csv.writerow(to_write)
         f.close()
 
-
-def eval_repl(matchobj):
-     print(matchobj.group(1))
-     return str(eval(matchobj.group(1), globals(), locals()))
-
-
-
 def replace_field_values(orginal_text, outputParameters, browser=None):
     pattern = r'Field\["([^"]+)"\]'
     try:
         replaced_text = re.sub(
             pattern, lambda match: outputParameters.get(match.group(1), ''), orginal_text)
-        if replaced_text.find("EVAL") != -1: # 如果返回值中包含EVAL
+        if re.search(r'eval\(', replaced_text, re.IGNORECASE): # 如果返回值中包含EVAL
             replaced_text = replaced_text.replace("self.", "browser.")
-            replaced_text = re.sub(r'EVAL\("(.*?)"\)', lambda match: str(eval(match.group(1))), replaced_text)
-    except:
+            pattern = re.compile(r'(?i)eval\("(.+?)"\)')
+            # 循环替换所有匹配到的eval语句
+            while True:
+                match = pattern.search(replaced_text)
+                if not match:
+                    break
+                # 执行eval并将其结果转换为字符串形式
+                eval_replaced_text = str(eval(match.group(1)))
+                # 替换eval语句
+                replaced_text = replaced_text.replace(match.group(0), eval_replaced_text)
+    except Exception as e:
+        print("eval替换失败，请检查eval语句是否正确。| Failed to replace eval, please check if the eval statement is correct.")
         replaced_text = orginal_text
     return replaced_text
 
+
+def readCode(code):
+    if code.startswith("outside:"):
+        file_name = os.path.join(os.path.abspath("./"), code[8:])
+        with open(file_name, 'r', encoding='utf-8-sig') as file_obj:
+            code = file_obj.read()
+    return code
 
 def write_to_json(file_name, data, types, record, keys):
     keys = list(keys)
