@@ -91,6 +91,7 @@
                 </div>
 
                 <div>
+                    <label>Hint: Move the mouse to the smiley face to view the hint, double-click the option in the flowchart to try to run.</label>
                     <label>Option Name:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
                 </div>
@@ -230,7 +231,7 @@
                         <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
                         <p v-if="nowNode['isInLoop']"><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>Use relative XPath</p>
                         <p v-if='!paras.parameters[paraIndex]["relative"]'><input onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["iframe"]'></input>Element is inside iframe</p>
-                        <p>XPATH (Field["FieldName"] can be used in any XPATHS): <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
+                        <p>XPATH (Field["FieldName"] and eval("your code") can be used in any XPATHS): <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="If you want to write the XPath relative to the current element in the loop, you can write as *../div[1] which matches the first div child element of the parent of the current element in the loop."></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
                         <p style="margin-top: 10px">
@@ -389,7 +390,7 @@
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>Please read the instructions first and then write the specific code in the input box above (not in this box). To execute a large amount of code, you can simply write "outside:myCode.py" and the program will read and execute the code within myCode.py under the EasySpider directory.
 This option is an advanced feature that allows direct manipulation of the running browser using Python code. You can also customize variables in the entire execution environment and perform operations such as modifying and assigning values. Here are some examples:
 1. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").send_keys(Keys.END)` to scroll to the bottom.
 2. Define a global variable: `self.myVar = 1`
@@ -407,7 +408,7 @@ sys.path.append("D:/Python38/Lib/site-packages") # Assume emotlib library exists
 import emotlib # Now you can use emotlib library
 print(emotlib.emoji()) # Use one of its functions.
 </pre>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>Please read the instructions first and then write the specific code in the input box above (not in this box). To execute a large amount of code, you can simply write "outside:myCode.py" and the program will read and execute the code within myCode.py under the EasySpider directory.
 This option is an advanced feature that allows directly returning the expression value of Python code, and in other places, use Field["FieldName"] to represent the return value of this operation.. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text` to return the text on the current page.
 2. Return the value of a custom global variable: `self.myVar`
@@ -529,7 +530,7 @@ Please note that this feature does not support assigning values to variables. In
                     <div v-else-if='parseInt(loopType) < 8'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field):</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="Continue the loop if the command return value is greater than 0 or evaluates to true; otherwise, stop the loop. For example, return document.body.scrollWidth > 1000 is an example of a JavaScript command return value, and python D:/test.py is an example of a system command return value."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='parseInt(loopType) == 7'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='parseInt(loopType) == 7'>Please read the instructions first and then write the specific code in the input box above (not in this box). To execute a large amount of code, you can simply write "outside:myCode.py" and the program will read and execute the code within myCode.py under the EasySpider directory.
 Loop based on the expression value of Python code. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
@@ -541,8 +542,12 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
-                    <label v-if='parseInt(loopType) == 0'>Max Loop time (0 means infinite until cannot find the element or page content doesn't change):</label>
-                    <input onkeydown="inputDelete(event)" required v-if='parseInt(loopType) == 0' class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
+                    <div v-if='parseInt(loopType) == 0'>
+                        <label>Maximum number of loop iterations (0 represents an infinite loop until no more elements are found or no changes in page content are detected):</label>
+                        <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
+                        <label>Exit the loop when the content of the following page element does not change:</label>
+                        <input onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]'></input>
+                    </div>
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
@@ -602,7 +607,7 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <div v-else-if='TClass > 0 && TClass < 7 || TClass == 8'>
                         <label>Code/Script Content: </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="If the return value is greater than 0 or true, the operations within this branch will be executed; otherwise, they will not be executed. For example: return document.body.scrollWidth > 1000 or python D:/test.py, representing examples of JS command and system command return values."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>Please read the instructions first and then write the specific code in the input box above (not in this box).
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>Please read the instructions first and then write the specific code in the input box above (not in this box). To execute a large amount of code, you can simply write "outside:myCode.py" and the program will read and execute the code within myCode.py under the EasySpider directory. 
 Use the expression value of Python code to determine whether a condition is satisfied. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
@@ -680,7 +685,7 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     <label>Browser Emulation Type:</label>
                     <select id="environment" name="environment" class="form-control">
                         <option value=0>Desktop</option>
-                        <option value=1>Mobile (Not supported under Cloudflare mode)</option>
+                        <option value=1>Mobile</option>
                     </select>
                     <label>Whether to maximize the browser window:</label>
                     <select id="maximizeWindow" name="maximizeWindow" class="form-control">
@@ -694,6 +699,10 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                         <option value="0">No</option>
                         <option value="1">Yes (Requires running the same task ID and the same file name, please execute from the command line and specify the ID)</option>
                     </select>
+<!--                    <label>Wait time for the browser to close after the task is executed (in seconds):</label>-->
+                    <label>任务执行完毕后自动关闭浏览器等待秒数（用户临时目录将在浏览器关闭后自动删除）：</label>
+                    <label>Wait time for the browser to close after the task is executed (in seconds), the temporary user data directory will be automatically deleted after the browser is closed:</label>
+                    <input onkeydown="inputDelete(event)" type="number" value="60" id="quitWaitTime" name="quitWaitTime" class="form-control"></input>
                     <label>Maximum Display Length of Data in Console Preview:</label>
                     <input onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></input>
                     <label>Record log when executing the task:</label>

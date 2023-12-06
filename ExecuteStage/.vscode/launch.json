@@ -10,9 +10,9 @@
             "program": "easyspider_executestage.py",
             "console": "integratedTerminal",
             "justMyCode": false,
-            //  "args": ["--id", "[7]", "--read_type", "remote", "--headless", "0"]
-            // "args": ["--id", "[9]", "--read_type", "remote", "--headless", "0", "--saved_file_name", "YOUTUBE"]
-            "args": ["--id", "[96]", "--headless", "0", "--user_data", "0", "--keyboard", "1"]
+            //  "args": ["--ids", "[7]", "--read_type", "remote", "--headless", "0"]
+            // "args": ["--ids", "[9]", "--read_type", "remote", "--headless", "0", "--saved_file_name", "YOUTUBE"]
+            "args": ["--ids", "[52]", "--headless", "0", "--user_data", "1", "--keyboard", "1"]
         }
     ]
 }

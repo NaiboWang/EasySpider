@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 # import atexit
+import atexit
+import copy
+import shutil
+import string
 import undetected_chromedriver as uc
 from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
-    on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel, write_to_json
+    on_press_creator, on_release_creator, readCode, replace_field_values, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -24,6 +28,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from pynput.keyboard import Key, Listener
 from datetime import datetime
 import io  # 遇到错误退出时应执行的代码
@@ -55,7 +60,7 @@ desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class BrowserThread(Thread):
-    def __init__(self, browser_t, id, service, version, event, saveName, config):
+    def __init__(self, browser_t, id, service, version, event, saveName, config, option):
         Thread.__init__(self)
         self.logs = io.StringIO()
         try:
@@ -63,6 +68,7 @@ class BrowserThread(Thread):
         except:
             self.log = True
         self.browser = browser_t
+        self.option = option
         self.config = config
         self.version = version
         self.totalSteps = 0
@@ -90,12 +96,12 @@ class BrowserThread(Thread):
         now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         self.saveName = self.saveName.replace("current_time", now)
 
-        self.print_and_log("任务ID", i, "的保存文件名为:", self.saveName)
-        self.print_and_log("Save Name for task ID", i, "is:", self.saveName)
-        if not os.path.exists("Data/Task_" + str(i)):
-            os.mkdir("Data/Task_" + str(i))
-        if not os.path.exists("Data/Task_" + str(i) + "/" + self.saveName):
-            os.mkdir("Data/Task_" + str(i) + "/" +
+        self.print_and_log("任务ID", id, "的保存文件名为:", self.saveName)
+        self.print_and_log("Save Name for task ID", id, "is:", self.saveName)
+        if not os.path.exists("Data/Task_" + str(id)):
+            os.mkdir("Data/Task_" + str(id))
+        if not os.path.exists("Data/Task_" + str(id) + "/" + self.saveName):
+            os.mkdir("Data/Task_" + str(id) + "/" +
                      self.saveName)  # 创建保存文件夹用来保存截图
         self.getDataStep = 0
         self.startSteps = 0
@@ -245,7 +251,7 @@ class BrowserThread(Thread):
                     cookies = node["parameters"]["cookies"]
                 except:
                     node["parameters"]["cookies"] = ""
-            if node["option"] == 2:  # 点击操作
+            elif node["option"] == 2:  # 点击操作
                 try:
                     alertHandleType = node["parameters"]["alertHandleType"]
                 except:
@@ -312,6 +318,13 @@ class BrowserThread(Thread):
                         node["parameters"]["xpath"] = ""
                         self.print_and_log("您的任务版本号为" + self.task_version +
                                            "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif node["option"] == 8:  # 循环操作
+                try:
+                    exitElement = node["parameters"]["exitElement"]
+                    if exitElement == "":
+                        node["parameters"]["exitElement"] = "//body"
+                except:
+                    node["parameters"]["exitElement"] = "//body"
         self.print_and_log("预处理完成|Preprocess completed")
 
     def readFromExcel(self):
@@ -391,7 +404,21 @@ class BrowserThread(Thread):
         self.saveData(exit=True)
         if self.outputFormat == "mysql":
             self.mysql.close()
-
+        try:
+            quitWaitTime = self.service["quitWaitTime"]
+        except:
+            quitWaitTime = 60
+        self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
+        self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
+        time.sleep(quitWaitTime)
+        self.browser.quit()
+        self.print_and_log("正在清理临时用户目录……|Cleaning up temporary user directory...")
+        try:
+            shutil.rmtree(self.option["tmp_user_data_folder"])
+        except:
+            pass
+        self.print_and_log("清理完成！|Clean up completed!")
+        
     def recordLog(self, *args, **kwargs):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         print(now + ":", *args, file=self.logs, **kwargs)
@@ -576,6 +603,7 @@ class BrowserThread(Thread):
                 self.recordLog("JavaScript execution failed")
         elif int(codeMode) == 5:
             try:
+                code = readCode(code)
                 output = exec(code)
                 self.recordLog("执行下面的代码:" + code)
                 self.recordLog("Execute the following code:" + code)
@@ -585,6 +613,7 @@ class BrowserThread(Thread):
                                    code, ", error is:", e)
         elif int(codeMode) == 6:
             try:
+                code = readCode(code)
                 output = eval(code)
                 self.recordLog("获得下面的代码返回值:" + code)
                 self.recordLog(
@@ -909,6 +938,40 @@ class BrowserThread(Thread):
             self.recordLog(
                 "判断条件内所有条件分支的条件都不满足|None of the conditions in the judgment condition are met")
 
+    def handleHistory(self, node, xpath, thisHitoryURL, thisHistoryLength, index, element=None, elements=None):
+        if self.history["index"] != thisHistoryLength and self.history["handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
+            difference = thisHistoryLength - self.history["index"]  # 计算历史记录变化差值
+            self.browser.execute_script('history.go(' + str(difference) + ')')  # 回退历史记录
+            # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
+            time.sleep(node["parameters"]["historyWait"])
+            # else:
+            # time.sleep(2)
+            try:
+                self.browser.execute_script('window.stop()')
+            except:
+                pass
+        ti = 0
+        if self.browser.current_url.startswith("data:"):
+            while self.browser.current_url != thisHitoryURL:  # 如果执行完一次循环之后网址发生了变化
+                try:
+                    self.browser.execute_script("history.go(1)")  # 如果是data:开头的网址，就前进一步
+                except:  # 超时的情况下
+                    pass
+                ti += 1
+                if self.browser.current_url == thisHitoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
+                    break
+            time.sleep(2)
+            if element == None: # 不固定元素列表
+                element = self.browser.find_elements(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
+            else: # 固定元素列表
+                element = self.browser.find_element(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
+            if index > 0:
+                index -= 1  # 如果是data:开头的网址，就要重试一次
+        else:
+            if element == None:
+                element = elements
+        return index, element
+
     # 对循环的处理
     def loopExecute(self, node, loopValue, clickPath="", index=0):
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
@@ -931,8 +994,7 @@ class BrowserThread(Thread):
                     # newBodyText = self.browser.page_source
                     # newBodyText = self.browser.find_element(By.XPATH, "//body").text
                     if node["parameters"]["exitCount"] == 0:
-                        newBodyText = self.browser.find_element(
-                            By.CSS_SELECTOR, "body", iframe=False).text
+                        newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
                         if node["parameters"]["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
@@ -1045,38 +1107,7 @@ class BrowserThread(Thread):
                             self.print_and_log("关闭标签页发生错误：", e)
                             self.print_and_log(
                                 "Error occurred while closing tab: ", e)
-                    if self.history["index"] != thisHistoryLength and self.history[
-                        "handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
-                        difference = thisHistoryLength - \
-                                     self.history["index"]  # 计算历史记录变化差值
-                        self.browser.execute_script(
-                            'history.go(' + str(difference) + ')')  # 回退历史记录
-                        # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
-                        time.sleep(node["parameters"]["historyWait"])
-                        # else:
-                        # time.sleep(2)
-                        # 切换历史记录等待：
-                        self.recordLog("Change history back time or: ",
-                                       node["parameters"]["historyWait"])
-                        try:
-                            self.browser.execute_script('window.stop()')
-                        except:
-                            pass
-                    ti = 0
-                    if self.browser.current_url.startswith("data:"):
-                        while self.browser.current_url != thisHitoryURL:  # 如果执行完一次循环之后网址发生了变化
-                            try:
-                                self.browser.execute_script("history.go(1)")  # 如果是data:开头的网址，就前进一步
-                            except:  # 超时的情况下
-                                pass
-                            ti += 1
-                            if self.browser.current_url == thisHitoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
-                                break
-                        time.sleep(2)
-                        elements = self.browser.find_elements(By.XPATH,
-                                                              xpath, iframe=node["parameters"]["iframe"])
-                        if index > 0:
-                            index -= 1  # 如果是data:开头的网址，就要重试一次
+                    index, elements = self.handleHistory(node, xpath, thisHitoryURL, thisHistoryLength, index, elements=elements)
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
@@ -1130,50 +1161,11 @@ class BrowserThread(Thread):
                             self.print_and_log("关闭标签页发生错误：", e)
                             self.print_and_log(
                                 "Error occurred while closing tab: ", e)
-                    if self.history["index"] != thisHistoryLength and self.history[
-                        "handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
-                        difference = thisHistoryLength - \
-                                     self.history["index"]  # 计算历史记录变化差值
-                        self.browser.execute_script(
-                            'history.go(' + str(difference) + ')')  # 回退历史记录
-                        # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
-                        time.sleep(node["parameters"]["historyWait"])
-                        # else:
-                        # time.sleep(2)
-                        self.recordLog("Change history back time or: ",
-                                       node["parameters"]["historyWait"])
-                        try:
-                            self.browser.execute_script('window.stop()')
-                        except:
-                            pass
-                    # if self.browser.current_url.startswith("data:"):
-                    #     try:
-                    #         self.browser.execute_script("history.go(1)") # 如果是data:开头的网址，就前进一步
-                    #     except: # 超时的情况下
-                    #         pass
-                    #     time.sleep(2)
-                    #     elements = self.browser.find_elements(By.XPATH,
-                    #                                   xpath, iframe=node["parameters"]["iframe"])
-                    #     if index > 0:
-                    #         index -= 1 # 如果是data:开头的网址，就要重试一次
-                    ti = 0
-                    if self.browser.current_url.startswith("data:"):
-                        while self.browser.current_url != thisHitoryURL:  # 如果执行完一次循环之后网址发生了变化
-                            try:
-                                self.browser.execute_script("history.go(1)")  # 如果是data:开头的网址，就前进一步
-                            except:  # 超时的情况下
-                                pass
-                            ti += 1
-                            if self.browser.current_url == thisHitoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
-                                break
-                        time.sleep(2)
-                        elements = self.browser.find_elements(By.XPATH,
-                                                              xpath, iframe=node["parameters"]["iframe"])
-                        if index > 0:
-                            index -= 1  # 如果是data:开头的网址，就要重试一次
+                    index, element = self.handleHistory(node, path, thisHitoryURL, thisHistoryLength, index, element=element)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
                     self.print_and_log("找不到循环元素: ", path)
+                    index += 1
                     continue  # 循环中找不到元素就略过操作
                 except Exception as e:
                     raise
@@ -1903,16 +1895,13 @@ class BrowserThread(Thread):
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
-
 if __name__ == '__main__':
     from multiprocessing import freeze_support
-
     freeze_support()  # 防止无限死循环多开
-
     # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
     # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
     config = {
-        "id": [0],
+        "ids": [0],
         "saved_file_name": "",
         "user_data": False,
         "config_folder": "",
@@ -1925,20 +1914,20 @@ if __name__ == '__main__':
     }
     c = Config(config)
     print(c)
-    options = Options()
+    options = webdriver.ChromeOptions()
     driver_path = "chromedriver.exe"
     import platform
 
     print(sys.platform, platform.architecture())
-    option = webdriver.ChromeOptions()
+    # option = webdriver.ChromeOptions()
     if not os.path.exists(os.getcwd() + "/Data"):
         os.mkdir(os.getcwd() + "/Data")
     if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
         # MacOS需要用option而不是options！
-        option.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        option.add_extension(
-            "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
+        # option.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
+        # option.add_extension(
+            # "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         options.add_extension(
             "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
@@ -1957,26 +1946,26 @@ if __name__ == '__main__':
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
-            option.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
+            # option.binary_location = os.path.join(
+            #     os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
-            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            # option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
-            option.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
+            # option.binary_location = os.path.join(
+                # os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
-            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            # option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
-            option.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
+            # option.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
-            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
+            # option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         else:
             print("Unsupported platform")
@@ -1993,16 +1982,21 @@ if __name__ == '__main__':
         # 软件dev用
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/ElectronJS")
-        option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+        # option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
         options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
         driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        option.add_extension("../ElectronJS/XPathHelper.crx")
+        # option.add_extension("../ElectronJS/XPathHelper.crx")
+        options.add_extension("../ElectronJS/XPathHelper.crx")
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
+        # option.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"
-        option.add_extension("XPathHelper.crx")
+        # option.add_extension("XPathHelper.crx")
+        options.add_extension("XPathHelper.crx")
 
-    option.add_experimental_option(
+    # option.add_experimental_option(
+        # 'excludeSwitches', ['enable-automation'])  # 以开发者模式
+    options.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
 
     # user_data_dir = r''  # 注意没有Default！
@@ -2021,65 +2015,84 @@ if __name__ == '__main__':
             print("Config file path: " +
                   c.config_folder + c.config_file_name)
             absolute_user_data_folder = config["absolute_user_data_folder"]
-            print("\nAbsolute_user_data_folder:",
-                  absolute_user_data_folder, "\n")
     except:
         pass
-    if c.user_data:
-        option.add_argument(
-            f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
-        option.add_argument("--profile-directory=Default")
-        options.add_argument(
-            f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
-        options.add_argument("--profile-directory=Default")
-        print(
-            "正在使用带用户信息浏览器模式，注意此模式同一个用户信息目录只能同时运行一个浏览器实例，如果需要多开请复制用户信息目录并载入复制的目录地址，具体请参考程序多开文档：https://github.com/NaiboWang/EasySpider/wiki/Run-multiple-tasks-in-parallel")
-        print(
-            "Using browser with user data, please note that only one browser instance can be run at the same time with the same user data directory, if you need to run multiple instances, please copy the user data directory and load the copied directory address, please refer to the program multiple open document for details: https://github.com/NaiboWang/EasySpider/wiki/Run-multiple-tasks-in-parallel")
-    print(
-        "如果报错Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally，说明有之前运行的Chrome实例没有正常关闭，请关闭之前打开的所有Chrome实例后再运行程序即可。")
-    print(
-        "If you get an error Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally, it means that there is a Chrome instance that was not closed properly before, please close all Chrome instances that were opened before running the program.")
-
-    if c.headless:
-        print("Headless mode")
-        print("无头模式")
-        option.add_argument("--headless")
-        options.add_argument("--headless")
 
     # options.add_argument(
     #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
-    option.add_argument(
-        "--disable-blink-features=AutomationControlled")  # TMALL 反扒
+    # option.add_argument(
+        # "--disable-blink-features=AutomationControlled")  # TMALL 反扒
     options.add_argument(
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
 
     options.add_argument('-ignore-certificate-errors')
     options.add_argument('-ignore -ssl-errors')
-    option.add_argument('-ignore-certificate-errors')
-    option.add_argument('-ignore -ssl-errors')
+    # option.add_argument('-ignore-certificate-errors')
+    # option.add_argument('-ignore -ssl-errors')
+
+    if c.headless:
+        print("Headless mode")
+        print("无头模式")
+        # option.add_argument("--headless")
+        options.add_argument("--headless")
+
+    tmp_options = []
+    for id in c.ids:
+        tmp_options.append({"options": copy.deepcopy(options), "tmp_user_data_folder": ""})
+
+    if c.user_data:
+        tmp_user_folder_parent = os.path.join(os.getcwd(), "TempUserDataFolder")
+        if not os.path.exists(tmp_user_folder_parent):
+            os.mkdir(tmp_user_folder_parent)
+        characters = string.ascii_letters + string.digits
+        for i in range(len(c.ids)):
+            id = c.ids[i]
+            # 从字符集中随机选择字符构成字符串
+            random_string = ''.join(random.choice(characters) for i in range(10))
+            tmp_user_data_folder = os.path.join(tmp_user_folder_parent, "user_data_" + str(id) + "_" + str(time.time()).replace(".","") + "_" + random_string)
+            tmp_options[i]["tmp_user_data_folder"] = tmp_user_data_folder
+            if os.path.exists(tmp_user_data_folder):
+                shutil.rmtree(tmp_user_data_folder)
+            print(f"Copying user data folder to: {tmp_user_data_folder}, please wait...")
+            print(f"正在复制用户信息目录到: {tmp_user_data_folder}，请稍等...")
+            shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
+            print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
+            print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+            # option = tmp_options[i]["option"]
+            options = tmp_options[i]["options"]
+            # option.add_argument(
+                # f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒
+            # option.add_argument("--profile-directory=Default")
+            options.add_argument(
+                f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒
+            options.add_argument("--profile-directory=Default")
+    print(
+        "如果报错Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally，说明有之前运行的Chrome实例没有正常关闭，请关闭之前打开的所有Chrome实例后再运行程序即可。")
+    print(
+        "If you get an error Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally, it means that there is a Chrome instance that was not closed properly before, please close all Chrome instances that were opened before running the program.")
 
     threads = []
-    for i in c.id:
-        # print(options)
-        print("id: ", i)
+    for i in range(len(c.ids)):
+        id = c.ids[i]
+        # option = tmp_options[i]["option"]
+        options = tmp_options[i]["options"]
+        print("id: ", id)
         if c.read_type == "remote":
             print("remote")
             content = requests.get(
-                c.server_address + "/queryExecutionInstance?id=" + str(i))
+                c.server_address + "/queryExecutionInstance?id=" + str(id))
             service = json.loads(content.text)  # 加载服务信息
         else:
             print("local")
-            with open("execution_instances/" + str(i) + ".json", 'r', encoding='utf-8') as f:
+            with open("execution_instances/" + str(id) + ".json", 'r', encoding='utf-8') as f:
                 content = f.read()
                 service = json.loads(content)  # 加载服务信息
         try:
             print("Task Name:", service["name"])
             print("任务名称:", service["name"])
         except:
-            print("Cannot find task with id:" + str(i) + ", please check whether " + str(i) +
-                  ".json exists in the 'execution_instances' folder.")
-            print("未找到id为" + str(i) + "的任务，请检查'execution_instances'文件夹中是否存在" + str(i) + ".json文件。")
+            print(f"Cannot find task with id: {str(id)}, please check whether {str(id)}.json exists in the 'execution_instances' folder.")
+            print(f"未找到id为{str(id)}的任务，请检查'execution_instances'文件夹中是否存在{str(id)}.json文件。")
             continue
         try:
             cloudflare = service["cloudflare"]
@@ -2087,8 +2100,8 @@ if __name__ == '__main__':
             cloudflare = 0
         if cloudflare == 0:
             options.add_argument('log-level=3')  # 隐藏日志
-            option.add_argument('log-level=3')  # 隐藏日志
-            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(i))
+            # option.add_argument('log-level=3')  # 隐藏日志
+            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(id))
             print("Data path:", path)
             options.add_experimental_option("prefs", {
                 # 设置文件下载路径
@@ -2103,30 +2116,32 @@ if __name__ == '__main__':
                 'safebrowsing.disable_download_protection': True,
                 'profile.default_content_settings.popups': 0,
             })
-            option.add_experimental_option("prefs", {
-                # 设置文件下载路径
-                "download.default_directory": path,
-                "download.prompt_for_download": False,  # 禁止下载提示框
-                "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
-                "download.directory_upgrade": True,
-                "download.extensions_to_open": "applications/pdf",
-                "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
-                "safebrowsing_for_trusted_sources_enabled": False,
-                "safebrowsing.enabled": False,
-                'safebrowsing.enabled': False,
-                'safebrowsing.disable_download_protection': True,
-                'profile.default_content_settings.popups': 0,
-            })
+            # option.add_experimental_option("prefs", {
+            #     # 设置文件下载路径
+            #     "download.default_directory": path,
+            #     "download.prompt_for_download": False,  # 禁止下载提示框
+            #     "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
+            #     "download.directory_upgrade": True,
+            #     "download.extensions_to_open": "applications/pdf",
+            #     "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
+            #     "safebrowsing_for_trusted_sources_enabled": False,
+            #     "safebrowsing.enabled": False,
+            #     'safebrowsing.enabled': False,
+            #     'safebrowsing.disable_download_protection': True,
+            #     'profile.default_content_settings.popups': 0,
+            # })
             try:
                 if service["environment"] == 1:
-                    option.add_experimental_option(
-                        'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
+                    # option.add_experimental_option(
+                        # 'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
                     options.add_experimental_option(
                         'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
             except:
                 pass
-            browser_t = MyChrome(
-                options=options, chrome_options=option, executable_path=driver_path)
+            # browser_t = MyChrome(
+                # options=options, chrome_options=option, executable_path=driver_path)
+            selenium_service = Service(executable_path=driver_path)
+            browser_t = MyChrome(service=selenium_service, options=options)
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器
@@ -2149,9 +2164,9 @@ if __name__ == '__main__':
                 sys.exit()
         event = Event()
         event.set()
-        thread = BrowserThread(browser_t, i, service,
-                               c.version, event, c.saved_file_name, config=config)
-        print("Thread with task id: ", i, " is created")
+        thread = BrowserThread(browser_t, id, service,
+                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i])
+        print("Thread with task id: ", id, " is created")
         threads.append(thread)
         thread.start()
         # Set the pause operation
@@ -2190,10 +2205,3 @@ if __name__ == '__main__':
     for thread in threads:
         print()
         thread.join()
-
-    for thread in threads:
-        thread.browser.quit()
-        # print("Thread with task id: ", thread.id, " is closed")
-        print("程序已运行完成，请手动关闭此窗口。")
-        print(
-            "The program has finished running, please manually close this window.")

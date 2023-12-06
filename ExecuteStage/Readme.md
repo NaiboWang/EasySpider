@@ -58,7 +58,7 @@ This section covers the compilation instructions for the `Execution stage progra
 在当前文件夹下直接运行程序：
 
 ```Python
-python3 easyspider_executestage.py --id [1]
+python3 easyspider_executestage.py --ids [1]
 ```
 
 以上是运行任务号为`1`的任务的示例命令，更多命令行参数使用说明请参考：[Argument Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction)。
@@ -70,7 +70,7 @@ Before running the program, make sure you have completed the compilation of the 
 To run the program directly in the current folder, use the following command:
 
 ```Python
-python3 easyspider_executestage.py --id [1]
+python3 easyspider_executestage.py --ids [1]
 ```
 
 The above is an example command to run a task with the ID of `1`. For more information on command-line parameters, please refer to: [Argument Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction) on the project's GitHub Wiki.

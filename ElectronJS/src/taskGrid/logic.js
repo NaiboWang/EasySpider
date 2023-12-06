@@ -29,7 +29,7 @@ ws.onmessage = function(evt) {
     evt = JSON.parse(evt.data);
     console.log(evt);
     if (evt["type"] == "title") { //如果不是特殊处理的话，默认全部是增加元素操作
-        if (old_title == "New Task") { //只记录第一次的title
+        if (old_title == "新任务 | New Task") { //只记录第一次的title
             $("#serviceName").val(evt.data.title);
         }
         old_title = evt.data.title;
@@ -226,6 +226,7 @@ function addParameters(t) {
         t["parameters"]["code"] = ""; //执行的代码
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["exitCount"] = 0; //执行多少次后退出循环，0代表不设置此条件
+        t["parameters"]["exitElement"] = "//body"; //检测此元素不变时退出循环
         t["parameters"]["historyWait"] = 2; //历史记录回退时间，用于循环点击每个链接的情况下点击链接后不打开新标签页的情况
         t["parameters"]["breakMode"] = 0; //break类型，0代表JS，2代表系统命令
         t["parameters"]["breakCode"] = ""; //break条件
@@ -485,6 +486,7 @@ function saveService(type) {
             "version": "0.6.0",
             "saveThreshold": saveThreshold,
             // "cloudflare": cloudflare,
+            "quitWaitTime": parseInt($("#quitWaitTime").val()),
             "environment": environment,
             "maximizeWindow": parseInt($("#maximizeWindow").val()),
             "maxViewLength": parseInt($("#maxViewLength").val()),

@@ -176,7 +176,6 @@ def write_to_csv(file_name, data, record):
             f_csv.writerow(to_write)
         f.close()
 
-
 def replace_field_values(orginal_text, outputParameters, browser=None):
     pattern = r'Field\["([^"]+)"\]'
     try:
@@ -184,15 +183,28 @@ def replace_field_values(orginal_text, outputParameters, browser=None):
             pattern, lambda match: outputParameters.get(match.group(1), ''), orginal_text)
         if re.search(r'eval\(', replaced_text, re.IGNORECASE): # 如果返回值中包含EVAL
             replaced_text = replaced_text.replace("self.", "browser.")
-            pattern = re.compile(r'(?i)eval\("([^"]+)"\)')
-            match = pattern.search(replaced_text)
-            eval_replaced_text = str(eval(match.group(1)))
-            replaced_text = replaced_text.replace(match.group(0), eval_replaced_text)
+            pattern = re.compile(r'(?i)eval\("(.+?)"\)')
+            # 循环替换所有匹配到的eval语句
+            while True:
+                match = pattern.search(replaced_text)
+                if not match:
+                    break
+                # 执行eval并将其结果转换为字符串形式
+                eval_replaced_text = str(eval(match.group(1)))
+                # 替换eval语句
+                replaced_text = replaced_text.replace(match.group(0), eval_replaced_text)
     except Exception as e:
-        print(e)
+        print("eval替换失败，请检查eval语句是否正确。| Failed to replace eval, please check if the eval statement is correct.")
         replaced_text = orginal_text
     return replaced_text
 
+
+def readCode(code):
+    if code.startswith("outside:"):
+        file_name = os.path.join(os.path.abspath("./"), code[8:])
+        with open(file_name, 'r', encoding='utf-8-sig') as file_obj:
+            code = file_obj.read()
+    return code
 
 def write_to_json(file_name, data, types, record, keys):
     keys = list(keys)

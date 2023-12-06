@@ -322,10 +322,10 @@ async function beginInvoke(msg, ws) {
         let parameters = [];
         console.log(msg.message)
         if (msg.message.user_data_folder == null || msg.message.user_data_folder == undefined || msg.message.user_data_folder == "") {
-            parameters = ["--id", "[" + msg.message.id + "]", "--server_address", server_address, "--user_data", 0];
+            parameters = ["--ids", "[" + msg.message.id + "]", "--server_address", server_address, "--user_data", 0];
         } else {
             let user_data_folder_path = path.join(task_server.getDir(), msg.message.user_data_folder);
-            parameters = ["--id", "[" + msg.message.id + "]", "--server_address", server_address, "--user_data", 1];
+            parameters = ["--ids", "[" + msg.message.id + "]", "--server_address", server_address, "--user_data", 1];
             config.user_data_folder = msg.message.user_data_folder;
             config.absolute_user_data_folder = user_data_folder_path;
             fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));

@@ -24,6 +24,7 @@ cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/requirements.txt ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/Readme.md ../.temp_to_pub/EasySpider_Linux_x64/Code
+cp ../ExecuteStage/myCode.py ../.temp_to_pub/EasySpider_Linux_x64
 cp -Rf ../ExecuteStage/undetected_chromedriver_ES ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp -Rf ../ExecuteStage/.vscode ../.temp_to_pub/EasySpider_Linux_x64/Code
 chmod 777 ../.temp_to_pub/EasySpider_Linux_x64/easy-spider.sh

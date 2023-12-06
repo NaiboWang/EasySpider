@@ -10,7 +10,7 @@
     <script src="vue.js"></script>
     <script src="bootstrap/js/bootstrap.js"></script>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet"></link>
-    <title>Task Invoke</title>
+    <title>任务调用 | Task Invoke</title>
     <style>
         table {
             table-layout: auto;
@@ -248,7 +248,7 @@
         <label style="margin-top: 15px;display: block">{{"You can also use the XPath Helper extension to test XPaths when executing the task:~执行任务的过程中也可以随时使用XPath Helper扩展来调试XPath。" | lang}}</label>
         <label style="margin-top: 15px;display: block">{{"如果想进行更复杂的操作，如设置无头模式，设置定时执行等，请使用下方的命令行执行任务选项并配置好命令行参数。~ If you want to perform more complex operations, such as setting headless mode, setting scheduled execution, etc., please use the command line to execute the task and configure the command line parameters below." | lang}}</label>
         <div style="margin-bottom: 10px;">
-            <label style="margin-top: 10px;">{{"Execution ID (EID):~执行ID：" | lang}}</label>
+            <label style="margin-top: 10px;">{{"Execution ID (EID), execution files are stored in 'execution_instances' folder:~执行ID（执行文件存放在execution_instances文件夹内）：" | lang}}</label>
             <input class="form-control" v-model="ID"></input>
             <p></p>
             <!-- <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p> -->
@@ -499,18 +499,18 @@
     function changeCommand() {
         $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
             if(OSInfo.version == 'win32' && OSInfo.bit == 'x64'){
-                app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --ids [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             } else if(OSInfo.version == 'win32' && OSInfo.bit == 'ia32'){
-                app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --id [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --ids [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             } else if(OSInfo.version == 'linux'){
-                app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --id '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --ids '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             } else if(OSInfo.version == 'darwin'){
                 if(getUrlParam("lang") == "zh"){
                     app.$data.easyspider_location = "你的EasySpider文件夹，如：cd /Users/"+ app.$data.config_folder.split("/")[2] + "/Downloads/EasySpider_MacOS_all_arch";
                 } else {
                     app.$data.easyspider_location = "Your EasySpider folder, such as: cd /Users/"+ app.$data.config_folder.split("/")[2] + "/Downloads/EasySpider_MacOS_all_arch";
                 }
-                app.$data.command = "./easyspider_executestage --id '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
+                app.$data.command = "./easyspider_executestage --ids '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             }
         });
     }
