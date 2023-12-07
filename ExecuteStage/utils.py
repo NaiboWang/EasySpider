@@ -302,8 +302,8 @@ class myMySQL:
                 config = json.load(f)
                 self.host = config["host"]
                 self.port = config["port"]
-                self.user = config["username"]
-                self.passwd = config["password"]
+                self.username = config["username"]
+                self.password = config["password"]
                 self.db = config["database"]
         except Exception as e:
             print("读取配置文件失败，请检查配置文件："+config_file+"是否存在，或配置信息是否有误。")
@@ -315,21 +315,22 @@ class myMySQL:
     def connect(self):
         try:
             self.conn = pymysql.connect(
-                host=self.host, port=self.port, user=self.user, passwd=self.passwd, db=self.db)
+                host=self.host, port=self.port, user=self.username, passwd=self.password, db=self.db)
             print("成功连接到数据库。")
             print("Successfully connected to the database.")
         except:
             print("连接数据库失败，请检查配置文件是否正确。")
             print(
                 "Failed to connect to the database, please check if the configuration file is correct.")
+            sys.exit()
 
     def create_table(self, table_name, parameters):
         self.table_name = table_name
         self.field_sql = "("
-        cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor()
         # 检查表是否存在
-        cursor.execute("SHOW TABLES LIKE '%s'" % table_name)
-        result = cursor.fetchone()
+        self.cursor.execute(f"SHOW TABLES LIKE '{table_name}'")
+        result = self.cursor.fetchone()
 
         sql = "CREATE TABLE " + table_name + \
             " (_id INT AUTO_INCREMENT PRIMARY KEY, "
@@ -364,47 +365,52 @@ class myMySQL:
         # 如果表不存在，创建它
         if not result:
             # 执行SQL命令
-            cursor.execute(sql)
+            self.cursor.execute(sql)
         else:
-            print("数据表" + table_name + "已存在。")
-            print("The data table " + table_name + " already exists.")
-        cursor.close()
+            print(f'数据表 {table_name} 已存在')
+            print(f'The data table {table_name} already exists.')
+        self.cursor.close()
 
     def write_to_mysql(self, OUTPUT, record, types):
         # 创建一个游标对象
-        cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor()
 
         for line in OUTPUT:
             for i in range(len(line)):
                 if types[i] == "int" or types[i] == "bigInt":
                     try:
                         line[i] = int(line[i])
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = 0
                 elif types[i] == "double":
                     try:
                         line[i] = float(line[i])
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = 0.0
                 elif types[i] == "datetime":
                     try:
                         line[i] = datetime.datetime.strptime(
                             line[i], '%Y-%m-%d %H:%M:%S')
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = datetime.datetime.strptime(
                             "1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
                 elif types[i] == "date":
                     try:
                         line[i] = datetime.datetime.strptime(
                             line[i], '%Y-%m-%d')
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = datetime.datetime.strptime(
                             "1970-01-01", '%Y-%m-%d')
                 elif types[i] == "time":
                     try:
                         line[i] = datetime.datetime.strptime(
                             line[i], '%H:%M:%S')
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = datetime.datetime.strptime(
                             "00:00:00", '%H:%M:%S')
             to_write = []
@@ -412,21 +418,20 @@ class myMySQL:
                 if record[i]:
                     to_write.append(line[i])
             # 构造插入数据的 SQL 语句
-            sql = f"INSERT INTO " + self.table_name + \
-                " "+self.field_sql+" VALUES ("
-            for item in to_write:
+            sql = f'INSERT INTO {self.table_name} {self.field_sql} VALUES ('
+            for _ in to_write:
                 sql += "%s, "
             # 移除最后的逗号并添加闭合的括号
             sql = sql.rstrip(', ') + ")"
             # 执行 SQL 语句
             try:
-                cursor.execute(sql, to_write)
+                self.cursor.execute(sql, to_write)
             except pymysql.OperationalError as e:
                 print("Error:", e)
                 print("Try to reconnect to the database...")
                 self.connect()
-                cursor = self.conn.cursor() # 重新创建游标对象
-                cursor.execute(sql, to_write) # 重新执行SQL语句
+                self.cursor = self.conn.cursor() # 重新创建游标对象
+                self.cursor.execute(sql, to_write) # 重新执行SQL语句
                 # self.write_to_mysql(OUTPUT, record, types)
             except Exception as e:
                 print("Error:", e)
@@ -441,9 +446,16 @@ class myMySQL:
         self.conn.commit()
 
         # 关闭游标和连接
-        cursor.close()
+        self.cursor.close()
 
     def close(self):
-        self.conn.close()
-        print("成功关闭数据库。")
-        print("Successfully closed the database.")
+        try:
+            self.conn.close()
+            print("成功关闭数据库。")
+            print("Successfully closed the database.")
+        except:
+            print("关闭数据库失败。")
+            print("Failed to close the database.")
+    
+    def __del__(self):
+        self.close()
