@@ -94,10 +94,11 @@ class MyChrome(webdriver.Chrome):
             if not frames:
                 raise NoSuchElementException(f"No iframes found in the current page while searching for {value}")
             self.iframe_env = True
-            return self.find_element_recursive(by, value, frames)
+            element = self.find_element_recursive(by, value, frames)
         else:
             # Find element in the main document as normal
-            return super(MyChrome, self).find_element(by=by, value=value)
+            element = super(MyChrome, self).find_element(by=by, value=value)
+        return element
 
     # def find_elements(self, by=By.ID, value=None, iframe=False):
     #     # 在这里改变查找元素的行为
@@ -165,10 +166,11 @@ class MyChrome(webdriver.Chrome):
             if not frames:
                 return []  # Return an empty list if no iframes are found
             self.iframe_env = True
-            return self.find_elements_recursive(by, value, frames)
+            elements = self.find_elements_recursive(by, value, frames)
         else:
             # Find elements in the main document as normal
-            return super(MyChrome, self).find_elements(by=by, value=value)
+            elements =  super(MyChrome, self).find_elements(by=by, value=value)
+        return elements
 
 # MacOS不支持直接打包带Cloudflare的功能，如果要自己编译运行，可以把这个if去掉，然后配置好浏览器和driver路径
 if sys.platform != "darwin": 

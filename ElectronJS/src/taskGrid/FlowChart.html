@@ -633,13 +633,15 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="list.nl[index.nowNodeIndex]['parameters']['waitElementIframeIndex']" type="number" required></input>
                     <label style="margin-top:5px">Maximum waiting time for element appearance (in seconds):</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="list.nl[index.nowNodeIndex]['parameters']['waitElementTime']" type="number" required></input>
-                    <label style="margin-top:5px">Wait seconds <b>after</b> execution (can set decimal values, e.g., 0.5):</label>
-                    <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
-                    <label>Wait Type</label>
-                    <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
-                        <option value = 0>Fixed wait (set to wait for 10 seconds then it will wait for 10 seconds)</option>
-                        <option value = 1>Random wait (set to wait for 10 seconds then it will randomly wait for 10 × 0.5 - 10 × 1.5 seconds)</option>
-                    </select>
+                    <div v-if="nodeType!=10">
+                        <label style="margin-top:5px">Wait seconds <b>after</b> execution (can set decimal values, e.g., 0.5):</label>
+                        <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
+                        <label>Wait Type</label>
+                        <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
+                            <option value = 0>Fixed wait (set to wait for 10 seconds then it will wait for 10 seconds)</option>
+                            <option value = 1>Random wait (set to wait for 10 seconds then it will randomly wait for 10 × 0.5 - 10 × 1.5 seconds)</option>
+                        </select>
+                    </div>
                 </div>
 <!--                <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">Confirm</button>-->
 

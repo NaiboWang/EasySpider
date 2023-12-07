@@ -932,7 +932,6 @@ class BrowserThread(Thread):
                 if code > 0:
                     executeBranchId = i
                     break
-        # rt.end()
         if executeBranchId != 0:
             self.executeNode(executeBranchId, loopElement, clickPath, index)
         else:
