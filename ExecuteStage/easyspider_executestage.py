@@ -2,6 +2,7 @@
 # import atexit
 import atexit
 import copy
+import platform
 import shutil
 import string
 import undetected_chromedriver as uc
@@ -1711,6 +1712,7 @@ class BrowserThread(Thread):
                         p["relativeXPath"], self.outputParameters, self)
                     # 只有当前环境不变变化才可以快速提取数据
                     if self.browser.iframe_env != p["iframe"]:
+                    # if p["iframe"] or self.browser.iframe_env != p["iframe"]: # 如果是iframe，则不能快速提取数据，主要是各个上下文的iframe切换，但一般不会有人这么做
                         p["optimizable"] = False
                         continue
                     # relativeXPath = relativeXPath.lower()
@@ -1820,7 +1822,7 @@ class BrowserThread(Thread):
                             element = self.browser.find_element(
                                 By.XPATH, relativeXPath, iframe=p["iframe"])
                     except (
-                    NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
+                    NoSuchElementException, InvalidSelectorException, StaleElementReferenceException) as e:  # 找不到元素的时候，使用默认值
                         # self.print_and_log(p)
                         try:
                             content = p["default"]
@@ -1835,6 +1837,7 @@ class BrowserThread(Thread):
                                 self.print_and_log(
                                     "提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
                                         p["name"], relativeXPath))
+                                self.dataNotFoundKeys[p["name"]] = True
                         except:
                             pass
                         continue
@@ -1916,92 +1919,57 @@ if __name__ == '__main__':
     print(c)
     options = webdriver.ChromeOptions()
     driver_path = "chromedriver.exe"
-    import platform
-
     print(sys.platform, platform.architecture())
-    # option = webdriver.ChromeOptions()
     if not os.path.exists(os.getcwd() + "/Data"):
         os.mkdir(os.getcwd() + "/Data")
     if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # MacOS需要用option而不是options！
-        # option.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # option.add_extension(
-            # "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         options.add_extension(
             "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
-        # options.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # # MacOS需要用option而不是options！
-        # option.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # driver_path = os.getcwd()+ "/chromedriver_mac64"
         print(driver_path)
         if c.config_folder == "":
             c.config_folder = os.path.expanduser(
                 "~/Library/Application Support/EasySpider/")
-        # print("Config folder for MacOS:", c.config_folder)
     elif os.path.exists(os.getcwd() + "/EasySpider/resources"):  # 打包后的路径
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/EasySpider")
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
-            # option.binary_location = os.path.join(
-            #     os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
-            # option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
-            # option.binary_location = os.path.join(
-                # os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
-            # option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
-            # option.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
-            # option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         else:
             print("Unsupported platform")
             sys.exit()
         print("Chrome location:", options.binary_location)
         print("Chromedriver location:", driver_path)
-    # elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
-    #     print("Finding chromedriver in ./Chrome",
-    #           os.getcwd()+"/Chrome")
-    #     options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
-    #     # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
-    #     driver_path = "./Chrome/chromedriver.exe"
     elif os.path.exists(os.getcwd() + "/../ElectronJS"):
         # 软件dev用
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/ElectronJS")
-        # option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
         options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
         driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        # option.add_extension("../ElectronJS/XPathHelper.crx")
         options.add_extension("../ElectronJS/XPathHelper.crx")
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
-        # option.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"
-        # option.add_extension("XPathHelper.crx")
         options.add_extension("XPathHelper.crx")
 
-    # option.add_experimental_option(
-        # 'excludeSwitches', ['enable-automation'])  # 以开发者模式
     options.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
 
-    # user_data_dir = r''  # 注意没有Default！
-
-    # options.add_argument('--user-data-dir='+p)
 
     # 总结：
     # 0. 带Cookie需要用userdatadir
@@ -2018,22 +1986,15 @@ if __name__ == '__main__':
     except:
         pass
 
-    # options.add_argument(
-    #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
-    # option.add_argument(
-        # "--disable-blink-features=AutomationControlled")  # TMALL 反扒
     options.add_argument(
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
 
     options.add_argument('-ignore-certificate-errors')
     options.add_argument('-ignore -ssl-errors')
-    # option.add_argument('-ignore-certificate-errors')
-    # option.add_argument('-ignore -ssl-errors')
 
     if c.headless:
         print("Headless mode")
         print("无头模式")
-        # option.add_argument("--headless")
         options.add_argument("--headless")
 
     tmp_options = []
@@ -2058,11 +2019,7 @@ if __name__ == '__main__':
             shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
             print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
             print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
-            # option = tmp_options[i]["option"]
             options = tmp_options[i]["options"]
-            # option.add_argument(
-                # f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒
-            # option.add_argument("--profile-directory=Default")
             options.add_argument(
                 f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒
             options.add_argument("--profile-directory=Default")
@@ -2074,7 +2031,6 @@ if __name__ == '__main__':
     threads = []
     for i in range(len(c.ids)):
         id = c.ids[i]
-        # option = tmp_options[i]["option"]
         options = tmp_options[i]["options"]
         print("id: ", id)
         if c.read_type == "remote":
@@ -2100,7 +2056,6 @@ if __name__ == '__main__':
             cloudflare = 0
         if cloudflare == 0:
             options.add_argument('log-level=3')  # 隐藏日志
-            # option.add_argument('log-level=3')  # 隐藏日志
             path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(id))
             print("Data path:", path)
             options.add_experimental_option("prefs", {
@@ -2116,37 +2071,17 @@ if __name__ == '__main__':
                 'safebrowsing.disable_download_protection': True,
                 'profile.default_content_settings.popups': 0,
             })
-            # option.add_experimental_option("prefs", {
-            #     # 设置文件下载路径
-            #     "download.default_directory": path,
-            #     "download.prompt_for_download": False,  # 禁止下载提示框
-            #     "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
-            #     "download.directory_upgrade": True,
-            #     "download.extensions_to_open": "applications/pdf",
-            #     "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
-            #     "safebrowsing_for_trusted_sources_enabled": False,
-            #     "safebrowsing.enabled": False,
-            #     'safebrowsing.enabled': False,
-            #     'safebrowsing.disable_download_protection': True,
-            #     'profile.default_content_settings.popups': 0,
-            # })
             try:
                 if service["environment"] == 1:
-                    # option.add_experimental_option(
-                        # 'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
                     options.add_experimental_option(
                         'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
             except:
                 pass
-            # browser_t = MyChrome(
-                # options=options, chrome_options=option, executable_path=driver_path)
             selenium_service = Service(executable_path=driver_path)
             browser_t = MyChrome(service=selenium_service, options=options)
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器
-                # options.add_argument("--auto-open-devtools-for-tabs")
-                # options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # 需要用自己的浏览器
                 browser_t = MyUCChrome(
                     options=options, driver_executable_path=driver_path)
                 links = list(filter(isnotnull, service["links"].split("\n")))
@@ -2199,8 +2134,6 @@ if __name__ == '__main__':
         pass
         # print("您的操作系统不支持暂停功能。")
         # print("Your operating system does not support the pause function.")
-
-    # print("线程长度：", len(threads) )
 
     for thread in threads:
         print()
