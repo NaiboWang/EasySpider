@@ -147,6 +147,7 @@ let app = new Vue({
                 "relative": false,
                 "name": LANG("自定义参数_" + parameterNum.toString(), "Custom_Field_" + parameterNum.toString()),
                 "desc": "",
+                "iframe": false,
                 "extractType": 0,
                 "relativeXPath": "//body",
                 "recordASField": 1,

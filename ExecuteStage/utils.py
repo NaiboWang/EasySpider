@@ -94,6 +94,25 @@ def on_release_creator(event, press_time):
 #                 event.clear()
 #         time.sleep(1)  # 每秒检查一次
 
+def detect_optimizable(para, ignoreWaitElement=True, waitElement="", includePicture=False):
+    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1:
+        if para["nodeType"] <= 2:
+            if ignoreWaitElement or waitElement == "":
+                return True
+            else:
+                return False
+        elif para["nodeType"] == 4: # 如果是图片
+            if includePicture:
+                if para["downloadPic"]:
+                    return False
+                else:
+                    return True
+            else:
+                return False
+    else:
+        return False
+
+
 
 def download_image(browser, url, save_directory):
     # 定义浏览器头信息
@@ -195,6 +214,7 @@ def replace_field_values(orginal_text, outputParameters, browser=None):
                 replaced_text = replaced_text.replace(match.group(0), eval_replaced_text)
     except Exception as e:
         print("eval替换失败，请检查eval语句是否正确。| Failed to replace eval, please check if the eval statement is correct.")
+        print(e)
         replaced_text = orginal_text
     return replaced_text
 

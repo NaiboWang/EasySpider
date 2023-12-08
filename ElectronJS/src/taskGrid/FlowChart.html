@@ -505,14 +505,14 @@ Please note that this feature does not support assigning values to variables. In
                     <!-- 循环选项 -->
                     <label>Loop Type:</label>
                     <select v-model='loopType' class="form-control">
-                        <option value = 0>Single Element</option>
-                        <option value = 1>Unfixed Element List</option>
-                        <option value = 2>Fixed Element List</option>
-                        <option value = 3>Text List</option>
-                        <option value = 4>Weblink List</option>
-                        <option value = 5>Return value of JavaScript command (start with 'return ')</option>
-                        <option value = 6>Return value of system command</option>
-                        <option value = 7>Return value of Python code under current environment</option>
+                        <option :value = 0>Single Element</option>
+                        <option :value = 1>Unfixed Element List</option>
+                        <option :value = 2>Fixed Element List</option>
+                        <option :value = 3>Text List</option>
+                        <option :value = 4>Weblink List</option>
+                        <option :value = 5>Return value of JavaScript command (start with 'return ')</option>
+                        <option :value = 6>Return value of system command</option>
+                        <option :value = 7>Return value of Python code under current environment</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
                         <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
@@ -545,7 +545,7 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <div v-if='parseInt(loopType) == 0'>
                         <label>Maximum number of loop iterations (0 represents an infinite loop until no more elements are found or no changes in page content are detected):</label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
-                        <label>Exit the loop when the content of the following page element does not change:</label>
+                        <label>Exit the loop when the content of the following page element does not change (only works when loop iterations are set to 0):</label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]'></input>
                     </div>
 

@@ -6,7 +6,7 @@ import platform
 import shutil
 import string
 import undetected_chromedriver as uc
-from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
+from utils import detect_optimizable, download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, replace_field_values, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
@@ -46,7 +46,7 @@ import time
 import requests
 from ddddocr import DdddOcr
 from urllib.parse import urljoin
-from lxml import etree
+from lxml import etree, html
 import onnxruntime
 
 onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
@@ -280,8 +280,7 @@ class BrowserThread(Thread):
                     except:
                         para["iframe"] = False
                     try:
-                        para["relativeXPath"] = lowercase_tags_in_xpath(
-                            para["relativeXPath"])
+                        para["relativeXPath"] = lowercase_tags_in_xpath(para["relativeXPath"])
                     except:
                         pass
                     try:
@@ -293,11 +292,7 @@ class BrowserThread(Thread):
                             "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
                         self.print_and_log(
                             "If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
-                    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para[
-                        "nodeType"] <= 2:
-                        para["optimizable"] = True
-                    else:
-                        para["optimizable"] = False
+                    para["optimizable"] = detect_optimizable(para)
             elif node["option"] == 4:  # 输入文字
                 try:
                     index = node["parameters"]["index"]  # 索引值
@@ -326,6 +321,56 @@ class BrowserThread(Thread):
                         node["parameters"]["exitElement"] = "//body"
                 except:
                     node["parameters"]["exitElement"] = "//body"
+                node["parameters"]["quickExtractable"] = False # 是否可以快速提取
+                # 如果循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
+                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3:
+                    paras = self.procedure[node["sequence"][0]]["parameters"]["paras"]
+                    waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
+                    node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
+                    for para in paras:
+                        optimizable = detect_optimizable(para, ignoreWaitElement=False, waitElement=waitElement, includePicture=True)
+                        if para["iframe"]: # 如果是iframe，那么不可以快速提取
+                            optimizable = False
+                        if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
+                            node["parameters"]["quickExtractable"] = False
+                            break
+                    if node["parameters"]["quickExtractable"]:
+                        self.print_and_log("循环操作<" + node["title"] + ">可以快速提取数据")
+                        self.print_and_log("Loop operation <" + node["title"] + "> can extract data quickly")
+                        node["parameters"]["clear"] = self.procedure[node["sequence"][0]]["parameters"]["clear"]
+                        node["parameters"]["newLine"] = self.procedure[node["sequence"][0]]["parameters"]["newLine"]
+                        if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
+                            node["parameters"]["baseXPath"] = node["parameters"]["xpath"]
+                        elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
+                            node["parameters"]["baseXPath"] = node["parameters"]["pathList"]
+                        node["parameters"]["quickParas"] = []
+                        for para in paras:
+                            content_type = ""
+                            if para["relativeXPath"].find("/@href") >= 0 or para["relativeXPath"].find("/text()") >= 0 or para["relativeXPath"].find(
+                                    "::text()") >= 0:
+                                content_type = ""
+                            elif para["nodeType"] == 2:
+                                content_type = "//@href"
+                            elif para["nodeType"] == 4: # 图片链接
+                                content_type = "//@src"
+                            elif para["contentType"] == 1:
+                                content_type = "/text()"
+                            elif para["contentType"] == 0:
+                                content_type = "//text()"
+                            if para["relative"]: # 如果是相对XPath
+                                xpath = "." + para["relativeXPath"] + content_type
+                            else:
+                                xpath = para["relativeXPath"] + content_type
+                            # 如果是id()或(//div)[1]这种形式，不需要包/html/body
+                            # if xpath.find("/body") < 0 and xpath.startswith("/"):
+                            #     xpath = "/html/body" + xpath
+                            node["parameters"]["quickParas"].append({
+                                "name": para["name"],
+                                "relative": para["relative"],
+                                "xpath": xpath,
+                                "nodeType": para["nodeType"],
+                                "default": para["default"],
+                            })
         self.print_and_log("预处理完成|Preprocess completed")
 
     def readFromExcel(self):
@@ -984,15 +1029,50 @@ class BrowserThread(Thread):
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
         thisHitoryURL = self.browser.current_url
-        if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
+        # 快速提取处理
+        if node["parameters"]["quickExtractable"]:
+            self.browser.switch_to.default_content() # 切换到主页面
+            tree = html.fromstring(self.browser.page_source)
+            if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
+                baseXPath = replace_field_values(node["parameters"]["baseXPath"], self.outputParameters, self)
+                rows = tree.xpath(baseXPath)
+            elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
+                rows = []
+                for path in node["parameters"]["baseXPath"].split("\n"):
+                    baseXPath = replace_field_values(path, self.outputParameters, self)
+                    rows.extend(tree.xpath(baseXPath))
+                
+            for row in rows:
+                if node["parameters"]["clear"] == 1:
+                    self.clearOutputParameters()
+                for para in node["parameters"]["quickParas"]:
+                    xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+                    content = row.xpath(xpath)
+                    try:
+                        content = ' '.join(result.strip()
+                                        for result in content if result.strip())
+                        # 链接或者图片的情况下，合并链接相对路径为绝对路径
+                        if para["nodeType"] == 2 or para["nodeType"] == 4:
+                            base_url = self.browser.current_url
+                            # 合并链接相对路径为绝对路径
+                            content = urljoin(base_url, content)
+                        if len(content) == 0:
+                            content = para["default"]
+                    except:
+                        content = para["default"]
+                    self.outputParameters[para["name"]] = content
+                if node["parameters"]["newLine"]:
+                    line = new_line(self.outputParameters,
+                            self.maxViewLength, self.outputParametersRecord)
+                    self.OUTPUT.append(line)
+            self.saveData()
+        elif int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
             # 无跳转标签页操作
             count = 0  # 执行次数
             bodyText = "-"
             while True:  # do while循环
                 try:
                     finished = False
-                    # newBodyText = self.browser.page_source
-                    # newBodyText = self.browser.find_element(By.XPATH, "//body").text
                     if node["parameters"]["exitCount"] == 0:
                         newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
                         if node["parameters"]["iframe"]:  # 如果标记了iframe

@@ -505,14 +505,14 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <!-- 循环选项 -->
                     <label>循环类型：</label>
                     <select v-model='loopType' class="form-control">
-                        <option value = 0>单个元素（多用于循环点击下一页）</option>
-                        <option value = 1>不固定元素列表</option>
-                        <option value = 2>固定元素列表</option>
-                        <option value = 3>文本列表（多用于循环在文本框输入文本）</option>
-                        <option value = 4>网址列表（多用于循环打开网页）</option>
-                        <option value = 5>JavaScript命令返回值（需以return 开头）</option>
-                        <option value = 6>系统命令返回值</option>
-                        <option value = 7>执行环境下的Python表达式值（eval操作）</option>
+                        <option :value = 0>单个元素（多用于循环点击下一页）</option>
+                        <option :value = 1>不固定元素列表</option>
+                        <option :value = 2>固定元素列表</option>
+                        <option :value = 3>文本列表（多用于循环在文本框输入文本）</option>
+                        <option :value = 4>网址列表（多用于循环打开网页）</option>
+                        <option :value = 5>JavaScript命令返回值（需以return 开头）</option>
+                        <option :value = 6>系统命令返回值</option>
+                        <option :value = 7>执行环境下的Python表达式值（eval操作）</option>
                       </select>
                     <div v-if='parseInt(loopType) < 2'>
                         <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
@@ -543,9 +543,9 @@ print(emotlib.emoji()) # 使用其中的函数。
                     </div>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
                     <div v-if='parseInt(loopType) == 0'>
-                    <label>最多执行循环次数（0代表无限循环直到找不到元素或检测不到页面内容变化为止）：</label>
+                    <label>最多执行循环次数（0代表无限循环直到找不到元素或检测不到页面元素内容变化为止）：</label>
                     <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
-                        <label>检测页面以下元素内容不变化时退出循环：</label>
+                        <label>检测页面以下元素内容不变化时退出循环（次数为0时生效）：</label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]'></input>
                     </div>
 
