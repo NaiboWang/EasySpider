@@ -141,12 +141,13 @@ function handleElement() {
     app._data["nowNode"] = nodeList[vueData.nowNodeIndex];
     app._data["nodeType"] = app._data["nowNode"]["option"];
     app._data.useLoop = app._data["nowNode"]["parameters"]["useLoop"];
+    app._data["codeMode"] = -1; //自定义初始化
     if (app._data["nodeType"] == 8) {
         app._data.loopType = app._data["nowNode"]["parameters"]["loopType"];
     } else if (app._data["nodeType"] == 3) {
         app._data.paraIndex = 0; //参数索引初始化
         app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
-    } else if(app._data["nodeType"] == 5){
+    } else if (app._data["nodeType"] == 5){
         app._data.codeMode = app._data["nowNode"]["parameters"]["codeMode"];
     } else if (app._data["nodeType"] == 10) {
         app._data.TClass = app._data["nowNode"]["parameters"]["class"];
@@ -204,6 +205,7 @@ function addParameters(t) {
         t["parameters"]["afterJS"] = ""; //执行后执行的js
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
     } else if(t.option == 5) { //自定义操作
+        t["title"] = LANG("执行JavaScript", "Run JavaScript");
         t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["newLine"] = 1; //生成新行
         t["parameters"]["codeMode"] = 0; //代码模式，0代表JS, 2代表系统级别

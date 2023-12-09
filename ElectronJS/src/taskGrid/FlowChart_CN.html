@@ -91,7 +91,7 @@
                 </div>
 
                 <div>
-                    <label>提示：鼠标移到笑脸可查看提示，在流程图中双击选项可试运行。</label>
+                    <label>提示：鼠标移到笑脸可查看提示，在流程图中<b>双击</b>选项可试运行。</label>
                     <label>选项名称</span>：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
                 </div>
@@ -369,18 +369,18 @@
 
                 <div class="elements" v-if="nodeType==5">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
-                    <label>自定义执行模式</label>
-                    <select v-model='codeMode' class="form-control">
-                        <option value = 0>执行一段JavaScript脚本（如要获得返回值则需以return 开头）</option>
-                        <option value = 1>执行一段操作系统级别命令</option>
-                        <option v-if="nowNode['isInLoop']" value = 2>针对当前循环项的JavaScript脚本</option>
-                        <option v-if="nowNode['isInLoop']" value = 3>退出当前循环（Break操作）</option>
-                        <option v-if="nowNode['isInLoop']" value = 4>跳过当前循环后面的操作（Continue操作）</option>
-                        <option value = 5>在执行环境下运行Python代码（exec操作）</option>
-                        <option value = 6>在执行环境下获得Python表达式值（eval操作）</option>
-                        <option value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
-                        <option value = 8>刷新页面</option>
-                        <option value = 9>发送邮件</option>
+                    <label>执行模式</label>
+                    <select v-model='codeMode' class="form-control" @change="handleCodeModeChange">
+                        <option :value = 0>执行一段JavaScript脚本（如要获得返回值则需以return 开头）</option>
+                        <option :value = 1>执行一段操作系统级别命令</option>
+                        <option v-if="nowNode['isInLoop']" :value = 2>针对当前循环项的JavaScript脚本</option>
+                        <option v-if="nowNode['isInLoop']" :value = 3>退出当前循环（Break操作）</option>
+                        <option v-if="nowNode['isInLoop']" :value = 4>跳过当前循环后面的操作（Continue操作）</option>
+                        <option :value = 5>在执行环境下运行Python代码（exec操作）</option>
+                        <option :value = 6>在执行环境下获得Python表达式值（eval操作）</option>
+                        <option :value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
+                        <option :value = 8>刷新页面</option>
+                        <option :value = 9>发送邮件</option>
                     </select>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
@@ -470,7 +470,7 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <label>邮件内容：</label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="这里写邮件内容"></textarea>
                     </div>
-                    
+
                 </div>
 
                 <div class="elements" v-if="nodeType==6">

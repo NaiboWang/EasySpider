@@ -36,8 +36,10 @@
       height: 45px;
       width: 180px;
       border-radius: 7px;
-      border: skyblue solid;
-      background: rgb(73, 156, 189);
+      /*border: skyblue solid;*/
+      border: #007bff solid;
+      /*background: rgb(73, 156, 189);*/
+      background: rgb(10, 120, 200);
       color: white;
       text-align: center;
       padding: 5px;
@@ -76,7 +78,9 @@
   }
 
   .loop {
-      border: skyblue solid;
+      /*border: skyblue solid;*/
+      border: rgb(10,120,200) solid;
+      border-color: deepskyblue;
       text-align: center;
       padding: 5px;
       width: 90%;
@@ -104,7 +108,7 @@
   .branch {
       display: inline-block;
       margin: 5px;
-      border: skyblue solid;
+      border: deepskyblue solid;
       text-align: center;
       padding: 5px;
       width: 300px;

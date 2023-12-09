@@ -45,7 +45,7 @@ let app = new Vue({
         index: vueData,
         nodeType: 0, // 当前元素的类型
         nowNode: null, // 用来临时存储元素的节点
-        codeMode: 0, //代码模式
+        codeMode: -1, //代码模式
         loopType: -1, //点击循环时候用来循环选项
         useLoop: false, //记录是否使用循环内元素
         nowArrow: {"position": -1, "pId": 0, "num": 0},
@@ -112,18 +112,60 @@ let app = new Vue({
         },
         codeMode: {
             handler: function (newVal, oldVal) {
-                this.nowNode["parameters"]["codeMode"] = newVal;
-                // if(newVal == 3){
-                //     this.nowNode["title"] = LANG("退出循环", "Exit Loop");
-                // } else if(newVal == 4){
-                //     this.nowNode["title"] = LANG("跳过当前循环", "Skip Loop");
-                // } else {
-                //     this.nowNode["title"] = LANG("自定义操作", "Custom Action");
+                // this.nowNode["parameters"]["codeMode"] = newVal;
+                // console.log(newVal, oldVal);
+                // if (newVal == undefined){
+                //     this.codeMode = parseInt(oldVal);
                 // }
+                // select绑定一定要用:value！！！不然会出现奇怪的问题
             }
         }
     },
     methods: {
+        handleCodeModeChange: function (value) {
+            // if (this.codeMode == undefined || this.codeMode == null || this.codeMode == -1) {
+            //     return;
+            // }
+            this.nowNode["parameters"]["codeMode"] = this.codeMode;
+            // console.log(this.codeMode, value);
+            switch (parseInt(this.codeMode)) {
+                case 0:
+                    this.nowNode["title"] = LANG("执行JavaScript", "Run JavaScript");
+                    break;
+                case 1:
+                    this.nowNode["title"] = LANG("运行操作系统命令", "Run OS Command");
+                    break;
+                case 2:
+                    this.nowNode["title"] = LANG("执行JavaScript", "Run JavaScript");
+                    break;
+                case 3:
+                    this.nowNode["title"] = LANG("退出循环", "Exit Loop");
+                    break;
+                case 4:
+                    this.nowNode["title"] = LANG("跳过当前循环", "Skip Loop");
+                    break;
+                case 5:
+                    this.nowNode["title"] = LANG("执行Python代码", "Exec Python");
+                    break;
+                case 6:
+                    this.nowNode["title"] = LANG("获得Python表达式值", "Eval Python");
+                    break;
+                case 7:
+                    this.nowNode["title"] = LANG("暂停程序", "Pause Task");
+                    break;
+                case 8:
+                    this.nowNode["title"] = LANG("刷新页面", "Refresh Page");
+                    break;
+                case 9:
+                    this.nowNode["title"] = LANG("发送邮件", "Send Email");
+                    break;
+                case -1: // 跳转到其他操作时，不改变标题
+                    break;
+                default: // 默认情况
+                    this.nowNode["title"] = LANG("自定义操作", "Custom Action");
+                    break;
+            }
+        },
         getCookies: function () { //获取cookies
             let command = new WebSocket("ws://localhost:" + getUrlParam("wsport"))
             command.onopen = function () {
@@ -402,7 +444,6 @@ function toolBoxKernel(e, para = null) {
             let id = nowNode.getAttribute('data');
             let pidt = pId2;
             let move = true;
-            console.log(pidt, id);
             while (pidt != 0) {
                 if (pidt == id) {
                     move = false;
@@ -540,7 +581,6 @@ function toolBoxKernel(e, para = null) {
         return t;
     }
     option = 0;
-
 }
 
 $(".options").mousedown(function () {

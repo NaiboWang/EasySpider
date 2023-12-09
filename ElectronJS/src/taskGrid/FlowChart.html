@@ -91,7 +91,7 @@
                 </div>
 
                 <div>
-                    <label>Hint: Move the mouse to the smiley face to view the hint, double-click the option in the flowchart to try to run.</label>
+                    <label>Hint: Move the mouse to the smiley face to view the hint, <b>double-click</b> the option in the flowchart to try to run.</label>
                     <label>Option Name:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
                 </div>
@@ -369,18 +369,18 @@
 
                 <div class="elements" v-if="nodeType==5">
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Action is inside iframe</p>
-                    <label>Custom Action Mode</label>
-                    <select v-model='codeMode' class="form-control">
-                        <option value = 0>Execute JavaScript script (Start with "return " if you want to get return value)</option>
-                        <option value = 1>Execute operating system-level command</option>
-                        <option v-if="nowNode['isInLoop']" value = 2>Execute JavaScript script for the current element inside the loop</option>
-                        <option v-if="nowNode['isInLoop']" value = 3>Exit Current Loop (the "Break" operation)</option>
-                        <option v-if="nowNode['isInLoop']" value = 4>Skip Current Loop (the "Continue" operation)</option>
-                        <option value = 5>Run Python code on current environment (the "exec" operation)</option>
-                        <option value = 6>Get value of a Python expression (the "eval" operation)</option>
-                        <option value = 7>Pause program execution (such as when the captcha box appears)</option>
-                        <option value = 8>Refresh page</option>
-                        <option value = 9>Send Email</option>
+                    <label>Action Mode</label>
+                    <select v-model='codeMode' class="form-control" @change="handleCodeModeChange">
+                        <option :value = 0>Execute JavaScript script (Start with "return " if you want to get return value)</option>
+                        <option :value = 1>Execute operating system-level command</option>
+                        <option v-if="nowNode['isInLoop']" :value = 2>Execute JavaScript script for the current element inside the loop</option>
+                        <option v-if="nowNode['isInLoop']" :value = 3>Exit Current Loop (the "Break" operation)</option>
+                        <option v-if="nowNode['isInLoop']" :value = 4>Skip Current Loop (the "Continue" operation)</option>
+                        <option :value = 5>Run Python code on current environment (the "exec" operation)</option>
+                        <option :value = 6>Get value of a Python expression (the "eval" operation)</option>
+                        <option :value = 7>Pause program execution (such as when the captcha box appears)</option>
+                        <option :value = 8>Refresh page</option>
+                        <option :value = 9>Send Email</option>
                     </select>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
