@@ -211,6 +211,16 @@ function addParameters(t) {
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["recordASField"] = 0; //是否记录脚本输出
         t["parameters"]["paraType"] = "text"; //记录脚本输出的字段索引
+        t["parameters"]["emailConfig"] = {
+            "host": "",
+            "port": 465,
+            "username": "",
+            "password": "",
+            "from": "",
+            "to": "",
+            "subject": "",
+            "content": "",
+        }
     } else if (t.option == 6) { //切换下拉选项
         t["parameters"]["optionMode"] = 0; //下拉模式
         t["parameters"]["optionValue"] = ""; //下拉值

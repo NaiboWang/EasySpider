@@ -380,13 +380,8 @@
                         <option value = 6>在执行环境下获得Python表达式值（eval操作）</option>
                         <option value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
                         <option value = 8>刷新页面</option>
+                        <option value = 9>发送邮件</option>
                     </select>
-                    <div v-if='nowNode["parameters"]["codeMode"] == 7'>
-                        <label>此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘自定义暂停/继续快捷键（默认：p键）后才继续执行。</label>
-                    </div>
-                    <div v-if='nowNode["parameters"]["codeMode"] == 8'>
-                        <label>此操作可以刷新当前页面。</label>
-                    </div>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
@@ -452,11 +447,30 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <label>最长等待脚本执行时间（0代表无限等待）： </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
-
-
-
-
-
+                    <div v-if='nowNode["parameters"]["codeMode"] == 7'>
+                        <label>此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘自定义暂停/继续快捷键（默认：p键）后才继续执行。</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 8'>
+                        <label>此操作可以刷新当前页面。</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 9'>
+                        <label>此操作可以发送邮件，如用于爬虫任务完成后发送邮件通知。</label>
+                        <label>STMP邮件服务器主机：</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["host"]' placeholder="如smtp.163.com"></input>
+                        <label>邮件服务器端口：</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["port"]' placeholder="如465"></input>
+                        <label>发件人邮箱用户名：</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["username"]'></input>
+                        <label>发件人邮箱密码（设置了密码注意不要轻易泄露任务文件！）：</label>
+                        <input onkeydown="inputDelete(event)" type="password" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["password"]' placeholder="多数邮箱服务器为授权码而不是原密码"></input>
+                        <label>收件人邮箱地址：</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["to"]' placeholder="多个收件人用英文逗号隔开"></input>
+                        <label>邮件主题：</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["subject"]' placeholder="这里写邮件主题"></input>
+                        <label>邮件内容：</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="这里写邮件内容"></textarea>
+                    </div>
+                    
                 </div>
 
                 <div class="elements" v-if="nodeType==6">

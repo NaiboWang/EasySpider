@@ -7,7 +7,7 @@ import shutil
 import string
 import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
-    on_press_creator, on_release_creator, readCode, replace_field_values, write_to_csv, write_to_excel, write_to_json
+    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -727,6 +727,8 @@ class BrowserThread(Thread):
         elif codeMode == 8:  # 刷新页面
             self.browser.refresh()
             self.print_and_log("根据设置的自定义操作，任务已刷新页面|Task refreshed page according to custom operation")
+        elif codeMode == 9:  # 发送邮件
+            send_email(node["parameters"]["emailConfig"])
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])

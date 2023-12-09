@@ -1,5 +1,4 @@
-# 控制流程的暂停和继续
-
+# 工具库
 import csv
 import datetime
 import json
@@ -14,6 +13,47 @@ import requests
 from urllib.parse import urlparse
 import pymysql
 from lxml import etree
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+
+def send_email(config):
+    """
+    发送邮件的函数。
+
+    :param config: 包含邮件配置信息的字典。
+    """
+    # 校验配置信息是否完整
+    # required_keys = ["host", "port", "username", "password", "from", "to", "subject", "content"]
+    # missing_keys = [key for key in required_keys if key not in config]
+    # if missing_keys:
+    #     raise ValueError(f"邮件配置缺少必要的键: {', '.join(missing_keys)}")
+    try:
+        print("正在发送邮件到：" + config['to'])
+        message = MIMEText(config['content'], 'plain', 'utf-8')
+        message['From'] = Header(f"{config['username'].split('@')[0]} <{config['username']}>")
+        to_name_list = []
+        for address in config['to'].split(','):
+            address = address.strip()
+            name = address.split('@')[0]
+            to_name_list.append(f"{name} <{address}>")
+        to_name_list = ', '.join(to_name_list)
+        message['To'] = Header(to_name_list)
+        message['Subject'] = Header(config['subject'], 'utf-8')
+        # 使用SSL加密方式连接邮件服务器
+        smtp_server = smtplib.SMTP_SSL(config['host'], config['port'])
+        smtp_server.login(config['username'], config['password'])
+        to_address_list = config['to'].split(',')
+        smtp_server.sendmail(config['username'], to_address_list, message.as_string())
+        print("邮件发送成功|Email sent successfully")
+    except Exception as e:
+        print(f"无法发送邮件，发生错误：{e}")
+        print(f"Failed to send email, error: {e}")
+    finally:
+        try:
+            smtp_server.quit()
+        except:
+            pass
 
 
 def is_valid_url(url):

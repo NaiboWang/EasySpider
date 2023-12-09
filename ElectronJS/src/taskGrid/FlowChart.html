@@ -380,13 +380,8 @@
                         <option value = 6>Get value of a Python expression (the "eval" operation)</option>
                         <option value = 7>Pause program execution (such as when the captcha box appears)</option>
                         <option value = 8>Refresh page</option>
+                        <option value = 9>Send Email</option>
                     </select>
-                    <div v-if='nowNode["parameters"]["codeMode"] == 7'>
-                        <label>This operation can pause program execution, such as when a captcha box appears, and it will not continue until you manually press and hold the pause/continue shortcut key (default: key p).</label>
-                    </div>
-                    <div v-if='nowNode["parameters"]["codeMode"] == 8'>
-                        <label>This operation can refresh the current page.</label>
-                    </div>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>
@@ -452,10 +447,29 @@ Please note that this feature does not support assigning values to variables. In
                         <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
                     </div>
-
-
-
-
+                    <div v-if='nowNode["parameters"]["codeMode"] == 7'>
+                        <label>This operation can pause program execution, such as when a captcha box appears, and it will not continue until you manually press and hold the pause/continue shortcut key (default: key p).</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 8'>
+                        <label>This operation can refresh the current page.</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 9'>
+                        <label>This operation can send emails, for example, to notify by email when a web scraping task is completed.</label>
+                        <label>SMTP email server host:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["host"]' placeholder="e.g., smtp.gmail.com"></input>
+                        <label>Email server port:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["port"]' placeholder="e.g., 465"></input>
+                        <label>Sender email username:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["username"]'></input>
+                        <label>Sender email password (Be careful not to leak the task file if a password is set!):</label>
+                        <input onkeydown="inputDelete(event)" type="password" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["password"]' placeholder="Most email servers use authorization codes, not the original password"></input>
+                        <label>Recipient email address:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["to"]' placeholder="Separate multiple recipients with commas"></input>
+                        <label>Email subject:</label>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["subject"]' placeholder="Write the email subject here"></input>
+                        <label>Email content:</label>
+                        <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="Write the email content here"></textarea>
+                    </div>
 
                 </div>
 
@@ -607,7 +621,7 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <div v-else-if='TClass > 0 && TClass < 7 || TClass == 8'>
                         <label>Code/Script Content: </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="If the return value is greater than 0 or true, the operations within this branch will be executed; otherwise, they will not be executed. For example: return document.body.scrollWidth > 1000 or python D:/test.py, representing examples of JS command and system command return values."></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>Please read the instructions first and then write the specific code in the input box above (not in this box). To execute a large amount of code, you can simply write "outside:myCode.py" and the program will read and execute the code within myCode.py under the EasySpider directory. 
+                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>Please read the instructions first and then write the specific code in the input box above (not in this box). To execute a large amount of code, you can simply write "outside:myCode.py" and the program will read and execute the code within myCode.py under the EasySpider directory.
 Use the expression value of Python code to determine whether a condition is satisfied. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
