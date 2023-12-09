@@ -199,7 +199,7 @@
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Task Description:~任务描述：" | lang}} {{task["desc"]}}</p>
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"API URL (POST):~API 调用网址（POST）：" |
             lang}} {{backEndAddressServiceWrapper}}/invokeTask?id={{task["id"]}}</p>
-        <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Click here to see how to invoke task by API via POST request (Postman or JavaScript): ~点此查看通过POST方式进行API调用的示例（Postman或JS代码）：" | lang}}<a target="_blank" href="https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example">https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example</a></p>
+        <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"URL of how to invoke task by API via POST request (Postman or JavaScript): ~通过POST方式进行API调用的示例教程（Postman或JS代码）：" | lang}}<a target="_blank" href="https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example">https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example</a></p>
         <p><button class="btn btn-primary" @click="readFromExcel">{{"Read parameters from Excel file~从Excel文件读取输入参数"
             | lang}}
         </button></p>
@@ -237,7 +237,7 @@
                 <input type="text" class="form-control" v-model="mysql_config_path"></input>
             </div>
         </form>
-        <label style="display: block">{{"Click the button below to execute the task. Long press p on the keyboard to pause the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以长按p键暂停任务的执行以便" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha: ~如手动输入密码，验证码等。" | lang}}</label>
+        <label style="display: block">{{"Click the button below to execute the task. Long press the pause button (default: p) on the keyboard to pause the task. Manual intervention is possible during the task execution process, ~点击以下按钮执行任务，任务执行过程中可以长按暂停键（默认：p键）暂停任务的执行以便" | lang }}<b>{{"~人工干预，" | lang}}</b>{{"such as manually input a password or captcha: ~如手动输入密码，验证码等。" | lang}}</label>
         <button class="btn btn-primary" v-on:click="localExecuteInstant(false)">{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" |
             lang}}
         </button>
@@ -247,6 +247,7 @@
         <!-- <button style="margin-left: 5px;" v-on:click="remoteExcuteInstant" class="btn btn-primary">Directly Run Remotely</button> -->
         <label style="margin-top: 15px;display: block">{{"You can also use the XPath Helper extension to test XPaths when executing the task:~执行任务的过程中也可以随时使用XPath Helper扩展来调试XPath。" | lang}}</label>
         <label style="margin-top: 15px;display: block">{{"如果想进行更复杂的操作，如设置无头模式，设置定时执行等，请使用下方的命令行执行任务选项并配置好命令行参数。~ If you want to perform more complex operations, such as setting headless mode, setting scheduled execution, etc., please use the command line to execute the task and configure the command line parameters below." | lang}}</label>
+        </label>
         <div style="margin-bottom: 10px;">
             <label style="margin-top: 10px;">{{"Execution ID (EID), execution files are stored in 'execution_instances' folder:~执行ID（执行文件存放在execution_instances文件夹内）：" | lang}}</label>
             <input class="form-control" v-model="ID"></input>

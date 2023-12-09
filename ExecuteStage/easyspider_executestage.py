@@ -322,13 +322,13 @@ class BrowserThread(Thread):
                 except:
                     node["parameters"]["exitElement"] = "//body"
                 node["parameters"]["quickExtractable"] = False # 是否可以快速提取
-                # 如果循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
-                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3:
+                # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
+                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
                     paras = self.procedure[node["sequence"][0]]["parameters"]["paras"]
                     waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
                     node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
                     for para in paras:
-                        optimizable = detect_optimizable(para, ignoreWaitElement=False, waitElement=waitElement, includePicture=True)
+                        optimizable = detect_optimizable(para, ignoreWaitElement=False, waitElement=waitElement)
                         if para["iframe"]: # 如果是iframe，那么不可以快速提取
                             optimizable = False
                         if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
@@ -1803,6 +1803,8 @@ class BrowserThread(Thread):
                         content_type = ""
                     elif p["nodeType"] == 2:
                         content_type = "//@href"
+                    elif p["nodeType"] == 4:
+                        content_type = "//@src"
                     elif p["contentType"] == 1:
                         content_type = "/text()"
                     elif p["contentType"] == 0:
@@ -1843,7 +1845,7 @@ class BrowserThread(Thread):
                         # 拼接所有文本内容并去掉两边的空白
                         content = ' '.join(result.strip()
                                            for result in content if result.strip())
-                        if p["nodeType"] == 2:
+                        if p["nodeType"] == 2 or p["nodeType"] == 4:
                             base_url = self.browser.current_url
                             # 合并链接相对路径为绝对路径
                             content = urljoin(base_url, content)
@@ -1992,6 +1994,7 @@ if __name__ == '__main__':
         "headless": False,
         "server_address": "http://localhost:8074",
         "keyboard": True,  # 是否监听键盘输入
+        "pause_key": "p",  # 暂停键
         "version": "0.6.0",
     }
     c = Config(config)
@@ -2189,10 +2192,13 @@ if __name__ == '__main__':
         #     Thread(target=check_pause, args=("p", event)).start()
         # else:
         time.sleep(3)
-        try:
-            pause_key = service["pauseKey"]
-        except:
-            pause_key = "p"
+        if c.pause_key == "p":
+            try:
+                pause_key = service["pauseKey"]
+            except:
+                pause_key = "p"
+        else:
+            pause_key = c.pause_key
         press_time = {"duration": 0, "is_pressed": False, "pause_key": pause_key}
         print("\n\n----------------------------------")
         print(
