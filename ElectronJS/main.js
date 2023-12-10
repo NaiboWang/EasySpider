@@ -198,7 +198,7 @@ async function findElement(driver, by, value, iframe = false) {
     }
 }
 
-async function findElementAcrossAllWindows(msg) {
+async function findElementAcrossAllWindows(msg, notifyBrowser=true) {
     let handles = await driver.getAllWindowHandles();
     // console.log("handles", handles);
     let content_handle = current_handle;
@@ -223,9 +223,9 @@ async function findElementAcrossAllWindows(msg) {
     } catch {
         iframe = msg.iframe;
     }
-    if (iframe) {
-        notify_browser("在IFrame中执行操作可能需要较长时间，请耐心等待。", "Executing operations in IFrame may take a long time, please wait patiently.", "info");
-    }
+    // if (iframe) {
+    //     notify_browser("在IFrame中执行操作可能需要较长时间，请耐心等待。", "Executing operations in IFrame may take a long time, please wait patiently.", "info");
+    // }
     let xpath = "";
     try {
         xpath = msg.message.xpath;
@@ -257,7 +257,7 @@ async function findElementAcrossAllWindows(msg) {
             }
         }
     }
-    if (element == null) {
+    if (element == null && notifyBrowser) {
         notify_browser("无法找到元素，请检查xpath是否正确：" + xpath, "Cannot find the element, please check if the xpath is correct: " + xpath, "warning");
     }
     return element;
@@ -356,7 +356,8 @@ async function beginInvoke(msg, ws) {
                     url = parent_node["parameters"]["textList"].split("\n")[0];
                 }
                 await driver.get(url);
-            } else if (option == 2 || option == 7) { //点击事件
+            }
+            else if (option == 2 || option == 7) { //点击事件
                 let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
                 if (parameters.useLoop) {
                     let parent_node = JSON.parse(msg.message.parentNode);
@@ -378,7 +379,39 @@ async function beginInvoke(msg, ws) {
                     await new Promise(resolve => setTimeout(resolve, afterJSWaitTime));
                 }
                 send_message_to_browser(JSON.stringify({"type": "cancelSelection"}));
-            } else if (option == 4) { //键盘输入事件
+            }
+            else if (option == 3) { //提取数据
+                notify_browser("提示：提取数据操作只能试运行设置的JavaScript语句。", "Hint: can only test JavaScript  statement set in the data extraction operation.", "info");
+                let paras = parameters.paras; //所有的提取数据参数
+                let not_found_xpaths = [];
+                for (let i = 0; i < paras.length; i++) {
+                    let para = paras[i];
+                    let xpath = para.relativeXPath;
+                    if (para.relative) {
+                        let parent_node = JSON.parse(msg.message.parentNode);
+                        let parent_xpath = parent_node.parameters.xpath;
+                        xpath = parent_xpath + xpath;
+                    }
+                    let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
+                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser=false);
+                    if (element != null) {
+                        if (para.beforeJS != "") {
+                            await driver.executeScript(para.beforeJS, element);
+                            await new Promise(resolve => setTimeout(resolve, para.beforeJSWaitTime));
+                        }
+                        if (para.afterJS != "") {
+                            await driver.executeScript(para.afterJS, element);
+                            await new Promise(resolve => setTimeout(resolve, para.afterJSWaitTime));
+                        }
+                    } else {
+                        not_found_xpaths.push(xpath);
+                    }
+                }
+                if (not_found_xpaths.length > 0) {
+                    notify_browser("无法找到以下元素，请检查xpath是否正确：" + not_found_xpaths.join("\n"), "Cannot find the element, please check if the xpath is correct: " + not_found_xpaths.join("\n"), "warning");
+                }
+            }
+            else if (option == 4) { //键盘输入事件
                 let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
                 let value = node.parameters.value;
                 if (node.parameters.useLoop) {
@@ -432,7 +465,18 @@ async function beginInvoke(msg, ws) {
                 // Interacting with dropdown element based on optionMode
                 switch (optionMode) {
                     case 0: //切换到下一个选项
-                        let script = "var options = arguments[0].options;for (var i = 0; i < options.length; i++) {if (options[i].selected) {options[i].selected = false;if (i == options.length - 1) {options[0].selected = true;} else {options[i + 1].selected = true;}break;}}";
+                        let script = `var options = arguments[0].options;
+                        for (var i = 0; i < options.length; i++) {
+                            if (options[i].selected) {
+                                options[i].selected = false;
+                                if (i == options.length - 1) {
+                                    options[0].selected = true;
+                                } else {
+                                    options[i + 1].selected = true;
+                                }
+                                break;
+                            }
+                        }`;
                         await driver.executeScript(script, element);
                         break;
                     case 1:
@@ -544,7 +588,7 @@ let wss = new WebSocket.Server({port: websocket_port});
 wss.on('connection', function (ws) {
     ws.on('message', async function (message, isBinary) {
         let msg = JSON.parse(message.toString());
-        console.log("\n\nGET A MESSAGE: ", msg);
+        // console.log("\n\nGET A MESSAGE: ", msg);
         // console.log(msg, msg.type, msg.message);
         if (msg.type == 0) {
             if (msg.message.id == 0) {
@@ -553,17 +597,17 @@ wss.on('connection', function (ws) {
                 //     socket_window = null;
                 //     console.log("socket_window closed");
                 // });
-                console.log("set socket_window")
+                // console.log("set socket_window at time: ", new Date());
             } else if (msg.message.id == 1) {
                 socket_start = ws;
-                console.log("set socket_start")
+                console.log("set socket_start at time: ", new Date());
             } else if (msg.message.id == 2) {
                 socket_flowchart = ws;
                 // socket_flowchart.on('close', function (event) {
                 //     socket_flowchart = null;
                 //     console.log("socket_flowchart closed");
                 // });
-                console.log("set socket_flowchart");
+                console.log("set socket_flowchart at time: ", new Date());
             } else { //其他的ID是用来标识不同的浏览器标签页的
                 await new Promise(resolve => setTimeout(resolve, 2300));
                 let handles = await driver.getAllWindowHandles();
@@ -577,6 +621,15 @@ wss.on('connection', function (ws) {
                 socket_flowchart.send(JSON.stringify({"type": "title", "data": {"title": msg.message.title}}));
                 allWindowSockets.push(ws);
                 allWindowScoketNames.push(msg.message.id);
+                console.log("set socket for id: ", msg.message.id, " at time: ", new Date());
+                ws.on('close', function (event) {
+                    let index = allWindowSockets.indexOf(ws);
+                    if (index > -1) {
+                        allWindowSockets.splice(index, 1);
+                        allWindowScoketNames.splice(index, 1);
+                    }
+                    console.log("socket for id: ", msg.message.id, " closed at time: ", new Date());
+                });
                 // console.log("handle_pairs: ", handle_pairs);
             }
         } else if (msg.type == 10) {
@@ -626,7 +679,7 @@ async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
         .setChromeOptions(options)
         .setChromeService(serviceBuilder)
         .build();
-    await driver.manage().setTimeouts({implicit: 10000, pageLoad: 10000, script: 10000});
+    await driver.manage().setTimeouts({implicit: 3, pageLoad: 10000, script: 10000});
     await driver.executeScript("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})");
     // await driver.executeScript("localStorage.clear();"); //重置参数数量
     const cdpConnection = await driver.createCDPConnection("page");

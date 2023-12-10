@@ -386,7 +386,7 @@ function elementDblClick(e) {
     try {
         let nodeType = app._data.nowNode["option"]
         if (nodeType >= 8) {
-            showInfo(LANG("试运行功能不适用于循环和条件分支操作。", "The trial run function is not applicable to loop and condition branch operations."))
+            showInfo(LANG("试运行功能不适用于循环和条件分支操作，请试运行循环或条件分支内部的具体操作，如点击元素。", "The trial run function is not applicable to loop and condition branch operations. Please try to run the specific operations in the loop/condition branch, such as clicking elements."));
         } else {
             if(nodeType == 5 && app._data.nowNode["parameters"]["codeMode"] != 0){
                 showInfo(LANG("试运行自定义操作功能只适用于执行JavaScript操作。", "The trial run custom action function is only applicable to run JavaScript operation."))

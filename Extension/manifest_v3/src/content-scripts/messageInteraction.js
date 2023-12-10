@@ -229,7 +229,7 @@ function createNotification(text, type="info") {
 setInterval(function () {
     let notifications = document.getElementsByClassName("notification_of_easyspider");
     for (let i = 0; i < notifications.length; i++) {
-        if (new Date().getTime() - parseInt(notifications[i].getAttribute("data-timestamp")) > 10000) {
+        if (new Date().getTime() - parseInt(notifications[i].dataset.timestamp) > 10000) {
             if (notifications[i].parentNode === document.body) {
                 document.body.removeChild(notifications[i]); // 避免移除已经不存在的元素
             }
