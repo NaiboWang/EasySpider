@@ -26,3 +26,4 @@ rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x32\Data
 mkdir ..\.temp_to_pub\EasySpider_windows_x32\Data
 del EasySpider_en.crx
 del EasySpider_zh.crx
+xcopy .\tasks\* ..\.temp_to_pub\EasySpider_windows_x32\tasks\ /E /I /Y

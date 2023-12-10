@@ -79,6 +79,8 @@ if __name__ == "__main__":
             os.remove("./EasySpider_windows_x64/config.json")
         if os.path.exists("./EasySpider_windows_x64/mysql_config.json"):
             os.remove("./EasySpider_windows_x64/mysql_config.json")
+        if os.path.exists("./EasySpider_windows_x64/TempUserDataFolder"):
+            shutil.rmtree("./EasySpider_windows_x64/TempUserDataFolder")
         os.mkdir("./EasySpider_windows_x64/Data")
         os.mkdir("./EasySpider_windows_x64/execution_instances")
         # compress_folder_to_7z_split("./EasySpider_windows_x64", file_name)
@@ -97,6 +99,8 @@ if __name__ == "__main__":
             os.remove("./EasySpider_windows_x32/config.json")
         if os.path.exists("./EasySpider_windows_x32/mysql_config.json"):
             os.remove("./EasySpider_windows_x32/mysql_config.json")
+        if os.path.exists("./EasySpider_windows_x32/TempUserDataFolder"):
+            shutil.rmtree("./EasySpider_windows_x32/TempUserDataFolder")
         os.mkdir("./EasySpider_windows_x32/Data")
         os.mkdir("./EasySpider_windows_x32/execution_instances")
         # compress_folder_to_7z_split("./EasySpider_windows_x32", file_name)
@@ -115,6 +119,8 @@ if __name__ == "__main__":
             os.remove("./EasySpider_Linux_x64/config.json")
         if os.path.exists("./EasySpider_Linux_x64/mysql_config.json"):
             os.remove("./EasySpider_Linux_x64/mysql_config.json")
+        if os.path.exists("./EasySpider_Linux_x64/TempUserDataFolder"):
+            shutil.rmtree("./EasySpider_Linux_x64/TempUserDataFolder")
         os.mkdir("./EasySpider_Linux_x64/Data")
         os.mkdir("./EasySpider_Linux_x64/execution_instances")
         subprocess.call(["tar", "-Jcvf", file_name, "./EasySpider_Linux_x64"])
@@ -128,6 +134,8 @@ if __name__ == "__main__":
             if os.path.exists("./EasySpider_MacOS_all_arch/Data"):
                 shutil.rmtree("./EasySpider_MacOS_all_arch/Data")
             os.mkdir("./EasySpider_MacOS_all_arch/Data")
+        if os.path.exists("./EasySpider_MacOS_all_arch/TempUserDataFolder"):
+            shutil.rmtree("./EasySpider_MacOS_all_arch/TempUserDataFolder")
         subprocess.call(["tar", "-zcvf", file_name, "./EasySpider_MacOS_all_arch"])
         # subprocess.call(["7zz", "a", "-v95m", file_name.replace(".tar.gz", ".7z"), file_name, "请继续解压EasySpider_MacOS_all_arch.tar.gz使用.txt"])
         print(f"Compress {file_name} successfully!")

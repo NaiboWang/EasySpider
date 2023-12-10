@@ -198,7 +198,7 @@ async function findElement(driver, by, value, iframe = false) {
     }
 }
 
-async function findElementAcrossAllWindows(msg, notifyBrowser=true) {
+async function findElementAcrossAllWindows(msg, notifyBrowser = true) {
     let handles = await driver.getAllWindowHandles();
     // console.log("handles", handles);
     let content_handle = current_handle;
@@ -232,6 +232,12 @@ async function findElementAcrossAllWindows(msg, notifyBrowser=true) {
     } catch {
         xpath = msg.xpath;
     }
+    if (xpath.indexOf("Field") >= 0 || xpath.indexOf("eval") >= 0) {
+        //两秒后通知浏览器
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        notify_browser("检测到XPath中包含Field(\"\")或eval(\"\")，试运行时无法正常定位到包含此两项表达式的元素，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in xpath, and the element containing these two expressions cannot be located normally during trial operation. Please test whether it is valid in the formal call stage.", "warning");
+        return null;
+    }
     let notify = false;
     while (true) {
         // console.log("handles");
@@ -258,7 +264,7 @@ async function findElementAcrossAllWindows(msg, notifyBrowser=true) {
         }
     }
     if (element == null && notifyBrowser) {
-        notify_browser("无法找到元素，请检查xpath是否正确：" + xpath, "Cannot find the element, please check if the xpath is correct: " + xpath, "warning");
+        notify_browser("无法找到元素，请检查XPath是否正确：" + xpath, "Cannot find the element, please check if the XPath is correct: " + xpath, "warning");
     }
     return element;
 }
@@ -330,7 +336,12 @@ async function beginInvoke(msg, ws) {
             console.log(e);
         }
     } else if (msg.type == 4) { //试运行功能
-        if (socket_window == null) {
+        try{
+            let flowchart_url = flowchart_window.webContents.getURL();
+        } catch {
+            flowchart_window = null;
+        }
+        if (flowchart_window == null) {
             notify_flowchart("试运行功能只能在设计任务阶段，Chrome浏览器打开时使用！", "The trial run function can only be used when designing tasks and opening in Chrome browser!", "error");
         } else {
             let node = JSON.parse(msg.message.node);
@@ -356,8 +367,7 @@ async function beginInvoke(msg, ws) {
                     url = parent_node["parameters"]["textList"].split("\n")[0];
                 }
                 await driver.get(url);
-            }
-            else if (option == 2 || option == 7) { //点击事件
+            } else if (option == 2 || option == 7) { //点击事件
                 let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
                 if (parameters.useLoop) {
                     let parent_node = JSON.parse(msg.message.parentNode);
@@ -365,22 +375,15 @@ async function beginInvoke(msg, ws) {
                     elementInfo.xpath = parent_xpath + elementInfo.xpath;
                 }
                 let element = await findElementAcrossAllWindows(elementInfo);
-                if (beforeJS != "") {
-                    await driver.executeScript(beforeJS, element);
-                    await new Promise(resolve => setTimeout(resolve, beforeJSWaitTime));
-                }
+                await execute_js(parameters.beforeJS, element, parameters.beforeJSWaitTime);
                 if (option == 2) {
                     await click_element(element);
                 } else if (option == 7) {
                     await driver.actions().move({origin: element}).perform();
                 }
-                if (afterJS != "") {
-                    await driver.executeScript(afterJS, element);
-                    await new Promise(resolve => setTimeout(resolve, afterJSWaitTime));
-                }
+                await execute_js(parameters.afterJS, element, parameters.afterJSWaitTime);
                 send_message_to_browser(JSON.stringify({"type": "cancelSelection"}));
-            }
-            else if (option == 3) { //提取数据
+            } else if (option == 3) { //提取数据
                 notify_browser("提示：提取数据操作只能试运行设置的JavaScript语句，且只针对第一个匹配的元素。", "Hint: can only test JavaScript  statement set in the data extraction operation, and only for the first matching element.", "info");
                 let paras = parameters.paras; //所有的提取数据参数
                 let not_found_xpaths = [];
@@ -393,25 +396,18 @@ async function beginInvoke(msg, ws) {
                         xpath = parent_xpath + xpath;
                     }
                     let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
-                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser=false);
+                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                     if (element != null) {
-                        if (para.beforeJS != "") {
-                            await driver.executeScript(para.beforeJS, element);
-                            await new Promise(resolve => setTimeout(resolve, para.beforeJSWaitTime));
-                        }
-                        if (para.afterJS != "") {
-                            await driver.executeScript(para.afterJS, element);
-                            await new Promise(resolve => setTimeout(resolve, para.afterJSWaitTime));
-                        }
+                        await execute_js(para.beforeJS, element, para.beforeJSWaitTime);
+                        await execute_js(para.afterJS, element, para.afterJSWaitTime);
                     } else {
                         not_found_xpaths.push(xpath);
                     }
                 }
                 if (not_found_xpaths.length > 0) {
-                    notify_browser("无法找到以下元素，请检查xpath是否正确：" + not_found_xpaths.join("\n"), "Cannot find the element, please check if the xpath is correct: " + not_found_xpaths.join("\n"), "warning");
+                    notify_browser("无法找到以下元素，请检查XPath是否正确：" + not_found_xpaths.join("\n"), "Cannot find the element, please check if the XPath is correct: " + not_found_xpaths.join("\n"), "warning");
                 }
-            }
-            else if (option == 4) { //键盘输入事件
+            } else if (option == 4) { //键盘输入事件
                 let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
                 let value = node.parameters.value;
                 if (node.parameters.useLoop) {
@@ -429,21 +425,17 @@ async function beginInvoke(msg, ws) {
                     enter = true;
                 }
                 let element = await findElementAcrossAllWindows(elementInfo);
-                if (beforeJS != "") {
-                    await driver.executeScript(beforeJS, element);
-                    await new Promise(resolve => setTimeout(resolve, beforeJSWaitTime));
-                }
+                await execute_js(beforeJS, element, beforeJSWaitTime);
                 await element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
                 if (enter) {
                     await element.sendKeys(Key.ENTER);
                 }
-                if (afterJS != "") {
-                    await driver.executeScript(afterJS, element);
-                    await new Promise(resolve => setTimeout(resolve, afterJSWaitTime));
-                }
+                await execute_js(afterJS, element, afterJSWaitTime);
             } else if (option == 5) { //自定义操作的JS代码
                 let code = parameters.code;
-                await driver.executeScript(code);
+                let waitTime = parameters.waitTime;
+                let element = await driver.findElement(By.tagName("body"));
+                await execute_js(code, element, waitTime);
             } else if (option == 6) { //切换下拉选项
                 let optionMode = parseInt(parameters.optionMode);
                 let optionValue = parameters.optionValue;
@@ -457,10 +449,7 @@ async function beginInvoke(msg, ws) {
                 }
                 let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
                 let element = await findElementAcrossAllWindows(elementInfo);
-                if (beforeJS != "") {
-                    await driver.executeScript(beforeJS, element);
-                    await new Promise(resolve => setTimeout(resolve, beforeJSWaitTime));
-                }
+                execute_js(beforeJS, element, beforeJSWaitTime);
                 let dropdown = new Select(element);
                 // Interacting with dropdown element based on optionMode
                 switch (optionMode) {
@@ -491,6 +480,7 @@ async function beginInvoke(msg, ws) {
                     default:
                         throw new Error('Invalid option mode');
                 }
+                execute_js(afterJS, element, afterJSWaitTime);
             }
         }
 
@@ -560,6 +550,20 @@ async function click_element(element) {
     } catch (e) {
         console.log(e);
         await driver.executeScript("arguments[0].click();", element);
+    }
+}
+
+async function execute_js(js, element, wait_time = 3) {
+    if (js.length != 0) {
+        try {
+            await driver.executeScript(js, element);
+            if(wait_time == 0){
+                wait_time = 30000;
+            }
+            await new Promise(resolve => setTimeout(resolve, wait_time));
+        } catch (e) {
+            notify_browser("执行JavaScript出错，请检查JavaScript语句是否正确：" + js + "\n错误信息：" + e, "Error executing JavaScript, please check if the JavaScript statement is correct: " + js + "\nError message: " + e, "error");
+        }
     }
 }
 
@@ -708,13 +712,15 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "", mobile = f
     runBrowser(lang, user_data_folder, mobile);
     let size = screen.getPrimaryDisplay().workAreaSize;
     let width = parseInt(size.width);
-    let height = parseInt(size.height * 0.6);
+    let height = parseInt(size.height * 0.5);
     flowchart_window = new BrowserWindow({
         x: 0,
         y: 0,
         width: width,
         height: height,
         icon: iconPath,
+        maximizable: true,
+        transparent: true,
     });
     let url = "";
     let id = -1;

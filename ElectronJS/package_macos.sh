@@ -27,3 +27,4 @@ cp ../ExecuteStage/Readme.md ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp ../ExecuteStage/myCode.py ../.temp_to_pub/EasySpider_MacOS_all_arch
 cp -Rf ../ExecuteStage/undetected_chromedriver_ES ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp -Rf ../ExecuteStage/.vscode ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
+cp -Rf ../tasks/* "../.temp_to_pub/EasySpider_MacOS_all_arch/Sample Tasks"

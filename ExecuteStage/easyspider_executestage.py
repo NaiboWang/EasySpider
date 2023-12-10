@@ -464,6 +464,7 @@ class BrowserThread(Thread):
         except:
             pass
         self.print_and_log("清理完成！|Clean up completed!")
+        self.print_and_log("您现在可以安全的关闭此窗口了。|You can safely close this window now.")
         
     def recordLog(self, *args, **kwargs):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -985,7 +986,7 @@ class BrowserThread(Thread):
             self.recordLog(
                 "判断条件内所有条件分支的条件都不满足|None of the conditions in the judgment condition are met")
 
-    def handleHistory(self, node, xpath, thisHitoryURL, thisHistoryLength, index, element=None, elements=None):
+    def handleHistory(self, node, xpath, thisHistoryURL, thisHistoryLength, index, element=None, elements=None):
         if self.history["index"] != thisHistoryLength and self.history["handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
             difference = thisHistoryLength - self.history["index"]  # 计算历史记录变化差值
             self.browser.execute_script('history.go(' + str(difference) + ')')  # 回退历史记录
@@ -998,14 +999,16 @@ class BrowserThread(Thread):
             except:
                 pass
         ti = 0
-        if self.browser.current_url.startswith("data:"):
-            while self.browser.current_url != thisHitoryURL:  # 如果执行完一次循环之后网址发生了变化
+        # print("CURRENT URL:", self.browser.current_url)
+        # time.sleep(2)
+        if self.browser.current_url.startswith("data:") or self.browser.current_url.startswith("chrome:"):
+            while self.browser.current_url != thisHistoryURL:  # 如果执行完一次循环之后网址发生了变化
                 try:
                     self.browser.execute_script("history.go(1)")  # 如果是data:开头的网址，就前进一步
                 except:  # 超时的情况下
                     pass
                 ti += 1
-                if self.browser.current_url == thisHitoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
+                if self.browser.current_url == thisHistoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
                     break
             time.sleep(2)
             if element == None: # 不固定元素列表
@@ -1030,7 +1033,7 @@ class BrowserThread(Thread):
             thisHistoryLength = 0
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
-        thisHitoryURL = self.browser.current_url
+        thisHistoryURL = self.browser.current_url
         # 快速提取处理
         if node["parameters"]["quickExtractable"]:
             self.browser.switch_to.default_content() # 切换到主页面
@@ -1189,7 +1192,7 @@ class BrowserThread(Thread):
                             self.print_and_log("关闭标签页发生错误：", e)
                             self.print_and_log(
                                 "Error occurred while closing tab: ", e)
-                    index, elements = self.handleHistory(node, xpath, thisHitoryURL, thisHistoryLength, index, elements=elements)
+                    index, elements = self.handleHistory(node, xpath, thisHistoryURL, thisHistoryLength, index, elements=elements)
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
@@ -1243,7 +1246,7 @@ class BrowserThread(Thread):
                             self.print_and_log("关闭标签页发生错误：", e)
                             self.print_and_log(
                                 "Error occurred while closing tab: ", e)
-                    index, element = self.handleHistory(node, path, thisHitoryURL, thisHistoryLength, index, element=element)
+                    index, element = self.handleHistory(node, path, thisHistoryURL, thisHistoryLength, index, element=element)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
                     self.print_and_log("找不到循环元素: ", path)
@@ -2112,9 +2115,14 @@ if __name__ == '__main__':
                 shutil.rmtree(tmp_user_data_folder)
             print(f"Copying user data folder to: {tmp_user_data_folder}, please wait...")
             print(f"正在复制用户信息目录到: {tmp_user_data_folder}，请稍等...")
-            shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
-            print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
-            print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+            if os.path.exists(absolute_user_data_folder):
+                shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
+                print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
+                print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+            else:
+                tmp_user_data_folder = absolute_user_data_folder
+                print("Cannot find user data folder, create a new folder.")
+                print("未找到用户信息目录，创建新目录。")
             options = tmp_options[i]["options"]
             options.add_argument(
                 f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒

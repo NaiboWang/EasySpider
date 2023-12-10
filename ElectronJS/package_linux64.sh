@@ -28,7 +28,6 @@ cp ../ExecuteStage/myCode.py ../.temp_to_pub/EasySpider_Linux_x64
 cp -Rf ../ExecuteStage/undetected_chromedriver_ES ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp -Rf ../ExecuteStage/.vscode ../.temp_to_pub/EasySpider_Linux_x64/Code
 chmod 777 ../.temp_to_pub/EasySpider_Linux_x64/easy-spider.sh
-
 rm -rf ../.temp_to_pub/EasySpider_Linux_x64/user_data
 rm -rf  ../.temp_to_pub/EasySpider_Linux_x64/execution_instances
 mkdir ../.temp_to_pub/EasySpider_Linux_x64/execution_instances
@@ -36,3 +35,4 @@ rm -rf  ../.temp_to_pub/EasySpider_Linux_x64/Data
 mkdir ../.temp_to_pub/EasySpider_Linux_x64/Data
 rm EasySpider_zh.crx
 rm EasySpider_en.crx
+cp -Rf ../tasks/* ../.temp_to_pub/EasySpider_Linux_x64/tasks

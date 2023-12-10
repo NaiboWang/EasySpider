@@ -386,6 +386,7 @@
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
                         <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
+                         注意包含exec和eval操作的语句和XPath不能在当前页面试运行，只能在任务真正调用时运行。
 此选项为高级功能，可以直接用Python代码操纵正在运行中的浏览器，及可以自定义整个执行环境中的变量，并对变量进行修改赋值等操作，示例：
 1. 用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").send_keys(Keys.END)即可滚动到页面最下方。
 2. 自定义一个全局变量：self.myVar = 1
@@ -462,7 +463,7 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <label>发件人邮箱用户名：</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["username"]'></input>
                         <label>发件人邮箱密码（设置了密码注意不要轻易泄露任务文件！）：</label>
-                        <input onkeydown="inputDelete(event)" type="password" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["password"]' placeholder="多数邮箱服务器为授权码而不是原密码"></input>
+                        <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["password"]' placeholder="多数邮箱服务器为授权码而不是原密码"></input>
                         <label>收件人邮箱地址：</label>
                         <input onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["to"]' placeholder="多个收件人用英文逗号隔开"></input>
                         <label>邮件主题：</label>

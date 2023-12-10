@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 # import atexit
-from utils import download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, on_press_creator, on_release_creator, replace_field_values, write_to_csv, write_to_excel, write_to_json
+import atexit
+import copy
+import platform
+import shutil
+import string
+import undetected_chromedriver as uc
+from utils import detect_optimizable, download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
+    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -22,6 +29,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from pynput.keyboard import Key, Listener
 from datetime import datetime
 import io  # 遇到错误退出时应执行的代码
@@ -38,10 +46,10 @@ import time
 import requests
 from ddddocr import DdddOcr
 from urllib.parse import urljoin
-from lxml import etree
+from lxml import etree, html
 import onnxruntime
+
 onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
-import undetected_chromedriver as uc
 # import pandas as pd
 # import numpy
 # import pytesseract
@@ -53,7 +61,7 @@ desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class BrowserThread(Thread):
-    def __init__(self, browser_t, id, service, version, event, saveName, config):
+    def __init__(self, browser_t, id, service, version, event, saveName, config, option):
         Thread.__init__(self)
         self.logs = io.StringIO()
         try:
@@ -61,6 +69,7 @@ class BrowserThread(Thread):
         except:
             self.log = True
         self.browser = browser_t
+        self.option = option
         self.config = config
         self.version = version
         self.totalSteps = 0
@@ -76,25 +85,32 @@ class BrowserThread(Thread):
         self.SAVED = False
         self.BREAK = False
         self.CONTINUE = False
+        try:
+            maximizeWindow = service["maximizeWindow"]
+        except:
+            maximizeWindow = 0
+        if maximizeWindow == 1:
+            self.browser.maximize_window()
         # 名称设定
         if saveName != "":  # 命令行覆盖保存名称
             self.saveName = saveName  # 保存文件的名字
         now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         self.saveName = self.saveName.replace("current_time", now)
 
-        self.print_and_log("任务ID", i, "的保存文件名为:", self.saveName)
-        self.print_and_log("Save Name for task ID", i, "is:", self.saveName)
-        if not os.path.exists("Data/Task_" + str(i)):
-            os.mkdir("Data/Task_" + str(i))
-        if not os.path.exists("Data/Task_" + str(i) + "/" + self.saveName):
-            os.mkdir("Data/Task_" + str(i) + "/" +
+        self.print_and_log("任务ID", id, "的保存文件名为:", self.saveName)
+        self.print_and_log("Save Name for task ID", id, "is:", self.saveName)
+        if not os.path.exists("Data/Task_" + str(id)):
+            os.mkdir("Data/Task_" + str(id))
+        if not os.path.exists("Data/Task_" + str(id) + "/" + self.saveName):
+            os.mkdir("Data/Task_" + str(id) + "/" +
                      self.saveName)  # 创建保存文件夹用来保存截图
         self.getDataStep = 0
         self.startSteps = 0
         try:
             startFromExit = service["startFromExit"]  # 从上次退出的步骤开始
             if startFromExit == 1:
-                with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'r', encoding='utf-8-sig') as file_obj:
+                with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'r',
+                          encoding='utf-8-sig') as file_obj:
                     self.startSteps = int(file_obj.read())  # 读取已执行步数
         except:
             pass
@@ -114,8 +130,13 @@ class BrowserThread(Thread):
             js = f.read()
             self.print_and_log("Loading stealth.min.js")
         self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-                                     'source': js})  # TMALL 反扒
+            'source': js})  # TMALL 反扒
         WebDriverWait(self.browser, 10)
+        self.browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+        path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id))
+        self.paramss = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': path}}
+
+        self.browser.execute("send_command", self.paramss)  # 下载地址改变
         # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
         try:
@@ -148,8 +169,11 @@ class BrowserThread(Thread):
             self.save_threshold = service["saveThreshold"]  # 保存最低阈值
         except:
             self.save_threshold = 10
-        self.links = list(
-            filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
+        try:
+            self.links = list(
+                filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
+        except:
+            self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
         self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
@@ -157,7 +181,7 @@ class BrowserThread(Thread):
                 self.OUTPUT.append([])  # 添加表头
                 self.writeMode = 0
         elif self.outputFormat == "json":
-            self.writeMode = 3 # JSON模式无需判断是否存在文件
+            self.writeMode = 3  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
             self.mysql.create_table(self.saveName, service["outputParameters"])
@@ -228,7 +252,11 @@ class BrowserThread(Thread):
                     cookies = node["parameters"]["cookies"]
                 except:
                     node["parameters"]["cookies"] = ""
-            if node["option"] == 2:  # 点击操作
+            elif node["option"] == 2:  # 点击操作
+                try:
+                    alertHandleType = node["parameters"]["alertHandleType"]
+                except:
+                    node["parameters"]["alertHandleType"] = 0
                 if node["parameters"]["useLoop"]:
                     if self.task_version <= "0.3.5":
                         # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
@@ -242,14 +270,17 @@ class BrowserThread(Thread):
                     clear = node["parameters"]["clear"]
                 except:
                     node["parameters"]["clear"] = 0
+                try:
+                    newLine = node["parameters"]["newLine"]
+                except:
+                    node["parameters"]["newLine"] = 1
                 for para in paras:
                     try:
                         iframe = para["iframe"]
                     except:
                         para["iframe"] = False
                     try:
-                        para["relativeXPath"] = lowercase_tags_in_xpath(
-                            para["relativeXPath"])
+                        para["relativeXPath"] = lowercase_tags_in_xpath(para["relativeXPath"])
                     except:
                         pass
                     try:
@@ -259,11 +290,9 @@ class BrowserThread(Thread):
                     if para["contentType"] == 8:
                         self.print_and_log(
                             "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
-                        self.print_and_log("If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
-                    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
-                        para["optimizable"] = True
-                    else:
-                        para["optimizable"] = False
+                        self.print_and_log(
+                            "If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
+                    para["optimizable"] = detect_optimizable(para)
             elif node["option"] == 4:  # 输入文字
                 try:
                     index = node["parameters"]["index"]  # 索引值
@@ -274,6 +303,10 @@ class BrowserThread(Thread):
                     clear = node["parameters"]["clear"]
                 except:
                     node["parameters"]["clear"] = 0
+                try:
+                    newLine = node["parameters"]["newLine"]
+                except:
+                    node["parameters"]["newLine"] = 1
             elif node["option"] == 7:  # 移动到元素
                 if node["parameters"]["useLoop"]:
                     if self.task_version <= "0.3.5":
@@ -281,6 +314,63 @@ class BrowserThread(Thread):
                         node["parameters"]["xpath"] = ""
                         self.print_and_log("您的任务版本号为" + self.task_version +
                                            "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif node["option"] == 8:  # 循环操作
+                try:
+                    exitElement = node["parameters"]["exitElement"]
+                    if exitElement == "":
+                        node["parameters"]["exitElement"] = "//body"
+                except:
+                    node["parameters"]["exitElement"] = "//body"
+                node["parameters"]["quickExtractable"] = False # 是否可以快速提取
+                # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
+                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
+                    paras = self.procedure[node["sequence"][0]]["parameters"]["paras"]
+                    waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
+                    node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
+                    for para in paras:
+                        optimizable = detect_optimizable(para, ignoreWaitElement=False, waitElement=waitElement)
+                        if para["iframe"]: # 如果是iframe，那么不可以快速提取
+                            optimizable = False
+                        if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
+                            node["parameters"]["quickExtractable"] = False
+                            break
+                    if node["parameters"]["quickExtractable"]:
+                        self.print_and_log("循环操作<" + node["title"] + ">可以快速提取数据")
+                        self.print_and_log("Loop operation <" + node["title"] + "> can extract data quickly")
+                        node["parameters"]["clear"] = self.procedure[node["sequence"][0]]["parameters"]["clear"]
+                        node["parameters"]["newLine"] = self.procedure[node["sequence"][0]]["parameters"]["newLine"]
+                        if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
+                            node["parameters"]["baseXPath"] = node["parameters"]["xpath"]
+                        elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
+                            node["parameters"]["baseXPath"] = node["parameters"]["pathList"]
+                        node["parameters"]["quickParas"] = []
+                        for para in paras:
+                            content_type = ""
+                            if para["relativeXPath"].find("/@href") >= 0 or para["relativeXPath"].find("/text()") >= 0 or para["relativeXPath"].find(
+                                    "::text()") >= 0:
+                                content_type = ""
+                            elif para["nodeType"] == 2:
+                                content_type = "//@href"
+                            elif para["nodeType"] == 4: # 图片链接
+                                content_type = "//@src"
+                            elif para["contentType"] == 1:
+                                content_type = "/text()"
+                            elif para["contentType"] == 0:
+                                content_type = "//text()"
+                            if para["relative"]: # 如果是相对XPath
+                                xpath = "." + para["relativeXPath"] + content_type
+                            else:
+                                xpath = para["relativeXPath"] + content_type
+                            # 如果是id()或(//div)[1]这种形式，不需要包/html/body
+                            # if xpath.find("/body") < 0 and xpath.startswith("/"):
+                            #     xpath = "/html/body" + xpath
+                            node["parameters"]["quickParas"].append({
+                                "name": para["name"],
+                                "relative": para["relative"],
+                                "xpath": xpath,
+                                "nodeType": para["nodeType"],
+                                "default": para["default"],
+                            })
         self.print_and_log("预处理完成|Preprocess completed")
 
     def readFromExcel(self):
@@ -291,8 +381,9 @@ class BrowserThread(Thread):
         except:
             self.print_and_log("读取Excel失败，将会使用默认参数执行任务，请检查文件路径是否正确：",
                                os.path.abspath(self.inputExcel))
-            self.print_and_log("Failed to read Excel, will execute the task with default parameters, please check if the file path is correct: ",
-                               os.path.abspath(self.inputExcel))
+            self.print_and_log(
+                "Failed to read Excel, will execute the task with default parameters, please check if the file path is correct: ",
+                os.path.abspath(self.inputExcel))
             time.sleep(5)
             return 0
 
@@ -321,7 +412,7 @@ class BrowserThread(Thread):
             if "urlList_0" in data.keys():
                 self.links = data["urlList_0"]
         except:
-            pass
+            self.links = "about:blank"
         task = self.service
         for key, value in data.items():
             for i in range(len(task["inputParameters"])):
@@ -359,7 +450,22 @@ class BrowserThread(Thread):
         self.saveData(exit=True)
         if self.outputFormat == "mysql":
             self.mysql.close()
-
+        try:
+            quitWaitTime = self.service["quitWaitTime"]
+        except:
+            quitWaitTime = 60
+        self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
+        self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
+        time.sleep(quitWaitTime)
+        self.browser.quit()
+        self.print_and_log("正在清理临时用户目录……|Cleaning up temporary user directory...")
+        try:
+            shutil.rmtree(self.option["tmp_user_data_folder"])
+        except:
+            pass
+        self.print_and_log("清理完成！|Clean up completed!")
+        self.print_and_log("您现在可以安全的关闭此窗口了。|You can safely close this window now.")
+        
     def recordLog(self, *args, **kwargs):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         print(now + ":", *args, file=self.logs, **kwargs)
@@ -379,29 +485,32 @@ class BrowserThread(Thread):
             # 写入日志
             # self.recordLog("持久化存储数据/Persistently store data")
             if self.log:
-                with open("Data/Task_" + str(self.id) + "/" + self.saveName + '.log', 'a', encoding='utf-8-sig') as file_obj:
+                with open("Data/Task_" + str(self.id) + "/" + self.saveName + '.log', 'a',
+                          encoding='utf-8-sig') as file_obj:
                     file_obj.write(self.logs.getvalue())
                     file_obj.close()
             # 写入已执行步数
-            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'w', encoding='utf-8-sig') as file_obj:
+            with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'w',
+                      encoding='utf-8-sig') as file_obj:
                 file_obj.write(str(self.totalSteps + 1))
                 file_obj.close()
             # 写入数据
             if self.outputFormat == "csv" or self.outputFormat == "txt":
                 file_name = "Data/Task_" + \
-                    str(self.id) + "/" + self.saveName + \
-                    '.' + self.outputFormat
+                            str(self.id) + "/" + self.saveName + \
+                            '.' + self.outputFormat
                 write_to_csv(file_name, self.OUTPUT,
                              self.outputParametersRecord)
             elif self.outputFormat == "xlsx":
                 file_name = "Data/Task_" + \
-                    str(self.id) + "/" + self.saveName + '.xlsx'
+                            str(self.id) + "/" + self.saveName + '.xlsx'
                 write_to_excel(
                     file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord)
             elif self.outputFormat == "json":
                 file_name = "Data/Task_" + \
-                    str(self.id) + "/" + self.saveName + '.json'
-                write_to_json(file_name, self.OUTPUT, self.outputParametersTypes, self.outputParametersRecord, self.outputParameters.keys())
+                            str(self.id) + "/" + self.saveName + '.json'
+                write_to_json(file_name, self.OUTPUT, self.outputParametersTypes,
+                              self.outputParametersRecord, self.outputParameters.keys())
             elif self.outputFormat == "mysql":
                 self.mysql.write_to_mysql(
                     self.OUTPUT, self.outputParametersRecord, self.outputParametersTypes)
@@ -502,7 +611,7 @@ class BrowserThread(Thread):
             max_wait_time = 999999
         # self.print_and_log(codeMode, code)
         # 将value中的Field[""]替换为outputParameters中的键值
-        code = replace_field_values(code, self.outputParameters)
+        code = replace_field_values(code, self.outputParameters, self)
         if iframe and self.browser.iframe_env == False:
             # 获取所有的 iframe
             self.browser.switch_to.default_content()
@@ -541,6 +650,7 @@ class BrowserThread(Thread):
                 self.recordLog("JavaScript execution failed")
         elif int(codeMode) == 5:
             try:
+                code = readCode(code)
                 output = exec(code)
                 self.recordLog("执行下面的代码:" + code)
                 self.recordLog("Execute the following code:" + code)
@@ -550,6 +660,7 @@ class BrowserThread(Thread):
                                    code, ", error is:", e)
         elif int(codeMode) == 6:
             try:
+                code = readCode(code)
                 output = eval(code)
                 self.recordLog("获得下面的代码返回值:" + code)
                 self.recordLog(
@@ -595,7 +706,7 @@ class BrowserThread(Thread):
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
                 loopPath = replace_field_values(
-                    loopPath, self.outputParameters)
+                    loopPath, self.outputParameters, self)
                 elements = self.browser.find_elements(
                     By.XPATH, loopPath, iframe=paras["iframe"])
                 element = elements[index]
@@ -610,6 +721,15 @@ class BrowserThread(Thread):
         elif codeMode == 4:
             self.CONTINUE = True
             self.recordLog("跳过本次循环|Skip this loop")
+        elif codeMode == 7:  # 暂停程序执行
+            self.event.clear()
+            self.print_and_log(
+                f"根据设置的自定义操作，任务已暂停，长按{self.service['pauseKey']}键继续执行...|Task paused according to custom operation, long press '{self.service['pauseKey']}' to continue...")
+        elif codeMode == 8:  # 刷新页面
+            self.browser.refresh()
+            self.print_and_log("根据设置的自定义操作，任务已刷新页面|Task refreshed page according to custom operation")
+        elif codeMode == 9:  # 发送邮件
+            send_email(node["parameters"]["emailConfig"])
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=paras["iframe"])
@@ -618,7 +738,7 @@ class BrowserThread(Thread):
         # self.print_and_log("操作<" + node["title"] + ">的返回值为：" + output)
         # self.print_and_log("The return value of operation <" + node["title"] + "> is: " + output)
         self.outputParameters[node["title"]] = output
-        if recordASField:
+        if recordASField and paras["newLine"]:
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
@@ -639,7 +759,8 @@ class BrowserThread(Thread):
                 optionValue = loopValue
             optionMode = 1
         try:
-            xpath = replace_field_values(para["xpath"], self.outputParameters)
+            xpath = replace_field_values(
+                para["xpath"], self.outputParameters, self)
             dropdown = Select(self.browser.find_element(
                 By.XPATH, xpath, iframe=para["iframe"]))
             try:
@@ -669,21 +790,22 @@ class BrowserThread(Thread):
 
     def moveToElement(self, para, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
-        loopPath = replace_field_values(loopPath, self.outputParameters)
-        xpath = replace_field_values(para["xpath"], self.outputParameters)
+        loopPath = replace_field_values(loopPath, self.outputParameters, self)
+        xpath = replace_field_values(
+            para["xpath"], self.outputParameters, self)
         if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             if xpath == "":
                 path = loopPath
             else:
                 path = "(" + loopPath + ")" + \
-                    "[" + str(index + 1) + "]" + \
-                    xpath
+                       "[" + str(index + 1) + "]" + \
+                       xpath
                 index = 0  # 如果是相对循环内元素的点击，在定位到元素后，index应该重置为0
             # element = loopElement
         else:
             index = 0
             path = xpath  # 不然使用元素定义的xpath
-        path = replace_field_values(path, self.outputParameters)
+        path = replace_field_values(path, self.outputParameters, self)
         try:
             elements = self.browser.find_elements(
                 By.XPATH, path, iframe=para["iframe"])
@@ -709,9 +831,9 @@ class BrowserThread(Thread):
         try:
             if node["parameters"]["waitElement"] != "":
                 waitElement = replace_field_values(
-                    node["parameters"]["waitElement"], self.outputParameters)
+                    node["parameters"]["waitElement"], self.outputParameters, self)
                 waitElementTime = float(node["parameters"]["waitElementTime"])
-                waitElementIframeIndex = node["parameters"]["waitElementInIframe"]
+                waitElementIframeIndex = node["parameters"]["waitElementIframeIndex"]
                 self.print_and_log("等待元素出现:", waitElement)
                 self.print_and_log(
                     "Waiting for element to appear:", waitElement)
@@ -730,7 +852,7 @@ class BrowserThread(Thread):
                 self.print_and_log("等待元素出现超时：", waitElement, "，将继续执行。")
                 self.print_and_log("Timeout waiting for element to appear:",
                                    waitElement, ", will continue to execute.")
-                self.print_and_log(e)
+                self.recordLog(e)
             self.recordLog("Wait element not found")
         self.recordLog("执行节点|Execute node:", node["title"])
         # 根据不同选项执行不同操作
@@ -738,8 +860,8 @@ class BrowserThread(Thread):
             for i in node["sequence"]:  # 从根节点开始向下读取
                 self.executeNode(i, loopValue, loopPath, index)
         elif node["option"] == 1:  # 打开网页操作
-            if not (nodeId == 1 and self.service["cloudflare"] == 1):
-                self.openPage(node["parameters"], loopValue)
+            # if not (nodeId == 1 and self.service["cloudflare"] == 1):
+            self.openPage(node["parameters"], loopValue)
         elif node["option"] == 2:  # 点击元素
             self.clickElement(node["parameters"], loopValue, loopPath, index)
         elif node["option"] == 3:  # 提取数据
@@ -798,7 +920,7 @@ class BrowserThread(Thread):
                     bodyText = self.browser.find_element(
                         By.CSS_SELECTOR, "body", iframe=cnode["parameters"]["iframe"]).text
                     value = replace_field_values(
-                        cnode["parameters"]["value"], self.outputParameters)
+                        cnode["parameters"]["value"], self.outputParameters, self)
                     if bodyText.find(value) >= 0:
                         executeBranchId = i
                         break
@@ -807,7 +929,7 @@ class BrowserThread(Thread):
             elif tType == 2:  # 当前页面包含元素
                 try:
                     xpath = replace_field_values(
-                        cnode["parameters"]["value"], self.outputParameters)
+                        cnode["parameters"]["value"], self.outputParameters, self)
                     if self.browser.find_element(By.XPATH, xpath, iframe=cnode["parameters"]["iframe"]):
                         executeBranchId = i
                         break
@@ -816,7 +938,7 @@ class BrowserThread(Thread):
             elif tType == 3:  # 当前循环元素包括文本
                 try:
                     value = replace_field_values(
-                        cnode["parameters"]["value"], self.outputParameters)
+                        cnode["parameters"]["value"], self.outputParameters, self)
                     if loopElement.text.find(value) >= 0:
                         executeBranchId = i
                         break
@@ -825,7 +947,7 @@ class BrowserThread(Thread):
             elif tType == 4:  # 当前循环元素包括元素
                 try:
                     xpath = replace_field_values(
-                        cnode["parameters"]["value"][1:], self.outputParameters)
+                        cnode["parameters"]["value"][1:], self.outputParameters, self)
                     if loopElement.find_element(By.XPATH, xpath):
                         executeBranchId = i
                         break
@@ -834,16 +956,20 @@ class BrowserThread(Thread):
             elif tType <= 8:  # JS命令返回值
                 if tType == 5:  # JS命令返回值等于
                     output = self.execute_code(
-                        0, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], iframe=cnode["parameters"]["iframe"])
+                        0, cnode["parameters"]["code"], cnode["parameters"]["waitTime"],
+                        iframe=cnode["parameters"]["iframe"])
                 elif tType == 6:  # System
                     output = self.execute_code(
-                        1, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], iframe=cnode["parameters"]["iframe"])
+                        1, cnode["parameters"]["code"], cnode["parameters"]["waitTime"],
+                        iframe=cnode["parameters"]["iframe"])
                 elif tType == 7:  # 针对当前循环项的JS命令返回值
                     output = self.execute_code(
-                        2, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement, iframe=cnode["parameters"]["iframe"])
+                        2, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement,
+                        iframe=cnode["parameters"]["iframe"])
                 elif tType == 8:  # 针对当前循环项的System命令返回值
                     output = self.execute_code(
-                        6, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement, iframe=cnode["parameters"]["iframe"])
+                        6, cnode["parameters"]["code"], cnode["parameters"]["waitTime"], loopElement,
+                        iframe=cnode["parameters"]["iframe"])
                 try:
                     if output.find("rue") != -1:  # 如果返回值中包含true
                         code = 1
@@ -854,33 +980,106 @@ class BrowserThread(Thread):
                 if code > 0:
                     executeBranchId = i
                     break
-        # rt.end()
         if executeBranchId != 0:
             self.executeNode(executeBranchId, loopElement, clickPath, index)
         else:
             self.recordLog(
                 "判断条件内所有条件分支的条件都不满足|None of the conditions in the judgment condition are met")
 
+    def handleHistory(self, node, xpath, thisHistoryURL, thisHistoryLength, index, element=None, elements=None):
+        if self.history["index"] != thisHistoryLength and self.history["handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
+            difference = thisHistoryLength - self.history["index"]  # 计算历史记录变化差值
+            self.browser.execute_script('history.go(' + str(difference) + ')')  # 回退历史记录
+            # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
+            time.sleep(node["parameters"]["historyWait"])
+            # else:
+            # time.sleep(2)
+            try:
+                self.browser.execute_script('window.stop()')
+            except:
+                pass
+        ti = 0
+        # print("CURRENT URL:", self.browser.current_url)
+        # time.sleep(2)
+        if self.browser.current_url.startswith("data:") or self.browser.current_url.startswith("chrome:"):
+            while self.browser.current_url != thisHistoryURL:  # 如果执行完一次循环之后网址发生了变化
+                try:
+                    self.browser.execute_script("history.go(1)")  # 如果是data:开头的网址，就前进一步
+                except:  # 超时的情况下
+                    pass
+                ti += 1
+                if self.browser.current_url == thisHistoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
+                    break
+            time.sleep(2)
+            if element == None: # 不固定元素列表
+                element = self.browser.find_elements(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
+            else: # 固定元素列表
+                element = self.browser.find_element(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
+            if index > 0:
+                index -= 1  # 如果是data:开头的网址，就要重试一次
+        else:
+            if element == None:
+                element = elements
+        return index, element
+
     # 对循环的处理
     def loopExecute(self, node, loopValue, clickPath="", index=0):
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
         thisHandle = self.browser.current_window_handle  # 记录本次循环内的标签页的ID
-        thisHistoryLength = self.browser.execute_script(
-            'return history.length')  # 记录本次循环内的history的length
+        try:
+            thisHistoryLength = self.browser.execute_script(
+                'return history.length')  # 记录本次循环内的history的length
+        except:
+            thisHistoryLength = 0
         self.history["index"] = thisHistoryLength
         self.history["handle"] = thisHandle
-        if int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
+        thisHistoryURL = self.browser.current_url
+        # 快速提取处理
+        if node["parameters"]["quickExtractable"]:
+            self.browser.switch_to.default_content() # 切换到主页面
+            tree = html.fromstring(self.browser.page_source)
+            if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
+                baseXPath = replace_field_values(node["parameters"]["baseXPath"], self.outputParameters, self)
+                rows = tree.xpath(baseXPath)
+            elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
+                rows = []
+                for path in node["parameters"]["baseXPath"].split("\n"):
+                    baseXPath = replace_field_values(path, self.outputParameters, self)
+                    rows.extend(tree.xpath(baseXPath))
+                
+            for row in rows:
+                if node["parameters"]["clear"] == 1:
+                    self.clearOutputParameters()
+                for para in node["parameters"]["quickParas"]:
+                    xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+                    content = row.xpath(xpath)
+                    try:
+                        content = ' '.join(result.strip()
+                                        for result in content if result.strip())
+                        # 链接或者图片的情况下，合并链接相对路径为绝对路径
+                        if para["nodeType"] == 2 or para["nodeType"] == 4:
+                            base_url = self.browser.current_url
+                            # 合并链接相对路径为绝对路径
+                            content = urljoin(base_url, content)
+                        if len(content) == 0:
+                            content = para["default"]
+                    except:
+                        content = para["default"]
+                    self.outputParameters[para["name"]] = content
+                if node["parameters"]["newLine"]:
+                    line = new_line(self.outputParameters,
+                            self.maxViewLength, self.outputParametersRecord)
+                    self.OUTPUT.append(line)
+            self.saveData()
+        elif int(node["parameters"]["loopType"]) == 0:  # 单个元素循环
             # 无跳转标签页操作
             count = 0  # 执行次数
             bodyText = "-"
             while True:  # do while循环
                 try:
                     finished = False
-                    # newBodyText = self.browser.page_source
-                    # newBodyText = self.browser.find_element(By.XPATH, "//body").text
                     if node["parameters"]["exitCount"] == 0:
-                        newBodyText = self.browser.find_element(
-                            By.CSS_SELECTOR, "body", iframe=False).text
+                        newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
                         if node["parameters"]["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
@@ -904,7 +1103,7 @@ class BrowserThread(Thread):
                                 "Page changed detected, continue loop.")
                             bodyText = newBodyText
                     xpath = replace_field_values(
-                        node["parameters"]["xpath"], self.outputParameters)
+                        node["parameters"]["xpath"], self.outputParameters, self)
                     # self.recordLog("循环元素|Loop element:", xpath)
                     element = self.browser.find_element(
                         By.XPATH, xpath, iframe=node["parameters"]["iframe"])
@@ -947,14 +1146,16 @@ class BrowserThread(Thread):
                     break
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
+                                               node["parameters"]["breakCodeWaitTime"],
+                                               iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
         elif int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
             try:
                 xpath = replace_field_values(
-                    node["parameters"]["xpath"], self.outputParameters)
+                    node["parameters"]["xpath"], self.outputParameters, self)
                 elements = self.browser.find_elements(By.XPATH,
                                                       xpath, iframe=node["parameters"]["iframe"])
                 # self.recordLog("循环元素|Loop element:", xpath)
@@ -962,7 +1163,8 @@ class BrowserThread(Thread):
                     self.print_and_log("Loop element not found: ",
                                        xpath)
                     self.print_and_log("找不到循环元素: ", xpath)
-                for index in range(len(elements)):
+                index = 0
+                while index < len(elements):
                     for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
                         self.executeNode(i, elements[index],
                                          xpath, index)
@@ -990,29 +1192,16 @@ class BrowserThread(Thread):
                             self.print_and_log("关闭标签页发生错误：", e)
                             self.print_and_log(
                                 "Error occurred while closing tab: ", e)
-                    if self.history["index"] != thisHistoryLength and self.history[
-                            "handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
-                        difference = thisHistoryLength - \
-                            self.history["index"]  # 计算历史记录变化差值
-                        self.browser.execute_script(
-                            'history.go(' + str(difference) + ')')  # 回退历史记录
-                        # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
-                        time.sleep(node["parameters"]["historyWait"])
-                        # else:
-                        # time.sleep(2)
-                        # 切换历史记录等待：
-                        self.recordLog("Change history back time or: ", 
-                                       node["parameters"]["historyWait"])
-                        try:
-                            self.browser.execute_script('window.stop()')
-                        except:
-                            pass
+                    index, elements = self.handleHistory(node, xpath, thisHistoryURL, thisHistoryLength, index, elements=elements)
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
-                            node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
+                            node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
+                                                   node["parameters"]["breakCodeWaitTime"],
+                                                   iframe=node["parameters"]["iframe"])
                         code = get_output_code(output)
                         if code <= 0:
                             break
+                    index = index + 1
             except NoSuchElementException:
                 self.print_and_log("Loop element not found: ", xpath)
                 self.print_and_log("找不到循环元素: ", xpath)
@@ -1020,9 +1209,14 @@ class BrowserThread(Thread):
                 raise
         elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
             # 千万不要忘了分割！！
-            for path in node["parameters"]["pathList"].split("\n"):
+            paths = node["parameters"]["pathList"].split("\n")
+            # for path in node["parameters"]["pathList"].split("\n"):
+            index = 0
+            while index < len(paths):
+                path = paths[index]
                 try:
-                    path = replace_field_values(path, self.outputParameters)
+                    path = replace_field_values(
+                        path, self.outputParameters, self)
                     element = self.browser.find_element(
                         By.XPATH, path, iframe=node["parameters"]["iframe"])
                     # self.recordLog("循环元素|Loop element:", path)
@@ -1052,41 +1246,30 @@ class BrowserThread(Thread):
                             self.print_and_log("关闭标签页发生错误：", e)
                             self.print_and_log(
                                 "Error occurred while closing tab: ", e)
-                    if self.history["index"] != thisHistoryLength and self.history[
-                            "handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
-                        difference = thisHistoryLength - \
-                            self.history["index"]  # 计算历史记录变化差值
-                        self.browser.execute_script(
-                            'history.go(' + str(difference) + ')')  # 回退历史记录
-                        # if node["parameters"]["historyWait"] > 2:  # 回退后要等待的时间
-                        time.sleep(node["parameters"]["historyWait"])
-                        # else:
-                        # time.sleep(2)
-                        self.recordLog("Change history back time or: ",
-                                       node["parameters"]["historyWait"])
-                        try:
-                            self.browser.execute_script('window.stop()')
-                        except:
-                            pass
+                    index, element = self.handleHistory(node, path, thisHistoryURL, thisHistoryLength, index, element=element)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
                     self.print_and_log("找不到循环元素: ", path)
+                    index += 1
                     continue  # 循环中找不到元素就略过操作
                 except Exception as e:
                     raise
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
+                                               node["parameters"]["breakCodeWaitTime"],
+                                               iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
+                index = index + 1
         elif int(node["parameters"]["loopType"]) == 3:  # 固定文本列表
             textList = node["parameters"]["textList"].split("\n")
             if len(textList) == 1:  # 如果固定文本列表只有一行，现在就可以替换变量
                 textList = replace_field_values(
-                    node["parameters"]["textList"], self.outputParameters).split("\n")
+                    node["parameters"]["textList"], self.outputParameters, self).split("\n")
             for text in textList:
-                text = replace_field_values(text, self.outputParameters)
+                text = replace_field_values(text, self.outputParameters, self)
                 # self.recordLog("当前循环文本|Current loop text:", text)
                 for i in node["sequence"]:  # 挨个执行操作
                     self.executeNode(i, text, "", 0)
@@ -1098,7 +1281,9 @@ class BrowserThread(Thread):
                     break
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
+                                               node["parameters"]["breakCodeWaitTime"],
+                                               iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
@@ -1108,13 +1293,13 @@ class BrowserThread(Thread):
                 filter(isnotnull, node["parameters"]["textList"].split("\n")))  # 去空行
             if len(urlList) == 1:  # 如果固定网址列表只有一行，现在就可以替换变量
                 urlList = replace_field_values(
-                    node["parameters"]["textList"], self.outputParameters).split("\n")
+                    node["parameters"]["textList"], self.outputParameters, self).split("\n")
             # urlList = []
             # for url in tempList:
             #     if url != "":
             #         urlList.append(url)
             for url in urlList:
-                url = replace_field_values(url, self.outputParameters)
+                url = replace_field_values(url, self.outputParameters, self)
                 # self.recordLog("当前循环网址|Current loop url:", url)
                 for i in node["sequence"]:
                     self.executeNode(i, url, "", 0)
@@ -1126,7 +1311,9 @@ class BrowserThread(Thread):
                     break
                 if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                     output = self.execute_code(int(
-                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"], node["parameters"]["breakCodeWaitTime"], iframe=node["parameters"]["iframe"])
+                        node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
+                                               node["parameters"]["breakCodeWaitTime"],
+                                               iframe=node["parameters"]["iframe"])
                     code = get_output_code(output)
                     if code <= 0:
                         break
@@ -1134,13 +1321,16 @@ class BrowserThread(Thread):
             while True:  # do while循环
                 if int(node["parameters"]["loopType"]) == 5:  # JS
                     output = self.execute_code(
-                        0, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
+                        0, node["parameters"]["code"], node["parameters"]["waitTime"],
+                        iframe=node["parameters"]["iframe"])
                 elif int(node["parameters"]["loopType"]) == 6:  # System
                     output = self.execute_code(
-                        1, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
+                        1, node["parameters"]["code"], node["parameters"]["waitTime"],
+                        iframe=node["parameters"]["iframe"])
                 elif int(node["parameters"]["loopType"]) == 7:  # Python
                     output = self.execute_code(
-                        6, node["parameters"]["code"], node["parameters"]["waitTime"], iframe=node["parameters"]["iframe"])
+                        6, node["parameters"]["code"], node["parameters"]["waitTime"],
+                        iframe=node["parameters"]["iframe"])
                 code = get_output_code(output)
                 if code <= 0:
                     break
@@ -1179,7 +1369,7 @@ class BrowserThread(Thread):
         else:  # 在流程图其他位置设置了打开网页的操作，读取的应该是第一个网址，如打开网页后登录，再打开第二个网页
             url = list(filter(isnotnull, para["links"].split("\n")))[0]
         # 将value中的Field[""]替换为outputParameters中的键值
-        url = replace_field_values(url, self.outputParameters)
+        url = replace_field_values(url, self.outputParameters, self)
         try:
             maxWaitTime = int(para["maxWaitTime"])
         except:
@@ -1216,13 +1406,17 @@ class BrowserThread(Thread):
                     "return history.length")
             except:
                 self.history["index"] = 0
+        except Exception as e:
+            self.print_and_log("History Length Error")
+            self.history["index"] = 0
         self.scrollDown(para)  # 控制屏幕向下滚动
 
     # 键盘输入事件
     def inputInfo(self, para, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
-            xpath = replace_field_values(para["xpath"], self.outputParameters)
+            xpath = replace_field_values(
+                para["xpath"], self.outputParameters, self)
             textbox = self.browser.find_element(
                 By.XPATH, xpath, iframe=para["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
@@ -1281,15 +1475,17 @@ class BrowserThread(Thread):
         try:
             # element = self.browser.find_element(
             #     By.XPATH, path, iframe=para["iframe"])
-            clickPath = replace_field_values(clickPath, self.outputParameters)
-            xpath = replace_field_values(para["xpath"], self.outputParameters)
+            clickPath = replace_field_values(
+                clickPath, self.outputParameters, self)
+            xpath = replace_field_values(
+                para["xpath"], self.outputParameters, self)
             if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 if xpath == "":
                     path = clickPath
                 else:
                     path = "(" + clickPath + ")" + \
-                        "[" + str(index + 1) + "]" + \
-                        xpath
+                           "[" + str(index + 1) + "]" + \
+                           xpath
                     index = 0  # 如果是相对循环内元素的点击，在定位到元素后，index应该重置为0
                 # element = loopElement
             else:
@@ -1314,13 +1510,25 @@ class BrowserThread(Thread):
             click_way = 0
         try:
             if click_way == 0:  # 用selenium的点击方法
-                actions = ActionChains(self.browser)  # 实例化一个action对象
-                actions.click(element).perform()
+                try:
+                    actions = ActionChains(self.browser)  # 实例化一个action对象
+                    actions.click(element).perform()
+                except Exception as e:
+                    self.browser.execute_script("arguments[0].scrollIntoView();", element)
+                    try:
+                        actions = ActionChains(self.browser)  # 实例化一个action对象
+                        actions.click(element).perform()
+                    except Exception as e:
+                        self.print_and_log(f"Selenium点击元素{path}失败，将尝试使用JavaScript点击")
+                        self.print_and_log(f"Failed to click element {path} with Selenium, will try to click with JavaScript")
+                        script = 'var result = document.evaluate(`' + path + \
+                            '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
+                        self.browser.execute_script(script, str(index))  # 用js的点击方法
             elif click_way == 1:  # 用js的点击方法
                 script = 'var result = document.evaluate(`' + path + \
-                    '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
+                         '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
                 self.browser.execute_script(script, str(index))  # 用js的点击方法
-            # self.recordLog("点击元素|Click element: " + path)
+            self.recordLog("点击元素|Click element: " + path)
         except TimeoutException:
             self.print_and_log(
                 'Time out after set seconds when loading clicked page')
@@ -1334,6 +1542,22 @@ class BrowserThread(Thread):
             self.print_and_log("Failed to click element:" + path,
                                ", please try to change the click type to JavaScript Click.")
             self.print_and_log(e)
+
+        # 弹窗处理
+        if para["alertHandleType"] > 0:
+            try:
+                time.sleep(1.5)
+                alert = self.browser.switch_to.alert
+                alertHandleType = int(para["alertHandleType"])
+                if alertHandleType == 1:
+                    alert.accept()
+                    self.print_and_log("已点击确认|Clicked OK")
+                elif alertHandleType == 2:
+                    alert.dismiss()
+                    self.print_and_log("已点击取消|Clicked Cancel")
+            except Exception as e:
+                self.print_and_log("找不到弹窗|Cannot find alert")
+
         # 点击后对该元素执行一段JavaScript代码
         try:
             if para["afterJS"] != "":
@@ -1367,6 +1591,9 @@ class BrowserThread(Thread):
                     pass
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
+            except Exception as e:
+                self.print_and_log("History Length Error")
+                self.history["index"] = 0
         else:
             try:
                 self.history["index"] = self.browser.execute_script(
@@ -1379,6 +1606,9 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
                 # 如果打开了新窗口，切换到新窗口
+            except Exception as e:
+                self.print_and_log("History Length Error")
+                self.history["index"] = 0
         self.scrollDown(para)  # 根据参数配置向下滚动
         # rt.end()
 
@@ -1477,7 +1707,7 @@ class BrowserThread(Thread):
                 image = Image.open(screenshot_stream).convert('L')
                 temp_name = "OCR_" + str(time.time()) + ".png"
                 location = "Data/Task_" + \
-                    str(self.id) + "/" + self.saveName + "/" + temp_name
+                           str(self.id) + "/" + self.saveName + "/" + temp_name
                 image.save(location)
                 ocr = DdddOcr()
                 with open(location, 'rb') as f:
@@ -1548,7 +1778,8 @@ class BrowserThread(Thread):
 
     # 提取数据事件
     def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
-        parentPath = replace_field_values(parentPath, self.outputParameters)
+        parentPath = replace_field_values(
+            parentPath, self.outputParameters, self)
         if para["clear"] == 1:
             self.clearOutputParameters()
         try:
@@ -1574,19 +1805,23 @@ class BrowserThread(Thread):
             if p["optimizable"]:
                 try:
                     relativeXPath = replace_field_values(
-                        p["relativeXPath"], self.outputParameters)
+                        p["relativeXPath"], self.outputParameters, self)
                     # 只有当前环境不变变化才可以快速提取数据
                     if self.browser.iframe_env != p["iframe"]:
+                    # if p["iframe"] or self.browser.iframe_env != p["iframe"]: # 如果是iframe，则不能快速提取数据，主要是各个上下文的iframe切换，但一般不会有人这么做
                         p["optimizable"] = False
                         continue
                     # relativeXPath = relativeXPath.lower()
                     # relativeXPath = lowercase_tags_in_xpath(relativeXPath)
                     # 已经有text()或@href了，不需要再加
                     content_type = ""
-                    if relativeXPath.find("/@href") >= 0 or relativeXPath.find("/text()") >= 0 or relativeXPath.find("::text()") >= 0:
+                    if relativeXPath.find("/@href") >= 0 or relativeXPath.find("/text()") >= 0 or relativeXPath.find(
+                            "::text()") >= 0:
                         content_type = ""
                     elif p["nodeType"] == 2:
                         content_type = "//@href"
+                    elif p["nodeType"] == 4:
+                        content_type = "//@src"
                     elif p["contentType"] == 1:
                         content_type = "/text()"
                     elif p["contentType"] == 0:
@@ -1600,8 +1835,8 @@ class BrowserThread(Thread):
                         if relativeXPath.find("//") >= 0:
                             if xpath.startswith("/"):
                                 full_path = "(" + parentPath + ")" + \
-                                    "[" + str(index + 1) + "]" + \
-                                    relativeXPath + content_type
+                                            "[" + str(index + 1) + "]" + \
+                                            relativeXPath + content_type
                             else:  # 如果是id()这种形式，不需要包parentPath
                                 full_path = xpath
                             try:
@@ -1627,33 +1862,39 @@ class BrowserThread(Thread):
                         # 拼接所有文本内容并去掉两边的空白
                         content = ' '.join(result.strip()
                                            for result in content if result.strip())
-                        if p["nodeType"] == 2:
+                        if p["nodeType"] == 2 or p["nodeType"] == 4:
                             base_url = self.browser.current_url
                             # 合并链接相对路径为绝对路径
                             content = urljoin(base_url, content)
                     else:
                         content = p["default"]
                         if not self.dataNotFoundKeys[p["name"]]:
-                            self.print_and_log('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                                relativeXPath, p["name"]))
-                            self.print_and_log("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
-                                p["name"], relativeXPath))
+                            self.print_and_log(
+                                'Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
+                                    relativeXPath, p["name"]))
+                            self.print_and_log(
+                                "提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
+                                    p["name"], relativeXPath))
                             self.dataNotFoundKeys[p["name"]] = True
                 except Exception as e:
                     if not self.dataNotFoundKeys[p["name"]]:
-                        self.print_and_log('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                            relativeXPath, p["name"]))
-                        self.print_and_log("提取数据操作时，字段名 %s 对应XPath %s 未找到（请查看原因，如是否翻页太快页面元素未加载出来），使用默认值，本字段将不再重复报错" % (
-                            p["name"], relativeXPath))
+                        self.print_and_log(
+                            'Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
+                                relativeXPath, p["name"]))
+                        self.print_and_log(
+                            "提取数据操作时，字段名 %s 对应XPath %s 未找到（请查看原因，如是否翻页太快页面元素未加载出来），使用默认值，本字段将不再重复报错" % (
+                                p["name"], relativeXPath))
                         self.dataNotFoundKeys[p["name"]] = True
-                self.outputParameters[p["name"]] = content
-
+                try:
+                    self.outputParameters[p["name"]] = content
+                except:
+                    self.outputParameters[p["name"]] = p["default"]
         # 对于不能优化的操作，使用selenium执行
         for p in para["paras"]:
             if not p["optimizable"]:
                 content = ""
                 relativeXPath = replace_field_values(
-                    p["relativeXPath"], self.outputParameters)
+                    p["relativeXPath"], self.outputParameters, self)
                 if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
                     try:
                         # relativeXPath = relativeXPath.lower()
@@ -1668,8 +1909,8 @@ class BrowserThread(Thread):
                                     #     relativeXPath + ")" + \
                                     #     "[" + str(index + 1) + "]"
                                     full_path = "(" + parentPath + ")" + \
-                                        "[" + str(index + 1) + "]" + \
-                                        relativeXPath
+                                                "[" + str(index + 1) + "]" + \
+                                                relativeXPath
                                     element = self.browser.find_element(
                                         By.XPATH, full_path, iframe=p["iframe"])
                                 else:
@@ -1678,7 +1919,8 @@ class BrowserThread(Thread):
                         else:
                             element = self.browser.find_element(
                                 By.XPATH, relativeXPath, iframe=p["iframe"])
-                    except (NoSuchElementException, InvalidSelectorException, StaleElementReferenceException):  # 找不到元素的时候，使用默认值
+                    except (
+                    NoSuchElementException, InvalidSelectorException, StaleElementReferenceException) as e:  # 找不到元素的时候，使用默认值
                         # self.print_and_log(p)
                         try:
                             content = p["default"]
@@ -1687,10 +1929,13 @@ class BrowserThread(Thread):
                         self.outputParameters[p["name"]] = content
                         try:
                             if not self.dataNotFoundKeys[p["name"]]:
-                                self.print_and_log('Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
-                                    relativeXPath, p["name"]))
-                                self.print_and_log("提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
-                                    p["name"], relativeXPath))
+                                self.print_and_log(
+                                    'Element %s not found with parameter name %s when extracting data, use default, this error will only show once' % (
+                                        relativeXPath, p["name"]))
+                                self.print_and_log(
+                                    "提取数据操作时，字段名 %s 对应XPath %s 未找到，使用默认值，本字段将不再重复报错" % (
+                                        p["name"], relativeXPath))
+                                self.dataNotFoundKeys[p["name"]] = True
                         except:
                             pass
                         continue
@@ -1746,20 +1991,18 @@ class BrowserThread(Thread):
                 self.outputParameters[p["name"]] = content
                 self.execute_code(
                     2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS
-        if para["recordASField"] > 0:
+        if para["recordASField"] > 0 and para["newLine"]:
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
-
 if __name__ == '__main__':
-    # from multiprocessing import freeze_support
-    # freeze_support() # 防止无限死循环多开
-    
+    from multiprocessing import freeze_support
+    freeze_support()  # 防止无限死循环多开
     # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
     # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
     config = {
-        "id": [0],
+        "ids": [0],
         "saved_file_name": "",
         "user_data": False,
         "config_folder": "",
@@ -1768,92 +2011,64 @@ if __name__ == '__main__':
         "headless": False,
         "server_address": "http://localhost:8074",
         "keyboard": True,  # 是否监听键盘输入
-        "version": "0.5.0",
+        "pause_key": "p",  # 暂停键
+        "version": "0.6.0",
     }
     c = Config(config)
     print(c)
-    options = Options()
+    options = webdriver.ChromeOptions()
     driver_path = "chromedriver.exe"
-    import platform
     print(sys.platform, platform.architecture())
-    option = webdriver.ChromeOptions()
-    if not os.path.exists(os.getcwd()+"/Data"):
-        os.mkdir(os.getcwd()+"/Data")
+    if not os.path.exists(os.getcwd() + "/Data"):
+        os.mkdir(os.getcwd() + "/Data")
     if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # MacOS需要用option而不是options！
-        option.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        option.add_extension(
-            "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         options.add_extension(
             "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
         driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
-        # options.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # # MacOS需要用option而不是options！
-        # option.binary_location = "chrome_mac64.app/Contents/MacOS/Google Chrome"
-        # driver_path = os.getcwd()+ "/chromedriver_mac64"
         print(driver_path)
         if c.config_folder == "":
             c.config_folder = os.path.expanduser(
                 "~/Library/Application Support/EasySpider/")
-        # print("Config folder for MacOS:", c.config_folder)
-    elif os.path.exists(os.getcwd()+"/EasySpider/resources"):  # 打包后的路径
+    elif os.path.exists(os.getcwd() + "/EasySpider/resources"):  # 打包后的路径
         print("Finding chromedriver in EasySpider",
-              os.getcwd()+"/EasySpider")
+              os.getcwd() + "/EasySpider")
         if sys.platform == "win32" and platform.architecture()[0] == "32bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
-            option.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
-            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
             options.binary_location = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
-            option.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
             driver_path = os.path.join(
                 os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
-            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
             options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
-            option.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
             driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
-            option.add_extension("EasySpider/resources/app/XPathHelper.crx")
             options.add_extension("EasySpider/resources/app/XPathHelper.crx")
         else:
             print("Unsupported platform")
             sys.exit()
         print("Chrome location:", options.binary_location)
         print("Chromedriver location:", driver_path)
-    # elif os.getcwd().find("ExecuteStage") >= 0:  # 如果直接执行
-    #     print("Finding chromedriver in ./Chrome",
-    #           os.getcwd()+"/Chrome")
-    #     options.binary_location = "./Chrome/chrome.exe"  # 指定chrome位置
-    #     # option.binary_location = "C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe"
-    #     driver_path = "./Chrome/chromedriver.exe"
-    elif os.path.exists(os.getcwd()+"/../ElectronJS"):
+    elif os.path.exists(os.getcwd() + "/../ElectronJS"):
         # 软件dev用
         print("Finding chromedriver in EasySpider",
-              os.getcwd()+"/ElectronJS")
-        option.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+              os.getcwd() + "/ElectronJS")
         options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
         driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        option.add_extension("../ElectronJS/XPathHelper.crx")
+        options.add_extension("../ElectronJS/XPathHelper.crx")
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"
-        option.add_extension("XPathHelper.crx")
+        options.add_extension("XPathHelper.crx")
 
-    option.add_experimental_option(
+    options.add_experimental_option(
         'excludeSwitches', ['enable-automation'])  # 以开发者模式
 
-    # user_data_dir = r''  # 注意没有Default！
-
-    # options.add_argument('--user-data-dir='+p)
 
     # 总结：
     # 0. 带Cookie需要用userdatadir
@@ -1867,97 +2082,119 @@ if __name__ == '__main__':
             print("Config file path: " +
                   c.config_folder + c.config_file_name)
             absolute_user_data_folder = config["absolute_user_data_folder"]
-            print("\nAbsolute_user_data_folder:",
-                  absolute_user_data_folder, "\n")
     except:
         pass
-    if c.user_data:
-        option.add_argument(
-            f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
-        option.add_argument("--profile-directory=Default")
-        options.add_argument(
-            f'--user-data-dir={absolute_user_data_folder}')  # TMALL 反扒
-        options.add_argument("--profile-directory=Default")
 
-    if c.headless:
-        print("Headless mode")
-        print("无头模式")
-        option.add_argument("--headless")
-        options.add_argument("--headless")
-
-    # options.add_argument(
-    #     '--user-data-dir=C:\\Users\\q9823\\AppData\\Local\\Google\\Chrome\\User Data')  # TMALL 反扒
-    option.add_argument(
-        "--disable-blink-features=AutomationControlled")  # TMALL 反扒
     options.add_argument(
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
 
     options.add_argument('-ignore-certificate-errors')
     options.add_argument('-ignore -ssl-errors')
-    option.add_argument('-ignore-certificate-errors')
-    option.add_argument('-ignore -ssl-errors')
+
+    if c.headless:
+        print("Headless mode")
+        print("无头模式")
+        options.add_argument("--headless")
+
+    tmp_options = []
+    for id in c.ids:
+        tmp_options.append({"options": copy.deepcopy(options), "tmp_user_data_folder": ""})
+
+    if c.user_data:
+        tmp_user_folder_parent = os.path.join(os.getcwd(), "TempUserDataFolder")
+        if not os.path.exists(tmp_user_folder_parent):
+            os.mkdir(tmp_user_folder_parent)
+        characters = string.ascii_letters + string.digits
+        for i in range(len(c.ids)):
+            id = c.ids[i]
+            # 从字符集中随机选择字符构成字符串
+            random_string = ''.join(random.choice(characters) for i in range(10))
+            tmp_user_data_folder = os.path.join(tmp_user_folder_parent, "user_data_" + str(id) + "_" + str(time.time()).replace(".","") + "_" + random_string)
+            tmp_options[i]["tmp_user_data_folder"] = tmp_user_data_folder
+            if os.path.exists(tmp_user_data_folder):
+                shutil.rmtree(tmp_user_data_folder)
+            print(f"Copying user data folder to: {tmp_user_data_folder}, please wait...")
+            print(f"正在复制用户信息目录到: {tmp_user_data_folder}，请稍等...")
+            if os.path.exists(absolute_user_data_folder):
+                shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
+                print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
+                print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+            else:
+                tmp_user_data_folder = absolute_user_data_folder
+                print("Cannot find user data folder, create a new folder.")
+                print("未找到用户信息目录，创建新目录。")
+            options = tmp_options[i]["options"]
+            options.add_argument(
+                f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒
+            options.add_argument("--profile-directory=Default")
+    print(
+        "如果报错Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally，说明有之前运行的Chrome实例没有正常关闭，请关闭之前打开的所有Chrome实例后再运行程序即可。")
+    print(
+        "If you get an error Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally, it means that there is a Chrome instance that was not closed properly before, please close all Chrome instances that were opened before running the program.")
 
     threads = []
-    for i in c.id:
-        # print(options)
-        print("id: ", i)
+    for i in range(len(c.ids)):
+        id = c.ids[i]
+        options = tmp_options[i]["options"]
+        print("id: ", id)
         if c.read_type == "remote":
             print("remote")
             content = requests.get(
-                c.server_address + "/queryExecutionInstance?id=" + str(i))
+                c.server_address + "/queryExecutionInstance?id=" + str(id))
             service = json.loads(content.text)  # 加载服务信息
         else:
             print("local")
-            with open("execution_instances/" + str(i) + ".json", 'r', encoding='utf-8') as f:
+            with open("execution_instances/" + str(id) + ".json", 'r', encoding='utf-8') as f:
                 content = f.read()
                 service = json.loads(content)  # 加载服务信息
-        print("Task Name:", service["name"])
-        print("任务名称:", service["name"])
+        try:
+            print("Task Name:", service["name"])
+            print("任务名称:", service["name"])
+        except:
+            print(f"Cannot find task with id: {str(id)}, please check whether {str(id)}.json exists in the 'execution_instances' folder.")
+            print(f"未找到id为{str(id)}的任务，请检查'execution_instances'文件夹中是否存在{str(id)}.json文件。")
+            continue
         try:
             cloudflare = service["cloudflare"]
         except:
             cloudflare = 0
         if cloudflare == 0:
             options.add_argument('log-level=3')  # 隐藏日志
-            option.add_argument('log-level=3')  # 隐藏日志
+            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(id))
+            print("Data path:", path)
             options.add_experimental_option("prefs", {
                 # 设置文件下载路径
-                "download.default_directory": "Data/Task_" + str(i),
+                "download.default_directory": path,
                 "download.prompt_for_download": False,  # 禁止下载提示框
                 "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
                 "download.directory_upgrade": True,
                 "download.extensions_to_open": "applications/pdf",
-                "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
-            })
-            option.add_experimental_option("prefs", {
-                # 设置文件下载路径
-                "download.default_directory": "Data/Task_" + str(i),
-                "download.prompt_for_download": False,  # 禁止下载提示框
-                "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
-                "download.directory_upgrade": True,
-                "download.extensions_to_open": "applications/pdf",
-                "plugins.always_open_pdf_externally": True  # 总是在外部程序中打开PDF
+                "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
+                "safebrowsing_for_trusted_sources_enabled": False,
+                "safebrowsing.enabled": False,
+                'safebrowsing.disable_download_protection': True,
+                'profile.default_content_settings.popups': 0,
             })
             try:
                 if service["environment"] == 1:
-                    option.add_experimental_option(
-                        'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
                     options.add_experimental_option(
                         'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
             except:
                 pass
-            browser_t = MyChrome(
-                options=options, chrome_options=option, executable_path=driver_path)
+            selenium_service = Service(executable_path=driver_path)
+            browser_t = MyChrome(service=selenium_service, options=options)
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器
-                # options.add_argument("--auto-open-devtools-for-tabs") 
-                # options.binary_location = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"  # 需要用自己的浏览器
-                browser_t = MyUCChrome(options=options, driver_executable_path=driver_path)
+                browser_t = MyUCChrome(
+                    options=options, driver_executable_path=driver_path)
                 links = list(filter(isnotnull, service["links"].split("\n")))
-                browser_t.execute_script('window.open("'+ links[0] +'","_blank");') # open page in new tab
-                time.sleep(5) # wait until page has loaded
-                browser_t.switch_to.window(browser_t.window_handles[1]) # switch to new tab
+                # open page in new tab
+                browser_t.execute_script(
+                    'window.open("' + links[0] + '","_blank");')
+                time.sleep(5)  # wait until page has loaded
+                browser_t.switch_to.window(
+                    browser_t.window_handles[1])  # switch to new tab
                 # browser_t = uc.Chrome()
             else:
                 print("Cloudflare模式只支持Windows x64平台。")
@@ -1966,27 +2203,30 @@ if __name__ == '__main__':
                 sys.exit()
         event = Event()
         event.set()
-        thread = BrowserThread(browser_t, i, service,
-                               c.version, event, c.saved_file_name, config=config)
-        print("Thread with task id: ", i, " is created")
+        thread = BrowserThread(browser_t, id, service,
+                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i])
+        print("Thread with task id: ", id, " is created")
         threads.append(thread)
         thread.start()
         # Set the pause operation
         # if sys.platform != "linux":
         #     time.sleep(3)
-        #     print("\n\n----------------------------------")
-        #     print("正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
-        #     print("Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
-        #     print("----------------------------------\n\n")
         #     Thread(target=check_pause, args=("p", event)).start()
         # else:
         time.sleep(3)
-        press_time = {"duration": 0, "is_pressed": False}
+        if c.pause_key == "p":
+            try:
+                pause_key = service["pauseKey"]
+            except:
+                pause_key = "p"
+        else:
+            pause_key = c.pause_key
+        press_time = {"duration": 0, "is_pressed": False, "pause_key": pause_key}
         print("\n\n----------------------------------")
         print(
-            "正在运行任务，长按键盘p键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按p键。")
+            "正在运行任务，长按键盘" + pause_key + "键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按" + pause_key + "键。")
         print(
-            "Running task, long press 'p' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press 'p' again.")
+            "Running task, long press '" + pause_key + "' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press '" + pause_key + "' again.")
         print("----------------------------------\n\n")
         # if cloudflare:
         #     print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
@@ -1994,22 +2234,14 @@ if __name__ == '__main__':
         # 使用监听器监听键盘输入
     try:
         if c.keyboard:
-            with Listener(on_press=on_press_creator(press_time, event), on_release=on_release_creator(event, press_time)) as listener:
+            with Listener(on_press=on_press_creator(press_time, event),
+                          on_release=on_release_creator(event, press_time)) as listener:
                 listener.join()
     except:
         pass
         # print("您的操作系统不支持暂停功能。")
         # print("Your operating system does not support the pause function.")
 
-    # print("线程长度：", len(threads) )
-
     for thread in threads:
         print()
         thread.join()
-
-    for thread in threads:
-        thread.browser.quit()
-        # print("Thread with task id: ", thread.id, " is closed")
-        print("程序已运行完成，请手动关闭此窗口。")
-        print(
-            "The program has finished running, please manually close this window.")

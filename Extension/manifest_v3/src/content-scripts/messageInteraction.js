@@ -168,7 +168,7 @@ export function collectSingle() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
-    createNotification(LANG("采集成功", "Collect successfully"), "success");
+    // createNotification(LANG("采集成功", "Collect successfully"), "success");
 }
 
 function createNotification(text, type="info") {
@@ -213,6 +213,8 @@ function createNotification(text, type="info") {
     setTimeout(function () {
         notification.style.right = '20px'; // 调整距离左边的位置
     }, 100);
+    // let removeXPathText = text.split("是否正确：")[0].split("is correct:")[0];
+    // let timeoutInterval = 1500 * removeXPathText.length / 5;
     let timeoutInterval = 1500 * text.length / 5;
     // 设置退出动画，通知从右向左滑出
     setTimeout(function () {

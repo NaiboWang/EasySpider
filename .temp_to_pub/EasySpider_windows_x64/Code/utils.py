@@ -1,5 +1,4 @@
-# 控制流程的暂停和继续
-
+# 工具库
 import csv
 import datetime
 import json
@@ -14,6 +13,47 @@ import requests
 from urllib.parse import urlparse
 import pymysql
 from lxml import etree
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+
+def send_email(config):
+    """
+    发送邮件的函数。
+
+    :param config: 包含邮件配置信息的字典。
+    """
+    # 校验配置信息是否完整
+    # required_keys = ["host", "port", "username", "password", "from", "to", "subject", "content"]
+    # missing_keys = [key for key in required_keys if key not in config]
+    # if missing_keys:
+    #     raise ValueError(f"邮件配置缺少必要的键: {', '.join(missing_keys)}")
+    try:
+        print("正在发送邮件到：" + config['to'])
+        message = MIMEText(config['content'], 'plain', 'utf-8')
+        message['From'] = Header(f"{config['username'].split('@')[0]} <{config['username']}>")
+        to_name_list = []
+        for address in config['to'].split(','):
+            address = address.strip()
+            name = address.split('@')[0]
+            to_name_list.append(f"{name} <{address}>")
+        to_name_list = ', '.join(to_name_list)
+        message['To'] = Header(to_name_list)
+        message['Subject'] = Header(config['subject'], 'utf-8')
+        # 使用SSL加密方式连接邮件服务器
+        smtp_server = smtplib.SMTP_SSL(config['host'], config['port'])
+        smtp_server.login(config['username'], config['password'])
+        to_address_list = config['to'].split(',')
+        smtp_server.sendmail(config['username'], to_address_list, message.as_string())
+        print("邮件发送成功|Email sent successfully")
+    except Exception as e:
+        print(f"无法发送邮件，发生错误：{e}")
+        print(f"Failed to send email, error: {e}")
+    finally:
+        try:
+            smtp_server.quit()
+        except:
+            pass
 
 
 def is_valid_url(url):
@@ -31,7 +71,7 @@ def lowercase_tags_in_xpath(xpath):
 def on_press_creator(press_time, event):
     def on_press(key):
         try:
-            if key.char == 'p':
+            if key.char == press_time["pause_key"]:
                 if press_time["is_pressed"] == False:  # 没按下p键时，记录按下p键的时间
                     press_time["duration"] = time.time()
                     press_time["is_pressed"] = True
@@ -39,14 +79,14 @@ def on_press_creator(press_time, event):
                     duration = time.time() - press_time["duration"]
                     if duration > 2:
                         if event._flag == False:
-                            print("任务执行中，长按p键暂停执行。")
-                            print("Task is running, long press 'p' to pause.")
+                            print("任务执行中，长按" + press_time["pause_key"] + "键暂停执行。")
+                            print("Task is running, long press '" + press_time["pause_key"] + "' to pause.")
                             # 设置Event的值为True，使得线程b可以继续执行
                             event.set()
                         else:
                             # 设置Event的值为False，使得线程b暂停执行
-                            print("任务已暂停，长按p键继续执行...")
-                            print("Task paused, long press 'p' to continue...")
+                            print("任务已暂停，长按" + press_time["pause_key"] + "键继续执行...")
+                            print("Task paused, long press '" + press_time["pause_key"] + "' to continue...")
                             event.clear()
                         press_time["duration"] = time.time()
                         press_time["is_pressed"] = False
@@ -93,6 +133,22 @@ def on_release_creator(event, press_time):
 #                 print("Task paused, press 'p' to continue...")
 #                 event.clear()
 #         time.sleep(1)  # 每秒检查一次
+
+def detect_optimizable(para, ignoreWaitElement=True, waitElement=""):
+    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1:
+        if para["nodeType"] <= 2:
+            if ignoreWaitElement or waitElement == "":
+                return True
+            else:
+                return False
+        elif para["nodeType"] == 4: # 如果是图片
+            if para["downloadPic"]:
+                return False
+            else:
+                return True
+    else:
+        return False
+
 
 
 def download_image(browser, url, save_directory):
@@ -176,16 +232,36 @@ def write_to_csv(file_name, data, record):
             f_csv.writerow(to_write)
         f.close()
 
-
-def replace_field_values(orginal_text, outputParameters):
+def replace_field_values(orginal_text, outputParameters, browser=None):
     pattern = r'Field\["([^"]+)"\]'
     try:
         replaced_text = re.sub(
             pattern, lambda match: outputParameters.get(match.group(1), ''), orginal_text)
-    except:
+        if re.search(r'eval\(', replaced_text, re.IGNORECASE): # 如果返回值中包含EVAL
+            replaced_text = replaced_text.replace("self.", "browser.")
+            pattern = re.compile(r'(?i)eval\("(.+?)"\)')
+            # 循环替换所有匹配到的eval语句
+            while True:
+                match = pattern.search(replaced_text)
+                if not match:
+                    break
+                # 执行eval并将其结果转换为字符串形式
+                eval_replaced_text = str(eval(match.group(1)))
+                # 替换eval语句
+                replaced_text = replaced_text.replace(match.group(0), eval_replaced_text)
+    except Exception as e:
+        print("eval替换失败，请检查eval语句是否正确。| Failed to replace eval, please check if the eval statement is correct.")
+        print(e)
         replaced_text = orginal_text
     return replaced_text
 
+
+def readCode(code):
+    if code.startswith("outside:"):
+        file_name = os.path.join(os.path.abspath("./"), code[8:])
+        with open(file_name, 'r', encoding='utf-8-sig') as file_obj:
+            code = file_obj.read()
+    return code
 
 def write_to_json(file_name, data, types, record, keys):
     keys = list(keys)
@@ -281,33 +357,37 @@ class myMySQL:
             print("MySQL config file path: ", config_file)
             with open(config_file, 'r') as f:
                 config = json.load(f)
-                host = config["host"]
-                port = config["port"]
-                user = config["username"]
-                passwd = config["password"]
-                db = config["database"]
+                self.host = config["host"]
+                self.port = config["port"]
+                self.username = config["username"]
+                self.password = config["password"]
+                self.db = config["database"]
         except Exception as e:
             print("读取配置文件失败，请检查配置文件："+config_file+"是否存在，或配置信息是否有误。")
             print("Failed to read configuration file, please check if the configuration file: " +
                   config_file+" exists, or if the configuration information is incorrect.")
             print(e)
+        self.connect()
+        
+    def connect(self):
         try:
             self.conn = pymysql.connect(
-                host=host, port=port, user=user, passwd=passwd, db=db)
+                host=self.host, port=self.port, user=self.username, passwd=self.password, db=self.db)
             print("成功连接到数据库。")
             print("Successfully connected to the database.")
         except:
             print("连接数据库失败，请检查配置文件是否正确。")
             print(
                 "Failed to connect to the database, please check if the configuration file is correct.")
+            sys.exit()
 
     def create_table(self, table_name, parameters):
         self.table_name = table_name
         self.field_sql = "("
-        cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor()
         # 检查表是否存在
-        cursor.execute("SHOW TABLES LIKE '%s'" % table_name)
-        result = cursor.fetchone()
+        self.cursor.execute(f"SHOW TABLES LIKE '{table_name}'")
+        result = self.cursor.fetchone()
 
         sql = "CREATE TABLE " + table_name + \
             " (_id INT AUTO_INCREMENT PRIMARY KEY, "
@@ -342,47 +422,52 @@ class myMySQL:
         # 如果表不存在，创建它
         if not result:
             # 执行SQL命令
-            cursor.execute(sql)
+            self.cursor.execute(sql)
         else:
-            print("数据表" + table_name + "已存在。")
-            print("The data table " + table_name + " already exists.")
-        cursor.close()
+            print(f'数据表 {table_name} 已存在')
+            print(f'The data table {table_name} already exists.')
+        self.cursor.close()
 
     def write_to_mysql(self, OUTPUT, record, types):
         # 创建一个游标对象
-        cursor = self.conn.cursor()
+        self.cursor = self.conn.cursor()
 
         for line in OUTPUT:
             for i in range(len(line)):
                 if types[i] == "int" or types[i] == "bigInt":
                     try:
                         line[i] = int(line[i])
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = 0
                 elif types[i] == "double":
                     try:
                         line[i] = float(line[i])
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = 0.0
                 elif types[i] == "datetime":
                     try:
                         line[i] = datetime.datetime.strptime(
                             line[i], '%Y-%m-%d %H:%M:%S')
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = datetime.datetime.strptime(
                             "1970-01-01 00:00:00", '%Y-%m-%d %H:%M:%S')
                 elif types[i] == "date":
                     try:
                         line[i] = datetime.datetime.strptime(
                             line[i], '%Y-%m-%d')
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = datetime.datetime.strptime(
                             "1970-01-01", '%Y-%m-%d')
                 elif types[i] == "time":
                     try:
                         line[i] = datetime.datetime.strptime(
                             line[i], '%H:%M:%S')
-                    except:
+                    except Exception as e:
+                        print(e)
                         line[i] = datetime.datetime.strptime(
                             "00:00:00", '%H:%M:%S')
             to_write = []
@@ -390,15 +475,21 @@ class myMySQL:
                 if record[i]:
                     to_write.append(line[i])
             # 构造插入数据的 SQL 语句
-            sql = f"INSERT INTO " + self.table_name + \
-                " "+self.field_sql+" VALUES ("
-            for item in to_write:
+            sql = f'INSERT INTO {self.table_name} {self.field_sql} VALUES ('
+            for _ in to_write:
                 sql += "%s, "
             # 移除最后的逗号并添加闭合的括号
             sql = sql.rstrip(', ') + ")"
             # 执行 SQL 语句
             try:
-                cursor.execute(sql, to_write)
+                self.cursor.execute(sql, to_write)
+            except pymysql.OperationalError as e:
+                print("Error:", e)
+                print("Try to reconnect to the database...")
+                self.connect()
+                self.cursor = self.conn.cursor() # 重新创建游标对象
+                self.cursor.execute(sql, to_write) # 重新执行SQL语句
+                # self.write_to_mysql(OUTPUT, record, types)
             except Exception as e:
                 print("Error:", e)
                 print("Error SQL:", sql, to_write)
@@ -412,9 +503,16 @@ class myMySQL:
         self.conn.commit()
 
         # 关闭游标和连接
-        cursor.close()
+        self.cursor.close()
 
     def close(self):
-        self.conn.close()
-        print("成功关闭数据库。")
-        print("Successfully closed the database.")
+        try:
+            self.conn.close()
+            print("成功关闭数据库。")
+            print("Successfully closed the database.")
+        except:
+            print("关闭数据库失败。")
+            print("Failed to close the database.")
+    
+    def __del__(self):
+        self.close()
