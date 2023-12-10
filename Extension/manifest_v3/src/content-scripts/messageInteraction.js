@@ -1,22 +1,9 @@
 //实现与后台和流程图部分的交互
 
-import {getElementXPaths, global, readXPath, isInIframe} from "./global.js";
-
-// var startMsg = { "type": 0, msg: ""};
-//
-// chrome.runtime.sendMessage(startMsg, function(response) {
-//     console.log(response.msg);
-// }); //每次打开新页面的时候需要告诉后台
-// chrome.runtime.onMessage.addListener(
-//     function(request, sender, sendResponse) {
-//         if (request["type"] == 1){
-//             sendResponse("回答处理结果");
-//         }
-//     }
-// );
+import {getElementXPaths, global, readXPath, isInIframe, clearEl} from "./global.js";
 
 global.ws = new WebSocket("ws://localhost:8084");
-global.ws.onopen = function() {
+global.ws.onopen = function () {
     // Web Socket 已连接上，使用 send() 方法发送数据
     console.log("已连接");
     let message = {
@@ -28,13 +15,26 @@ global.ws.onopen = function() {
     };
     this.send(JSON.stringify(message));
 };
-global.ws.onmessage = function(evt) {
+global.ws.onmessage = function (evt) {
     evt = JSON.parse(evt.data);
-    if (evt["type"] == "0") { //0代表更新参数添加索引值
-        chrome.storage.local.set({ "parameterNum": parseInt(evt["value"]) }); //修改值
+    if (evt["type"] == "update_parameter_num") { //0代表更新参数添加索引值
+        chrome.storage.local.set({"parameterNum": parseInt(evt["value"])}); //修改值
         console.log("更新参数添加索引值为：" + evt["value"]);
+    } else if (evt["type"] == "notify") { //1代表更新参数
+        createNotification(LANG(evt["msg_zh"], evt["msg_en"]), evt["level"]);
+    } else if (evt["type"] == "cancelSelection") { //试运行点击元素后取消选中元素
+        clearEl();
     }
 };
+
+function LANG(zh, en) {
+    if (global.lang == "zh") {
+        return zh;
+    } else {
+        return en;
+    }
+}
+
 export function input(value) {
     let message = {
         "type": "inputText",
@@ -55,7 +55,7 @@ export function input(value) {
     // msg = { type: 2, value: value, xpath: message.xpath, id: global.id};
     let message_keyboard = {
         type: 2, //消息类型，2代表键盘输入
-        message: { "keyboardStr": value, "xpath": message.xpath, "iframe": global.iframe, "id": global.id } // {}全选{BS}退格
+        message: {"keyboardStr": value, "xpath": message.xpath, "iframe": global.iframe, "id": global.id} // {}全选{BS}退格
     };
     global.ws.send(JSON.stringify(message_keyboard));
 }
@@ -81,7 +81,7 @@ export function sendSingleClick() {
     global.ws.send(JSON.stringify(message_action));
 }
 
-export function sendChangeOption(optionMode, optionValue){
+export function sendChangeOption(optionMode, optionValue) {
     let message = {
         "type": "changeOption",
         "optionMode": optionMode,
@@ -101,7 +101,7 @@ export function sendChangeOption(optionMode, optionValue){
     global.ws.send(JSON.stringify(message_action));
 }
 
-export function sendMouseMove(){
+export function sendMouseMove() {
     let message = {
         "type": "mouseMove",
         "history": history.length, //记录history的长度
@@ -120,7 +120,7 @@ export function sendMouseMove(){
     global.ws.send(JSON.stringify(message_action));
 }
 
-export function sendLoopMouseMove(){
+export function sendLoopMouseMove() {
     let message = {
         "type": "loopMouseMove",
         "history": history.length, //记录history的长度
@@ -168,7 +168,74 @@ export function collectSingle() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    createNotification(LANG("采集成功", "Collect successfully"), "success");
 }
+
+function createNotification(text, type="info") {
+    // 创建通知元素
+    let notification = document.createElement('div');
+    notification.className = 'notification_of_easyspider'; // 使用 class 方便后续添加样式
+    notification.setAttribute("data-timestamp", new Date().getTime()); // 用于清除通知
+    // 设置通知文本
+    notification.innerText = text;
+
+    // 定义与添加样式
+    let cssText = `
+      position: fixed;
+      bottom: 20px; /* 距底部20px */
+      right: -320px; /* 初始位置在屏幕右侧，假设通知框宽度320px */
+      min-width: 300px;
+      padding: 10px 20px;
+      color: white;
+      z-index: 2147483641;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: right 0.5s ease-in-out; /* 动画效果 */
+    `;
+    notification.style.cssText = cssText;
+
+    if (type === "success") {
+        notification.style.backgroundColor = 'rgb(103, 194, 58)';
+    } else if (type === "info") {
+        notification.style.backgroundColor = '#00a8ff';
+    } else if (type === "warning") {
+        notification.style.backgroundColor = 'rgb(230, 162, 60)';
+    } else if (type === "error") {
+        notification.style.backgroundColor = '#ff6b6b';
+    }
+
+    // 将通知添加到页面中
+    document.body.appendChild(notification);
+
+    // 触发动画，通知从右向左滑入
+    setTimeout(function () {
+        notification.style.right = '20px'; // 调整距离左边的位置
+    }, 100);
+    let timeoutInterval = 1500 * text.length / 5;
+    // 设置退出动画，通知从右向左滑出
+    setTimeout(function () {
+        notification.style.right = '-320px'; // 向左退出
+        // 确定动画结束后移除通知
+        notification.addEventListener('transitionend', function () {
+            if (notification.parentNode === document.body) {
+                document.body.removeChild(notification); // 避免移除已经不存在的元素
+            }
+        });
+    }, timeoutInterval + 500); // 通知停留时间加上动画时间
+}
+
+setInterval(function () {
+    let notifications = document.getElementsByClassName("notification_of_easyspider");
+    for (let i = 0; i < notifications.length; i++) {
+        if (new Date().getTime() - parseInt(notifications[i].getAttribute("data-timestamp")) > 10000) {
+            if (notifications[i].parentNode === document.body) {
+                document.body.removeChild(notifications[i]); // 避免移除已经不存在的元素
+            }
+        }
+    }
+}, 3000);
 
 //采集无规律多元素
 export function collectMultiNoPattern() {
@@ -201,7 +268,7 @@ export function collectMultiWithPattern() {
         "isDescendents": global.app._data.selectedDescendents, //标记是否采集的是子元素
         "parameters": global.outputParameters,
     };
-    for(let i=0;i<global.outputParameters.length;i++){
+    for (let i = 0; i < global.outputParameters.length; i++) {
         global.outputParameters[i]["exampleValues"] = [global.outputParameters[i]["exampleValues"][0]];
     }
     if (!detectAllSelected()) //如果不是全部选中的话

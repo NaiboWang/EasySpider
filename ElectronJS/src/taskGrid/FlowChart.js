@@ -382,6 +382,24 @@ function elementClick(e) {
     e.stopPropagation(); //防止冒泡
 }
 
+function elementDblClick(e) {
+    try {
+        let nodeType = app._data.nowNode["option"]
+        if (nodeType >= 8) {
+            showInfo(LANG("试运行功能不适用于循环和条件分支操作。", "The trial run function is not applicable to loop and condition branch operations."))
+        } else {
+            if(nodeType == 5 && app._data.nowNode["parameters"]["codeMode"] != 0){
+                showInfo(LANG("试运行自定义操作功能只适用于执行JavaScript操作。", "The trial run custom action function is only applicable to run JavaScript operation."))
+            } else {
+                trailRun(app._data.nowNode);
+            }
+        }
+    } catch (e) {
+        showError(LANG("试运行功能只能在设计任务阶段，Chrome浏览器打开时使用！", "The trial run function can only be used when designing tasks and opening in Chrome browser!"));
+    }
+    e.stopPropagation(); //防止冒泡
+}
+
 //箭头点击事件
 function arrowClick(e) {
     if (option != 0) {
@@ -495,12 +513,11 @@ function toolBoxKernel(e, para = null) {
             if (str == "") {
                 title += LANG("元素", "Element");
             } else {
-                let lang = detectLang(str);
-                if (lang == 1) { //中文
+                if(window.location.href.indexOf("_CN") != -1){
                     if (str.length > l) {
                         str = str.substring(0, l) + "...";
                     }
-                } else { //英文
+                } else {
                     if (str.length > l + 7) {
                         str = str.substring(0, l + 7) + "...";
                     }
@@ -643,6 +660,8 @@ function bindEvents() {
         rule.addEventListener('mousedown', elementMousedown);
         rule.removeEventListener('click', elementClick);
         rule.addEventListener('click', elementClick);
+        rule.removeEventListener('dblclick', elementDblClick);
+        rule.addEventListener('dblclick', elementDblClick);
         rule.removeEventListener('dragend', elementDragEnd);
         rule.addEventListener('dragend', elementDragEnd);
     }
@@ -749,7 +768,7 @@ document.getElementById("flowchart_graph").oncontextmenu = function (e) {
     // 创建一个包含删除选项的右键菜单
     let contextMenu = document.createElement("div");
     contextMenu.id = "contextMenu";
-    contextMenu.innerHTML = `<div>${LANG("试运行", "Test Run")}</div>
+    contextMenu.innerHTML = `<div>${LANG("试运行", "Trial Run")}</div>
         <div>${LANG("复制元素", "Copy Element")}</div>
         <div>${LANG("剪切元素", "Move Element")}</div>
         <div>${LANG("删除元素（双击）", "Delete Element (Double Click)")}</div>`;
@@ -802,7 +821,8 @@ document.getElementById("flowchart_graph").oncontextmenu = function (e) {
 
     // Add Test Run functionality
     contextMenu.children[0].addEventListener('click', function () {
-
+        elementDblClick(e);
+        contextMenu.remove(); // Remove the context menu
     });
 
     // Add copy functionality

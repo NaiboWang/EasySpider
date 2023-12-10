@@ -1507,13 +1507,25 @@ class BrowserThread(Thread):
             click_way = 0
         try:
             if click_way == 0:  # 用selenium的点击方法
-                actions = ActionChains(self.browser)  # 实例化一个action对象
-                actions.click(element).perform()
+                try:
+                    actions = ActionChains(self.browser)  # 实例化一个action对象
+                    actions.click(element).perform()
+                except Exception as e:
+                    self.browser.execute_script("arguments[0].scrollIntoView();", element)
+                    try:
+                        actions = ActionChains(self.browser)  # 实例化一个action对象
+                        actions.click(element).perform()
+                    except Exception as e:
+                        self.print_and_log(f"Selenium点击元素{path}失败，将尝试使用JavaScript点击")
+                        self.print_and_log(f"Failed to click element {path} with Selenium, will try to click with JavaScript")
+                        script = 'var result = document.evaluate(`' + path + \
+                            '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
+                        self.browser.execute_script(script, str(index))  # 用js的点击方法
             elif click_way == 1:  # 用js的点击方法
                 script = 'var result = document.evaluate(`' + path + \
                          '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
                 self.browser.execute_script(script, str(index))  # 用js的点击方法
-            # self.recordLog("点击元素|Click element: " + path)
+            self.recordLog("点击元素|Click element: " + path)
         except TimeoutException:
             self.print_and_log(
                 'Time out after set seconds when loading clicked page')

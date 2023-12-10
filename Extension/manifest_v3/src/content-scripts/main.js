@@ -64,6 +64,23 @@ document.addEventListener("mousemove", function() {
         tooltips = true;
         return;
     }
+    //如果鼠标在ID为notification_of_easyspider内则点击和选中失效
+    try {
+        let notification_of_easyspider = document.getElementsByClassName("notification_of_easyspider")[0];
+        let x = event.clientX;
+        let y = event.clientY;
+        let divx1 = notification_of_easyspider.offsetLeft;
+        let divy1 = notification_of_easyspider.offsetTop;
+        let divx2 = notification_of_easyspider.offsetLeft + notification_of_easyspider.offsetWidth;
+        let divy2 = notification_of_easyspider.offsetTop + notification_of_easyspider.offsetHeight;
+        if (y >= divy1 - 100 && y <= divy2 + 100) {
+            tooltips = true;
+            // console.log("notification_of_easyspider");
+            return;
+        }
+    } catch (e) {
+
+    }
     global.oe = document.elementFromPoint(event.x, event.y);
     if (global.oe == global.tdiv) {
         return;

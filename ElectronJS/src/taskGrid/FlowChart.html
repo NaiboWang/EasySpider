@@ -16,13 +16,13 @@
 
 <body>
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> Hint: Save Successfully!
-    </div>
-    <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="tip_message">Tip: Save successful!</span>
     </div>
     <div id="tipInfo" class="alert alert-info alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="info_message">提示：您加载的任务版本不是最新版，可能出现兼容性问题。</span>
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="info_message">Tip: The task version you loaded is not the latest, which may cause compatibility issues.</span>
+    </div>
+    <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">Tip: The save name does not conform to MySQL table naming conventions, please try again!</span>
     </div>
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
@@ -559,7 +559,7 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <div v-if='parseInt(loopType) == 0'>
                         <label>Maximum number of loop iterations (0 represents an infinite loop until no more elements are found or no changes in page content are detected):</label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
-                        <label>Exit the loop when the content of the following page element does not change (only works when loop iterations are set to 0):</label>
+                        <label>Exit the loop when the content of the following elements on the page does not change (effective when the count is 0. If it is a multi-layer nested iframe, it is recommended to write an XPath for an element that only exists within the iframe page you want to extract, such as /html/body/div[@class='LeftSide_menu']):</label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]'></input>
                     </div>
 

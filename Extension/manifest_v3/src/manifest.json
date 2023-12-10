@@ -52,6 +52,7 @@
         "identity",
         "storage",
         "tabs",
-        "scripting"
+        "scripting",
+        "notifications"
     ]
 }

@@ -33,6 +33,14 @@ ws.onmessage = function(evt) {
             $("#serviceName").val(evt.data.title);
         }
         old_title = evt.data.title;
+    } else if (evt["type"] == "notify") {
+        if (evt["level"] == "success") {
+            showSuccess(LANG(evt["msg_zh"], evt["msg_en"]));
+        } else if(evt["level"] == "info"){
+            showInfo(LANG(evt["msg_zh"], evt["msg_en"]));
+        } else if(evt["level"] == "error"){
+            showError(LANG(evt["msg_zh"], evt["msg_en"]));
+        }
     } else {
         handleAddElement(evt); //处理增加元素操作
     }
@@ -130,9 +138,19 @@ function notifyParameterNum(num) {
     let message = {
         type: 3, //消息类型，3代表元素增加事件
         from: 1, //0代表从浏览器到流程图，1代表从流程图到浏览器
-        message: { "pipe": JSON.stringify({ "type": 0, "value": parameterNum }) } // {}全选{BS}退格
+        message: { "pipe": JSON.stringify({ "type": "update_parameter_num", "value": parameterNum }) } // {}全选{BS}退格
     };
     ws.send(JSON.stringify(message));
+}
+
+function trailRun(node){
+    let message = {
+        type: 4, //消息类型，4代表试运行事件
+        from: 1, //0代表从浏览器到流程图，1代表从流程图到浏览器
+        message: { "node": JSON.stringify(node), "parentNode": JSON.stringify(nodeList[actionSequence[node["parentId"]]])}
+    };
+    ws.send(JSON.stringify(message));
+    console.log(message);
 }
 
 
@@ -325,6 +343,20 @@ function modifyParameters(t, para) {
     }
 }
 
+function showSuccess(msg, time=4000) {
+    $("#tip").text(msg);
+    $("#tip").slideDown(); //提示框
+    let fadeout = setTimeout(function() {
+        $("#tip").slideUp();
+    }, time);
+}
+function showInfo(msg, time=4000) {
+    $("#info_message").text(msg);
+    $("#tipInfo").slideDown(); //提示框
+    let fadeout = setTimeout(function() {
+        $("#tipInfo").slideUp();
+    }, time);
+}
 function showError(msg, time=4000) {
     $("#error_message").text(msg);
     $("#tipError").slideDown(); //提示框
@@ -333,13 +365,6 @@ function showError(msg, time=4000) {
     }, time);
 }
 
-function showInfo(msg, time=4000) {
-    $("#info_message").text(msg);
-    $("#tipInfo").slideDown(); //提示框
-    let fadeout = setTimeout(function() {
-        $("#tipInfo").slideUp();
-    }, time);
-}
 
 //点击确定按钮时的处理
 $("#confirm").mousedown(updateUI);
@@ -525,10 +550,7 @@ function saveService(type) {
             function(result) { $("#serviceId").val(parseInt(result)) });
         // alert("保存成功!");
         $('#myModal').modal('hide');
-        $("#tip").slideDown(); //提示框
-        let fadeout = setTimeout(function() {
-            $("#tip").slideUp();
-        }, 2000);
+        showSuccess(LANG("保存成功！","Save successfully!"));
     // }
 }
 

@@ -16,13 +16,13 @@
 
 <body>
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> 提示：保存成功!
-    </div>
-    <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
-        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="tip_message">提示：保存成功！</span>
     </div>
     <div id="tipInfo" class="alert alert-info alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="info_message">提示：您加载的任务版本不是最新版，可能出现兼容性问题。</span>
+    </div>
+    <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
     </div>
     <div id="navigator">
         <nav aria-label="breadcrumb" v-if="type==1">
@@ -559,7 +559,7 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <div v-if='parseInt(loopType) == 0'>
                     <label>最多执行循环次数（0代表无限循环直到找不到元素或检测不到页面元素内容变化为止）：</label>
                     <input onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
-                        <label>检测页面以下元素内容不变化时退出循环（次数为0时生效）：</label>
+                        <label>检测页面以下元素内容不变化时退出循环（次数为0时生效，如果是多层嵌套iframe，建议写一个只有要提取的iframe页面内才有的元素的XPath，如/html/body/div[@class='LeftSide_menu']）：</label>
                         <input onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]'></input>
                     </div>
 
