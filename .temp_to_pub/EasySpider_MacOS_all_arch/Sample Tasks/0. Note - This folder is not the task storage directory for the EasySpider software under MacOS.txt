@@ -1,0 +1,1 @@
+Note: This folder is not the task storage directory for the EasySpider software under MacOS. It is only a directory containing sample task files for reference. You can copy the *.json files from this folder to your own system directory under /Users/your_username/Library/Application Support/EasySpider/tasks to migrate and load the sample tasks.

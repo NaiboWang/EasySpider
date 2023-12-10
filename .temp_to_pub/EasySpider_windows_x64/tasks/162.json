@@ -1,0 +1,1869 @@
+{
+    "id": 162,
+    "name": "（下一页元素不断点击检测）京东(JD.COM)-正品低价、品质保障、配送及时、轻松购物！",
+    "url": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1",
+    "links": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1",
+    "create_time": "7/12/2023, 3:52:29 AM",
+    "update_time": "7/12/2023, 11:25:36 AM",
+    "version": "0.3.5",
+    "saveThreshold": 10,
+    "cloudflare": 0,
+    "environment": 0,
+    "maxViewLength": 15,
+    "outputFormat": "xlsx",
+    "saveName": "current_time",
+    "containJudge": false,
+    "desc": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1",
+    "inputParameters": [
+        {
+            "id": 0,
+            "name": "urlList_0",
+            "nodeId": 1,
+            "nodeName": "打开网页",
+            "value": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1",
+            "desc": "要采集的网址列表，多行以\\n分开",
+            "type": "text",
+            "exampleValue": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1"
+        },
+        {
+            "id": 1,
+            "name": "loopTimes_循环_1",
+            "nodeId": 2,
+            "nodeName": "循环",
+            "desc": "循环循环执行的次数（0代表无限循环）",
+            "type": "int",
+            "exampleValue": 0,
+            "value": 0
+        }
+    ],
+    "outputParameters": [
+        {
+            "id": 0,
+            "name": "参数1_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "\n\t\t\t\t\t\t\t\t\n\t\t\t\t        \t"
+        },
+        {
+            "id": 1,
+            "name": "参数2_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//item.jd.com/10074103895025.html"
+        },
+        {
+            "id": 2,
+            "name": "参数3_图片地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": ""
+        },
+        {
+            "id": 3,
+            "name": "参数4_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "<"
+        },
+        {
+            "id": 4,
+            "name": "参数5_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": ">"
+        },
+        {
+            "id": 5,
+            "name": "参数6_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+        },
+        {
+            "id": 6,
+            "name": "参数7_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "javascript:;"
+        },
+        {
+            "id": 7,
+            "name": "参数8_图片地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//img10.360buyimg.com/n7/jfs/t1/223071/9/26861/52107/6447dccdF82ed3618/38720d0c75761a6c.jpg.avif"
+        },
+        {
+            "id": 8,
+            "name": "参数9_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "￥"
+        },
+        {
+            "id": 9,
+            "name": "参数10_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "90.00"
+        },
+        {
+            "id": 10,
+            "name": "参数11_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "\n\t\t\t\t\t\t\t\t【原装】Magsafe磁吸可无线充电适用苹果14ProMax手机壳iPhon 莱卡磁吸壳【绅士黑 精孔镜头全包版】金属镜头框 iPhone14 Pro\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t"
+        },
+        {
+            "id": 11,
+            "name": "参数12_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//item.jd.com/10074103895025.html"
+        },
+        {
+            "id": 12,
+            "name": "参数13_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "【原装】Magsafe磁吸可无线充电适用苹果14ProMax手机壳iPhon莱卡磁吸壳【绅士黑精孔镜头全包版】金属镜头框14Pro"
+        },
+        {
+            "id": 13,
+            "name": "参数14_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "iPhone"
+        },
+        {
+            "id": 14,
+            "name": "参数15_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "条评价"
+        },
+        {
+            "id": 15,
+            "name": "参数16_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "7"
+        },
+        {
+            "id": 16,
+            "name": "参数17_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//item.jd.com/10074103895025.html#comment"
+        },
+        {
+            "id": 17,
+            "name": "参数18_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "关注"
+        },
+        {
+            "id": 18,
+            "name": "参数19_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "javascript:;"
+        },
+        {
+            "id": 19,
+            "name": "参数20_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "韩睿数码经营部"
+        },
+        {
+            "id": 20,
+            "name": "参数21_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//mall.jd.com/index-12718492.html?from=pc"
+        },
+        {
+            "id": 21,
+            "name": "参数22_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "免邮"
+        },
+        {
+            "id": 22,
+            "name": "参数23_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "暂不支持配送"
+        },
+        {
+            "id": 23,
+            "name": "参数24_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+        },
+        {
+            "id": 24,
+            "name": "参数25_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "javascript:;"
+        },
+        {
+            "id": 25,
+            "name": "参数26_图片地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//img10.360buyimg.com/n7/jfs/t1/134381/30/31857/5920/645d1539Fae6f9f38/22492be5e1e8b182.jpg.avif"
+        },
+        {
+            "id": 26,
+            "name": "参数27_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "iPhone"
+        },
+        {
+            "id": 27,
+            "name": "参数28_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "券25-5"
+        },
+        {
+            "id": 28,
+            "name": "参数29_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+        },
+        {
+            "id": 29,
+            "name": "参数30_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "javascript:;"
+        },
+        {
+            "id": 30,
+            "name": "参数31_图片地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//img14.360buyimg.com/n7/jfs/t1/140114/30/37035/68820/647b62f6F01f76f86/1a31a07040edd153.jpg.avif"
+        },
+        {
+            "id": 31,
+            "name": "参数32_链接文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+        },
+        {
+            "id": 32,
+            "name": "参数33_链接地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "javascript:;"
+        },
+        {
+            "id": 33,
+            "name": "参数34_图片地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//img13.360buyimg.com/n7/jfs/t1/45287/18/23342/69296/647b62f6F4ccf5e10/6f55cd8c1090423b.jpg.avif"
+        },
+        {
+            "id": 34,
+            "name": "参数35_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "全店1件9折起，包邮"
+        },
+        {
+            "id": 35,
+            "name": "参数36_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "6.28-7.31"
+        },
+        {
+            "id": 36,
+            "name": "参数37_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "赠"
+        },
+        {
+            "id": 37,
+            "name": "参数38_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "【大品牌】值得信赖，品质取胜，放心使用【放心购】收藏商品，送运费险，享7天保价【好物榜】iPhone新品配件，更多好物-点击查看了解"
+        },
+        {
+            "id": 38,
+            "name": "参数39_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "爱心东东"
+        },
+        {
+            "id": 39,
+            "name": "参数40_文本",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "iPhone"
+        },
+        {
+            "id": 40,
+            "name": "参数41_图片地址",
+            "desc": "",
+            "type": "text",
+            "recordASField": 1,
+            "exampleValue": "//m.360buyimg.com/cc/jfs/t1/197706/29/27826/4384/63314bc6E21b4c3e9/8b4d5fc44efc5b3f.png"
+        }
+    ],
+    "graph": [
+        {
+            "index": 0,
+            "id": 0,
+            "parentId": 0,
+            "type": -1,
+            "option": 0,
+            "title": "root",
+            "sequence": [
+                1,
+                2
+            ],
+            "parameters": {
+                "history": 1,
+                "tabIndex": 0,
+                "useLoop": false,
+                "xpath": "",
+                "wait": 0,
+                "waitType": 0
+            },
+            "isInLoop": false
+        },
+        {
+            "id": 1,
+            "index": 1,
+            "parentId": 0,
+            "type": 0,
+            "option": 1,
+            "title": "打开网页",
+            "sequence": [],
+            "isInLoop": false,
+            "position": 0,
+            "parameters": {
+                "useLoop": false,
+                "xpath": "",
+                "wait": 13,
+                "waitType": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "url": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1",
+                "links": "https://search.jd.com/Search?keyword=iPhone&qrst=50&wq=iPhone&ev=exbrand_Apple%5E&pvid=96ccc12f8d214f9292cbd8375d3a8a5f&page=103&s=3061&click=1",
+                "maxWaitTime": 10,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "cookies": ""
+            }
+        },
+        {
+            "id": 2,
+            "index": 2,
+            "parentId": 0,
+            "type": 1,
+            "option": 8,
+            "title": "循环",
+            "sequence": [
+                4,
+                3
+            ],
+            "isInLoop": false,
+            "position": 1,
+            "parameters": {
+                "history": 6,
+                "tabIndex": -1,
+                "useLoop": false,
+                "xpath": "//*[contains(@class, \"pn-next\")]",
+                "iframe": false,
+                "wait": 0,
+                "waitType": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "loopType": 0,
+                "pathList": "",
+                "textList": "",
+                "code": "",
+                "waitTime": 0,
+                "exitCount": 0,
+                "historyWait": 2,
+                "breakMode": 0,
+                "breakCode": "",
+                "breakCodeWaitTime": 0,
+                "allXPaths": [
+                    "/html/body/div[5]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/span[1]/a[9]",
+                    "//a[contains(., '下一页>')]",
+                    "//A[@class='pn-next']",
+                    "/html/body/div[last()-11]/div/div/div[last()-1]/div/div/div/span[last()-1]/a"
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "index": 3,
+            "parentId": 2,
+            "type": 0,
+            "option": 2,
+            "title": "点击元素",
+            "sequence": [],
+            "isInLoop": true,
+            "position": 1,
+            "parameters": {
+                "history": 6,
+                "tabIndex": -1,
+                "useLoop": true,
+                "xpath": "//*[contains(@class, \"pn-next\")]",
+                "iframe": false,
+                "wait": 10,
+                "waitType": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": "3",
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "clickWay": 0,
+                "maxWaitTime": 2,
+                "paras": [],
+                "allXPaths": [
+                    "/html/body/div[5]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/span[1]/a[9]",
+                    "//a[contains(., '下一页>')]",
+                    "//A[@class='pn-next']",
+                    "/html/body/div[last()-11]/div/div/div[last()-1]/div/div/div/span[last()-1]/a"
+                ],
+                "loopType": 0
+            }
+        },
+        {
+            "id": 3,
+            "index": 4,
+            "parentId": 2,
+            "type": 1,
+            "option": 8,
+            "title": "循环",
+            "sequence": [
+                5
+            ],
+            "isInLoop": true,
+            "position": 0,
+            "parameters": {
+                "history": 7,
+                "tabIndex": -1,
+                "useLoop": false,
+                "xpath": "/html/body/div[5]/div[2]/div[2]/div[1]/div[1]/div[2]/ul[1]/li/div[1]",
+                "iframe": false,
+                "wait": 0,
+                "waitType": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "scrollType": 0,
+                "scrollCount": 1,
+                "scrollWaitTime": 1,
+                "loopType": 1,
+                "pathList": "",
+                "textList": "",
+                "code": "",
+                "waitTime": 0,
+                "exitCount": 0,
+                "historyWait": 2,
+                "breakMode": 0,
+                "breakCode": "",
+                "breakCodeWaitTime": 0,
+                "allXPaths": [
+                    "/html/body/div[5]/div[2]/div[2]/div[1]/div[1]/div[2]/ul[1]/li[1]/div[1]",
+                    "//div[contains(., '')]",
+                    "//DIV[@class='gl-i-wrap']",
+                    "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-59]/div"
+                ]
+            }
+        },
+        {
+            "id": 5,
+            "index": 5,
+            "parentId": 3,
+            "type": 0,
+            "option": 3,
+            "title": "提取数据",
+            "sequence": [],
+            "isInLoop": true,
+            "position": 0,
+            "parameters": {
+                "history": 7,
+                "tabIndex": -1,
+                "useLoop": false,
+                "xpath": "",
+                "iframe": false,
+                "wait": 0,
+                "waitType": 0,
+                "beforeJS": "",
+                "beforeJSWaitTime": 0,
+                "afterJS": "",
+                "afterJSWaitTime": 0,
+                "paras": [
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数1_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[1]/a[1]",
+                        "allXPaths": [
+                            "/div[1]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-8]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "\n\t\t\t\t\t\t\t\t\n\t\t\t\t        \t"
+                            }
+                        ],
+                        "unique_index": "/div[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数2_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[1]/a[1]",
+                        "allXPaths": [
+                            "/div[1]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-8]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "//item.jd.com/10074103895025.html"
+                            }
+                        ],
+                        "unique_index": "/div[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 4,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数3_图片地址",
+                        "desc": "",
+                        "relativeXPath": "/div[1]/a[1]/img[1]",
+                        "allXPaths": [
+                            "/div[1]/a[1]/img[1]",
+                            "//img[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-8]/a/img"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": ""
+                            }
+                        ],
+                        "unique_index": "/div[1]/a[1]/img[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数4_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/span[1]",
+                        "allXPaths": [
+                            "/div[2]/span[1]",
+                            "//span[contains(., '<')]",
+                            "//SPAN[@class='ps-prev']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-7]/span[last()-1]"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "<"
+                            }
+                        ],
+                        "unique_index": "/div[2]/span[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数5_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/span[2]",
+                        "allXPaths": [
+                            "/div[2]/span[2]",
+                            "//span[contains(., '>')]",
+                            "//SPAN[@class='ps-next']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-7]/span"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": ">"
+                            }
+                        ],
+                        "unique_index": "/div[2]/span[2]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数6_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[1]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[1]/a[1]",
+                            "//a[contains(., '')]",
+                            "//A[@class='curr']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-7]/div/ul/li/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数7_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[1]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[1]/a[1]",
+                            "//a[contains(., '')]",
+                            "//A[@class='curr']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-7]/div/ul/li/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "javascript:;"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 4,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数8_图片地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[1]/a[1]/img[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[1]/a[1]/img[1]",
+                            "//img[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-7]/div/ul/li/a/img"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "//img10.360buyimg.com/n7/jfs/t1/223071/9/26861/52107/6447dccdF82ed3618/38720d0c75761a6c.jpg.avif"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[1]/a[1]/img[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数9_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[3]/strong[1]/em[1]",
+                        "allXPaths": [
+                            "/div[3]/strong[1]/em[1]",
+                            "//em[contains(., '￥')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-6]/strong/em"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "￥"
+                            }
+                        ],
+                        "unique_index": "/div[3]/strong[1]/em[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数10_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[3]/strong[1]/i[1]",
+                        "allXPaths": [
+                            "/div[3]/strong[1]/i[1]",
+                            "//i[contains(., '90.00')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-6]/strong/i"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "90.00"
+                            }
+                        ],
+                        "unique_index": "/div[3]/strong[1]/i[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数11_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]",
+                        "allXPaths": [
+                            "/div[4]/a[1]",
+                            "//a[contains(., '【')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-5]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "\n\t\t\t\t\t\t\t\t【原装】Magsafe磁吸可无线充电适用苹果14ProMax手机壳iPhon 莱卡磁吸壳【绅士黑 精孔镜头全包版】金属镜头框 iPhone14 Pro\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数12_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]",
+                        "allXPaths": [
+                            "/div[4]/a[1]",
+                            "//a[contains(., '【')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-5]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "//item.jd.com/10074103895025.html"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数13_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]/em[1]",
+                        "allXPaths": [
+                            "/div[4]/a[1]/em[1]",
+                            "//em[contains(., '【原装】Magsaf')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-5]/a/em"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "【原装】Magsafe磁吸可无线充电适用苹果14ProMax手机壳iPhon莱卡磁吸壳【绅士黑精孔镜头全包版】金属镜头框14Pro"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]/em[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数14_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]/em[1]/font[1]",
+                        "allXPaths": [
+                            "/div[4]/a[1]/em[1]/font[1]",
+                            "//font[contains(., 'iPhone')]",
+                            "//FONT[@class='skcolor_ljg']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-5]/a/em/font"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "iPhone"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]/em[1]/font[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数15_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[5]/strong[1]",
+                        "allXPaths": [
+                            "/div[5]/strong[1]",
+                            "//strong[contains(., '7条评价')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-4]/strong"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "条评价"
+                            }
+                        ],
+                        "unique_index": "/div[5]/strong[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数16_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[5]/strong[1]/a[1]",
+                        "allXPaths": [
+                            "/div[5]/strong[1]/a[1]",
+                            "//a[contains(., '7')]",
+                            "id(\"J_comment_10074103895025\")",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-4]/strong/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "7"
+                            }
+                        ],
+                        "unique_index": "/div[5]/strong[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数17_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[5]/strong[1]/a[1]",
+                        "allXPaths": [
+                            "/div[5]/strong[1]/a[1]",
+                            "//a[contains(., '7')]",
+                            "id(\"J_comment_10074103895025\")",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-4]/strong/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "//item.jd.com/10074103895025.html#comment"
+                            }
+                        ],
+                        "unique_index": "/div[5]/strong[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数18_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[6]/a[1]",
+                        "allXPaths": [
+                            "/div[6]/a[1]",
+                            "//a[contains(., '关注')]",
+                            "//A[@class='J_focus']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-3]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "关注"
+                            }
+                        ],
+                        "unique_index": "/div[6]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数19_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[6]/a[1]",
+                        "allXPaths": [
+                            "/div[6]/a[1]",
+                            "//a[contains(., '关注')]",
+                            "//A[@class='J_focus']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-3]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "javascript:;"
+                            }
+                        ],
+                        "unique_index": "/div[6]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数20_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[7]/span[1]/a[1]",
+                        "allXPaths": [
+                            "/div[7]/span[1]/a[1]",
+                            "//a[contains(., '韩睿数码经营部')]",
+                            "//A[@class='curr-shop hd-shopname']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-2]/span/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "韩睿数码经营部"
+                            }
+                        ],
+                        "unique_index": "/div[7]/span[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数21_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[7]/span[1]/a[1]",
+                        "allXPaths": [
+                            "/div[7]/span[1]/a[1]",
+                            "//a[contains(., '韩睿数码经营部')]",
+                            "//A[@class='curr-shop hd-shopname']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-2]/span/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "//mall.jd.com/index-12718492.html?from=pc"
+                            }
+                        ],
+                        "unique_index": "/div[7]/span[1]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数22_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[8]/i[1]",
+                        "allXPaths": [
+                            "/div[8]/i[1]",
+                            "//i[contains(., '免邮')]",
+                            "//I[@class='goods-icons4 J-picon-tips']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div[last()-1]/i"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "免邮"
+                            }
+                        ],
+                        "unique_index": "/div[8]/i[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数23_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[9]",
+                        "allXPaths": [
+                            "/div[9]",
+                            "//div[contains(., '暂不支持配送')]",
+                            "//DIV[@class='p-stock']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-4]/div/div"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 0,
+                                "value": "暂不支持配送"
+                            }
+                        ],
+                        "unique_index": "/div[9]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数24_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[2]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[2]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-58]/div/div[last()-7]/div/ul/li/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 2,
+                                "value": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[2]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数25_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[2]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[2]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-58]/div/div[last()-7]/div/ul/li/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 2,
+                                "value": "javascript:;"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[2]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 4,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数26_图片地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[2]/a[1]/img[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[2]/a[1]/img[1]",
+                            "//img[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-58]/div/div[last()-7]/div/ul/li/a/img"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 2,
+                                "value": "//img10.360buyimg.com/n7/jfs/t1/134381/30/31857/5920/645d1539Fae6f9f38/22492be5e1e8b182.jpg.avif"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[2]/a[1]/img[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数27_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]/em[1]/font[2]",
+                        "allXPaths": [
+                            "/div[4]/a[1]/em[1]/font[2]",
+                            "//font[contains(., 'iPhone')]",
+                            "//FONT[@class='skcolor_ljg']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-58]/div/div[last()-5]/a/em/font"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 2,
+                                "value": "iPhone"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]/em[1]/font[2]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数28_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[8]/i[2]",
+                        "allXPaths": [
+                            "/div[8]/i[2]",
+                            "//i[contains(., '券25-5')]",
+                            "//I[@class='goods-icons4 J-picon-tips']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-58]/div/div[last()-1]/i"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 2,
+                                "value": "券25-5"
+                            }
+                        ],
+                        "unique_index": "/div[8]/i[2]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数29_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[3]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[3]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-57]/div/div[last()-7]/div/ul/li[last()-1]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 3,
+                                "value": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[3]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数30_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[3]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[3]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-57]/div/div[last()-7]/div/ul/li[last()-1]/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 3,
+                                "value": "javascript:;"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[3]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 4,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数31_图片地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[3]/a[1]/img[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[3]/a[1]/img[1]",
+                            "//img[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-57]/div/div[last()-7]/div/ul/li[last()-1]/a/img"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 3,
+                                "value": "//img14.360buyimg.com/n7/jfs/t1/140114/30/37035/68820/647b62f6F01f76f86/1a31a07040edd153.jpg.avif"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[3]/a[1]/img[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 1,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数32_链接文本",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[4]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[4]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-57]/div/div[last()-7]/div/ul/li/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 3,
+                                "value": "\n\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[4]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 2,
+                        "contentType": 0,
+                        "relative": true,
+                        "name": "参数33_链接地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[4]/a[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[4]/a[1]",
+                            "//a[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-57]/div/div[last()-7]/div/ul/li/a"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 3,
+                                "value": "javascript:;"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[4]/a[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 4,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数34_图片地址",
+                        "desc": "",
+                        "relativeXPath": "/div[2]/div[1]/ul[1]/li[4]/a[1]/img[1]",
+                        "allXPaths": [
+                            "/div[2]/div[1]/ul[1]/li[4]/a[1]/img[1]",
+                            "//img[contains(., '')]",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-57]/div/div[last()-7]/div/ul/li/a/img"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 3,
+                                "value": "//img13.360buyimg.com/n7/jfs/t1/45287/18/23342/69296/647b62f6F4ccf5e10/6f55cd8c1090423b.jpg.avif"
+                            }
+                        ],
+                        "unique_index": "/div[2]/div[1]/ul[1]/li[4]/a[1]/img[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数35_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[1]/a[1]/div[1]/div[1]",
+                        "allXPaths": [
+                            "/div[1]/a[1]/div[1]/div[1]",
+                            "//div[contains(., '全店1件9折起，包邮')]",
+                            "//DIV[@class='sign-title ac']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-56]/div/div[last()-8]/a/div/div"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 4,
+                                "value": "全店1件9折起，包邮"
+                            }
+                        ],
+                        "unique_index": "/div[1]/a[1]/div[1]/div[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数36_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[1]/a[1]/div[1]/div[1]/span[1]",
+                        "allXPaths": [
+                            "/div[1]/a[1]/div[1]/div[1]/span[1]",
+                            "//span[contains(., '6.28-7.31')]",
+                            "//SPAN[@class='sign-date']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-56]/div/div[last()-8]/a/div/div/span"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 4,
+                                "value": "6.28-7.31"
+                            }
+                        ],
+                        "unique_index": "/div[1]/a[1]/div[1]/div[1]/span[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数37_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[8]/i[3]",
+                        "allXPaths": [
+                            "/div[8]/i[3]",
+                            "//i[contains(., '赠')]",
+                            "//I[@class='goods-icons4 J-picon-tips']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-53]/div/div[last()-1]/i"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 7,
+                                "value": "赠"
+                            }
+                        ],
+                        "unique_index": "/div[8]/i[3]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数38_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]/i[1]",
+                        "allXPaths": [
+                            "/div[4]/a[1]/i[1]",
+                            "//i[contains(., '【大品牌】值得信赖，')]",
+                            "id(\"J_AD_10060570031778\")",
+                            "//I[@class='promo-words']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-50]/div/div[last()-5]/a/i"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 10,
+                                "value": "【大品牌】值得信赖，品质取胜，放心使用【放心购】收藏商品，送运费险，享7天保价【好物榜】iPhone新品配件，更多好物-点击查看了解"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]/i[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数39_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]/em[1]/span[1]",
+                        "allXPaths": [
+                            "/div[4]/a[1]/em[1]/span[1]",
+                            "//span[contains(., '爱心东东')]",
+                            "//SPAN[@class='p-tag']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-48]/div/div[last()-5]/a/em/span"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 12,
+                                "value": "爱心东东"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]/em[1]/span[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 0,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数40_文本",
+                        "desc": "",
+                        "relativeXPath": "/div[4]/a[1]/em[1]/font[3]",
+                        "allXPaths": [
+                            "/div[4]/a[1]/em[1]/font[3]",
+                            "//font[contains(., 'iPhone')]",
+                            "//FONT[@class='skcolor_ljg']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-32]/div/div[last()-5]/a/em/font"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 28,
+                                "value": "iPhone"
+                            }
+                        ],
+                        "unique_index": "/div[4]/a[1]/em[1]/font[3]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    },
+                    {
+                        "nodeType": 4,
+                        "contentType": 1,
+                        "relative": true,
+                        "name": "参数41_图片地址",
+                        "desc": "",
+                        "relativeXPath": "/div[7]/img[1]",
+                        "allXPaths": [
+                            "/div[7]/img[1]",
+                            "//img[contains(., '')]",
+                            "//IMG[@class='shop-tag fl']",
+                            "/html/body/div[last()-11]/div/div/div[last()-1]/div/div[last()-1]/ul/li[last()-25]/div/div[last()-2]/img"
+                        ],
+                        "exampleValues": [
+                            {
+                                "num": 35,
+                                "value": "//m.360buyimg.com/cc/jfs/t1/197706/29/27826/4384/63314bc6E21b4c3e9/8b4d5fc44efc5b3f.png"
+                            }
+                        ],
+                        "unique_index": "/div[7]/img[1]",
+                        "iframe": false,
+                        "default": "",
+                        "paraType": "text",
+                        "recordASField": 1,
+                        "beforeJS": "",
+                        "beforeJSWaitTime": 0,
+                        "JS": "",
+                        "JSWaitTime": 0,
+                        "afterJS": "",
+                        "afterJSWaitTime": 0,
+                        "downloadPic": 0
+                    }
+                ],
+                "loopType": 1
+            }
+        }
+    ]
+}

@@ -381,7 +381,7 @@ async function beginInvoke(msg, ws) {
                 send_message_to_browser(JSON.stringify({"type": "cancelSelection"}));
             }
             else if (option == 3) { //提取数据
-                notify_browser("提示：提取数据操作只能试运行设置的JavaScript语句。", "Hint: can only test JavaScript  statement set in the data extraction operation.", "info");
+                notify_browser("提示：提取数据操作只能试运行设置的JavaScript语句，且只针对第一个匹配的元素。", "Hint: can only test JavaScript  statement set in the data extraction operation, and only for the first matching element.", "info");
                 let paras = parameters.paras; //所有的提取数据参数
                 let not_found_xpaths = [];
                 for (let i = 0; i < paras.length; i++) {

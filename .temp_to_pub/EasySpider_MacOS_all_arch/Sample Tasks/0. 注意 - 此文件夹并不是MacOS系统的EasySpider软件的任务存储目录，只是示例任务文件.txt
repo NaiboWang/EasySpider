@@ -1,0 +1,1 @@
+注意：此文件夹并不是MacOS系统下EasySpider软件的任务存储目录，只是示例任务文件可供参考，可以将此文件夹下的*.json文件拷贝到自己系统目录的/Users/你的用户名/Library/Application Support/EasySpider/tasks文件夹下以迁移并加载示例任务。
