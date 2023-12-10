@@ -232,7 +232,7 @@ async function findElementAcrossAllWindows(msg, notifyBrowser = true) {
     } catch {
         xpath = msg.xpath;
     }
-    if (xpath.indexOf("Field") >= 0 || xpath.indexOf("eval") >= 0) {
+    if (xpath.indexOf("Field(") >= 0 || xpath.indexOf("eval(") >= 0) {
         //两秒后通知浏览器
         await new Promise(resolve => setTimeout(resolve, 2000));
         notify_browser("检测到XPath中包含Field(\"\")或eval(\"\")，试运行时无法正常定位到包含此两项表达式的元素，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in xpath, and the element containing these two expressions cannot be located normally during trial operation. Please test whether it is valid in the formal call stage.", "warning");
@@ -423,6 +423,11 @@ async function beginInvoke(msg, ws) {
                 if (/<enter>/i.test(keyInfo)) {
                     keyInfo = keyInfo.replace(/<enter>/gi, '');
                     enter = true;
+                }
+                if (keyInfo.indexOf("Field(") >= 0 || keyInfo.indexOf("eval(") >= 0) {
+                    //两秒后通知浏览器
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    notify_browser("检测到文字中包含Field(\"\")或eval(\"\")，试运行时无法输入两项表达式的替换值，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in the text, and the replacement value of the two expressions cannot be entered during trial operation. Please test whether it is valid in the formal call stage.", "warning");
                 }
                 let element = await findElementAcrossAllWindows(elementInfo);
                 await execute_js(beforeJS, element, beforeJSWaitTime);
@@ -720,7 +725,7 @@ function handleOpenBrowser(event, lang = "en", user_data_folder = "", mobile = f
         height: height,
         icon: iconPath,
         maximizable: true,
-        transparent: true,
+        resizable: true,
     });
     let url = "";
     let id = -1;
