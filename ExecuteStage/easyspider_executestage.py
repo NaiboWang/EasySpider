@@ -855,40 +855,45 @@ class BrowserThread(Thread):
                 self.recordLog(e)
             self.recordLog("Wait element not found")
         self.recordLog("执行节点|Execute node:", node["title"])
-        # 根据不同选项执行不同操作
-        if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
-            for i in node["sequence"]:  # 从根节点开始向下读取
-                self.executeNode(i, loopValue, loopPath, index)
-        elif node["option"] == 1:  # 打开网页操作
-            # if not (nodeId == 1 and self.service["cloudflare"] == 1):
-            self.openPage(node["parameters"], loopValue)
-        elif node["option"] == 2:  # 点击元素
-            self.clickElement(node["parameters"], loopValue, loopPath, index)
-        elif node["option"] == 3:  # 提取数据
-            # 针对提取数据操作，设置操作开始的步骤，用于不小心关闭后的恢复的增量采集
-            if self.totalSteps >= self.startSteps:
-                self.getData(node["parameters"], loopValue, node["isInLoop"],
-                             parentPath=loopPath, index=index)
+        try:
+            # 根据不同选项执行不同操作
+            if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
+                for i in node["sequence"]:  # 从根节点开始向下读取
+                    self.executeNode(i, loopValue, loopPath, index)
+            elif node["option"] == 1:  # 打开网页操作
+                # if not (nodeId == 1 and self.service["cloudflare"] == 1):
+                self.openPage(node["parameters"], loopValue)
+            elif node["option"] == 2:  # 点击元素
+                self.clickElement(node["parameters"], loopValue, loopPath, index)
+            elif node["option"] == 3:  # 提取数据
+                # 针对提取数据操作，设置操作开始的步骤，用于不小心关闭后的恢复的增量采集
+                if self.totalSteps >= self.startSteps:
+                    self.getData(node["parameters"], loopValue, node["isInLoop"],
+                                parentPath=loopPath, index=index)
+                    self.saveData()
+                else:
+                    # self.getDataStep += 1
+                    self.print_and_log("跳过第" + str(self.totalSteps) + "次提取数据。")
+                    self.print_and_log(
+                        "Skip the " + str(self.totalSteps) + "th data extraction.")
+                self.totalSteps += 1  # 总步数加一
+            elif node["option"] == 4:  # 输入文字
+                self.inputInfo(node["parameters"], loopValue)
+            elif node["option"] == 5:  # 自定义操作
+                self.customOperation(node, loopValue, loopPath, index)
                 self.saveData()
-            else:
-                # self.getDataStep += 1
-                self.print_and_log("跳过第" + str(self.totalSteps) + "次提取数据。")
-                self.print_and_log(
-                    "Skip the " + str(self.totalSteps) + "th data extraction.")
-            self.totalSteps += 1  # 总步数加一
-        elif node["option"] == 4:  # 输入文字
-            self.inputInfo(node["parameters"], loopValue)
-        elif node["option"] == 5:  # 自定义操作
-            self.customOperation(node, loopValue, loopPath, index)
-            self.saveData()
-        elif node["option"] == 6:  # 切换下拉框
-            self.switchSelect(node["parameters"], loopValue)
-        elif node["option"] == 7:  # 鼠标移动到元素上
-            self.moveToElement(node["parameters"], loopValue, loopPath, index)
-        elif node["option"] == 8:  # 循环
-            self.loopExecute(node, loopValue, loopPath, index)  # 执行循环
-        elif node["option"] == 9:  # 条件分支
-            self.judgeExecute(node, loopValue, loopPath, index)
+            elif node["option"] == 6:  # 切换下拉框
+                self.switchSelect(node["parameters"], loopValue)
+            elif node["option"] == 7:  # 鼠标移动到元素上
+                self.moveToElement(node["parameters"], loopValue, loopPath, index)
+            elif node["option"] == 8:  # 循环
+                self.loopExecute(node, loopValue, loopPath, index)  # 执行循环
+            elif node["option"] == 9:  # 条件分支
+                self.judgeExecute(node, loopValue, loopPath, index)
+        except Exception as e:
+            self.print_and_log("执行节点<" + node["title"] + ">时出错，将继续执行，错误为：", e)
+            self.print_and_log("Error executing node <" + node["title"] + ">, will continue to execute, error is:", e)
+        
 
         # 执行完之后进行等待
         if node["option"] != 0 and node["option"] != 2:  # 点击元素操作单独定义等待时间操作
@@ -1637,7 +1642,7 @@ class BrowserThread(Thread):
                     downloadPic = 0
                 if downloadPic == 1:
                     download_image(self, content, "Data/Task_" +
-                                   str(self.id) + "/" + self.saveName + "/")
+                                   str(self.id) + "/" + self.saveName + "/", element)
             else:  # 普通节点
                 content = element.text
         elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
@@ -1662,7 +1667,7 @@ class BrowserThread(Thread):
                     downloadPic = 0
                 if downloadPic == 1:
                     download_image(self, content, "Data/Task_" +
-                                   str(self.id) + "/" + self.saveName + "/")
+                                   str(self.id) + "/" + self.saveName + "/", element)
             else:
                 command = 'var arr = [];\
                 var content = arguments[0];\

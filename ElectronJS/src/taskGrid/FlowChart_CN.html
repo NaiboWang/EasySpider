@@ -113,10 +113,10 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
                     <label>打开网页后是否向下滚动：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>不滚动</option>
-                        <option value = 1>向下滚动一屏</option>
-                        <option value = 2>滚动到底部</option>
-                        <option value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
+                        <option :value = 0>不滚动</option>
+                        <option :value = 1>向下滚动一屏</option>
+                        <option :value = 2>滚动到底部</option>
+                        <option :value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
                     </select>
                     <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -159,10 +159,10 @@
                     </select>
                     <label>点击后是否向下滚动页面：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>不滚动</option>
-                        <option value = 1>向下滚动一屏</option>
-                        <option value = 2>滚动到底部</option>
-                        <option value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
+                        <option :vaule = 0>不滚动</option>
+                        <option :vaule = 1>向下滚动一屏</option>
+                        <option :vaule = 2>滚动到底部</option>
+                        <option :vaule = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
                       </select>
                     <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -490,10 +490,10 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <div v-if="!useLoop">
                         <p>切换模式</p>
                         <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
-                            <option value=0>切换到下一个选项</option>
-                            <option value=1>按索引值切换选项（第一个选项索引值为0）</option>
-                            <option value=2>按选项值切换选项</option>
-                            <option value=3>按选项文本切换选项</option>
+                            <option :value=0>切换到下一个选项</option>
+                            <option :value=1>按索引值切换选项（第一个选项索引值为0）</option>
+                            <option :value=2>按选项值切换选项</option>
+                            <option :value=3>按选项文本切换选项</option>
                         </select>
                         <p>设定值（不适用于切换到下一个选项模式）</p>
                         <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
@@ -568,9 +568,9 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <div>
                             <p><label>（自定义操作）使用代码/脚本定义循环退出条件（也可以在流程中添加<b>自定义操作</b>，然后选择<b>退出循环</b>选项）： </label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
-                                <option value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
-                                <option value = 1>JavaScript脚本返回值（需以return 开头）</option>
-                                <option value = 2>操作系统级别命令</option>
+                                <option :value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
+                                <option :value = 1>JavaScript脚本返回值（需以return 开头）</option>
+                                <option :value = 2>操作系统级别命令</option>
                             </select>
                             <div>
                                 <textarea style="margin-top: 10px" onkeydown="inputDelete(event)" class="form-control" rows="2"
@@ -584,10 +584,10 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
                     <label>执行完是否向下滚动：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>不滚动</option>
-                        <option value = 1>向下滚动一屏</option>
-                        <option value = 2>滚动到底部</option>
-                        <option value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
+                        <option :value = 0>不滚动</option>
+                        <option :value = 1>向下滚动一屏</option>
+                        <option :value = 2>滚动到底部</option>
+                        <option :value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
                     </select>
                     <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -596,23 +596,23 @@ print(emotlib.emoji()) # 使用其中的函数。
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
-                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，依此类推。</label>
+                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。</label>
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
-                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，依此类推。</label>
+                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。</label>
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
                     <label>条件类型：</label>
                     <select v-model='TClass' class="form-control">
-                        <option value = 0>无条件</option>
-                        <option value = 1>当前页面包括文本</option>
-                        <option value = 2>当前页面包括元素</option>
-                        <option v-if="nowNode['isInLoop']" value = 3>当前循环项包括文本</option>
-                        <option v-if="nowNode['isInLoop']" value = 4>当前循环项包括元素</option>
-                        <option value = 5>JavaScript命令返回值（需以return 开头）</option>
-                        <option value = 6>系统命令返回值</option>
-                        <option v-if="nowNode['isInLoop']" value = 7>针对当前循环项的JavaScript命令返回值（需以return 开头）</option>
-                        <option value = 8>执行环境下的Python表达式值（eval操作）</option>
+                        <option :value = 0>无条件</option>
+                        <option :value = 1>当前页面包括文本</option>
+                        <option :value = 2>当前页面包括元素</option>
+                        <option v-if="nowNode['isInLoop']" :value = 3>当前循环项包括文本</option>
+                        <option v-if="nowNode['isInLoop']" :value = 4>当前循环项包括元素</option>
+                        <option :value = 5>JavaScript命令返回值（需以return 开头）</option>
+                        <option :value = 6>系统命令返回值</option>
+                        <option v-if="nowNode['isInLoop']" :value = 7>针对当前循环项的JavaScript命令返回值（需以return 开头）</option>
+                        <option :value = 8>执行环境下的Python表达式值（eval操作）</option>
                       </select>
 
                     <div v-if='TClass > 0 && TClass < 5'>
@@ -653,8 +653,8 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
                         <label style="margin-top:5px">等待类型</label>
                         <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
-                            <option value = 0>固定等待（设置等10秒就等10秒）</option>
-                            <option value = 1>随机等待（设置等10秒会随机等10×0.5 - 10 × 1.5 秒）</option>
+                            <option :value = 0>固定等待（设置等10秒就等10秒）</option>
+                            <option :value = 1>随机等待（设置等10秒会随机等10×0.5 - 10 × 1.5 秒）</option>
                         </select>
                     </div>
                 </div>

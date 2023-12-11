@@ -38,6 +38,7 @@
       border-radius: 7px;
       /*border: skyblue solid;*/
       border: #007bff solid;
+      border-color: transparent;
       /*background: rgb(73, 156, 189);*/
       background: rgb(10, 120, 200);
       color: white;

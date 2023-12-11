@@ -198,7 +198,7 @@ async function findElement(driver, by, value, iframe = false) {
     }
 }
 
-async function findElementAcrossAllWindows(msg, notifyBrowser = true) {
+async function findElementAcrossAllWindows(msg, notifyBrowser = true, scrollIntoView = true) {
     let handles = await driver.getAllWindowHandles();
     // console.log("handles", handles);
     let content_handle = current_handle;
@@ -266,6 +266,16 @@ async function findElementAcrossAllWindows(msg, notifyBrowser = true) {
     if (element == null && notifyBrowser) {
         notify_browser("无法找到元素，请检查XPath是否正确：" + xpath, "Cannot find the element, please check if the XPath is correct: " + xpath, "warning");
     }
+    if (element != null && scrollIntoView) {
+        // 浏览器切换到元素位置稍微靠上的位置
+        try {
+            // let script = `arguments[0].scrollIntoView(true);`;
+            let script = `arguments[0].scrollIntoView({block: "center", inline: "center"});`;
+            await driver.executeScript(script, element);
+        } catch (e) {
+            console.log("Cannot scrollIntoView");
+        }
+    }
     return element;
 }
 
@@ -308,7 +318,7 @@ async function beginInvoke(msg, ws) {
             keyInfo = keyInfo.replace(/<enter>/gi, '');
             enter = true;
         }
-        let element = await findElementAcrossAllWindows(msg);
+        let element = await findElementAcrossAllWindows(msg, notifyBrowser = true, scrollIntoView = false);
         await element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
         if (enter) {
             await element.sendKeys(Key.ENTER);
@@ -321,7 +331,7 @@ async function beginInvoke(msg, ws) {
                 let type = message.type;
                 console.log("FROM Browser: ", message);
                 if (type.indexOf("Click") >= 0 || type.indexOf("Move") >= 0) {
-                    let element = await findElementAcrossAllWindows(message);
+                    let element = await findElementAcrossAllWindows(message, notifyBrowser = true, scrollIntoView = false);
                     if (type.indexOf("Click") >= 0) {
                         await click_element(element);
                     } else if (type.indexOf("Move") >= 0) {
@@ -336,7 +346,7 @@ async function beginInvoke(msg, ws) {
             console.log(e);
         }
     } else if (msg.type == 4) { //试运行功能
-        try{
+        try {
             let flowchart_url = flowchart_window.webContents.getURL();
         } catch {
             flowchart_window = null;
@@ -562,7 +572,7 @@ async function execute_js(js, element, wait_time = 3) {
     if (js.length != 0) {
         try {
             await driver.executeScript(js, element);
-            if(wait_time == 0){
+            if (wait_time == 0) {
                 wait_time = 30000;
             }
             await new Promise(resolve => setTimeout(resolve, wait_time));

@@ -113,10 +113,10 @@
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
                     <label>After executed, whether scroll down:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>No scrolling</option>
-                        <option value = 1>Scroll one screen</option>
-                        <option value = 2>Scroll to the end</option>
-                        <option value = 3>Keep scrolling until the page data does not change</option>
+                        <option :vaule = 0>No scrolling</option>
+                        <option :vaule = 1>Scroll one screen</option>
+                        <option :vaule = 2>Scroll to the end</option>
+                        <option :vaule = 3>Keep scrolling until the page data does not change</option>
                       </select>
                     <label>Scroll Times (the wait time after scrolling <b>ineffective</b> when the scrolling type is set to <b>no scrolling</b>):</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -159,10 +159,10 @@
                     </select>
                     <label>Whether to scroll down after clicking:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>No Scrolling</option>
-                        <option value = 1>Scroll one screen</option>
-                        <option value = 2>Scroll to the end</option>
-                        <option value = 3>Keep scrolling until the page data does not change</option>
+                        <option :vaule = 0>No Scrolling</option>
+                        <option :vaule = 1>Scroll one screen</option>
+                        <option :vaule = 2>Scroll to the end</option>
+                        <option :vaule = 3>Keep scrolling until the page data does not change</option>
                       </select>
                     <label>Scroll Times:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -414,8 +414,8 @@ This option is an advanced feature that allows directly returning the expression
 Please note that this feature does not support assigning values to variables. In other words, you cannot write something like `self.myVar = 1`. If you want to perform assignment operations, please select the previous option, "Run Python code on current environment (the "exec" operation)"</pre>
                         <p style="margin-top: 15px">Whether to record the output/return value of the execution as a field: </p>
                         <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
-                            <option value = 0>No</option>
-                            <option value = 1>Yes</option>
+                            <option :vaule = 0>No</option>
+                            <option :vaule = 1>Yes</option>
                         </select></p>
                         <p><label>Convert parameter type to:</label>
                         <select v-model='nowNode["parameters"]["paraType"]' class="form-control">
@@ -490,10 +490,10 @@ Please note that this feature does not support assigning values to variables. In
                     <div v-if="!useLoop">
                     <p>Option switch Mode</p>
                         <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
-                            <option value=0>Switch to the next option</option>
-                            <option value=1>Switch options by index (0 is the first option)</option>
-                            <option value=2>Switch options by option value</option>
-                            <option value=3>Switch options by option text</option>
+                            <option :vaule = 0>Switch to the next option</option>
+                            <option :vaule = 1>Switch options by index (0 is the first option)</option>
+                            <option :vaule = 2>Switch options by option value</option>
+                            <option :vaule = 3>Switch options by option text</option>
                         </select>
                         <p>Set value (not applicable for "Switch to the next option" mode)</p>
                         <input class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
@@ -568,9 +568,9 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                         <div>
                             <p><label>(Advanced Operation) Define loop exit condition using code/script; or you can add a <b>Custom Action</b>, then select the "Exit Loop" option:</label></p>
                             <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
-                                <option value=0>Do not set script (even if a script is written below, it will not be executed)</option>
-                                <option value=1>JavaScript script (start with 'return ')</option>
-                                <option value=2>Operating system-level command</option>
+                                <option :vaule = 0>Do not set script (even if a script is written below, it will not be executed)</option>
+                                <option :vaule = 1>JavaScript script (start with 'return ')</option>
+                                <option :vaule = 2>Operating system-level command</option>
                             </select>
                             <div>
                             <textarea style="margin-top: 10px" onkeydown="inputDelete(event)" class="form-control" rows="2"
@@ -584,10 +584,10 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
                     <label>After executed, whether scroll down:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option value = 0>No Scrolling</option>
-                        <option value = 1>Scroll one screen</option>
-                        <option value = 2>Scroll to the end</option>
-                        <option value = 3>Keep scrolling until the page data does not change</option>
+                        <option :vaule = 0>No Scrolling</option>
+                        <option :vaule = 1>Scroll one screen</option>
+                        <option :vaule = 2>Scroll to the end</option>
+                        <option :vaule = 3>Keep scrolling until the page data does not change</option>
                     </select>
                     <label>Scroll Times:</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
@@ -604,15 +604,15 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Operation is in iframe</p>
                     <label>Condition Type:</label>
                     <select v-model='TClass' class="form-control">
-                        <option value = 0>No Condition</option>
-                        <option value = 1>Text inside current page</option>
-                        <option value = 2>Element inside current page</option>
-                        <option v-if="nowNode['isInLoop']" value = 3>Text inside current loop</option>
-                        <option v-if="nowNode['isInLoop']" value = 4>Element inside current loop</option>
-                        <option value = 5>Return value of JavaScript command (start with 'return ')</option>
-                        <option value = 6>Return value of system command</option>
-                        <option v-if="nowNode['isInLoop']" value = 7>Return value of JavaScript command for the current loop item</option>
-                        <option value = 8>Return value of Python code under current environment</option>
+                        <option :value = 0>No Condition</option>
+                        <option :value = 1>Text inside current page</option>
+                        <option :value = 2>Element inside current page</option>
+                        <option v-if="nowNode['isInLoop']" :value = 3>Text inside current loop</option>
+                        <option v-if="nowNode['isInLoop']" :value = 4>Element inside current loop</option>
+                        <option :value = 5>Return value of JavaScript command (start with 'return ')</option>
+                        <option :value = 6>Return value of system command</option>
+                        <option v-if="nowNode['isInLoop']" :value = 7>Return value of JavaScript command for the current loop item</option>
+                        <option :value = 8>Return value of Python code under current environment</option>
                       </select>
 
                     <div v-if='TClass > 0 && TClass < 5'>
@@ -653,8 +653,8 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                         <input onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["wait"]'></input>
                         <label>Wait Type</label>
                         <select v-model='list.nl[index.nowNodeIndex]["parameters"]["waitType"]' class="form-control">
-                            <option value = 0>Fixed wait (set to wait for 10 seconds then it will wait for 10 seconds)</option>
-                            <option value = 1>Random wait (set to wait for 10 seconds then it will randomly wait for 10 × 0.5 - 10 × 1.5 seconds)</option>
+                            <option :vaule = 0>Fixed wait (set to wait for 10 seconds then it will wait for 10 seconds)</option>
+                            <option :vaule = 1>Random wait (set to wait for 10 seconds then it will randomly wait for 10 × 0.5 - 10 × 1.5 seconds)</option>
                         </select>
                     </div>
                 </div>

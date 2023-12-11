@@ -16,6 +16,8 @@ from lxml import etree
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
+import urllib.request
+import base64
 
 def send_email(config):
     """
@@ -151,39 +153,73 @@ def detect_optimizable(para, ignoreWaitElement=True, waitElement=""):
 
 
 
-def download_image(browser, url, save_directory):
+def download_image(browser, url, save_directory, element=None):
     # 定义浏览器头信息
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
-    if is_valid_url(url):
+    if url.startswith("data:image"):
+        base64_data = url.split(",")[1]
+        image_data = base64.b64decode(base64_data)
+        # 提取文件名
+        file_name = str(uuid.uuid4()) + '.png'
+        # 构建保存路径
+        save_path = os.path.join(save_directory, file_name)
+        # 保存图片到本地
+        with open(save_path, 'wb') as file:
+            file.write(image_data)
+        browser.print_and_log("图片已成功下载到:", save_path)
+        browser.print_and_log(
+            "The image has been successfully downloaded to:", save_path)
+    elif is_valid_url(url):
         try:
-            # 发送 GET 请求获取图片数据
-            response = requests.get(url, headers=headers)
+            # 提取文件名
+            file_name = url.split('/')[-1].split("?")[0]
 
+            # 生成唯一的新文件名
+            new_file_name = file_name + '_' + \
+                str(uuid.uuid4()) + '_' + file_name
+
+            # 构建保存路径
+            save_path = os.path.join(save_directory, new_file_name)
+            # 发送 GET 请求获取图片数据，加载浏览器的cookies
+            s = requests.session()
+            cookies = browser.browser.get_cookies()
+            for cookie in cookies:
+                s.cookies.set(cookie['name'], cookie['value'])
+            response = s.get(url, headers=headers)
             # 检查响应状态码是否为成功状态
             if response.status_code == requests.codes.ok:
-                # 提取文件名
-                file_name = url.split('/')[-1].split("?")[0]
-
-                # 生成唯一的新文件名
-                new_file_name = file_name + '_' + \
-                    str(uuid.uuid4()) + '_' + file_name
-
-                # 构建保存路径
-                save_path = os.path.join(save_directory, new_file_name)
-
                 # 保存图片到本地
                 with open(save_path, 'wb') as file:
                     file.write(response.content)
-
                 browser.print_and_log("图片已成功下载到:", save_path)
                 browser.print_and_log(
                     "The image has been successfully downloaded to:", save_path)
             else:
-                browser.print_and_log("下载图片失败，请检查此图片链接是否有效:", url)
-                browser.print_and_log(
-                    "Failed to download image, please check if this image link is valid:", url)
+                # browser.print_and_log(f"直接下载图片失败，状态码为:{response.status_code}，尝试使用Selenium下载图片...")
+                # browser.print_and_log(
+                    # f"Failed to download image directly, status code is: {response.status_code}, try to download image using Selenium...")
+                JS = "var xhr = new XMLHttpRequest(); xhr.open('GET', '" + url +"', true); xhr.responseType = 'blob'; xhr.onload = function() {var reader = new FileReader(); reader.readAsDataURL(xhr.response); reader.onloadend = function() { var base64data = reader.result;}}; xhr.send();"""
+                base64data = browser.browser.execute_script(JS)
+                if base64data:
+                    image_data = base64data.b64decode(base64data.split(",")[1])
+                    with open(save_path, 'wb') as file:
+                        file.write(image_data)
+                    browser.print_and_log("图片已成功下载到:", save_path)
+                    browser.print_and_log(
+                        "The image has been successfully downloaded to:", save_path)
+                else:
+                    browser.print_and_log("下载图片失败，只能使用元素截图功能下载图片。")
+                    browser.print_and_log("Failed to download image, can only download image using element screenshot function.")
+                    # 使用元素截图功能下载图片
+                    try:
+                        element.screenshot(save_path)
+                        browser.print_and_log("图片截图已保存到:", save_path)
+                        browser.print_and_log(
+                            "The image screenshot has been saved to:", save_path)
+                    except Exception as e:
+                        browser.print_and_log("下载图片失败|Error downloading image: ", e)
         except Exception as e:
             browser.print_and_log("下载图片失败|Error downloading image: ", e)
     else:
