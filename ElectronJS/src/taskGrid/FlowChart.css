@@ -221,7 +221,8 @@
       position: sticky;
       top: 0px;
       margin-bottom: 0px;
-      background-color: azure;
+      /*background-color: azure;*/
+        background-color: aliceblue;
       z-index: 1000;
   }
 

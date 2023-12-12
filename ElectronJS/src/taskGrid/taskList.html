@@ -56,7 +56,7 @@
                             <td style="height: 30px;overflow: hidden; max-width: 200px">{{list[i-1]["url"]}}</td>
                             <td style="text-align: left"><a href="javascript:void(0)" v-on:click="browseTask(list[i-1]['id'])">{{"Task Information~任务信息" | lang}}</a></td>
                             <td style="text-align: left;font-weight: bold" v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyTask(list[i-1]['id'],list[i-1]['url'])">{{"Modify Task~修改任务" | lang}}</a></td>
-                            <td style="text-align: left"><a disabled href="javascript:void(0)" v-on:click="deleteTask(list[i-1]['id'])">{{"Delete Task~删除任务" | lang}}</a></td>
+                            <td style="text-align: left"><a disabled href="javascript:void(0)" v-on:dblclick="deleteTask(list[i-1]['id'])">{{"Delete Task (Double Click)~删除任务（双击）" | lang}}</a></td>
                         </tr>
                     </tbody>
                 </table>
@@ -96,13 +96,13 @@
                 window.location.href = "taskInfo.html?type="+getUrlParam("type")+"&id=" + id + "&lang="+getUrlParam("lang")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
             },
             deleteTask: function(id) {
-                let text = "Are you sure to remove the selected task?";
-                if (getUrlParam("lang") == "en"|| getUrlParam("lang")=="") {
-                    text = "Are you sure to remove the selected task?";
-                } else if (getUrlParam("lang") == "zh") {
-                    text = "确定要删除选中的任务吗？";
-                }
-                if (confirm(text)) {
+                // let text = "Are you sure to remove the selected task?";
+                // if (getUrlParam("lang") == "en"|| getUrlParam("lang")=="") {
+                //     text = "Are you sure to remove the selected task?";
+                // } else if (getUrlParam("lang") == "zh") {
+                //     text = "确定要删除选中的任务吗？";
+                // }
+                // if (confirm(text)) {
                     $.get(app.$data.backEndAddressServiceWrapper + "/deleteTask?id=" + id, function(res) {
                         $.get(app.$data.backEndAddressServiceWrapper + "/queryTasks", function(re) {
                             result = re.sort(desc);
@@ -110,7 +110,7 @@
                         });
                     });
                     // alert("Sorry, the task cannot be deleted since the system is a demo system for paper reviewers, please contact the author (naibowang@u.nus.edu) to remove it.")
-                }
+                // }
             },
         }
     });

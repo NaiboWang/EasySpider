@@ -36,7 +36,8 @@
                     v-on:mousedown="selectDescendents">选中子元素</a> <span title="应选尽选模式，如想使用其他模式请先选中全部再选中子元素">☺</span></div>
                 <div v-if="!selectedDescendents && !selectStatus" id="Single">
                   <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">切换下拉选项</a><span title=""></span></div>
-                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">输入文字</a><span title=""></span></div>
+                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(false)">输入文字</a><span title=""></span></div>
+                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(true)">批量输入文字</a><span title=""></span></div>
                   <div v-if="tname()!='图片'"><a v-on:mousedown="getText">采集该{{ tname() }}的文本</a><span
                       title="采集文本"></span></div>
                   <div v-if="tname()=='选择框'"><a v-on:mousedown="getSelectedValue">采集当前选中项的值</a><span title=""></span></div>
@@ -170,10 +171,10 @@
               <div><a v-on:mousedown="getCurrentTitle">Collect Title of current page</a><span title="Title of this page">☺</span></div>
               <div><a v-on:mousedown="getCurrentURL">Collect URL of current page</a><span title="URL of this page">☺</span></div>
             </div>
-            <p style="color:black">● Mouse move to smiling face ☺ to see operation help.</p>
-            <p style="color:black">● When your mouse moves to the element, please <strong>right-click</strong> your
+            <p style="color:black; margin-top: 10px">● Mouse move to smiling face ☺ to see operation help.</p>
+            <p style="color:black; margin-top: 10px">● When your mouse moves to the element, please <strong>right-click</strong> your
               mouse button or press <strong>F7</strong> on the keyboard to select it.</p>
-            <p style="color:black">● If this toolbox blocks the page element, you can click the × button in the
+            <p style="color:black; margin-top: 10px">● If this toolbox blocks the page element, you can click the × button in the
               lower right corner of this toolbox to close it.</p>
             <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also respond, but this click operation will not be recorded in the task flow. Similarly, if you want to input in a text box but do not want the action to be recorded , you can move the mouse to the text box and press <strong>F9</strong> on the keyboard to input.</p>
             <p style="color:black; margin-top: 10px">● If you accidentally left-click on an element and cause the page to jump, simply go back or switch back to the tab.</p>
@@ -193,7 +194,8 @@
                 <div v-if="!selectedDescendents && !selectStatus" id="Single">
                   <!-- <div v-if="tname()=='selection box'"> <a>循环切换该下拉项</a><span title="">☺</span></div> -->
                   <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">Change selection option</a><span title=""></span></div>
-                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput">Input Text</a><span title=""></span>
+                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(false)">Input Text</a><span title=""></span>
+                    <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(true)">Input Text (Batch)</a><span title=""></span>
                   </div>
                   <div v-if="tname()!='图片'"><a v-on:mousedown="getText">Extract {{ tname() | toEng }}'s text</a><span
                       title="collect text"></span></div>
@@ -362,6 +364,7 @@ export default {
   el: '#realcontent',
   data: {
     lang: global.lang,
+    batch: false, //是否为批量输入模式
     option: 0,
     list: {nl: global.nodeList, opp: global.outputParameters},
     valTable: [], // 用来存储转换后的参数列表
@@ -578,7 +581,8 @@ export default {
       // global.nodeList[0]["node"].click(); //点击元素
       clearEl();
     },
-    setInput: function () { //输入文字
+    setInput: function (batch=false) { //输入文字
+      this.batch = batch;
       this.page = 1;
       this.$nextTick(function () { //下一时刻获得焦点
         document.getElementById("WTextBox").focus();
@@ -591,7 +595,7 @@ export default {
       // } else{
       //   global.nodeList[0]["node"].setAttribute("value", ""); // 先设置为空，再设置输入 box内容
       // }
-      input(this.text); // 设置输入
+      input(this.text, this.batch); // 设置输入
       this.text = "";
       clearEl();
     },

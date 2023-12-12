@@ -157,13 +157,18 @@
                         <option :value = 0>Selenium点击</option>
                         <option :value = 1>JavaScript点击</option>
                     </select>
+                    <label>在新标签页打开超链接：</label>
+                    <select v-model='nowNode["parameters"]["newTab"]' class="form-control">
+                        <option :value = 1>是</option>
+                        <option :value = 0>否</option>
+                    </select>
                     <label>点击后是否向下滚动页面：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
-                        <option :vaule = 0>不滚动</option>
-                        <option :vaule = 1>向下滚动一屏</option>
-                        <option :vaule = 2>滚动到底部</option>
-                        <option :vaule = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
-                      </select>
+                        <option :value = 0>不滚动</option>
+                        <option :value = 1>向下滚动一屏</option>
+                        <option :value = 2>滚动到底部</option>
+                        <option :value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
+                    </select>
                     <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
                     <input onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
@@ -218,10 +223,10 @@
                                     </td>
                                     <td style="width:200px">{{paras.parameters[i-1]["exampleValues"][0]["value"]}}</td>
                                     <td>
-                                        <a v-on:mousedown="modifyParas(i-1)">修改</a>
-                                        <a v-on:mousedown="deleteParas(i-1)">删除</a>
-                                        <a v-on:mousedown="upParas(i-1)">上移</a>
-                                        <a v-on:mousedown="downParas(i-1)">下移</a>
+                                        <a v-on:mousedown="modifyPara(i-1)">修改</a>
+                                        <a v-on:mousedown="deletePara(i-1)">删除</a>
+                                        <a v-on:mousedown="upPara(i-1)">上移</a>
+                                        <a v-on:mousedown="downPara(i-1)">下移</a>
                                     </td>
                                 </tr>
                         </table>
@@ -241,6 +246,7 @@
                         </p>
                         <div :class="{collapse: true, 'show': paras.parameters[paraIndex]['beforeJS'].length!=0 || paras.parameters[paraIndex]['afterJS'].length!=0}" id="elementAdvanced">
                             <div>
+                                <div><a href="#" v-on:mousedown="trailPara(paraIndex)" style="text-decoration: none">试运行</a></div>
                                 <label>提取该元素数据<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
                                 <textarea onkeydown="inputDelete(event)" class="form-control" rows="2"
                                           placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='paras.parameters[paraIndex]["beforeJS"]'></textarea>
@@ -519,7 +525,7 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
                     <!-- 循环选项 -->
                     <label>循环类型：</label>
-                    <select v-model='loopType' class="form-control">
+                    <select v-model='loopType' class="form-control" @change="handleLoopTypeChange">
                         <option :value = 0>单个元素（多用于循环点击下一页）</option>
                         <option :value = 1>不固定元素列表</option>
                         <option :value = 2>固定元素列表</option>
@@ -596,14 +602,14 @@ print(emotlib.emoji()) # 使用其中的函数。
                 </div>
 
                 <div class="elements" v-if="nodeType==9">
-                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。</label>
+                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。设计任务时点击分支即可在浏览器中<b>动态调试</b>分支是否满足（不适用于系统命令和Python Eval操作）。</label>
                 </div>
 
                 <div class="elements" v-if="nodeType==10">
-                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。</label>
+                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。设计任务时点击分支即可在浏览器中<b>动态调试</b>分支是否满足（不适用于系统命令和Python Eval操作）。</label>
                     <p><input onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
                     <label>条件类型：</label>
-                    <select v-model='TClass' class="form-control">
+                    <select v-model='TClass' class="form-control" @change="handleJudgeTypeChange">
                         <option :value = 0>无条件</option>
                         <option :value = 1>当前页面包括文本</option>
                         <option :value = 2>当前页面包括元素</option>

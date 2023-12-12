@@ -8,8 +8,8 @@ let exampleMsg = { //示例消息
     }
 }
 console.log(JSON.stringify(exampleMsg));
-let ws = new WebSocket("ws://localhost:"+getUrlParam("wsport"));
-ws.onopen = function() {
+let ws = new WebSocket("ws://localhost:" + getUrlParam("wsport"));
+ws.onopen = function () {
     // Web Socket 已连接上，使用 send() 方法发送数据
     console.log("已连接");
     message = {
@@ -20,12 +20,12 @@ ws.onopen = function() {
     };
     this.send(JSON.stringify(message));
 };
-ws.onclose = function() {
+ws.onclose = function () {
     // 关闭 websocket
     console.log("连接已关闭...");
 };
 let old_title = "";
-ws.onmessage = function(evt) {
+ws.onmessage = function (evt) {
     evt = JSON.parse(evt.data);
     console.log(evt);
     if (evt["type"] == "title") { //如果不是特殊处理的话，默认全部是增加元素操作
@@ -36,9 +36,9 @@ ws.onmessage = function(evt) {
     } else if (evt["type"] == "notify") {
         if (evt["level"] == "success") {
             showSuccess(LANG(evt["msg_zh"], evt["msg_en"]));
-        } else if(evt["level"] == "info"){
+        } else if (evt["level"] == "info") {
             showInfo(LANG(evt["msg_zh"], evt["msg_en"]));
-        } else if(evt["level"] == "error"){
+        } else if (evt["level"] == "error") {
             showError(LANG(evt["msg_zh"], evt["msg_en"]));
         }
     } else {
@@ -46,20 +46,20 @@ ws.onmessage = function(evt) {
     }
 };
 
-function changeOutputFormat(para){
-    try{
-        for(let i=0;i<para["parameters"].length;i++) {
+function changeOutputFormat(para) {
+    try {
+        for (let i = 0; i < para["parameters"].length; i++) {
             let exampleValue = para["parameters"][i]["exampleValues"][0]["value"];
             let len = exampleValue.length;
             if (len > 20000) {
-                if($("#outputFormat").val() == "xlsx") {
+                if ($("#outputFormat").val() == "xlsx") {
                     $("#outputFormat").val("csv"); //如果有一个参数的示例值长度超过20000，就默认输出为csv
                     showInfo(LANG("示例值长度超过16000，超出Excel单个单元格存储限制，已自动切换保存为csv格式。", "The length of the example value exceeds 16000, and the csv save format has been automatically switched."));
                 }
                 break;
             }
         }
-    } catch(e){
+    } catch (e) {
         console.log(e);
     }
 }
@@ -85,7 +85,10 @@ function handleAddElement(msg) {
         addElement(2, msg);
     } else if (msg["type"] == "inputText") {
         addElement(4, msg);
-    } else if (msg["type"] == "changeOption"){
+    } else if (msg["type"] == "batchInputText") {
+        addElement(8, msg);
+        addElement(4, msg);
+    } else if (msg["type"] == "changeOption") {
         addElement(6, msg);
     } else if (msg["type"] == "mouseMove") {
         addElement(7, msg);
@@ -110,7 +113,8 @@ function handleAddElement(msg) {
             }
             changeOutputFormat(msg);
             app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
-            setTimeout(function(){$("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
+            setTimeout(function () {
+                $("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);
         } else {
             addElement(3, msg);
@@ -122,9 +126,9 @@ function handleAddElement(msg) {
         addElement(3, msg);
         changeOutputFormat(msg);
         notifyParameterNum(msg["parameters"].length); //通知浏览器端参数的个数变化
-    } else if(msg["type"] == "GetCookies"){
-        for(let node of nodeList){
-            if(node["option"] == 1){
+    } else if (msg["type"] == "GetCookies") {
+        for (let node of nodeList) {
+            if (node["option"] == 1) {
                 node["parameters"]["cookies"] = msg["message"];
                 $("#pageCookies").val(msg["message"]);
                 break;
@@ -138,18 +142,28 @@ function notifyParameterNum(num) {
     let message = {
         type: 3, //消息类型，3代表元素增加事件
         from: 1, //0代表从浏览器到流程图，1代表从流程图到浏览器
-        message: { "pipe": JSON.stringify({ "type": "update_parameter_num", "value": parameterNum }) } // {}全选{BS}退格
+        message: {"pipe": JSON.stringify({"type": "update_parameter_num", "value": parameterNum})} // {}全选{BS}退格
     };
     ws.send(JSON.stringify(message));
 }
 
-function trailRun(node){
+function trailElement(node, type = 1) {
+    // type=0代表标记节点，type=1代表试运行
+    let parentNode = nodeList[actionSequence[node["parentId"]]];
+    if (node.option == 10) { //条件分支的话，传父元素的父元素
+        parentNode = nodeList[actionSequence[parentNode["parentId"]]];
+    }
+    if (parentNode.option == 10) { //如果父元素是条件分支，传父元素的爷爷元素
+        parentNode = nodeList[actionSequence[parentNode["parentId"]]];
+        parentNode = nodeList[actionSequence[parentNode["parentId"]]];
+    }
     let message = {
         type: 4, //消息类型，4代表试运行事件
         from: 1, //0代表从浏览器到流程图，1代表从流程图到浏览器
-        message: { "node": JSON.stringify(node), "parentNode": JSON.stringify(nodeList[actionSequence[node["parentId"]]])}
+        message: {"type": type, "node": JSON.stringify(node), "parentNode": JSON.stringify(parentNode)}
     };
     ws.send(JSON.stringify(message));
+    console.log(node);
     console.log(message);
 }
 
@@ -165,7 +179,7 @@ function handleElement() {
     } else if (app._data["nodeType"] == 3) {
         app._data.paraIndex = 0; //参数索引初始化
         app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
-    } else if (app._data["nodeType"] == 5){
+    } else if (app._data["nodeType"] == 5) {
         app._data.codeMode = app._data["nowNode"]["parameters"]["codeMode"];
     } else if (app._data["nodeType"] == 10) {
         app._data.TClass = app._data["nowNode"]["parameters"]["class"];
@@ -203,6 +217,7 @@ function addParameters(t) {
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
         t["parameters"]["clickWay"] = 0; //点击方式，0代表selenium点击，1代表js点击
+        t["parameters"]["newTab"] = 1; //是否新标签页打开
         t["parameters"]["maxWaitTime"] = 10; //最长等待时间
         t["parameters"]["paras"] = []; //默认参数列表
         t["parameters"]["wait"] = 2; //点击后等待时间默认2s
@@ -222,7 +237,7 @@ function addParameters(t) {
         t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
         t["parameters"]["afterJS"] = ""; //执行后执行的js
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
-    } else if(t.option == 5) { //自定义操作
+    } else if (t.option == 5) { //自定义操作
         t["title"] = LANG("执行JavaScript", "Run JavaScript");
         t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["newLine"] = 1; //生成新行
@@ -246,6 +261,7 @@ function addParameters(t) {
         t["parameters"]["optionValue"] = ""; //下拉值
         t["parameters"]["index"] = 0; //输入框索引
     } else if (t.option == 8) { //循环
+        t["title"] = LANG("循环 - 单个元素", "Loop - single element");
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
@@ -262,7 +278,7 @@ function addParameters(t) {
         t["parameters"]["breakCode"] = ""; //break条件
         t["parameters"]["breakCodeWaitTime"] = 0; //break条件等待时间
     } else if (t.option == 9) { //条件
-
+        t["title"] = LANG("判断条件 - 从左往右依次判断", "Judgment condition - judge from left to right");
     } else if (t.option == 10) { //条件分支
         t["parameters"]["class"] = 0; //0代表什么条件都没有，1代表当前页面包括文本，2代表当前页面包括元素，3代表当前循环包括文本，4代表当前循环包括元素
         t["parameters"]["value"] = ""; //相关值
@@ -305,12 +321,13 @@ function modifyParameters(t, para) {
         t["parameters"]["value"] = para["value"];
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
-    } else if(t.option == 6){
+        t["parameters"]["useLoop"] = para["useLoop"];
+    } else if (t.option == 6) {
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
         t["parameters"]["optionMode"] = para["optionMode"];
         t["parameters"]["optionValue"] = para["optionValue"];
-    } else if(t.option == 7){
+    } else if (t.option == 7) {
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["useLoop"] = para["useLoop"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
@@ -318,6 +335,7 @@ function modifyParameters(t, para) {
         t["parameters"]["loopType"] = para["loopType"];
         t["parameters"]["xpath"] = para["xpath"];
         t["parameters"]["allXPaths"] = para["allXPaths"];
+        t["parameters"]["textList"] = para["value"];
         if (para["nextPage"]) { //循环点击下一页的情况下
             t["title"] = LANG("循环点击下一页", "Loop click next page");
         } else if (para["type"] == "loopClickSingle") { //循环点击单个元素
@@ -326,8 +344,10 @@ function modifyParameters(t, para) {
             t["title"] = LANG("循环点击每个元素", "Loop click every element");
         } else if (para["type"] == "loopMouseMove") { //循环移动到单个元素
             t["title"] = LANG("循环移动到每个元素", "Loop move to every element");
-        } else if (para["type"] == "multiCollectWithPattern"){
+        } else if (para["type"] == "multiCollectWithPattern") {
             t["title"] = LANG("循环采集数据", "Loop collect data");
+        } else if (para["type"] == "batchInputText") {
+            t["title"] = LANG("循环输入文字", "Loop input text");
         } else {
             t["title"] = LANG("循环", "Loop");
         }
@@ -343,24 +363,26 @@ function modifyParameters(t, para) {
     }
 }
 
-function showSuccess(msg, time=4000) {
+function showSuccess(msg, time = 4000) {
     $("#tip").text(msg);
     $("#tip").slideDown(); //提示框
-    let fadeout = setTimeout(function() {
+    let fadeout = setTimeout(function () {
         $("#tip").slideUp();
     }, time);
 }
-function showInfo(msg, time=4000) {
+
+function showInfo(msg, time = 4000) {
     $("#info_message").text(msg);
     $("#tipInfo").slideDown(); //提示框
-    let fadeout = setTimeout(function() {
+    let fadeout = setTimeout(function () {
         $("#tipInfo").slideUp();
     }, time);
 }
-function showError(msg, time=4000) {
+
+function showError(msg, time = 4000) {
     $("#error_message").text(msg);
     $("#tipError").slideDown(); //提示框
-    let fadeout = setTimeout(function() {
+    let fadeout = setTimeout(function () {
         $("#tipError").slideUp();
     }, time);
 }
@@ -370,11 +392,11 @@ function showError(msg, time=4000) {
 $("#confirm").mousedown(updateUI);
 
 //点击保存任务按钮时的处理
-$("#saveButton").mousedown(function() {
+$("#saveButton").mousedown(function () {
     saveService(0);
 });
 //点击另存为任务按钮时的处理
-$("#saveAsButton").mousedown(function() {
+$("#saveAsButton").mousedown(function () {
     saveService(1);
 });
 
@@ -398,170 +420,178 @@ function saveService(type) {
         text = LANG("确认要另存为任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task as (if you can't use the mouse to click, please press the enter key)?");
     }
     // if (confirm(text)) {
-        let serviceName = $("#serviceName").val();
-        let url = $("#url").val();
-        let serviceDescription = $("#serviceDescription").val();
-        let inputParameters = [];
-        let outputParameters = [];
-        let outputNames = [];
-        let inputIndex = 0;
-        let outputIndex = 0;
-        let links = "about:blank"; //记录所有的link
-        let containJudge = false; //是否含有判断语句
-        let saveThreshold = parseInt($("#saveThreshold").val());
-        let cloudflare = parseInt($("#cloudflare").val());
-        let environment = parseInt($("#environment").val());
-        for (let i = 1; i < nodeList.length; i++) {
-            if (nodeList[i]["id"] != -1) { //已经被删除的节点不进行统计
-                if (nodeList[i]["option"] == 1) //打开网页操作，统计输入框输入操作
+    let serviceName = $("#serviceName").val();
+    let url = $("#url").val();
+    let serviceDescription = $("#serviceDescription").val();
+    let inputParameters = [];
+    let outputParameters = [];
+    let outputNames = [];
+    let inputIndex = 0;
+    let outputIndex = 0;
+    let links = "about:blank"; //记录所有的link
+    let containJudge = false; //是否含有判断语句
+    let saveThreshold = parseInt($("#saveThreshold").val());
+    let cloudflare = parseInt($("#cloudflare").val());
+    let environment = parseInt($("#environment").val());
+    for (let i = 1; i < nodeList.length; i++) {
+        if (nodeList[i]["id"] != -1) { //已经被删除的节点不进行统计
+            if (nodeList[i]["option"] == 1) //打开网页操作，统计输入框输入操作
+            {
+                if (!nodeList[i]["parameters"]["useLoop"]) //如果不是使用循环里的文本
                 {
-                    if (!nodeList[i]["parameters"]["useLoop"]) //如果不是使用循环里的文本
-                    {
-                        inputParameters.push({
-                            id: inputIndex,
-                            name: "urlList_" + inputIndex++,
-                            nodeId: i, //记录操作位于的节点位置，重要！！！
-                            nodeName: nodeList[i]["title"],
-                            value: nodeList[i]["parameters"]["links"],
-                            desc: LANG("要采集的网址列表，多行以\\n分开","List of URLs to be collected, separated by \\n for multiple lines",),
-                            type: "text",
-                            exampleValue: nodeList[i]["parameters"]["links"]
-                        });
-                        links = nodeList[i]["parameters"]["links"];
-                    }
-                } else if (nodeList[i]["option"] == 4) //输入文字操作
-                {
-                    if (!nodeList[i]["parameters"]["useLoop"]) //如果不是使用循环里的文本
-                    {
-                        inputParameters.push({
-                            id: inputIndex,
-                            name: "inputText_" + inputIndex++,
-                            nodeName: nodeList[i]["title"],
-                            nodeId: i,
-                            desc: LANG("要输入的文本，如京东搜索框输入：电脑","The text to be entered, such as 'computer' at eBay search box"),
-                            type: "text",
-                            exampleValue: nodeList[i]["parameters"]["value"],
-                            value: nodeList[i]["parameters"]["value"],
-                        });
-                    }
-                } else if (nodeList[i]["option"] == 8) //循环操作
-                {
-                    if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2 && parseInt(nodeList[i]["parameters"]["loopType"]) < 5) { //循环中的循环输入文本或循环输入网址
-                        inputParameters.push({
-                            id: inputIndex,
-                            name: "loopText_" + inputIndex++,
-                            nodeId: i,
-                            nodeName: nodeList[i]["title"],
-                            desc: LANG("要输入的文本/网址,多行以\\n分开", "Text/URL to be entered, multiple lines should be separated by \\n"),
-                            type: "text",
-                            exampleValue: nodeList[i]["parameters"]["textList"],
-                            value: nodeList[i]["parameters"]["textList"],
-                        });
-                    } else if (parseInt(nodeList[i]["parameters"]["loopType"]) == 0) {
-                        inputParameters.push({
-                            id: inputIndex,
-                            name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
-                            nodeId: i,
-                            nodeName: nodeList[i]["title"],
-                            desc: LANG("循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）", "Number of loop executions for loop "+nodeList[i]["title"]+", 0 means unlimited loops (until element not found)"),
-                            type: "int",
-                            exampleValue: nodeList[i]["parameters"]["exitCount"],
-                            value: nodeList[i]["parameters"]["exitCount"],
-                        });
-                    }
-                } else if (nodeList[i]["option"] == 3) //提取数据操作
-                {
-                    for (let j = 0; j < nodeList[i]["parameters"]["paras"].length; j++) {
-                        if (outputNames.indexOf(nodeList[i]["parameters"]["paras"][j]["name"]) < 0) { //参数名称还未被添加
-                            outputNames.push(nodeList[i]["parameters"]["paras"][j]["name"]);
-                            outputParameters.push({
-                                id: outputIndex++,
-                                name: nodeList[i]["parameters"]["paras"][j]["name"],
-                                desc: nodeList[i]["parameters"]["paras"][j]["desc"],
-                                type: nodeList[i]["parameters"]["paras"][j]["paraType"],
-                                recordASField: nodeList[i]["parameters"]["paras"][j]["recordASField"],
-                                exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
-                            });
-                        }
-                    }
-                } else if (nodeList[i]["option"] == 5) //自定义操作
-                {
-                    // if (nodeList[i]["parameters"]["recordASField"] == 1) {
-                    let id = outputIndex++;
-                    let title = nodeList[i]["title"];
-                    // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
-                    //     $('#myModal').modal('hide');
-                    //     $("#tip2").slideDown(); //提示框
-                    //     fadeout = setTimeout(function() {
-                    //         $("#tip2").slideUp();
-                    //     }, 5000);
-                    //     return;
-                    // }
-                    outputNames.push(title);
-                    outputParameters.push({
-                        id: id,
-                        name: title,
-                        desc: LANG("自定义操作返回的数据","Output of custom action"),
-                        type: nodeList[i]["parameters"]["paraType"],
-                        recordASField: nodeList[i]["parameters"]["recordASField"],
-                        exampleValue: "",
+                    inputParameters.push({
+                        id: inputIndex,
+                        name: "urlList_" + inputIndex++,
+                        nodeId: i, //记录操作位于的节点位置，重要！！！
+                        nodeName: nodeList[i]["title"],
+                        value: nodeList[i]["parameters"]["links"],
+                        desc: LANG("要采集的网址列表，多行以\\n分开", "List of URLs to be collected, separated by \\n for multiple lines",),
+                        type: "text",
+                        exampleValue: nodeList[i]["parameters"]["links"]
                     });
-                    // }
-                } else if (nodeList[i]["option"] == 9) //条件判断
-                {
-                    containJudge = true;
+                    links = nodeList[i]["parameters"]["links"];
                 }
+            } else if (nodeList[i]["option"] == 4) //输入文字操作
+            {
+                if (!nodeList[i]["parameters"]["useLoop"]) //如果不是使用循环里的文本
+                {
+                    inputParameters.push({
+                        id: inputIndex,
+                        name: "inputText_" + inputIndex++,
+                        nodeName: nodeList[i]["title"],
+                        nodeId: i,
+                        desc: LANG("要输入的文本，如京东搜索框输入：电脑", "The text to be entered, such as 'computer' at eBay search box"),
+                        type: "text",
+                        exampleValue: nodeList[i]["parameters"]["value"],
+                        value: nodeList[i]["parameters"]["value"],
+                    });
+                }
+            } else if (nodeList[i]["option"] == 8) //循环操作
+            {
+                if (parseInt(nodeList[i]["parameters"]["loopType"]) > 2 && parseInt(nodeList[i]["parameters"]["loopType"]) < 5) { //循环中的循环输入文本或循环输入网址
+                    inputParameters.push({
+                        id: inputIndex,
+                        name: "loopText_" + inputIndex++,
+                        nodeId: i,
+                        nodeName: nodeList[i]["title"],
+                        desc: LANG("要输入的文本/网址,多行以\\n分开", "Text/URL to be entered, multiple lines should be separated by \\n"),
+                        type: "text",
+                        exampleValue: nodeList[i]["parameters"]["textList"],
+                        value: nodeList[i]["parameters"]["textList"],
+                    });
+                } else if (parseInt(nodeList[i]["parameters"]["loopType"]) == 0) {
+                    inputParameters.push({
+                        id: inputIndex,
+                        name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
+                        nodeId: i,
+                        nodeName: nodeList[i]["title"],
+                        desc: LANG("循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）", "Number of loop executions for loop " + nodeList[i]["title"] + ", 0 means unlimited loops (until element not found)"),
+                        type: "int",
+                        exampleValue: nodeList[i]["parameters"]["exitCount"],
+                        value: nodeList[i]["parameters"]["exitCount"],
+                    });
+                }
+            } else if (nodeList[i]["option"] == 3) //提取数据操作
+            {
+                for (let j = 0; j < nodeList[i]["parameters"]["paras"].length; j++) {
+                    if (outputNames.indexOf(nodeList[i]["parameters"]["paras"][j]["name"]) < 0) { //参数名称还未被添加
+                        outputNames.push(nodeList[i]["parameters"]["paras"][j]["name"]);
+                        outputParameters.push({
+                            id: outputIndex++,
+                            name: nodeList[i]["parameters"]["paras"][j]["name"],
+                            desc: nodeList[i]["parameters"]["paras"][j]["desc"],
+                            type: nodeList[i]["parameters"]["paras"][j]["paraType"],
+                            recordASField: nodeList[i]["parameters"]["paras"][j]["recordASField"],
+                            exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
+                        });
+                    }
+                }
+            } else if (nodeList[i]["option"] == 5) //自定义操作
+            {
+                // if (nodeList[i]["parameters"]["recordASField"] == 1) {
+                let id = outputIndex++;
+                let title = nodeList[i]["title"];
+                // if (outputNames.indexOf(title) >= 0) { //参数名称已经被添加
+                //     $('#myModal').modal('hide');
+                //     $("#tip2").slideDown(); //提示框
+                //     fadeout = setTimeout(function() {
+                //         $("#tip2").slideUp();
+                //     }, 5000);
+                //     return;
+                // }
+                outputNames.push(title);
+                outputParameters.push({
+                    id: id,
+                    name: title,
+                    desc: LANG("自定义操作返回的数据", "Output of custom action"),
+                    type: nodeList[i]["parameters"]["paraType"],
+                    recordASField: nodeList[i]["parameters"]["recordASField"],
+                    exampleValue: "",
+                });
+                // }
+            } else if (nodeList[i]["option"] == 9) //条件判断
+            {
+                containJudge = true;
             }
         }
-        serviceInfo = {
-            "id": parseInt(serviceId),
-            "name": serviceName,
-            "url": url,
-            "links": links,
-            "create_time": parseInt(serviceId) == -1 ? new Date().toLocaleString() : $("#create_time").val(),
-            "update_time": new Date().toLocaleString(),
-            "version": "0.6.0",
-            "saveThreshold": saveThreshold,
-            // "cloudflare": cloudflare,
-            "quitWaitTime": parseInt($("#quitWaitTime").val()),
-            "environment": environment,
-            "maximizeWindow": parseInt($("#maximizeWindow").val()),
-            "maxViewLength": parseInt($("#maxViewLength").val()),
-            "recordLog": parseInt($("#recordLog").val()),
-            "outputFormat": $("#outputFormat").val(),
-            "saveName": $("#saveName").val(),
-            "inputExcel": $("#inputExcel").val(),
-            "startFromExit": parseInt($("#startFromExit").val()),
-            "pauseKey": $("#pauseKey").val(),
-            "containJudge": containJudge,
-            "desc": serviceDescription,
-            "inputParameters": inputParameters,
-            "outputParameters": outputParameters,
-            "graph": nodeList, //图结构要存储下来
-        };
-        if(serviceInfo.outputFormat=="mysql"){
-            if(!isValidMySQLTableName(serviceInfo.saveName)) {
-                $('#myModal').modal('hide');
-                showError(LANG("提示：保存名不符合MySQL表名规范，请重试！","The save name is not valid for MySQL table name!"));
-                return;
-            }
+    }
+    serviceInfo = {
+        "id": parseInt(serviceId),
+        "name": serviceName,
+        "url": url,
+        "links": links,
+        "create_time": parseInt(serviceId) == -1 ? new Date().toLocaleString() : $("#create_time").val(),
+        "update_time": new Date().toLocaleString(),
+        "version": "0.6.0",
+        "saveThreshold": saveThreshold,
+        // "cloudflare": cloudflare,
+        "quitWaitTime": parseInt($("#quitWaitTime").val()),
+        "environment": environment,
+        "maximizeWindow": parseInt($("#maximizeWindow").val()),
+        "maxViewLength": parseInt($("#maxViewLength").val()),
+        "recordLog": parseInt($("#recordLog").val()),
+        "outputFormat": $("#outputFormat").val(),
+        "saveName": $("#saveName").val(),
+        "inputExcel": $("#inputExcel").val(),
+        "startFromExit": parseInt($("#startFromExit").val()),
+        "pauseKey": $("#pauseKey").val(),
+        "containJudge": containJudge,
+        "desc": serviceDescription,
+        "inputParameters": inputParameters,
+        "outputParameters": outputParameters,
+        "graph": nodeList, //图结构要存储下来
+    };
+    if (serviceInfo.outputFormat == "mysql") {
+        if (!isValidMySQLTableName(serviceInfo.saveName)) {
+            $('#myModal').modal('hide');
+            showError(LANG("提示：保存名不符合MySQL表名规范，请重试！", "The save name is not valid for MySQL table name!"));
+            return;
         }
-        $.post(backEndAddressServiceWrapper + "/manageTask", { paras: JSON.stringify(serviceInfo) },
-            function(result) { $("#serviceId").val(parseInt(result)) });
-        // alert("保存成功!");
-        $('#myModal').modal('hide');
-        showSuccess(LANG("保存成功！","Save successfully!"));
+    }
+    $.post(backEndAddressServiceWrapper + "/manageTask", {paras: JSON.stringify(serviceInfo)},
+        function (result) {
+            $("#serviceId").val(parseInt(result))
+            if (type == 1) { //任务另存为
+                let currentUrl = window.location.href;
+                let id = getUrlParam("id");
+                let newUrl = currentUrl.replace("id=" + id, "id=" + result + "&saveAs=1");
+                window.location.href = newUrl;
+            }
+        });
+    // alert("保存成功!");
+    $('#myModal').modal('hide');
+    showSuccess(LANG("保存成功！", "Save successfully!"));
     // }
 }
 
 if (sId != null && sId != -1) //加载任务
 {
-    $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function(result) {
+    $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
-        for(let node of nodeList){ //兼容旧版本
-            if(node["option"] == 1){
-                if(!("cookies" in node["parameters"])) {
+        for (let node of nodeList) { //兼容旧版本
+            if (node["option"] == 1) {
+                if (!("cookies" in node["parameters"])) {
                     node["parameters"]["cookies"] = "";
                 }
             }
@@ -570,15 +600,18 @@ if (sId != null && sId != -1) //加载任务
         $("#serviceId").val(result["id"]);
         $("#url").val(result["url"]);
         $("#serviceDescription").val(result["desc"]);
-        for(let key of Object.keys(result)){
-            try{
-                $("#"+key).val(result[key]);
-            } catch(e){
+        for (let key of Object.keys(result)) {
+            try {
+                $("#" + key).val(result[key]);
+            } catch (e) {
                 console.log(e);
             }
         }
-        if(result["version"]!= serviceInfo["version"]){
-            showInfo(LANG("提示：该任务为" + result["version"] + "版本任务，当前版本为" + serviceInfo["version"] + "，可能存在兼容性问题，请按照当前版本指南设计任务流程以避免任务执行不正常。","This task is designed by EasySpider " + result["version"] + ", current version of EasySpider is " + serviceInfo["version"] + ", there may be compatibility issues, please design the task flow according to the current version guide to avoid abnormal task execution."));
+        if (result["version"] != serviceInfo["version"]) {
+            showInfo(LANG("提示：该任务为" + result["version"] + "版本任务，当前版本为" + serviceInfo["version"] + "，可能存在兼容性问题，请按照当前版本指南设计任务流程以避免任务执行不正常。", "This task is designed by EasySpider " + result["version"] + ", current version of EasySpider is " + serviceInfo["version"] + ", there may be compatibility issues, please design the task flow according to the current version guide to avoid abnormal task execution."));
+        }
+        if (getUrlParam("saveAs") == 1) {
+            showSuccess(LANG("另存为成功！", "Save as successfully!"));
         }
         refresh();
     });
@@ -587,7 +620,7 @@ if (sId != null && sId != -1) //加载任务
 }
 
 function LANG(zh, en) {
-    if(window.location.href.indexOf("_CN") != -1){
+    if (window.location.href.indexOf("_CN") != -1) {
         return zh;
     } else {
         return en;

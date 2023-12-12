@@ -121,7 +121,7 @@ class BrowserThread(Thread):
                                "will start from the last step, before we already collected", self.startSteps, " items.")
         else:
             self.print_and_log("此模式下，任务ID", self.id,
-                               "将从头开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
+                               "将从头F开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
             self.print_and_log("In this mode, task ID", self.id,
                                "will start from the beginning, if you want to start from the last step, please set the option 'start from the last step' to 'yes' when saving the task.")
         stealth_path = driver_path[:driver_path.find(
@@ -325,11 +325,17 @@ class BrowserThread(Thread):
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
                     paras = self.procedure[node["sequence"][0]]["parameters"]["paras"]
-                    waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
-                    node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
+                    try:
+                        waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
+                    except:
+                        waitElement = ""
+                    if node["parameters"]["iframe"]:
+                        node["parameters"]["quickExtractable"] = False # 如果是iframe，那么不可以快速提取
+                    else:
+                        node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
                     for para in paras:
                         optimizable = detect_optimizable(para, ignoreWaitElement=False, waitElement=waitElement)
-                        if para["iframe"]: # 如果是iframe，那么不可以快速提取
+                        if para["iframe"] and not para["relative"]: # 如果是iframe，那么不可以快速提取
                             optimizable = False
                         if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
                             node["parameters"]["quickExtractable"] = False
@@ -911,7 +917,6 @@ class BrowserThread(Thread):
         self.event.wait()  # 等待事件结束
 
     # 对判断条件的处理
-
     def judgeExecute(self, node, loopElement, clickPath="", index=0):
         executeBranchId = 0  # 要执行的BranchId
         for i in node["sequence"]:
@@ -1514,10 +1519,18 @@ class BrowserThread(Thread):
         except:
             click_way = 0
         try:
+            newTab = int(para["newTab"])
+        except:
+            newTab = 1
+        try:
             if click_way == 0:  # 用selenium的点击方法
                 try:
                     actions = ActionChains(self.browser)  # 实例化一个action对象
-                    actions.click(element).perform()
+                    if newTab == 1:  # 在新标签页打开
+                        # Ctrl + Click
+                        actions.key_down(Keys.CONTROL).click(element).key_up(Keys.CONTROL).perform()
+                    else:
+                        actions.click(element).perform()
                 except Exception as e:
                     self.browser.execute_script("arguments[0].scrollIntoView();", element)
                     try:

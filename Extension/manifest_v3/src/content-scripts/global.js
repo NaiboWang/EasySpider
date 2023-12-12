@@ -22,6 +22,8 @@ export var global = {
     iframe: false,
 };
 
+
+
 export function isInIframe() {
     try {
         return window.self !== window.parent;
@@ -261,6 +263,13 @@ export function clearParameters(deal = true) //清空参数列表
     global.app._data.selectStatus = false;
 }
 
+export function LANG(zh, en) {
+    if (global.lang == "zh") {
+        return zh;
+    } else {
+        return en;
+    }
+}
 function parameterName(value){
     if (global.lang == 'zh'){
         return value;

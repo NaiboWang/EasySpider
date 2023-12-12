@@ -92,12 +92,12 @@ let app = new Vue({
         },
         loopType: { //循环类型发生变化的时候更新参数值
             handler: function (newVal, oldVal) {
-                this.nowNode["parameters"]["loopType"] = newVal;
+                // this.nowNode["parameters"]["loopType"] = newVal;
             }
         },
         TClass: {
             handler: function (newVal, oldVal) {
-                this.nowNode["parameters"]["class"] = newVal;
+                // this.nowNode["parameters"]["class"] = newVal;
             }
         },
         useLoop: {
@@ -122,7 +122,7 @@ let app = new Vue({
         }
     },
     methods: {
-        handleCodeModeChange: function (value) {
+        handleCodeModeChange: function () {
             // if (this.codeMode == undefined || this.codeMode == null || this.codeMode == -1) {
             //     return;
             // }
@@ -163,6 +163,73 @@ let app = new Vue({
                     break;
                 default: // 默认情况
                     this.nowNode["title"] = LANG("自定义操作", "Custom Action");
+                    break;
+            }
+        },
+        handleLoopTypeChange: function () {
+            this.nowNode["parameters"]["loopType"] = this.loopType;
+            switch (parseInt(this.loopType)) {
+                case 0:
+                    this.nowNode["title"] = LANG("循环 - 单个元素", "Loop - Single Element");
+                    break;
+                case 1:
+                    this.nowNode["title"] = LANG("循环 - 不固定元素列表", "Loop - Dynamic Element List");
+                    break;
+                case 2:
+                    this.nowNode["title"] = LANG("循环 - 固定元素列表", "Loop - Fixed Element List");
+                    break;
+                case 3:
+                    this.nowNode["title"] = LANG("循环 - 文本列表", "Loop - Text List");
+                    break;
+                case 4:
+                    this.nowNode["title"] = LANG("循环 - 网址列表", "Loop - URL List");
+                    break;
+                case 5:
+                    this.nowNode["title"] = LANG("循环 - JavaScript命令返回值", "Loop - JavaScript Command Return Value");
+                    break;
+                case 6:
+                    this.nowNode["title"] = LANG("循环 - 系统命令返回值", "Loop - OS Command Return Value");
+                    break;
+                case 7:
+                    this.nowNode["title"] = LANG("循环 - Python表达式返回值", "Loop - Python Expression Evaluation Value");
+                    break;
+                default:
+                    this.nowNode["title"] = LANG("循环", "Loop");
+                    break;
+            }
+        },
+        handleJudgeTypeChange: function () {
+            this.nowNode["parameters"]["class"] = this.TClass;
+            switch (parseInt(this.TClass)) {
+                case 0:
+                    this.nowNode["title"] = LANG("无条件", "No Condition");
+                    break;
+                case 1:
+                    this.nowNode["title"] = LANG("当前页面包含文本", "Current Page Contains Text");
+                    break;
+                case 2:
+                    this.nowNode["title"] = LANG("当前页面包含元素", "Current Page Contains Element");
+                    break;
+                case 3:
+                    this.nowNode["title"] = LANG("当前循环项包含文本", "Current Loop Item Contains Text");
+                    break;
+                case 4:
+                    this.nowNode["title"] = LANG("当前循环项包含元素", "Current Loop Item Contains Element");
+                    break;
+                case 5:
+                    this.nowNode["title"] = LANG("JavaScript命令返回值", "JavaScript Command Return Value");
+                    break;
+                case 6:
+                    this.nowNode["title"] = LANG("系统命令返回值", "OS Command Return Value");
+                    break;
+                case 7:
+                    this.nowNode["title"] = LANG("针对当前循环项的JavaScript命令返回值", "JavaScript Command Return Value for Current Loop Item");
+                    break;
+                case 8:
+                    this.nowNode["title"] = LANG("执行环境下的Python表达式值", "Python Expression Evaluation Value");
+                    break;
+                default:
+                    this.nowNode["title"] = LANG("条件分支", "Condition");
                     break;
             }
         },
@@ -216,30 +283,38 @@ let app = new Vue({
                 $("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);
         },
-        modifyParas: function (i) { //修改第i个参数
+        modifyPara: function (i) { //修改第i个参数
             this.paraIndex = i;
-            console.log(this.paras);
+            let clone_node = DeepClone(this.nowNode);
+            clone_node.option = 11; //单独的提取数据参数节点
+            clone_node.parameters.index = i;
+            trailElement(clone_node, 0);
         },
-        deleteParas: function (i) { //删除第i个参数
+        trailPara: function (i) { //试运行第i个参数
+            let clone_node = DeepClone(this.nowNode);
+            clone_node.option = 11; //单独的提取数据参数节点
+            clone_node.parameters.index = i;
+            trailElement(clone_node, 1);
+        },
+        deletePara: function (i) { //删除第i个参数
             this.nowNode["parameters"]["paras"].splice(i, 1);
             //如果参数删除完了，就把提取数据也删掉
             if (this.nowNode["parameters"]["paras"].length == 0) {
                 deleteElement();
             }
         },
-        upParas: function (i) { //上移第i个参数
+        upPara: function (i) { //上移第i个参数
             if (i != 0) {
                 let t = this.nowNode["parameters"]["paras"].splice(i, 1)[0];
                 this.nowNode["parameters"]["paras"].splice(i - 1, 0, t);
             }
         },
-        downParas: function (i) { //下移第i个参数
+        downPara: function (i) { //下移第i个参数
             if (i != this.nowNode["parameters"]["paras"].length - 1) {
                 let t = this.nowNode["parameters"]["paras"].splice(i, 1)[0];
                 this.nowNode["parameters"]["paras"].splice(i + 1, 0, t);
             }
         },
-
         getType: function (nodeType, contentType) { //根据类型得到字段名称
             if (contentType == 2) {
                 return "InnerHTML";
@@ -283,20 +358,20 @@ function newNode(node) {
     } else if (type == 1) //循环
     {
         return `<div class="loop clk" data="${id}" draggable="true" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
-             <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+             <p style="background:#d6d6d6;text-align:left;padding: 2px 2px 2px 5px">${title}</p>
                 <p class="arrow" draggable="true" position=-1 data = "${id}" pId=${id}>↓</p>
             </div>
             <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`;
     } else if (type == 2) //判断
     {
         return LANG(`<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
-                    <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                    <p style="background:#d6d6d6;text-align:left;padding: 2px 2px 2px 5px">${title}</p>
                     <p class="branchAdd" data="${id}">点击此处在最右边增加条件分支</p>
                     <div class="judge" id = "${id}">
                     </div></div>
                     <p class="arrow" draggable="true" data = "${id}" position=${node["position"]} pId=${node["parentId"]}>↓</p></div>`,
             `<div class="loop clk" draggable="true" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
-                    <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                    <p style="background:#d6d6d6;text-align:left;padding: 2px 2px 2px 5px">${title}</p>
                     <p class="branchAdd" data="${id}">Click here to add a new condition to the right most</p>
                     <div class="judge" id = "${id}">
                     </div></div>
@@ -304,7 +379,7 @@ function newNode(node) {
     } else //判断分支
     {
         return `<div class="branch clk" dataType=${type} data="${id}" position=${node["position"]} pId=${node["parentId"]}>
-                    <p style="background:#d6d6d6;text-align:left;padding:2px">${title}</p>
+                    <p style="background:#d6d6d6;text-align:left;padding: 2px 2px 2px 5px">${title}</p>
                     <p data = "${id}" class="arrow" draggable="true" position=-1 pId=${id}>↓</p>
                     <div id = "${id}">
                     </div></div>`;
@@ -346,27 +421,7 @@ function branchClick(e) {
     e.stopPropagation(); //防止冒泡
 }
 
-function elementMousedown(e) {
-    if (e.button == 2) //右键点击
-    {
-        try {
-            document.getElementById("contextMenu").remove();
-        } catch {
-
-        }
-        if (nowNode != null) {
-            nowNode.style.borderColor = "skyblue";
-        }
-        nowNode = this;
-        vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
-        this.style.borderColor = "blue";
-        handleElement(); //处理元素
-    }
-    e.stopPropagation(); //防止冒泡
-}
-
-//元素点击事件
-function elementClick(e) {
+function operationChange(e, theNode) {
     try {
         document.getElementById("contextMenu").remove();
     } catch (e) {
@@ -375,23 +430,40 @@ function elementClick(e) {
     if (nowNode != null) {
         nowNode.style.borderColor = "skyblue";
     }
-    nowNode = this;
-    vueData.nowNodeIndex = actionSequence[this.getAttribute("data")];
-    this.style.borderColor = "blue";
+    nowNode = theNode
+    vueData.nowNodeIndex = actionSequence[theNode.getAttribute("data")];
+    theNode.style.borderColor = "blue";
     handleElement(); //处理元素
+    trailElement(app._data.nowNode, 0);
     e.stopPropagation(); //防止冒泡
+}
+
+function elementMousedown(e) {
+    if (e.button == 2) //右键点击
+    {
+        operationChange(e, this);
+    }
+    e.stopPropagation(); //防止冒泡
+}
+
+//元素点击事件
+function elementClick(e) {
+    operationChange(e, this);
+    e.stopPropagation();
 }
 
 function elementDblClick(e) {
     try {
         let nodeType = app._data.nowNode["option"]
         if (nodeType >= 8) {
-            showInfo(LANG("试运行功能不适用于循环和条件分支操作，请试运行循环或条件分支内部的具体操作，如点击元素。", "The trial run function is not applicable to loop and condition branch operations. Please try to run the specific operations in the loop/condition branch, such as clicking elements."));
+            if (nodeType == 8) {
+                showInfo(LANG("试运行功能不适用于循环操作，请试运行循环内部的具体操作，如点击元素。", "The trial run function is not applicable to loop operations. Please try to run the specific operations in the loop, such as clicking elements."));
+            }
         } else {
-            if(nodeType == 5 && app._data.nowNode["parameters"]["codeMode"] != 0){
-                showInfo(LANG("试运行自定义操作功能只适用于执行JavaScript操作。", "The trial run custom action function is only applicable to run JavaScript operation."))
+            if (nodeType == 5 && (app._data.nowNode["parameters"]["codeMode"] != 0 && app._data.nowNode["parameters"]["codeMode"] != 8)) {
+                showInfo(LANG("试运行自定义操作功能只适用于执行JavaScript和刷新页面操作。", "The trial run custom action function is only applicable to run JavaScript and refresh page operations."));
             } else {
-                trailRun(app._data.nowNode);
+                trailElement(app._data.nowNode, 1);
             }
         }
     } catch (e) {
@@ -513,7 +585,7 @@ function toolBoxKernel(e, para = null) {
             if (str == "") {
                 title += LANG("元素", "Element");
             } else {
-                if(window.location.href.indexOf("_CN") != -1){
+                if (window.location.href.indexOf("_CN") != -1) {
                     if (str.length > l) {
                         str = str.substring(0, l) + "...";
                     }
@@ -549,7 +621,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 1,
                 type: 3,
                 option: 10,
-                title: LANG("条件分支1", "Condition 1"),
+                title: LANG("无条件", "No Condition"),
                 sequence: [],
                 isInLoop: false,
             };
@@ -559,7 +631,7 @@ function toolBoxKernel(e, para = null) {
                 index: l + 2,
                 type: 3,
                 option: 10,
-                title: LANG("条件分支2", "Condition 2"),
+                title: LANG("无条件", "No Condition"),
                 sequence: [],
                 isInLoop: false,
             };
