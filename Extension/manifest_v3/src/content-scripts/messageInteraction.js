@@ -25,14 +25,22 @@ global.ws.onmessage = function (evt) {
         createNotification(LANG(evt["msg_zh"], evt["msg_en"]), evt["level"]);
     } else if (evt["type"] == "cancelSelection") { //试运行点击元素后取消选中元素
         clearEl();
-    } else if (evt["type"] == "trial"){
+    } else if (evt["type"] == "trial") {
         trial(evt);
     }
 };
 
+function clearAfterSend() {
+    global.justSend = true;
+    // setTimeout(function () {
+    //     if (global.justSend) {
+    //         clearEl();
+    //         global.justSend = false;
+    //     }
+    // }, 1000);
+}
 
-
-export function input(value, batch=false) {
+export function input(value, batch = false) {
     let type = "inputText";
     let useLoop = false;
     if (batch) {
@@ -63,6 +71,7 @@ export function input(value, batch=false) {
         message: {"keyboardStr": value, "xpath": message.xpath, "iframe": global.iframe, "id": global.id} // {}全选{BS}退格
     };
     global.ws.send(JSON.stringify(message_keyboard));
+    clearAfterSend();
 }
 
 //点击元素操作
@@ -84,6 +93,7 @@ export function sendSingleClick() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 export function sendChangeOption(optionMode, optionValue) {
@@ -104,6 +114,7 @@ export function sendChangeOption(optionMode, optionValue) {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 export function sendMouseMove() {
@@ -123,6 +134,7 @@ export function sendMouseMove() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 export function sendLoopMouseMove() {
@@ -156,6 +168,7 @@ export function sendLoopMouseMove() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 //采集单个元素
@@ -173,7 +186,7 @@ export function collectSingle() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
-    // createNotification(LANG("采集成功", "Collect successfully"), "success");
+    clearAfterSend();
 }
 
 setInterval(function () {
@@ -202,6 +215,7 @@ export function collectMultiNoPattern() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 //采集有规律多元素
@@ -240,6 +254,7 @@ export function collectMultiWithPattern() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 //循环点击单个元素
@@ -266,6 +281,7 @@ export function sendLoopClickSingle(name) {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 //循环点击每个元素
@@ -301,6 +317,7 @@ export function sendLoopClickEvery() {
         message: {"pipe": JSON.stringify(message)}
     };
     global.ws.send(JSON.stringify(message_action));
+    clearAfterSend();
 }
 
 //检测是否xpath对应的元素被全选了，个数判断即可

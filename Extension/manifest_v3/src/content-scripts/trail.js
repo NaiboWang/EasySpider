@@ -1,12 +1,30 @@
-import {LANG} from "./global.js";
+import {
+    LANG,
+    clearEl,
+    addEl,
+    global,
+    readyToList,
+    handleElement,
+    handleDescendents,
+    selectAllElements
+} from "./global.js";
 
 //试运行操作标记
 export function trial(evt) {
+    // if(global.justSend){ //如果是刚刚发送的消息到流程图，不处理
+    //     global.justSend = false;
+    //     return;
+    // }
     let node = JSON.parse(evt["message"]["message"]["node"]);
     let parentNode = JSON.parse(evt["message"]["message"]["parentNode"]);
     let parameters = node.parameters;
     let type = evt["message"]["message"]["type"];
-    console.log("parameters", parameters);
+    // console.log("parameters", parameters);
+    for (let node of global.markElements) {
+        let element = node.element;
+        element.style.boxShadow = "none";
+    }
+    global.markElements = [];
     if (type == 0) {
         let option = node.option;
         console.log("option", option);
@@ -17,14 +35,125 @@ export function trial(evt) {
                 xpath = parentXPath + xpath;
             }
             let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            if (element != null) {
+                clearEl(true);
+                addEl(null, element);
+            }
             // if (element != null) {
             //     //移动到元素位置
             //     element.scrollIntoView({block: "center", inline: "center"});
             // }
+        } else if (option == 3) {
+            let paras = parameters.paras; //所有的提取数据参数
+            clearEl(true);
+            for (let i = 0; i < paras.length; i++) {
+                let para = paras[i];
+                let xpath = para.relativeXPath;
+                let parent_xpaths = "";
+                let xpaths = [];
+                if (para.relative) {
+                    if (parentNode.parameters.loopType <= 1) {
+                        parent_xpaths = [parentNode.parameters.xpath];
+                    } else if (parentNode.parameters.loopType == 2) { //循环项列表
+                        parent_xpaths = parentNode.parameters.pathList.split("\n");
+                    }
+                    for (let j = 0; j < parent_xpaths.length; j++) {
+                        let parent_xpath = parent_xpaths[j];
+                        let realXPath = parent_xpath + xpath;
+                        xpaths.push(realXPath);
+                    }
+                }
+                for (let j = 0; j < xpaths.length; j++) {
+                    let xpath = xpaths[j];
+                    try {
+                        let elementList = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                        console.log(xpath)
+                        for (let k = 0; k < elementList.snapshotLength; k++) {
+                            let element = elementList.snapshotItem(k);
+                            if (element != null) {
+                                global.markElements.push({
+                                    "element": element, "bgColor": element.style.backgroundColor,
+                                    "boxShadow": element.style.boxShadow
+                                });
+                                // element.style.backgroundColor = global.selectedColor;
+                                element.style.boxShadow = "0 0 0 1px #00a8ff";
+                            }
+                        }
+                    } catch (e) {
+                        console.log("跳过错误的xpath", xpath);
+                    }
+                }
+            }
+        } else if (option == 11) {
+            let paras = parameters.paras; //所有的提取数据参数
+            let i = parameters.index;
+            let para = paras[i];
+            let xpath = para.relativeXPath;
+            if (para.relative) {
+                let parent_xpath = parentNode.parameters.xpath;
+                if (parentNode.parameters.loopType == 2) {
+                    let pathList = parentNode.parameters.pathList.split("\n")[0].trim();
+                    parent_xpath = pathList;
+                }
+                xpath = parent_xpath + xpath;
+            }
+            let elementList = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+            clearEl(true);
+            for (let j = 0; j < elementList.snapshotLength; j++) {
+                let element = elementList.snapshotItem(j);
+                if (element != null) {
+                    addEl(null, element);
+                }
+            }
+        } else if (option == 8) {
+            let loopType = parameters.loopType;
+            if (loopType <= 2) {
+                let xpath = "";
+                if (loopType == 0) {
+                    xpath = parameters.xpath;
+                    let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                    if (element != null) {
+                        clearEl(true);
+                        addEl(null, element);
+                    }
+                } else if (loopType == 1) {
+                    let elementList = document.evaluate(parameters.xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+                    let element = elementList.snapshotItem(0);
+                    if (element != null) {
+                        clearEl(true);
+                        addEl(null, element);
+                        if (elementList.snapshotLength > 1) {
+                            selectAllElements();
+                        }
+                    }
+                } else if (loopType == 2) {
+                    clearEl(true);
+                    let pathList = parameters.pathList.split("\n");
+                    for (let i = 0; i < pathList.length; i++) {
+                        let path = pathList[i].trim();
+                        let element = document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                        if (element != null) {
+                            addEl(null, element);
+                        }
+                    }
+                }
+            }
         } else if (option == 10) { //条件分支
             let condition = parameters.class;
             let result = 0;
             let additionalInfo = "";
+            if (condition == 3 || condition == 4 || condition == 7) { //当前循环项判断时，选中当前循环项
+                let xpath = parentNode.parameters.xpath;
+                if (parentNode.parameters.loopType == 2) {
+                    let pathList = parentNode.parameters.pathList.split("\n")[0].trim();
+                    xpath = pathList;
+                }
+                let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                if (element != null) {
+                    clearEl(true);
+                    addEl(null, element);
+                }
+            }
             if (condition == 0) { //无条件
                 result = 1;
             } else if (condition == 1) { //当前页面包含文本
@@ -52,7 +181,7 @@ export function trial(evt) {
                         result = 1;
                     }
                 }
-                if(result == 0){
+                if (result == 0) {
                     additionalInfo = LANG("，注意只会检索第一个匹配到的循环项", ", note that only the first matching loop item will be retrieved");
                 }
             } else if (condition == 4) { //当前循环项包含元素，xpath
@@ -66,12 +195,12 @@ export function trial(evt) {
                 if (element != null) {
                     result = 1;
                 }
-                if(result == 0){
+                if (result == 0) {
                     additionalInfo = LANG("，注意只会检索第一个匹配到的循环项", ", note that only the first matching loop item will be retrieved");
                 }
             } else if (condition == 5 || condition == 7) { //从主程序传入的结果
                 result = evt["message"]["message"]["result"];
-                if(condition == 7 && result == 0){
+                if (condition == 7 && result == 0) {
                     additionalInfo = LANG("，注意只会检索第一个匹配到的循环项", ", note that only the first matching loop item will be retrieved");
                 }
             } else {

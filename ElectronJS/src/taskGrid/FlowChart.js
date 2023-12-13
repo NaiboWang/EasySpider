@@ -34,6 +34,7 @@ let vueData = {nowNodeIndex: 0}; //存储目前所在节点的索引号,不能�
 let option = 0; //工具箱选项
 let title = "";
 let parameterNum = 1; //记录目前的参数个数
+let debuggable = true; //是否可以调试
 
 // window.resizeTo( screen.availWidth, screen.availHeight );
 
@@ -351,7 +352,7 @@ function newNode(node) {
     {
         return `<div class="sequence"><div class="node clk" draggable="true" data="${id}" dataType=${type} id = "${id}" position=${node["position"]} pId=${node["parentId"]}>
                 <div >
-                    <p>${title}</p>
+                    <p style="margin-top: 2px">${title}</p>
                 </div>
             </div>
             <p class="arrow" draggable="true" position=${node["position"]} data = "${id}" pId=${node["parentId"]}>↓</p></div>`;
@@ -407,7 +408,8 @@ function branchClick(e) {
         parentId: 0,
         type: 3,
         option: 10,
-        title: LANG("条件分支" + (nodeList[actionSequence[judgeId]]["sequence"].length + 1).toString(), "Condition " + (l + 1).toString()),
+        // title: LANG("条件分支" + (nodeList[actionSequence[judgeId]]["sequence"].length + 1).toString(), "Condition " + (l + 1).toString()),
+        title: LANG("无条件", "No Condition"),
         sequence: [],
         isInLoop: false,
     };
@@ -434,7 +436,11 @@ function operationChange(e, theNode) {
     vueData.nowNodeIndex = actionSequence[theNode.getAttribute("data")];
     theNode.style.borderColor = "blue";
     handleElement(); //处理元素
-    trailElement(app._data.nowNode, 0);
+    if(debuggable){
+        trailElement(app._data.nowNode, 0);
+    } else {
+        debuggable = true;
+    }
     e.stopPropagation(); //防止冒泡
 }
 
@@ -520,7 +526,8 @@ function toolBoxKernel(e, para = null) {
             $("#" + t["id"]).click(); //复制后点击复制后的元素
             e.stopPropagation(); //防止冒泡
         }
-    } else if (option == 10) { //剪切操作
+    }
+    else if (option == 10) { //剪切操作
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if ($(nowNode).is(".branch")) {
@@ -563,7 +570,8 @@ function toolBoxKernel(e, para = null) {
             }
             e.stopPropagation(); //防止冒泡
         }
-    } else if (option > 0) { //新增操作
+    }
+    else if (option > 0) { //新增操作
         let l = nodeList.length;
         let nt = null;
         let nt2 = null;
@@ -652,6 +660,7 @@ function toolBoxKernel(e, para = null) {
         if (para != null) {
             modifyParameters(t, para);
         }
+        debuggable = false;
         if (option == 8) //循环情况下应插入在循环里面
         {
             app._data.nowArrow = {"position": -1, "pId": t["id"], "num": 0};

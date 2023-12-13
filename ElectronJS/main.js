@@ -360,7 +360,7 @@ async function beginInvoke(msg, ws) {
                 }
                 let elementInfo = {"iframe": parameters.iframe, "xpath": xpath, "id": -1};
                 //用于跳转到元素位置
-                let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
+                let element = await findElementAcrossAllWindows(elementInfo);
             } else if (option == 3) {
                 let paras = parameters.paras; //所有的提取数据参数
                 let para = paras[0];
@@ -368,10 +368,13 @@ async function beginInvoke(msg, ws) {
                 if (para.relative) {
                     let parent_node = JSON.parse(msg.message.parentNode);
                     let parent_xpath = parent_node.parameters.xpath;
+                    if (parent_node.parameters.loopType == 2) {
+                        parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                    }
                     xpath = parent_xpath + xpath;
                 }
                 let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
-                let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
+                let element = await findElementAcrossAllWindows(elementInfo);
             } else if (option == 11) {
                 let paras = parameters.paras; //所有的提取数据参数
                 let i = parameters.index;
@@ -380,25 +383,14 @@ async function beginInvoke(msg, ws) {
                 if (para.relative) {
                     let parent_node = JSON.parse(msg.message.parentNode);
                     let parent_xpath = parent_node.parameters.xpath;
+                    if (parent_node.parameters.loopType == 2) {
+                        parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                    }
                     xpath = parent_xpath + xpath;
                 }
                 let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
-                let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
+                let element = await findElementAcrossAllWindows(elementInfo);
             } else if (option == 8) {
-                //     <select v-model='loopType' class="form-control" @change = "handleLoopTypeChange" >
-                //         < option
-                // :
-                //     value = 0 > 单个元素（多用于循环点击下一页）</option>
-                //     <option :value = 1 > 不固定元素列表 < /option>
-                //     <option :value = 2 > 固定元素列表 < /option>
-                //     <option :value = 3 > 文本列表（多用于循环在文本框输入文本）</option>
-                //     <option :value = 4 > 网址列表（多用于循环打开网页）</option>
-                //     <option :value = 5 > JavaScript命令返回值（需以return
-                //     开头）</option>
-                //     <option :value = 6 > 系统命令返回值 < /option>
-                //     <option :value = 7 > 执行环境下的Python表达式值（eval操作）</option>
-                // </select>
-                //
                 let loopType = parameters.loopType;
                 if (loopType <= 2) {
                     let xpath = "";
@@ -408,7 +400,7 @@ async function beginInvoke(msg, ws) {
                         xpath = parameters.pathList.split("\n")[0].trim();
                     }
                     let elementInfo = {"iframe": parameters.iframe, "xpath": xpath, "id": -1};
-                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
+                    let element = await findElementAcrossAllWindows(elementInfo);
                 } else if (loopType == 5) { //JavaScript命令返回值
                     let code = parameters.code;
                     let waitTime = parameters.waitTime;
@@ -488,7 +480,7 @@ async function beginInvoke(msg, ws) {
                         let parent_xpath = parent_node.parameters.xpath;
                         elementInfo.xpath = parent_xpath + elementInfo.xpath;
                     }
-                    let element = await findElementAcrossAllWindows(elementInfo); //通过此函数找到元素并切换到对应的窗口
+                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false); //通过此函数找到元素并切换到对应的窗口
                     await execute_js(parameters.beforeJS, element, parameters.beforeJSWaitTime);
                     if (option == 2) {
                         await click_element(element);
@@ -521,6 +513,9 @@ async function beginInvoke(msg, ws) {
                         if (para.relative) {
                             let parent_node = JSON.parse(msg.message.parentNode);
                             let parent_xpath = parent_node.parameters.xpath;
+                            if (parent_node.parameters.loopType == 2) {
+                                parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                            }
                             xpath = parent_xpath + xpath;
                         }
                         let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
@@ -557,7 +552,7 @@ async function beginInvoke(msg, ws) {
                         await new Promise(resolve => setTimeout(resolve, 2000));
                         notify_browser("检测到文字中包含Field(\"\")或eval(\"\")，试运行时无法输入两项表达式的替换值，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in the text, and the replacement value of the two expressions cannot be entered during trial operation. Please test whether it is valid in the formal call stage.", "warning");
                     }
-                    let element = await findElementAcrossAllWindows(elementInfo);
+                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                     await execute_js(beforeJS, element, beforeJSWaitTime);
                     await element.sendKeys(Key.HOME, Key.chord(Key.SHIFT, Key.END), keyInfo);
                     if (enter) {
@@ -587,7 +582,7 @@ async function beginInvoke(msg, ws) {
                         }
                     }
                     let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
-                    let element = await findElementAcrossAllWindows(elementInfo);
+                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                     execute_js(beforeJS, element, beforeJSWaitTime);
                     let dropdown = new Select(element);
                     // Interacting with dropdown element based on optionMode
@@ -629,10 +624,13 @@ async function beginInvoke(msg, ws) {
                     if (para.relative) {
                         let parent_node = JSON.parse(msg.message.parentNode);
                         let parent_xpath = parent_node.parameters.xpath;
+                        if (parent_node.parameters.loopType == 2) {
+                            parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                        }
                         xpath = parent_xpath + xpath;
                     }
                     let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
-                    let element = await findElementAcrossAllWindows(elementInfo);
+                    let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                     if (element != null) {
                         await execute_js(para.beforeJS, element, para.beforeJSWaitTime);
                         await execute_js(para.afterJS, element, para.afterJSWaitTime);
@@ -787,12 +785,12 @@ wss.on('connection', function (ws) {
                     await driver.switchTo().window(current_handle);
                     console.log("New tab opened, change current_handle to: ", current_handle);
                     // 调整浏览器窗口大小，不然扩展会白屏
-                    let size = await driver.manage().window().getRect();
-                    let width = size.width;
-                    let height = size.height;
-                    await driver.manage().window().setRect({width: width, height: height + 10});
-                    // height = height - 1;
-                    await driver.manage().window().setRect({width: width, height: height});
+                    // let size = await driver.manage().window().getRect();
+                    // let width = size.width;
+                    // let height = size.height;
+                    // await driver.manage().window().setRect({width: width, height: height + 10});
+                    // // height = height - 1;
+                    // await driver.manage().window().setRect({width: width, height: height});
                 }
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 handle_pairs[msg.message.id] = current_handle;
