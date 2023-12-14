@@ -1734,7 +1734,7 @@ class BrowserThread(Thread):
                 location = "Data/Task_" + \
                            str(self.id) + "/" + self.saveName + "/" + temp_name
                 image.save(location)
-                ocr = DdddOcr()
+                ocr = DdddOcr(show_ad=False)
                 with open(location, 'rb') as f:
                     image_bytes = f.read()
                 content = ocr.classification(image_bytes)
@@ -2206,8 +2206,23 @@ if __name__ == '__main__':
                         'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
             except:
                 pass
-            selenium_service = Service(executable_path=driver_path)
-            browser_t = MyChrome(service=selenium_service, options=options)
+            try:
+                browser = service["browser"]
+            except:
+                browser = "chrome"
+            if browser == "chrome":
+                selenium_service = Service(executable_path=driver_path)
+                browser_t = MyChrome(service=selenium_service, options=options)
+            elif browser == "edge":
+                from selenium.webdriver.edge.service import Service as EdgeService
+                from selenium.webdriver.edge.options import Options as EdgeOptions
+                from myChrome import MyEdge
+                selenium_service = EdgeService(executable_path="msedgedriver.exe")
+                options = EdgeOptions()
+                options.use_chromium = True
+                options.add_argument("--ie-mode")
+                options.add_argument("ie.edgepath=msedge.exe")
+                browser_t = MyEdge(service=selenium_service, options=options)
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器

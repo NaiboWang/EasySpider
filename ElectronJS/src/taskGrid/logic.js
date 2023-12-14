@@ -586,6 +586,7 @@ function saveService(type) {
         "startFromExit": parseInt($("#startFromExit").val()),
         "pauseKey": $("#pauseKey").val(),
         "containJudge": containJudge,
+        "browser": $("#browser").val(),
         "desc": serviceDescription,
         "inputParameters": inputParameters,
         "outputParameters": outputParameters,
