@@ -14,7 +14,7 @@
             <!--            <p style="margin-bottom:10px;display:inline-block">特殊点选模式<span-->
             <!--                title="普通模式下如果不能选中元素可以勾选此项">☺</span></p>-->
             <p style="color: darkviolet;" v-if="nextPage==1">
-              ● 检测到您刚刚进行了采集数据的操作，如需设置翻页操作，请点击下方设置翻页操作选项。</p>
+              ● 检测到您添加了采集数据操作，如需设置采集后的翻页操作，请点击下方设置翻页操作选项。</p>
             <div class="innercontent" v-if="list.nl.length==0">
               <div v-if="nextPage==1" class="nextPage">
                 <a v-on:mousedown="setNextPage">设置翻页操作</a><span title="可根据提示指定翻页按钮">☺</span></div>
@@ -216,7 +216,7 @@
             <!--            <p style="margin-bottom:10px;display:inline-block">Special click mode<span-->
             <!--                title="If cannot select element by mouse, select this option">☺</span></p>-->
             <p style="color: darkviolet;" v-if="nextPage==1">
-              ● A data collection operation has just been detected. If you need to configure pagination, please click
+              ● A data collection operation has just been detected. If you need to configure pagination after data collection, please click
               the option below to set up pagination.</p>
             <div class="innercontent" v-if="list.nl.length==0">
               <div v-if="nextPage==1" class="nextPage">
