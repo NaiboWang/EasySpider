@@ -193,7 +193,7 @@
           <span
               style="font-size: 15px"> ● 请在页面上右键选择要点击的下一页按钮/链接，如要取消设置翻页操作，请点击下方取消选项。</span>
           <div style="font-size: 15px" v-if="list.nl.length==1">
-            ● 已选中一个元素，您可以点击下方选项确认设置翻页操作。
+            ● 已选中一个元素：<span style="color:darkviolet">{{getSelectedInnerText()}}</span>，您可以点击下方选项确认设置翻页操作。
           </div>
           <div style="font-size: 15px; color: #c82333;" v-else-if="list.nl.length>1">
             ● 翻页操作只能设置一个元素，请点击下方取消翻页操作选项并重新选择。
@@ -415,7 +415,7 @@
         <div v-else-if="page==3">
           <span style="font-size: 15px"> ● Please right-click on the page and select the next page button/link. To cancel the pagination setup, click the option below.</span>
           <div style="font-size: 15px" v-if="list.nl.length==1">
-            ● A single element has been selected, you can click the option below to confirm the pagination setup.
+            ● A single element has been selected: <span style="color:darkviolet">{{getSelectedInnerText()}}</span>, you can click the option below to confirm the pagination setup.
           </div>
           <div style="font-size: 15px; color: #c82333;" v-else-if="list.nl.length>1">
             ● The page-turning operation can only be set for one element. Please click the option below to cancel the
@@ -772,6 +772,10 @@ export default {
       generateParameters(10, true, false);
       this.selectStatus = true;
       clearReady();
+    },
+    getSelectedInnerText: function () { //提示文字
+      let l = 10;
+      return global.nodeList[0]["node"].innerText.trim().length > l ? global.nodeList[0]["node"].innerText.trim().substring(0, l) + "..." : global.nodeList[0]["node"].innerText.trim();
     },
     getSelectedText: function () { //采集选中文字
       generateParameters(11, true, false);

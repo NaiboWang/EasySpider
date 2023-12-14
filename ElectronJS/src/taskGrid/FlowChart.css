@@ -1,237 +1,242 @@
-  * {
-      margin: 0;
-      padding: 0;
-      font-size: 17px!important;
-  }
+* {
+    margin: 0;
+    padding: 0;
+    font-size: 17px !important;
+}
 
-  .modal-body label{
-      margin-top: 10px;
-  }
+input, textarea {
+    spellcheck: false;
+}
 
-  #contextMenu {
-      position: absolute;
-      background-color: white;
-      padding: 3px!important;
-      text-align: center;
-      border: 1px solid darkblue;
-      border-radius: 3px;
-      /*width: 120px;*/
-  }
+.modal-body label {
+    margin-top: 10px;
+}
 
-  #contextMenu div{
-      height: 30px;
-      padding-top: 2px;
-  }
+#contextMenu {
+    position: absolute;
+    background-color: white;
+    padding: 3px !important;
+    text-align: center;
+    border: 1px solid darkblue;
+    border-radius: 3px;
+    /*width: 120px;*/
+}
 
-  #contextMenu div:hover {
-      background-color: rgba(211,211,211,0.4) !important;
-      cursor: pointer;
-  }
+#contextMenu div {
+    height: 30px;
+    padding-top: 2px;
+}
 
-  label{
-      margin-left: 2px;
-  }
+#contextMenu div:hover {
+    background-color: rgba(211, 211, 211, 0.4) !important;
+    cursor: pointer;
+}
 
-  div.node {
-      height: 45px;
-      width: 180px;
-      border-radius: 7px;
-      /*border: skyblue solid;*/
-      border: #007bff solid;
-      border-color: transparent;
-      /*background: rgb(73, 156, 189);*/
-      background: rgb(10, 120, 200);
-      color: white;
-      text-align: center;
-      padding: 5px;
-      margin: 10px auto;
-  }
+label {
+    margin-left: 2px;
+}
 
-  .arrow {
-      margin: 10px auto;
-      text-align: center;
-      font-size: 23px!important;
-      color: black;
-  }
+div.node {
+    height: 45px;
+    width: 180px;
+    border-radius: 7px;
+    /*border: skyblue solid;*/
+    border: #007bff solid;
+    border-color: transparent;
+    /*background: rgb(73, 156, 189);*/
+    background: rgb(10, 120, 200);
+    color: white;
+    text-align: center;
+    padding: 5px;
+    margin: 10px auto;
+}
 
-  .arrow:hover {
-      background-color: deepskyblue!important;
-      cursor: pointer;
-      color: white;
-  }
+.arrow {
+    margin: 10px auto;
+    text-align: center;
+    font-size: 23px !important;
+    color: black;
+}
 
-  .branchAdd {
-      margin: 10px auto;
-      text-align: center;
-      font-size: 18px!important;
-      color: black;
-  }
+.arrow:hover {
+    background-color: deepskyblue !important;
+    cursor: pointer;
+    color: white;
+}
 
-  .branchAdd:hover {
-      background-color: deepskyblue;
-      cursor: pointer;
-      color: white;
-  }
+.branchAdd {
+    margin: 10px auto;
+    text-align: center;
+    font-size: 18px !important;
+    color: black;
+}
 
-  div.node:hover {
-      cursor: pointer;
-      background: navy;
-  }
+.branchAdd:hover {
+    background-color: deepskyblue;
+    cursor: pointer;
+    color: white;
+}
 
-  .loop {
-      /*border: skyblue solid;*/
-      border: rgb(10,120,200) solid;
-      border-color: deepskyblue;
-      text-align: center;
-      padding: 5px;
-      width: 90%;
-      min-width: 150px;
-      overflow: auto;
-      margin: 10px auto;
-      border-radius: 7px;
-  }
+div.node:hover {
+    cursor: pointer;
+    background: navy;
+}
 
-  .options {
-      height: 35px;
-  }
+.loop {
+    /*border: skyblue solid;*/
+    border: rgb(10, 120, 200) solid;
+    border-color: deepskyblue;
+    text-align: center;
+    padding: 5px;
+    width: 90%;
+    min-width: 150px;
+    overflow: auto;
+    margin: 10px auto;
+    border-radius: 7px;
+}
 
-  .judge {
-      /* display: flex; */
-      text-align: center;
-      padding: 5px;
-      width: 100%;
-      min-width: 150px;
-      margin: 10px auto;
-      justify-content: center;
-      border-radius: 7px;
-  }
+.options {
+    height: 35px;
+}
 
-  .branch {
-      display: inline-block;
-      margin: 5px;
-      border: deepskyblue solid;
-      text-align: center;
-      padding: 5px;
-      width: 300px;
-      min-width: 150px;
-      margin: 10px;
-      border-radius: 7px;
-  }
+.judge {
+    /* display: flex; */
+    text-align: center;
+    padding: 5px;
+    width: 100%;
+    min-width: 150px;
+    margin: 10px auto;
+    justify-content: center;
+    border-radius: 7px;
+}
 
-  .sequence {
-      display: block;
-  }
+.branch {
+    display: inline-block;
+    margin: 5px;
+    border: deepskyblue solid;
+    text-align: center;
+    padding: 5px;
+    width: 300px;
+    min-width: 150px;
+    margin: 10px;
+    border-radius: 7px;
+}
 
-  .toolbox button {
-      margin-top: 5px;
-      margin-left: 3px;
-      margin-bottom: 5px;
-      width: 80%;
-      font-size: 15px!important;
-  }
+.sequence {
+    display: block;
+}
 
-  .Modify {
-      margin: 20px;
-  }
+.toolbox button {
+    margin-top: 5px;
+    margin-left: 3px;
+    margin-bottom: 5px;
+    width: 80%;
+    font-size: 15px !important;
+}
 
-  .Modify input {
-      font-size: 17px!important;
-  }
+.Modify {
+    margin: 20px;
+}
 
-  .elements {
-      font-size: 17px!important;
-      margin: 10px 0;
-  }
+.Modify input {
+    font-size: 17px !important;
+}
 
-  .elements p {
-      margin: 5px 0;
-  }
+.elements {
+    font-size: 17px !important;
+    margin: 10px 0;
+}
 
-  .elements input[type=checkbox] {
-      width: 20px;
-      height: 20px;
-      vertical-align: sub;
-      margin-right: 5px;
-  }
+.elements p {
+    margin: 5px 0;
+}
 
-  .elements textarea {
-      min-height: 100px;
-  }
+.elements input[type=checkbox] {
+    width: 20px;
+    height: 20px;
+    vertical-align: sub;
+    margin-right: 5px;
+}
 
-  .elements label {
-      font-size: 17px!important;
-      margin: 10px 0;
-  }
-  /* th,
-  td,
-  tr {
-      height: 30px;
-      width: 100px;
-      font-size: 13px!important;
-      overflow: hidden;
-      border: 1px solid rgb(78, 78, 78);
-      padding-left: 2px;
-  }
+.elements textarea {
+    min-height: 100px;
+}
 
-  table {
-      table-layout: fixed;
-      word-break: break-all;
-      word-wrap: break-word;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      width: 100%;
-  } */
+.elements label {
+    font-size: 17px !important;
+    margin: 10px 0;
+}
 
-  .toolkitcontain {
-      border: 1px solid #cdd!important;
-      width: 100%;
-      /* 上面的宽度设定很重要 */
-      height: 214px;
-      overflow: auto;
-      margin-top: 10px;
-      position: relative;
-  }
+/* th,
+td,
+tr {
+    height: 30px;
+    width: 100px;
+    font-size: 13px!important;
+    overflow: hidden;
+    border: 1px solid rgb(78, 78, 78);
+    padding-left: 2px;
+}
 
-  .toolkitcontain table {
-      table-layout: fixed;
-      word-break: break-all;
-      word-wrap: break-word;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-      width: 100%;
-  }
+table {
+    table-layout: fixed;
+    word-break: break-all;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+} */
 
-  .toolkitcontain th,
-  .toolkitcontain td,
-  .toolkitcontain tr {
-      border: 1px solid rgb(78, 78, 78);
-      height: 30px;
-      width: 100px;
-      text-align: center;
-      font-weight: normal!important;
-      overflow: hidden;
-      font-size: 13px!important;
-      padding-left: 1px;
-      -webkit-user-select: none;
-  }
+.toolkitcontain {
+    border: 1px solid #cdd !important;
+    width: 100%;
+    /* 上面的宽度设定很重要 */
+    height: 214px;
+    overflow: auto;
+    margin-top: 10px;
+    position: relative;
+}
 
-  .toolkitcontain .toolkittb2 {
-      position: sticky;
-      top: 0px;
-      margin-bottom: 0px;
-      /*background-color: azure;*/
-        background-color: aliceblue;
-      z-index: 1000;
-  }
+.toolkitcontain table {
+    table-layout: fixed;
+    word-break: break-all;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+}
 
-  .toolkitcontain .toolkittb4 {
-      position: absolute;
-  }
+.toolkitcontain th,
+.toolkitcontain td,
+.toolkitcontain tr {
+    border: 1px solid rgb(78, 78, 78);
+    height: 30px;
+    width: 100px;
+    text-align: center;
+    font-weight: normal !important;
+    overflow: hidden;
+    font-size: 13px !important;
+    padding-left: 1px;
+    -webkit-user-select: none;
+}
 
-  .toolkitcontain a {
-      font-size: 13px!important;
-      cursor: pointer;
-      color: blue;
-  }
+.toolkitcontain .toolkittb2 {
+    position: sticky;
+    top: 0px;
+    margin-bottom: 0px;
+    /*background-color: azure;*/
+    background-color: aliceblue;
+    z-index: 1000;
+}
+
+.toolkitcontain .toolkittb4 {
+    position: absolute;
+}
+
+.toolkitcontain a {
+    font-size: 13px !important;
+    cursor: pointer;
+    color: blue;
+}

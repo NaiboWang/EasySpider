@@ -290,7 +290,7 @@ function addParameters(t) {
         t["parameters"]["optionValue"] = ""; //下拉值
         t["parameters"]["index"] = 0; //输入框索引
     } else if (t.option == 8) { //循环
-        t["title"] = LANG("循环 - 单个元素", "Loop - single element");
+        t["title"] = LANG("循环 - 单个元素", "Loop - Single Element");
         t["parameters"]["scrollType"] = 0; //滚动类型，0不滚动，1向下滚动1屏，2滚动到底部
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
@@ -307,7 +307,7 @@ function addParameters(t) {
         t["parameters"]["breakCode"] = ""; //break条件
         t["parameters"]["breakCodeWaitTime"] = 0; //break条件等待时间
     } else if (t.option == 9) { //条件
-        t["title"] = LANG("判断条件 - 从左往右依次判断", "Judgment condition - judge from left to right");
+        t["title"] = LANG("判断条件 - 从左往右依次判断", "Judgment Condition - Judge from Left to Right");
     } else if (t.option == 10) { //条件分支
         t["parameters"]["class"] = 0; //0代表什么条件都没有，1代表当前页面包括文本，2代表当前页面包括元素，3代表当前循环包括文本，4代表当前循环包括元素
         t["parameters"]["value"] = ""; //相关值
@@ -366,17 +366,17 @@ function modifyParameters(t, para) {
         t["parameters"]["allXPaths"] = para["allXPaths"];
         t["parameters"]["textList"] = para["value"];
         if (para["nextPage"]) { //循环点击下一页的情况下
-            t["title"] = LANG("循环点击下一页", "Loop click next page");
+            t["title"] = LANG("循环点击下一页", "Loop Click Next Page");
         } else if (para["type"] == "loopClickSingle") { //循环点击单个元素
-            t["title"] = LANG("循环点击单个元素", "Loop click single element");
+            t["title"] = LANG("循环点击单个元素", "Loop Click Single Element");
         } else if (para["type"] == "loopClickEvery") { //循环点击每个元素
-            t["title"] = LANG("循环点击每个元素", "Loop click every element");
+            t["title"] = LANG("循环点击每个元素", "Loop click Every Element");
         } else if (para["type"] == "loopMouseMove") { //循环移动到单个元素
-            t["title"] = LANG("循环移动到每个元素", "Loop move to every element");
+            t["title"] = LANG("循环移动到每个元素", "Loop Move to Every Element");
         } else if (para["type"] == "multiCollectWithPattern") {
-            t["title"] = LANG("循环采集数据", "Loop collect data");
+            t["title"] = LANG("循环采集数据", "Loop Collect Data");
         } else if (para["type"] == "batchInputText") {
-            t["title"] = LANG("循环输入文字", "Loop input text");
+            t["title"] = LANG("循环输入文字", "Loop Input Text");
         } else {
             t["title"] = LANG("循环", "Loop");
         }
