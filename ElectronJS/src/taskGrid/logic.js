@@ -105,6 +105,35 @@ function handleAddElement(msg) {
         addElement(8, msg);
         msg["xpath"] = ""; //循环点击每个元素，单个元素的xpath设置为空
         addElement(2, msg);
+    } else if (msg["type"] == "loopClickNextPage") {
+        let withLoop = msg.lastAction.includes("WithLoop"); //最后一个操作是否是循环操作
+        if (withLoop) {
+            //如果之前是循环提取数据操作，锚点先调整到循环提取数据操作下方
+            let loopElementId = app._data.nowArrow["pId"];
+            let loopElement = $("#" + loopElementId);
+            app._data.nowArrow["position"] = loopElement.attr("position");
+            app._data.nowArrow["pId"] = loopElement.attr("pId");
+        }
+        //按照循环点击元素的方式添加操作
+        addElement(8, msg);
+        msg["xpath"] = ""; //循环点击下一页，单个元素的xpath设置为空
+        addElement(2, msg);
+        //parentId是在actionSequence中的位置，nodeList[actionSequence[parentId]]才是父元素
+        //position是在父元素的sequence中的位置,nodeList[actionSequence[parentId]]["sequence"][position]才是该元素在nodeList中的位置，actionSequence[id]
+        let parentNode = nodeList[actionSequence[app._data.nowNode["parentId"]]]; //获取当前操作，即点击下一页操作的父元素，即循环操作
+        let parent_position = parentNode["position"];
+        let last_collect_data_node_position = parent_position - 1; //循环操作的上一个操作一般是提取数据操作
+        let parent_parentId = parentNode["parentId"]; //循环操作的父元素的id
+        let last_collect_data_node_index = nodeList[actionSequence[parent_parentId]]["sequence"][last_collect_data_node_position]; //提取数据操作在nodeList中的位置
+        let last_collect_data_node = nodeList[last_collect_data_node_index]; //提取数据操作
+        $("#" + last_collect_data_node["id"]).click(); //点击提取数据元素
+        app._data.nowArrow['position'] = -1; //循环点击下一页，下一个要插入的位置一般在元素上方
+        option = 10; //剪切操作
+        toolBoxKernel(null, null); //剪切操作
+        //切换到循环点击下一页操作
+        parentNode = nodeList[actionSequence[app._data.nowNode["parentId"]]]; //获取当前操作，即点击下一页操作的父元素，即循环操作
+        let parentId = parentNode["id"]; //循环操作的id
+        $("#" + parentId).click(); //点击循环操作
     } else if (msg["type"] == "singleCollect" || msg["type"] == "multiCollectNoPattern") {
         if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果现在节点就是提取数据节点，直接在此节点添加参数，而不是生成一个新的提取数据节点
             for (let i = 0; i < msg["parameters"].length; i++) {
@@ -552,6 +581,7 @@ function saveService(type) {
         "recordLog": parseInt($("#recordLog").val()),
         "outputFormat": $("#outputFormat").val(),
         "saveName": $("#saveName").val(),
+        "dataWriteMode": parseInt($("#dataWriteMode").val()),
         "inputExcel": $("#inputExcel").val(),
         "startFromExit": parseInt($("#startFromExit").val()),
         "pauseKey": $("#pauseKey").val(),

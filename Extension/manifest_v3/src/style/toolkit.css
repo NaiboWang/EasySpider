@@ -59,6 +59,18 @@
     padding-left: 5px !important;
 }
 
+.nextPage a{
+    color: darkviolet!important;
+}
+
+.nextPage a:hover{
+    color: blue!important;
+}
+
+.nextPage span{
+    color: darkviolet!important;
+}
+
 .tooltips button {
     margin-top: 7px !important;
     font-size: 13px;

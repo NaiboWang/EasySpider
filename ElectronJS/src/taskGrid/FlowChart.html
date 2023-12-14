@@ -698,6 +698,11 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     </select>
                     <label>Export File Name/Database Table Name (Can use ../ to represent relative path to change the file save location,the keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
                     <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
+                    <label>Data Write Mode (The export file/database table name above must be fixed, effective when the same task ID is executed multiple times):</label>
+                    <select id="dataWriteMode" name="dataWriteMode" class="form-control">
+                        <option value="1">Append (If the file exists, append to it)</option>
+                        <option value="2">Overwrite (If the file exists, overwrite it)</option>
+                    </select>
 <!--                    <label>Is it an extreme anti-scraping website like Cloudflare (<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">Watch Tutorial</a>)?</label>-->
 <!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->
 <!--                        <option value=0>No</option>-->
@@ -722,8 +727,6 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                         <option value="0">No</option>
                         <option value="1">Yes (Requires running the same task ID and the same file name, please execute from the command line and specify the ID)</option>
                     </select>
-<!--                    <label>Wait time for the browser to close after the task is executed (in seconds):</label>-->
-                    <label>任务执行完毕后自动关闭浏览器等待秒数（用户临时目录将在浏览器关闭后自动删除）：</label>
                     <label>Wait time for the browser to close after the task is executed (in seconds), the temporary user data directory will be automatically deleted after the browser is closed:</label>
                     <input onkeydown="inputDelete(event)" type="number" value="60" id="quitWaitTime" name="quitWaitTime" class="form-control"></input>
                     <label>Maximum Display Length of Data in Console Preview:</label>

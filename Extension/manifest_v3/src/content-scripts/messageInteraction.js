@@ -258,7 +258,7 @@ export function collectMultiWithPattern() {
 }
 
 //循环点击单个元素
-export function sendLoopClickSingle(name) {
+export function sendLoopClickSingle(name="") {
     let message = {
         "type": "loopClickSingle",
         "id": global.id,
@@ -271,9 +271,13 @@ export function sendLoopClickSingle(name) {
         "allXPaths": getElementXPaths(global.nodeList[0]["node"]),
         "loopType": 0, //循环类型，0为单个元素
         "nextPage": false, //是否循环点击下一页
+        "lastAction": global.app._data.lastAction,
     };
     if (name == "下一页元素") {
         message.nextPage = true;
+    } else if(name == "nextPageFromIndexPage") {
+        message.nextPage = true;
+        message.type = "loopClickNextPage";
     }
     let message_action = {
         type: 3, //消息类型，3代表元素增加事件

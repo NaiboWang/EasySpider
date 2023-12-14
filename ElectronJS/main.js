@@ -470,8 +470,16 @@ async function beginInvoke(msg, ws) {
                     try {
                         await driver.get(url);
                     } catch (e) {
-                        driver.switchTo().window(current_handle);
-                        await driver.get(url);
+                        try {
+                            await driver.switchTo().window(current_handle);
+                            await driver.get(url);
+                        } catch (e){
+                            let all_handles = await driver.getAllWindowHandles();
+                            let handle = all_handles[all_handles.length - 1];
+                            await driver.switchTo().window(handle);
+                            await driver.get(url);
+                        }
+
                     }
                 } else if (option == 2 || option == 7) { //点击事件
                     let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};

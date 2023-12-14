@@ -417,13 +417,18 @@ class myMySQL:
                 "Failed to connect to the database, please check if the configuration file is correct.")
             sys.exit()
 
-    def create_table(self, table_name, parameters):
+    def create_table(self, table_name, parameters, remove_if_exists=False):
         self.table_name = table_name
         self.field_sql = "("
         self.cursor = self.conn.cursor()
         # 检查表是否存在
         self.cursor.execute(f"SHOW TABLES LIKE '{table_name}'")
         result = self.cursor.fetchone()
+        # 如果表存在，删除它
+        if result and remove_if_exists:
+            self.cursor.execute(f"DROP TABLE {table_name}")
+            result = None
+            print(f'数据表 {table_name} 已存在，已删除。')
 
         sql = "CREATE TABLE " + table_name + \
             " (_id INT AUTO_INCREMENT PRIMARY KEY, "
@@ -510,8 +515,8 @@ class myMySQL:
             for i in range(len(line)):
                 if record[i]:
                     to_write.append(line[i])
-            # 构造插入数据的 SQL 语句
-            sql = f'INSERT INTO {self.table_name} {self.field_sql} VALUES ('
+            # 构造插入数据的 SQL 语句, IGNORE表示如果主键重复则忽略
+            sql = f'INSERT IGNORE INTO {self.table_name} {self.field_sql} VALUES ('
             for _ in to_write:
                 sql += "%s, "
             # 移除最后的逗号并添加闭合的括号

@@ -698,6 +698,11 @@ print(emotlib.emoji()) # 使用其中的函数。
                     </select>
                     <label>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
                     <input onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
+                    <label>数据写入模式（上方导出文件名/数据库表格名称需固定，同一个任务ID多次执行时生效）：</label>
+                    <select id="dataWriteMode" name="dataWriteMode" class="form-control">
+                        <option value=1>追加写入（如果文件已存在则在原文件后面追加）</option>
+                        <option value=2>覆盖写入（如果文件已存在则覆盖原文件）</option>
+                    </select>
 <!--                    <label>是否为Cloudflare等极端反爬网站（<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">查看Cloudflare设计和执行教程</a>）：</label>-->
 <!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->
 <!--                        <option value = 0>否</option>-->

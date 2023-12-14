@@ -436,7 +436,7 @@ function operationChange(e, theNode) {
     vueData.nowNodeIndex = actionSequence[theNode.getAttribute("data")];
     theNode.style.borderColor = "blue";
     handleElement(); //处理元素
-    if(debuggable){
+    if (debuggable) {
         trailElement(app._data.nowNode, 0);
     } else {
         debuggable = true;
@@ -504,7 +504,8 @@ function toolBoxKernel(e, para = null) {
         // let tarrow = DeepClone(app.$data.nowArrow);
         // refresh();
         // app._data.nowArrow =tarrow;
-    } else if (option == 11) { //复制操作
+    }
+    else if (option == 11) { //复制操作
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if (nowNode.getAttribute("dataType") > 0) {
@@ -568,7 +569,9 @@ function toolBoxKernel(e, para = null) {
             } else {
                 showError(LANG("自己不能移动到自己的节点里！", "Cannot move inside self!"));
             }
-            e.stopPropagation(); //防止冒泡
+            if (e != null) {
+                e.stopPropagation(); //防止冒泡
+            }
         }
     }
     else if (option > 0) { //新增操作

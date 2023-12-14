@@ -9,15 +9,19 @@
       <div class="realcontent">
         <div v-if="page==0">
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
-            <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
-                   v-on:mousedown="specialSelect"/>
-            <p style="margin-bottom:10px;display:inline-block">特殊点选模式<span
-                title="普通模式下如果不能选中元素可以勾选此项">☺</span></p>
+            <!--            <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"-->
+            <!--                   v-on:mousedown="specialSelect"/>-->
+            <!--            <p style="margin-bottom:10px;display:inline-block">特殊点选模式<span-->
+            <!--                title="普通模式下如果不能选中元素可以勾选此项">☺</span></p>-->
+            <p style="color: darkviolet;" v-if="nextPage==1">
+              ● 检测到您刚刚进行了采集数据的操作，如需设置翻页操作，请点击下方设置翻页操作选项。</p>
             <div class="innercontent" v-if="list.nl.length==0">
+              <div v-if="nextPage==1" class="nextPage">
+                <a v-on:mousedown="setNextPage">设置翻页操作</a><span title="可根据提示指定翻页按钮">☺</span></div>
               <div><a v-on:mousedown="getCurrentTitle">采集当前页面的标题</a><span title="当前页面标题">☺</span></div>
               <div><a v-on:mousedown="getCurrentURL">采集当前页面的网址</a><span title="当前页面URL地址">☺</span></div>
             </div>
-            <p style="color:black; margin-top: 10px">● 鼠标移动到笑脸☺查看操作提示。</p>
+            <p style="color:black; margin-top: 10px">● 鼠标移动到笑脸<span style="font-size: 20px">☺</span>查看操作提示。</p>
             <p style="color:black; margin-top: 10px">●
               鼠标移动到元素上后，请<strong>右键</strong>点击或者按<strong>F7</strong>键选中页面元素。
             </p>
@@ -147,7 +151,7 @@
             </div>
           </div>
 
-          <div v-if="valTable.length==0&&tname()!='下一页元素'"></div>
+          <!--          <div v-if="valTable.length==0&&tname()!='下一页元素'"></div>-->
 
           <div v-if="list.nl.length>0"
                style="bottom:12px;position:absolute;color:black!important;left:17px;font-size:13px">
@@ -158,7 +162,7 @@
             <p style="margin-left:16px;margin-bottom:0px">{{ lastElementXPath() }}</p>
           </div>
         </div>
-        <div v-if="page==1">
+        <div v-else-if="page==1">
           ● 请输入文字：
           <input id="WTextBox" v-model="text" autoFocus="autofocus" type="text"></input>
           <button style="margin-left:0px!important;" v-on:click="getInput">确定</button>
@@ -167,7 +171,7 @@
             输入&lt;enter&gt;或&lt;ENTER&gt;表示输入完成后模拟按下回车键，适用于只能通过回车键获得数据的情况。
           </div>
         </div>
-        <div v-if="page==2">
+        <div v-else-if="page==2">
           <span style="font-size: 15px"> ● 切换模式 </span>
           <select v-model="optionMode" @change="handleSelectChange">
             <option value=0>切换到下一个选项</option>
@@ -185,6 +189,21 @@
             <button style="margin-left:0px!important;" v-on:click="cancelInput">取消</button>
           </div>
         </div>
+        <div v-else-if="page==3">
+          <span
+              style="font-size: 15px"> ● 请在页面上右键选择要点击的下一页按钮/链接，如要取消设置翻页操作，请点击下方取消选项。</span>
+          <div style="font-size: 15px" v-if="list.nl.length==1">
+            ● 已选中一个元素，您可以点击下方选项确认设置翻页操作。
+          </div>
+          <div style="font-size: 15px; color: #c82333;" v-else-if="list.nl.length>1">
+            ● 翻页操作只能设置一个元素，请点击下方取消翻页操作选项并重新选择。
+          </div>
+          <div class="innercontent">
+            <div><a href="#" v-on:mousedown="confirmNextPage" v-if="list.nl.length==1" style="margin-bottom: 5px">确认设置翻页操作</a>
+            </div>
+            <div><a href="#" v-on:mousedown="cancelNextPage">取消设置翻页操作</a></div>
+          </div>
+        </div>
       </div>
     </div>
     <div v-else-if="lang=='en'">
@@ -192,17 +211,23 @@
       <div class="realcontent">
         <div v-if="page==0">
           <div v-if="list.nl.length==0" :style="{overflow: 'auto', maxHeight: winHeight * 0.4 + 'px'}">
-            <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"
-                   v-on:mousedown="specialSelect"> </input>
-            <p style="margin-bottom:10px;display:inline-block">Special click mode<span
-                title="If cannot select element by mouse, select this option">☺</span></p>
+            <!--            <input style="width:15px;height:15px;vertical-align:middle;" type="checkbox"-->
+            <!--                   v-on:mousedown="specialSelect"> </input>-->
+            <!--            <p style="margin-bottom:10px;display:inline-block">Special click mode<span-->
+            <!--                title="If cannot select element by mouse, select this option">☺</span></p>-->
+            <p style="color: darkviolet;" v-if="nextPage==1">
+              ● A data collection operation has just been detected. If you need to configure pagination, please click
+              the option below to set up pagination.</p>
             <div class="innercontent" v-if="list.nl.length==0">
+              <div v-if="nextPage==1" class="nextPage">
+                <a v-on:mousedown="setNextPage">Set up pagination</a><span
+                  title="Follow the prompt to specify the paging button">☺</span></div>
               <div><a v-on:mousedown="getCurrentTitle">Collect Title of current page</a><span
                   title="Title of this page">☺</span></div>
               <div><a v-on:mousedown="getCurrentURL">Collect URL of current page</a><span
                   title="URL of this page">☺</span></div>
             </div>
-            <p style="color:black; margin-top: 10px">● Mouse move to smiling face ☺ to see operation help.</p>
+            <p style="color:black; margin-top: 10px">● Mouse move to smiling face <span style="font-size: 20px">☺</span> to see operation help.</p>
             <p style="color:black; margin-top: 10px">● When your mouse moves to the element, please
               <strong>right-click</strong> your
               mouse button or press <strong>F7</strong> on the keyboard to select it.</p>
@@ -211,7 +236,8 @@
               lower right corner of this toolbox to close it.</p>
             <p style="color:black; margin-top: 10px">● When clicked with the left mouse button, the page will also
               respond, but this click operation will not be recorded in the task flow. Similarly, if you want to input
-              in a text box but do not want the action to be recorded , you can move the mouse to the text box and press
+              in a text box but do not want the action to be recorded , you can move the mouse to the text box and
+              press
               <strong>F9</strong> on the keyboard to input.</p>
             <p style="color:black; margin-top: 10px">● If you accidentally left-click on an element and cause the page
               to jump, simply go back or switch back to the tab.</p>
@@ -236,7 +262,8 @@
                   <!-- <div v-if="tname()=='selection box'"> <a>循环切换该下拉项</a><span title="">☺</span></div> -->
                   <div v-if="tname()=='选择框'"><a v-on:mousedown="changeSelect">Change selection option</a><span
                       title=""></span></div>
-                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(false)">Input Text</a><span title=""></span>
+                  <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(false)">Input Text</a><span
+                      title=""></span>
                   </div>
                   <div v-if="tname()=='文本框'"><a v-on:mousedown="setInput(true)">Input Text (Batch)</a><span
                       title=""></span>
@@ -280,115 +307,129 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <div v-if="list.nl.length>1">
+          <div v-if="list.nl.length>1">
 
-          <div v-if="option==100">
-            ● Already selected the following element, you can:
-            <div class="innercontent">
-              <div><a v-on:mousedown="confirmCollectMulti">Collect Data</a><span title=""></span></div>
-              <div><a v-on:mousedown="revoke">Revoke selection</a><span title=""></span></div>
+            <div v-if="option==100">
+              ● Already selected the following element, you can:
+              <div class="innercontent">
+                <div><a v-on:mousedown="confirmCollectMulti">Collect Data</a><span title=""></span></div>
+                <div><a v-on:mousedown="revoke">Revoke selection</a><span title=""></span></div>
+              </div>
+            </div>
+
+            <div v-if="option!=100">
+              ● Already selected {{ numOfList() }} similar elements, <span
+                v-if="numOfReady()>0">and we find other{{ numOfReady() }} similar elements (If unsatisfied with auto-detected similar elements, you can continue to manually select the rest of the elements that you think are similar), </span>you
+              can:
+              <div class="innercontent">
+                <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">Select All</a><span title=""></span></div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents">Select child elements (Greedy)</a><span
+                    title="Select All child elements for all blocks">☺</span></div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents(1,1)">Select child elements (RFSE)</a><span
+                    title="Relative to First Selected Element, will only select the common child elements between the first selected block and the rest of the blocks">☺</span>
+                </div>
+                <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
+                    v-on:mousedown="selectDescendents(1,2)">Select child elements (RASE)</a><span
+                    title="Relative to All Selected Elements, will select only the common child elements that exist in all blocks">☺</span>
+                </div>
+                <div><a v-on:mousedown="confirmCollectMultiAndDescendents">Collect Data</a><span title=""></span>
+                </div>
+                <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
+                    v-on:mousedown="loopClickEveryElement">Loop-click every {{ tname() | toEng }}</a><span
+                    title="Usually used to click every link in a list to open detail page to collect data">☺</span>
+                </div>
+                <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
+                    v-on:mousedown="loopMouseMove">Loop-mouse-move to every {{ tname() | toEng }}</a><span
+                    title=""></span></div>
+                <div><a v-on:mousedown="revoke">Revoke selection</a><span title=""></span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <div v-if="valTable.length>0">
+            <div class="toolkitcontain">
+              <table cellspacing="0" class="toolkittb2">
+                <tbody>
+                <th v-for="(i, index) in list.opp">
+                  <div>{{ i["name"] }}</div>
+                  <span v-bind:index="index" v-on:mousedown="removeField" title="Remove this field">×</span></th>
+                <th style="width:40px">Delete</th>
+                </tbody>
+              </table>
+              <table cellspacing="0" class="toolkittb4">
+                <tbody>
+                <tr v-for="i in valTable[0].length">
+                  <td v-for="j in list.opp.length">{{ valTable[j - 1][i - 1] }}</td>
+                  <td style="font-size: 22px!important;width:40px;cursor:pointer" v-bind:index="i-1"
+                      v-on:mousedown="deleteSingleLine">×
+                  </td>
+                </tr>
+                </tbody>
+              </table>
             </div>
           </div>
 
-          <div v-if="option!=100">
-            ● Already selected {{ numOfList() }} similar elements, <span
-              v-if="numOfReady()>0">and we find other{{ numOfReady() }} similar elements (If unsatisfied with auto-detected similar elements, you can continue to manually select the rest of the elements that you think are similar), </span>you
-            can:
-            <div class="innercontent">
-              <div v-if="numOfReady()>0"><a v-on:mousedown="selectAll">Select All</a><span title=""></span></div>
-              <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
-                  v-on:mousedown="selectDescendents">Select child elements (Greedy)</a><span
-                  title="Select All child elements for all blocks">☺</span></div>
-              <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
-                  v-on:mousedown="selectDescendents(1,1)">Select child elements (RFSE)</a><span
-                  title="Relative to First Selected Element, will only select the common child elements between the first selected block and the rest of the blocks">☺</span>
-              </div>
-              <div v-if="existDescendents()&&(tname()=='元素' || tname()=='链接')"><a
-                  v-on:mousedown="selectDescendents(1,2)">Select child elements (RASE)</a><span
-                  title="Relative to All Selected Elements, will select only the common child elements that exist in all blocks">☺</span>
-              </div>
-              <div><a v-on:mousedown="confirmCollectMultiAndDescendents">Collect Data</a><span title=""></span>
-              </div>
-              <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                  v-on:mousedown="loopClickEveryElement">Loop-click every {{ tname() | toEng }}</a><span
-                  title="Usually used to click every link in a list to open detail page to collect data">☺</span>
-              </div>
-              <div v-if="tname()!='选择框' && tname()!='文本框' && !selectedDescendents"><a
-                  v-on:mousedown="loopMouseMove">Loop-mouse-move to every {{ tname() | toEng }}</a><span
-                  title=""></span></div>
-              <div><a v-on:mousedown="revoke">Revoke selection</a><span title=""></span></div>
+          <div v-if="valTable.length==0&&tname()!='下一页元素'"></div>
+          <div v-if="list.nl.length>0"
+               style="bottom:12px;position:absolute;color:black!important;left:17px;font-size:13px">
+            <div style="margin-bottom:5px">
+              <button v-on:mousedown="cancel">Deselect</button>
+              <button v-if="!selectStatus" v-on:mousedown="enlarge">Expand Path</button>
             </div>
-          </div>
-
-        </div>
-
-        <div v-if="valTable.length>0">
-          <div class="toolkitcontain">
-            <table cellspacing="0" class="toolkittb2">
-              <tbody>
-              <th v-for="(i, index) in list.opp">
-                <div>{{ i["name"] }}</div>
-                <span v-bind:index="index" v-on:mousedown="removeField" title="Remove this field">×</span></th>
-              <th style="width:40px">Delete</th>
-              </tbody>
-            </table>
-            <table cellspacing="0" class="toolkittb4">
-              <tbody>
-              <tr v-for="i in valTable[0].length">
-                <td v-for="j in list.opp.length">{{ valTable[j - 1][i - 1] }}</td>
-                <td style="font-size: 22px!important;width:40px;cursor:pointer" v-bind:index="i-1"
-                    v-on:mousedown="deleteSingleLine">×
-                </td>
-              </tr>
-              </tbody>
-            </table>
+            <p style="margin-left:16px;margin-bottom:0px">{{ lastElementXPath() }}</p>
           </div>
         </div>
-
-        <div v-if="valTable.length==0&&tname()!='下一页元素'"></div>
-
-        <div v-if="list.nl.length>0"
-             style="bottom:12px;position:absolute;color:black!important;left:17px;font-size:13px">
-          <div style="margin-bottom:5px">
-            <button v-on:mousedown="cancel">Deselect</button>
-            <button v-if="!selectStatus" v-on:mousedown="enlarge">Expand Path</button>
-          </div>
-          <p style="margin-left:16px;margin-bottom:0px">{{ lastElementXPath() }}</p>
-        </div>
-      </div>
-      <div v-if="page==1">
-        ● Please input text:
-        <input id="WTextBox" v-model="text" autofocus="autofocus" type="text"></input>
-        <button style="margin-left:0px!important;" v-on:click="getInput">Confirm</button>
-        <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
-        <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
-          Inputting &lt;enter&gt; or &lt;ENTER&gt; represents the simulation of pressing the Enter key after input
-          is complete, which is applicable in situations where data can only be obtained through pressing the Enter
-          key.
-        </div>
-      </div>
-      <div v-if="page==2">
-        <span style="font-size: 15px"> ● Change Mode </span>
-        <select v-model="optionMode" @change="handleSelectChange">
-          <option value=0>Change to next option</option>
-          <option value=1>Change option by index</option>
-          <option value=2>Change option by value</option>
-          <option value=3>Change option by text</option>
-        </select>
-        <span style="font-size: 15px" v-if="optionMode == 3"> ● Option Text</span>
-        <span style="font-size: 15px" v-if="optionMode == 1"> ● Option Index</span>
-        <span style="font-size: 15px" v-if="optionMode == 2"> ● Option Value</span>
-        <input id="selectValue" v-if="optionMode != 0" v-model="optionValue" autoFocus="autofocus"
-               type="text"></input>
-        <div>
-          <button style="margin-left:0px!important;" v-on:click="sendChangeSelect">Confirm</button>
+        <div v-else-if="page==1">
+          ● Please input text:
+          <input id="WTextBox" v-model="text" autofocus="autofocus" type="text"></input>
+          <button style="margin-left:0px!important;" v-on:click="getInput">Confirm</button>
           <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
+          <div style="text-align: justify;margin-top: 15px;padding-right: 15px;margin-left: 4px">
+            Inputting &lt;enter&gt; or &lt;ENTER&gt; represents the simulation of pressing the Enter key after input
+            is complete, which is applicable in situations where data can only be obtained through pressing the Enter
+            key.
+          </div>
+        </div>
+        <div v-else-if="page==2">
+          <span style="font-size: 15px"> ● Change Mode </span>
+          <select v-model="optionMode" @change="handleSelectChange">
+            <option value=0>Change to next option</option>
+            <option value=1>Change option by index</option>
+            <option value=2>Change option by value</option>
+            <option value=3>Change option by text</option>
+          </select>
+          <span style="font-size: 15px" v-if="optionMode == 3"> ● Option Text</span>
+          <span style="font-size: 15px" v-if="optionMode == 1"> ● Option Index</span>
+          <span style="font-size: 15px" v-if="optionMode == 2"> ● Option Value</span>
+          <input id="selectValue" v-if="optionMode != 0" v-model="optionValue" autoFocus="autofocus"
+                 type="text"></input>
+          <div>
+            <button style="margin-left:0px!important;" v-on:click="sendChangeSelect">Confirm</button>
+            <button style="margin-left:0px!important;" v-on:click="cancelInput">Cancel</button>
+          </div>
+        </div>
+        <div v-else-if="page==3">
+          <span style="font-size: 15px"> ● Please right-click on the page and select the next page button/link. To cancel the pagination setup, click the option below.</span>
+          <div style="font-size: 15px" v-if="list.nl.length==1">
+            ● A single element has been selected, you can click the option below to confirm the pagination setup.
+          </div>
+          <div style="font-size: 15px; color: #c82333;" v-else-if="list.nl.length>1">
+            ● The page-turning operation can only be set for one element. Please click the option below to cancel the
+            page-turning operation and reselect.
+          </div>
+          <div class="innercontent">
+            <div><a href="#" v-on:mousedown="confirmNextPage" v-if="list.nl.length==1" style="margin-bottom: 5px">Confirm
+              Pagination Setup</a>
+            </div>
+            <div><a href="#" v-on:mousedown="cancelNextPage">Cancel Pagination Setup</a></div>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -445,6 +486,9 @@ export default {
     optionMode: 0,
     optionValue: "",
     mode: 0, //记录删除字段模式
+    nextPage: 0, //是否设置翻页操作
+    lastAction: "collectData", //记录上一次的操作
+    global: global,
   },
   mounted() {
     this.$nextTick(() => {
@@ -515,18 +559,35 @@ export default {
       this.selectedDescendents = false;
       this.selectStatus = false;
       this.nowPath = "";
+      console.log("initialized")
     },
     confirmCollectSingle: function () { //单元素确认采集
       collectSingle();
       clearEl();
+      this.nextPage = 1;
+      this.lastAction = "collectData";
     },
     confirmCollectMulti: function () { //无规律多元素确认采集
       collectMultiNoPattern();
       clearEl();
+      this.nextPage = 1;
+      this.lastAction = "collectData";
     },
     confirmCollectMultiAndDescendents: function () { //有规律多元素确认采集
       collectMultiWithPattern();
       clearEl();
+      this.nextPage = 1;
+      this.lastAction = "collectDataWithLoop";
+    },
+    setNextPage: function () { //设置下一页元素
+      this.page = 3;
+    },
+    confirmNextPage: function () { //确认下一页元素
+      this.loopClickSingleElement("nextPageFromIndexPage");
+    },
+    cancelNextPage: function () { //取消下一页元素
+      this.cancel();
+      this.nextPage = 1; //保留下一页元素设置
     },
     deleteSingleLine: function (event) { //删除单行元素
       let at = new Date().getTime()
@@ -574,6 +635,8 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 500)); //因为nodejs点击后又会把当前元素加入到列表中，所以这里需要等待一下再清空
       // global.nodeList[0]["node"].click(); //点击元素
       clearEl();
+      this.nextPage = 0;
+      this.lastAction = "clickElement";
     },
     changeSelect: function () {
       this.page = 2;
@@ -607,8 +670,9 @@ export default {
           alert("Switch failed, may fail when actually executed, please note.");
         }
       }
-
       clearEl();
+      this.nextPage = 0;
+      this.lastAction = "changeSelect";
     },
     handleSelectChange: function () {
       console.log(this.optionMode, this.optionValue);
@@ -625,19 +689,29 @@ export default {
     mouseMove: function () {
       sendMouseMove();
       clearEl();
+      this.nextPage = 0;
+      this.lastAction = "mouseMove";
     },
     loopMouseMove: function () {
       sendLoopMouseMove();
       clearEl();
+      this.nextPage = 0;
+      this.lastAction = "loopMouseMove";
     },
-    loopClickSingleElement: async function () { //循环点击单个元素
-      sendLoopClickSingle(this.tname()); //识别下一页,循环点击单个元素和点击多个元素
+    loopClickSingleElement: async function (type = "") { //循环点击单个元素
+      let name = this.tname();
+      if (type == "nextPageFromIndexPage") {
+        name = "nextPageFromIndexPage"
+      }
+      sendLoopClickSingle(name); //识别下一页,循环点击单个元素和点击多个元素
       // if (this.tname() != "下一页元素") { //下一页元素不进行点击操作
       global.nodeList[0]["node"].focus(); //获得元素焦点
       await new Promise(resolve => setTimeout(resolve, 500)); //因为nodejs点击后又会把当前元素加入到列表中，所以这里需要等待一下再清空
       // global.nodeList[0]["node"].click(); //点击元素
       // }
       clearEl();
+      this.nextPage = 0;
+      this.lastAction = "clickElementWithLoop";
     },
     loopClickEveryElement: async function () { //循环点击每个元素
       sendLoopClickEvery(); //识别下一页,循环点击单个元素和点击多个元素
@@ -645,6 +719,8 @@ export default {
       await new Promise(resolve => setTimeout(resolve, 500)); //因为nodejs点击后又会把当前元素加入到列表中，所以这里需要等待一下再清空
       // global.nodeList[0]["node"].click(); //点击元素
       clearEl();
+      this.nextPage = 0;
+      this.lastAction = "clickEveryElementWithLoop";
     },
     setInput: function (batch = false) { //输入文字
       this.batch = batch;
@@ -677,7 +753,8 @@ export default {
       this.selectStatus = true;
       clearReady();
     },
-    getCurrentTitle: function () { //获取当前页面的Title
+    getCurrentTitle: function () {
+      //获取当前页面的Title
       // 获取文档中所有元素
       // const elements = document.querySelectorAll('*');
       // global.nodeList.push(elements[0]); //将页面第一个元素放入列表中

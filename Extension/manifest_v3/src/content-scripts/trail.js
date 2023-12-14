@@ -62,6 +62,8 @@ export function trial(evt) {
                         let realXPath = parent_xpath + xpath;
                         xpaths.push(realXPath);
                     }
+                } else {
+                    xpaths.push(xpath);
                 }
                 for (let j = 0; j < xpaths.length; j++) {
                     let xpath = xpaths[j];
@@ -119,11 +121,18 @@ export function trial(evt) {
                 } else if (loopType == 1) {
                     let elementList = document.evaluate(parameters.xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
                     let element = elementList.snapshotItem(0);
-                    if (element != null) {
-                        clearEl(true);
-                        addEl(null, element);
-                        if (elementList.snapshotLength > 1) {
-                            selectAllElements();
+                    // if (element != null) {
+                    //     clearEl(true);
+                    //     addEl(null, element);
+                    //     if (elementList.snapshotLength > 1) {
+                    //         selectAllElements();
+                    //     }
+                    // }
+                    clearEl(true);
+                    for (let i = 0; i < elementList.snapshotLength; i++) {
+                        let element = elementList.snapshotItem(i);
+                        if (element != null) {
+                            addEl(null, element);
                         }
                     }
                 } else if (loopType == 2) {

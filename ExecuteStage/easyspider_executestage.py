@@ -175,6 +175,13 @@ class BrowserThread(Thread):
         except:
             self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
+        try:
+            self.dataWriteMode = service["dataWriteMode"] # 数据写入模式，1为追加，2为覆盖
+        except:
+            self.dataWriteMode = 1
+        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx" or self.outputFormat == "json":
+            if self.dataWriteMode == 2 and os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+                os.remove("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat)
         self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
             if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
@@ -184,7 +191,7 @@ class BrowserThread(Thread):
             self.writeMode = 3  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
-            self.mysql.create_table(self.saveName, service["outputParameters"])
+            self.mysql.create_table(self.saveName, service["outputParameters"], remove_if_exists=self.dataWriteMode == 2)
             self.writeMode = 2
         if self.writeMode == 0:
             self.print_and_log("新建模式|Create Mode")

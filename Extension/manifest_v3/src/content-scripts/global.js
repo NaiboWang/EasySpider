@@ -239,6 +239,7 @@ export function clearEl(trail=false) {
     global.nodeList.splice(0, global.nodeList.length); //清空数组
     global.app._data.option = 0; //选项重置
     global.app._data.page = 0; //恢复原始页面
+    // global.app._data.nextPage = 0; //不出现翻页操作提示
 }
 
 
@@ -271,6 +272,7 @@ export function clearParameters(deal = true) //清空参数列表
     if (deal) //是否取消对选中的子元素进行处理
     {
         global.app._data.selectedDescendents = false;
+        global.app._data.selectStatus = false;
     }
     for (let o of global.outputParameterNodes) {
         o["node"].style.boxShadow = o["boxShadow"];
@@ -278,7 +280,6 @@ export function clearParameters(deal = true) //清空参数列表
     global.outputParameterNodes.splice(0);
     global.outputParameters.splice(0); //清空原来的参数列表
     global.app._data.valTable = []; //清空展现数组
-    global.app._data.selectStatus = false;
 }
 
 export function LANG(zh, en) {
