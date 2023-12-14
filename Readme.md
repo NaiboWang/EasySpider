@@ -1,8 +1,8 @@
-## 请您Star/Please Star
+## 欢迎宣传此工具/Welcome to promote this tool
 
-如果您觉得此工具不错，请轻轻点击此页面右上角**Star**按钮增加项目曝光度，谢谢！软件完全免费（商用除外），只求大家Star和宣传给其他需要的朋友，谢谢！
+本软件完全免费（商用除外），如果您觉得此工具不错，请您宣传给有需要的朋友，同时，也欢迎您轻轻点击此页面右上角**Star**按钮增加项目曝光度，谢谢！
 
-If you think this tool is good, please gently click the **Star** button in the upper right corner at this page to increase the project exposure, thank you! The software is completely free (except for commercial use), only ask everyone to Star and promote it to other friends in need, thank you!
+This software is completely free (except for commercial use). If you think this tool is good, please promote it to friends in need. At the same time, you are also welcome to click the **Star** button at the top right of this page to increase the exposure of the project. Thank you!
 
 # 易采集/EasySpider: Visual Code-Free Web Crawler
 

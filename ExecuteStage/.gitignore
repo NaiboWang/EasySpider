@@ -11,7 +11,7 @@ Chrome/
 Data/
 tasks/
 Application/
-.history
+.history/
 execution_instances/
 .DS_Store
 mysql_config.json

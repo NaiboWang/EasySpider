@@ -1,6 +1,7 @@
 .DS_Store/
 .DS_Store
 .idea/
+.history/
 node_modules/
 ServiceWrapper/
 /GPUCache
