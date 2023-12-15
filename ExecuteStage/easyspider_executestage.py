@@ -1115,10 +1115,18 @@ class BrowserThread(Thread):
                     if node["parameters"]["exitCount"] == 0:
                         # newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
                         # 用find_elements获取所有匹配到的文本
-                        exitElements = self.browser.find_elements(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"])
-                        newBodyText = ""
-                        for exitElement in exitElements:
-                            newBodyText += exitElement.text
+                        try:
+                            exitElements = self.browser.find_elements(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"])
+                            newBodyText = ""
+                            for exitElement in exitElements:
+                                newBodyText += exitElement.text
+                        except Exception as e:
+                            self.print_and_log(f"设定的退出循环元素：{node['parameters']['exitElement']}的文本无法获取，本次循环将不再检测元素文本是否变化，将会继续执行，为解决此问题，您可以修改检测元素文本不变的元素为其他元素，或者将循环次数设定为固定次数大于0的值。")
+                            self.print_and_log(f"The text of the exit loop element set: {node['parameters']['exitElement']} cannot be obtained, this loop will no longer check whether the text of the element has changed, and will continue to execute. To solve this problem, you can modify the element whose text does not change to other elements, or set the number of loops to a fixed number greater than 0.")
+                            self.print_and_log(e)
+                            exitElements = []
+                            # newBodyText为随机文本，保证一直执行
+                            newBodyText = str(random.random())
                         if node["parameters"]["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
