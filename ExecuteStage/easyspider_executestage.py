@@ -1031,7 +1031,8 @@ class BrowserThread(Thread):
         ti = 0
         # print("CURRENT URL:", self.browser.current_url)
         # time.sleep(2)
-        if self.browser.current_url.startswith("data:") or self.browser.current_url.startswith("chrome:"):
+        # if self.browser.current_url.startswith("data:") or self.browser.current_url.startswith("chrome:"):
+        if self.browser.current_url != thisHistoryURL and self.history["index"] != thisHistoryLength and self.history["handle"] == self.browser.current_window_handle:
             while self.browser.current_url != thisHistoryURL:  # 如果执行完一次循环之后网址发生了变化
                 try:
                     self.browser.execute_script("history.go(1)")  # 如果是data:开头的网址，就前进一步
@@ -1045,8 +1046,8 @@ class BrowserThread(Thread):
                 element = self.browser.find_elements(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
             else: # 固定元素列表
                 element = self.browser.find_element(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
-            if index > 0:
-                index -= 1  # 如果是data:开头的网址，就要重试一次
+            # if index > 0:
+                # index -= 1  # 如果是data:开头的网址，就要重试一次
         else:
             if element == None:
                 element = elements
@@ -1199,8 +1200,16 @@ class BrowserThread(Thread):
                     self.print_and_log("找不到循环元素: ", xpath)
                 index = 0
                 while index < len(elements):
+                    try:
+                        element = elements[index]
+                        element_text = element.text
+                    except StaleElementReferenceException: # 如果元素已经失效，重试
+                        self.print_and_log("元素已失效，重新获取元素|Element has expired, reacquiring element")
+                        elements = self.browser.find_elements(By.XPATH,
+                                                              xpath, iframe=node["parameters"]["iframe"])
+                        element = elements[index]
                     for i in node["sequence"]:  # 挨个顺序执行循环里所有的操作
-                        self.executeNode(i, elements[index],
+                        self.executeNode(i, element,
                                          xpath, index)
                         if self.BREAK or self.CONTINUE:  # 如果有break操作，下面的操作不执行
                             self.CONTINUE = False

@@ -10,7 +10,7 @@
     <script src="vue.js"></script>
     <script src="bootstrap/js/bootstrap.js"></script>
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet"></link>
-    <title>任务调用/执行 | Task Invoke</title>
+    <title>任务执行 | Task Execute</title>
     <style>
         table {
             table-layout: auto;
@@ -58,7 +58,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h4 class="modal-title" id="myModalLabel">{{"Task Invocation Instruction~执行任务说明" | lang}}</h4>
+                        <h4 class="modal-title" id="myModalLabel">{{"Task Execution Instruction~执行任务说明" | lang}}</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
@@ -189,12 +189,12 @@
             <ol class="breadcrumb" style="padding-left:0;background-color: white">
                 <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
                 <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
-                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Invocation~任务调用/执行"
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Execution~任务执行"
                     | lang}}
                 </li>
             </ol>
         </nav>
-        <h4 style="text-align: center;">{{"Task Invocation~任务调用/执行" | lang}}</h4>
+        <h4 style="text-align: center;">{{"Task Execution~任务执行" | lang}}</h4>
         <p>{{"Task Name:~任务名称：" | lang}} {{task["name"]}}</p>
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"Task Description:~任务描述：" | lang}} {{task["desc"]}}</p>
         <p style="word-wrap: break-word;word-break: break-all;overflow: hidden;max-height: 100px;">{{"API URL (POST):~API 调用网址（POST）：" |

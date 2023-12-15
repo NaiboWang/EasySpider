@@ -346,6 +346,10 @@ class BrowserThread(Thread):
                         node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
                     for param in params:
                         optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
+                        try:
+                            iframe = param["iframe"]
+                        except:
+                            param["iframe"] = False
                         if param["iframe"] and not param["relative"]: # 如果是iframe，那么不可以快速提取
                             optimizable = False
                         if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
@@ -354,8 +358,14 @@ class BrowserThread(Thread):
                     if node["parameters"]["quickExtractable"]:
                         self.print_and_log("循环操作<" + node["title"] + ">可以快速提取数据")
                         self.print_and_log("Loop operation <" + node["title"] + "> can extract data quickly")
-                        node["parameters"]["clear"] = self.procedure[node["sequence"][0]]["parameters"]["clear"]
-                        node["parameters"]["newLine"] = self.procedure[node["sequence"][0]]["parameters"]["newLine"]
+                        try:
+                            node["parameters"]["clear"] = self.procedure[node["sequence"][0]]["parameters"]["clear"]
+                        except:
+                            node["parameters"]["clear"] = 0
+                        try:
+                            node["parameters"]["newLine"] = self.procedure[node["sequence"][0]]["parameters"]["newLine"]
+                        except:
+                            node["parameters"]["newLine"] = 1
                         if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
                             node["parameters"]["baseXPath"] = node["parameters"]["xpath"]
                         elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
@@ -838,7 +848,6 @@ class BrowserThread(Thread):
             self.print_and_log("Cannot find element:", xpath)
 
     # 执行节点关键函数部分
-
     def executeNode(self, nodeId, loopValue="", loopPath="", index=0):
         node = self.procedure[nodeId]
         # WebDriverWait(self.browser, 10).until
@@ -1100,7 +1109,12 @@ class BrowserThread(Thread):
                 try:
                     finished = False
                     if node["parameters"]["exitCount"] == 0:
-                        newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
+                        # newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
+                        # 用find_elements获取所有匹配到的文本
+                        exitElements = self.browser.find_elements(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"])
+                        newBodyText = ""
+                        for exitElement in exitElements:
+                            newBodyText += exitElement.text
                         if node["parameters"]["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
@@ -1111,7 +1125,6 @@ class BrowserThread(Thread):
                                     By.CSS_SELECTOR, "body").text  # 用super调用父类的方法
                                 newBodyText += iframe_text
                                 self.browser.switch_to.default_content()
-
                         if newBodyText == bodyText:  # 如果页面内容无变化
                             self.print_and_log("页面已检测不到新内容，停止循环。")
                             self.print_and_log(

@@ -37,7 +37,7 @@ def test(n = 0):
 # 异常捕获 | Exception capture
 try:
     # 使用XPath定位元素并点击浏览器中元素 | Use XPath to locate the element and click the element in the browser
-    element = self.browser.find_element(By.XPATH, "//*[contains(@class, 'LeftSide_menu_list__qXCeM')]/div[1]/a[1]") # 这里请忽略IDE的报错，因为代码是嵌入到程序中的，IDE无法识别self变量和By变量是正常的 | Please ignore the error reported by the IDE, because the code is embedded in the program, and the IDE cannot recognize that the self variable and By variable are normal
+    element = self.browser.find_element(By.XPATH, "//*[contains(@class, 'LeftSide_menu_list__qXCeM')]/div[1]/a[1]") # 这里请忽略IDE语法报错如找不到self的报错，因为代码是嵌入到程序中的，IDE无法识别self变量和By变量是正常的 | Please ignore the warning reported by the IDE such as "'self' is not defined", because the code is embedded in the program, and the IDE cannot recognize that the self variable and By variable are normal
     actions = ActionChains(self.browser) 
     actions.click(element).perform()
     print("点击成功|Click success")
