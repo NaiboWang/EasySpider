@@ -1109,7 +1109,12 @@ class BrowserThread(Thread):
                 try:
                     finished = False
                     if node["parameters"]["exitCount"] == 0:
-                        newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
+                        # newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
+                        # 用find_elements获取所有匹配到的文本
+                        exitElements = self.browser.find_elements(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"])
+                        newBodyText = ""
+                        for exitElement in exitElements:
+                            newBodyText += exitElement.text
                         if node["parameters"]["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
@@ -1120,7 +1125,6 @@ class BrowserThread(Thread):
                                     By.CSS_SELECTOR, "body").text  # 用super调用父类的方法
                                 newBodyText += iframe_text
                                 self.browser.switch_to.default_content()
-
                         if newBodyText == bodyText:  # 如果页面内容无变化
                             self.print_and_log("页面已检测不到新内容，停止循环。")
                             self.print_and_log(
