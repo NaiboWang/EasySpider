@@ -31,6 +31,7 @@ ws.onmessage = function (evt) {
     if (evt["type"] == "title") { //如果不是特殊处理的话，默认全部是增加元素操作
         if (old_title == "新任务 | New Task") { //只记录第一次的title
             $("#serviceName").val(evt.data.title);
+            $("#create_time").val(new Date().toLocaleString());
         }
         old_title = evt.data.title;
     } else if (evt["type"] == "notify") {
@@ -46,10 +47,10 @@ ws.onmessage = function (evt) {
     }
 };
 
-function changeOutputFormat(para) {
+function changeOutputFormat(param) {
     try {
-        for (let i = 0; i < para["parameters"].length; i++) {
-            let exampleValue = para["parameters"][i]["exampleValues"][0]["value"];
+        for (let i = 0; i < param["parameters"].length; i++) {
+            let exampleValue = param["parameters"][i]["exampleValues"][0]["value"];
             let len = exampleValue.length;
             if (len > 20000) {
                 if ($("#outputFormat").val() == "xlsx") {
@@ -88,6 +89,10 @@ function handleAddElement(msg) {
     } else if (msg["type"] == "batchInputText") {
         addElement(8, msg);
         addElement(4, msg);
+        //切换到循环输入文字操作
+        let parentNode = nodeList[actionSequence[app._data.nowNode["parentId"]]]; //获取当前操作，即点击下一页操作的父元素，即循环操作
+        let parentId = parentNode["id"]; //循环操作的id
+        $("#" + parentId).click(); //点击循环操作
     } else if (msg["type"] == "changeOption") {
         addElement(6, msg);
     } else if (msg["type"] == "mouseMove") {
@@ -138,10 +143,10 @@ function handleAddElement(msg) {
         if (app._data.nowNode != null && app._data["nowNode"]["option"] == 3) { //如果现在节点就是提取数据节点，直接在此节点添加参数，而不是生成一个新的提取数据节点
             for (let i = 0; i < msg["parameters"].length; i++) {
                 changeGetDataParameters(msg, i);
-                app._data["nowNode"]["parameters"]["paras"].push(msg["parameters"][i]);
+                app._data["nowNode"]["parameters"]["params"].push(msg["parameters"][i]);
             }
             changeOutputFormat(msg);
-            app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
+            app._data.params.parameters = app._data["nowNode"]["parameters"]["params"];
             setTimeout(function () {
                 $("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);
@@ -207,7 +212,7 @@ function handleElement() {
         app._data.loopType = app._data["nowNode"]["parameters"]["loopType"];
     } else if (app._data["nodeType"] == 3) {
         app._data.paraIndex = 0; //参数索引初始化
-        app._data.paras.parameters = app._data["nowNode"]["parameters"]["paras"];
+        app._data.params.parameters = app._data["nowNode"]["parameters"]["params"];
     } else if (app._data["nodeType"] == 5) {
         app._data.codeMode = app._data["nowNode"]["parameters"]["codeMode"];
     } else if (app._data["nodeType"] == 10) {
@@ -246,9 +251,9 @@ function addParameters(t) {
         t["parameters"]["scrollCount"] = 1; //滚动次数
         t["parameters"]["scrollWaitTime"] = 1; //滚动后等待时间
         t["parameters"]["clickWay"] = 0; //点击方式，0代表selenium点击，1代表js点击
-        t["parameters"]["newTab"] = 1; //是否新标签页打开
+        t["parameters"]["newTab"] = 0; //是否新标签页打开
         t["parameters"]["maxWaitTime"] = 10; //最长等待时间
-        t["parameters"]["paras"] = []; //默认参数列表
+        t["parameters"]["params"] = []; //默认参数列表
         t["parameters"]["wait"] = 2; //点击后等待时间默认2s
         t["parameters"]["beforeJS"] = ""; //执行前执行的js
         t["parameters"]["beforeJSWaitTime"] = 0; //执行前js等待时间
@@ -258,7 +263,7 @@ function addParameters(t) {
     } else if (t.option == 3) { //提取数据
         t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["newLine"] = 1; //生成新行
-        t["parameters"]["paras"] = []; //默认参数列表
+        t["parameters"]["params"] = []; //默认参数列表
     } else if (t.option == 4) { //输入文字
         t["parameters"]["value"] = "";
         t["parameters"]["index"] = 0; //输入框索引
@@ -333,62 +338,65 @@ function updateUI() {
 }
 
 //修改元素参数，注意所有socket传过来的参数都需要在这里赋值给操作
-function modifyParameters(t, para) {
-    t["parameters"]["history"] = para["history"];
-    t["parameters"]["tabIndex"] = para["tabIndex"];
-    t["parameters"]["iframe"] = para["iframe"];
+function modifyParameters(t, param) {
+    t["parameters"]["history"] = param["history"];
+    t["parameters"]["tabIndex"] = param["tabIndex"];
+    t["parameters"]["iframe"] = param["iframe"];
     if (t.option == 1) {
-        t["parameters"]["url"] = para["url"];
-        t["parameters"]["links"] = para["links"];
-        $("#serviceDescription").val(para["url"]);
-        $("#url").val(para["url"]);
+        t["parameters"]["url"] = param["url"];
+        t["parameters"]["links"] = param["links"];
+        $("#serviceDescription").val(param["url"]);
+        $("#url").val(param["url"]);
     } else if (t.option == 2) { //鼠标点击事件
-        t["parameters"]["xpath"] = para["xpath"];
-        t["parameters"]["useLoop"] = para["useLoop"];
-        t["parameters"]["allXPaths"] = para["allXPaths"];
+        t["parameters"]["xpath"] = param["xpath"];
+        t["parameters"]["useLoop"] = param["useLoop"];
+        t["parameters"]["allXPaths"] = param["allXPaths"];
+        if(param["type"] == "loopClickEvery"){
+            t["parameters"]["newTab"] = 1; //循环点击每个元素，新标签页打开
+        }
     } else if (t.option == 4) { //输入文字事件
-        t["parameters"]["value"] = para["value"];
-        t["parameters"]["xpath"] = para["xpath"];
-        t["parameters"]["allXPaths"] = para["allXPaths"];
-        t["parameters"]["useLoop"] = para["useLoop"];
+        t["parameters"]["value"] = param["value"];
+        t["parameters"]["xpath"] = param["xpath"];
+        t["parameters"]["allXPaths"] = param["allXPaths"];
+        t["parameters"]["useLoop"] = param["useLoop"];
     } else if (t.option == 6) {
-        t["parameters"]["xpath"] = para["xpath"];
-        t["parameters"]["allXPaths"] = para["allXPaths"];
-        t["parameters"]["optionMode"] = para["optionMode"];
-        t["parameters"]["optionValue"] = para["optionValue"];
+        t["parameters"]["xpath"] = param["xpath"];
+        t["parameters"]["allXPaths"] = param["allXPaths"];
+        t["parameters"]["optionMode"] = param["optionMode"];
+        t["parameters"]["optionValue"] = param["optionValue"];
     } else if (t.option == 7) {
-        t["parameters"]["xpath"] = para["xpath"];
-        t["parameters"]["useLoop"] = para["useLoop"];
-        t["parameters"]["allXPaths"] = para["allXPaths"];
+        t["parameters"]["xpath"] = param["xpath"];
+        t["parameters"]["useLoop"] = param["useLoop"];
+        t["parameters"]["allXPaths"] = param["allXPaths"];
     } else if (t.option == 8) { //循环事件
-        t["parameters"]["loopType"] = para["loopType"];
-        t["parameters"]["xpath"] = para["xpath"];
-        t["parameters"]["allXPaths"] = para["allXPaths"];
-        t["parameters"]["textList"] = para["value"];
-        if (para["nextPage"]) { //循环点击下一页的情况下
+        t["parameters"]["loopType"] = param["loopType"];
+        t["parameters"]["xpath"] = param["xpath"];
+        t["parameters"]["allXPaths"] = param["allXPaths"];
+        t["parameters"]["textList"] = param["value"];
+        if (param["nextPage"]) { //循环点击下一页的情况下
             t["title"] = LANG("循环点击下一页", "Loop Click Next Page");
-        } else if (para["type"] == "loopClickSingle") { //循环点击单个元素
+        } else if (param["type"] == "loopClickSingle") { //循环点击单个元素
             t["title"] = LANG("循环点击单个元素", "Loop Click Single Element");
-        } else if (para["type"] == "loopClickEvery") { //循环点击每个元素
+        } else if (param["type"] == "loopClickEvery") { //循环点击每个元素
             t["title"] = LANG("循环点击每个元素", "Loop click Every Element");
-        } else if (para["type"] == "loopMouseMove") { //循环移动到单个元素
+        } else if (param["type"] == "loopMouseMove") { //循环移动到单个元素
             t["title"] = LANG("循环移动到每个元素", "Loop Move to Every Element");
-        } else if (para["type"] == "multiCollectWithPattern") {
+        } else if (param["type"] == "multiCollectWithPattern") {
             t["title"] = LANG("循环采集数据", "Loop Collect Data");
-        } else if (para["type"] == "batchInputText") {
+        } else if (param["type"] == "batchInputText") {
             t["title"] = LANG("循环输入文字", "Loop Input Text");
         } else {
             t["title"] = LANG("循环", "Loop");
         }
-        if (para["loopType"] == 2) //如果是固定元素列表
+        if (param["loopType"] == 2) //如果是固定元素列表
         {
-            t["parameters"]["pathList"] = para["pathList"].join("\n");
+            t["parameters"]["pathList"] = param["pathList"].join("\n");
         }
     } else if (t.option == 3) { //采集数据
-        for (let i = 0; i < para["parameters"].length; i++) {
-            changeGetDataParameters(para, i);
+        for (let i = 0; i < param["parameters"].length; i++) {
+            changeGetDataParameters(param, i);
         }
-        t["parameters"]["paras"] = para["parameters"];
+        t["parameters"]["params"] = param["parameters"];
     }
 }
 
@@ -511,7 +519,7 @@ function saveService(type) {
                 } else if (parseInt(nodeList[i]["parameters"]["loopType"]) == 0) {
                     inputParameters.push({
                         id: inputIndex,
-                        name: "loopTimes_" + nodeList[i]["title"] + "_" + inputIndex++,
+                        name: "loopTimes_" + inputIndex++,
                         nodeId: i,
                         nodeName: nodeList[i]["title"],
                         desc: LANG("循环" + nodeList[i]["title"] + "执行的次数（0代表无限循环）", "Number of loop executions for loop " + nodeList[i]["title"] + ", 0 means unlimited loops (until element not found)"),
@@ -522,16 +530,16 @@ function saveService(type) {
                 }
             } else if (nodeList[i]["option"] == 3) //提取数据操作
             {
-                for (let j = 0; j < nodeList[i]["parameters"]["paras"].length; j++) {
-                    if (outputNames.indexOf(nodeList[i]["parameters"]["paras"][j]["name"]) < 0) { //参数名称还未被添加
-                        outputNames.push(nodeList[i]["parameters"]["paras"][j]["name"]);
+                for (let j = 0; j < nodeList[i]["parameters"]["params"].length; j++) {
+                    if (outputNames.indexOf(nodeList[i]["parameters"]["params"][j]["name"]) < 0) { //参数名称还未被添加
+                        outputNames.push(nodeList[i]["parameters"]["params"][j]["name"]);
                         outputParameters.push({
                             id: outputIndex++,
-                            name: nodeList[i]["parameters"]["paras"][j]["name"],
-                            desc: nodeList[i]["parameters"]["paras"][j]["desc"],
-                            type: nodeList[i]["parameters"]["paras"][j]["paraType"],
-                            recordASField: nodeList[i]["parameters"]["paras"][j]["recordASField"],
-                            exampleValue: nodeList[i]["parameters"]["paras"][j]["exampleValues"][0]["value"],
+                            name: nodeList[i]["parameters"]["params"][j]["name"],
+                            desc: nodeList[i]["parameters"]["params"][j]["desc"],
+                            type: nodeList[i]["parameters"]["params"][j]["paraType"],
+                            recordASField: nodeList[i]["parameters"]["params"][j]["recordASField"],
+                            exampleValue: nodeList[i]["parameters"]["params"][j]["exampleValues"][0]["value"],
                         });
                     }
                 }
@@ -569,7 +577,7 @@ function saveService(type) {
         "name": serviceName,
         "url": url,
         "links": links,
-        "create_time": parseInt(serviceId) == -1 ? new Date().toLocaleString() : $("#create_time").val(),
+        "create_time": $("#create_time").val(),
         "update_time": new Date().toLocaleString(),
         "version": "0.6.0",
         "saveThreshold": saveThreshold,
@@ -599,7 +607,7 @@ function saveService(type) {
             return;
         }
     }
-    $.post(backEndAddressServiceWrapper + "/manageTask", {paras: JSON.stringify(serviceInfo)},
+    $.post(backEndAddressServiceWrapper + "/manageTask", {params: JSON.stringify(serviceInfo)},
         function (result) {
             $("#serviceId").val(parseInt(result))
             if (type == 1) { //任务另存为

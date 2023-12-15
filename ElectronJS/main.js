@@ -230,12 +230,17 @@ async function findElementAcrossAllWindows(msg, notifyBrowser = true, scrollInto
     try {
         xpath = msg.message.xpath;
     } catch {
-        xpath = msg.xpath;
+        //如果msg.pathList存在，说明是循环中的元素
+        if(msg.pathList != undefined && msg.pathList != null && msg.pathList != ""){
+            xpath = msg.pathList[0].trim();
+        } else {
+            xpath = msg.xpath;
+        }
     }
     if (xpath.indexOf("Field(") >= 0 || xpath.indexOf("eval(") >= 0) {
         //两秒后通知浏览器
         await new Promise(resolve => setTimeout(resolve, 2000));
-        notify_browser("检测到XPath中包含Field(\"\")或eval(\"\")，试运行时无法正常定位到包含此两项表达式的元素，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in xpath, and the element containing these two expressions cannot be located normally during trial operation. Please test whether it is valid in the formal call stage.", "warning");
+        notify_browser("检测到XPath中包含Field(\"\")或eval(\"\")，试运行时无法正常定位到包含此两项表达式的元素，请在任务正式运行阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in xpath, and the element containing these two expressions cannot be located normally during trial operation. Please test whether it is valid in the formal call stage.", "warning");
         return null;
     }
     let notify = false;
@@ -355,17 +360,20 @@ async function beginInvoke(msg, ws) {
                 let xpath = parameters.xpath;
                 let parent_node = JSON.parse(msg.message.parentNode);
                 if (parameters.useLoop && option != 4 && option != 6) {
-                    let parentXPath = parent_node.parameters.xpath;
-                    xpath = parentXPath + xpath;
+                    let parent_xpath = parent_node.parameters.xpath;
+                    if (parent_node.parameters.loopType == 2) {
+                        parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                    }
+                    xpath = parent_xpath + xpath;
                 }
                 let elementInfo = {"iframe": parameters.iframe, "xpath": xpath, "id": -1};
                 //用于跳转到元素位置
                 let element = await findElementAcrossAllWindows(elementInfo);
             } else if (option == 3) {
-                let paras = parameters.paras; //所有的提取数据参数
-                let para = paras[0];
-                let xpath = para.relativeXPath;
-                if (para.relative) {
+                let params = parameters.params; //所有的提取数据参数
+                let param = params[0];
+                let xpath = param.relativeXPath;
+                if (param.relative) {
                     let parent_node = JSON.parse(msg.message.parentNode);
                     let parent_xpath = parent_node.parameters.xpath;
                     if (parent_node.parameters.loopType == 2) {
@@ -373,14 +381,14 @@ async function beginInvoke(msg, ws) {
                     }
                     xpath = parent_xpath + xpath;
                 }
-                let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
+                let elementInfo = {"iframe": param.iframe, "xpath": xpath, "id": -1};
                 let element = await findElementAcrossAllWindows(elementInfo);
             } else if (option == 11) {
-                let paras = parameters.paras; //所有的提取数据参数
+                let params = parameters.params; //所有的提取数据参数
                 let i = parameters.index;
-                let para = paras[i];
-                let xpath = para.relativeXPath;
-                if (para.relative) {
+                let param = params[i];
+                let xpath = param.relativeXPath;
+                if (param.relative) {
                     let parent_node = JSON.parse(msg.message.parentNode);
                     let parent_xpath = parent_node.parameters.xpath;
                     if (parent_node.parameters.loopType == 2) {
@@ -388,7 +396,7 @@ async function beginInvoke(msg, ws) {
                     }
                     xpath = parent_xpath + xpath;
                 }
-                let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
+                let elementInfo = {"iframe": param.iframe, "xpath": xpath, "id": -1};
                 let element = await findElementAcrossAllWindows(elementInfo);
             } else if (option == 8) {
                 let loopType = parameters.loopType;
@@ -422,8 +430,11 @@ async function beginInvoke(msg, ws) {
                     let element = await driver.findElement(By.tagName("body"));
                     if (condition == 7) {
                         let parent_node = JSON.parse(msg.message.parentNode);
-                        let xpath = parent_node.parameters.xpath;
-                        elementInfo = {"iframe": parent_node.parameters.iframe, "xpath": xpath, "id": -1};
+                        let parent_xpath = parent_node.parameters.xpath;
+                        if (parent_node.parameters.loopType == 2) {
+                            parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                        }
+                        let elementInfo = {"iframe": parent_node.parameters.iframe, "xpath": parent_xpath, "id": -1};
                         element = await findElementAcrossAllWindows(elementInfo);
                     }
                     let outcome = await execute_js(code, element, waitTime);
@@ -444,7 +455,7 @@ async function beginInvoke(msg, ws) {
                 flowchart_window = null;
             }
             if (flowchart_window == null) {
-                notify_flowchart("试运行功能只能在设计任务阶段，Chrome浏览器打开时使用！", "The trial run function can only be used when designing tasks and opening in Chrome browser!", "error");
+                notify_flowchart("试运行功能只能在任务设计阶段，Chrome浏览器打开时使用！", "The trial run function can only be used when designing tasks and opening in Chrome browser!", "error");
             } else {
                 notify_browser("正在试运行操作：" + node.title, "Trying to run the operation: " + node.title, "info");
                 let option = node.option;
@@ -473,19 +484,21 @@ async function beginInvoke(msg, ws) {
                         try {
                             await driver.switchTo().window(current_handle);
                             await driver.get(url);
-                        } catch (e){
+                        } catch (e) {
                             let all_handles = await driver.getAllWindowHandles();
                             let handle = all_handles[all_handles.length - 1];
                             await driver.switchTo().window(handle);
                             await driver.get(url);
                         }
-
                     }
                 } else if (option == 2 || option == 7) { //点击事件
                     let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
                     if (parameters.useLoop) {
                         let parent_node = JSON.parse(msg.message.parentNode);
                         let parent_xpath = parent_node.parameters.xpath;
+                        if (parent_node.parameters.loopType == 2) {
+                            parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
+                        }
                         elementInfo.xpath = parent_xpath + elementInfo.xpath;
                     }
                     let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false); //通过此函数找到元素并切换到对应的窗口
@@ -513,12 +526,12 @@ async function beginInvoke(msg, ws) {
                     send_message_to_browser(JSON.stringify({"type": "cancelSelection"}));
                 } else if (option == 3) { //提取数据
                     notify_browser("提示：提取数据操作只能试运行设置的JavaScript语句，且只针对第一个匹配的元素。", "Hint: can only test JavaScript  statement set in the data extraction operation, and only for the first matching element.", "info");
-                    let paras = parameters.paras; //所有的提取数据参数
+                    let params = parameters.params; //所有的提取数据参数
                     let not_found_xpaths = [];
-                    for (let i = 0; i < paras.length; i++) {
-                        let para = paras[i];
-                        let xpath = para.relativeXPath;
-                        if (para.relative) {
+                    for (let i = 0; i < params.length; i++) {
+                        let param = params[i];
+                        let xpath = param.relativeXPath;
+                        if (param.relative) {
                             let parent_node = JSON.parse(msg.message.parentNode);
                             let parent_xpath = parent_node.parameters.xpath;
                             if (parent_node.parameters.loopType == 2) {
@@ -526,11 +539,11 @@ async function beginInvoke(msg, ws) {
                             }
                             xpath = parent_xpath + xpath;
                         }
-                        let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
+                        let elementInfo = {"iframe": param.iframe, "xpath": xpath, "id": -1};
                         let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                         if (element != null) {
-                            await execute_js(para.beforeJS, element, para.beforeJSWaitTime);
-                            await execute_js(para.afterJS, element, para.afterJSWaitTime);
+                            await execute_js(param.beforeJS, element, param.beforeJSWaitTime);
+                            await execute_js(param.afterJS, element, param.afterJSWaitTime);
                         } else {
                             not_found_xpaths.push(xpath);
                         }
@@ -558,7 +571,7 @@ async function beginInvoke(msg, ws) {
                     if (keyInfo.indexOf("Field(") >= 0 || keyInfo.indexOf("eval(") >= 0) {
                         //两秒后通知浏览器
                         await new Promise(resolve => setTimeout(resolve, 2000));
-                        notify_browser("检测到文字中包含Field(\"\")或eval(\"\")，试运行时无法输入两项表达式的替换值，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in the text, and the replacement value of the two expressions cannot be entered during trial operation. Please test whether it is valid in the formal call stage.", "warning");
+                        notify_browser("检测到文字中包含Field(\"\")或eval(\"\")，试运行时无法输入两项表达式的替换值，请在任务正式运行阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in the text, and the replacement value of the two expressions cannot be entered during trial operation. Please test whether it is valid in the formal call stage.", "warning");
                     }
                     let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                     await execute_js(beforeJS, element, beforeJSWaitTime);
@@ -576,7 +589,20 @@ async function beginInvoke(msg, ws) {
                         await execute_js(code, element, waitTime);
                     } else if (codeMode == 8) {
                         //刷新页面
-                        await driver.navigate().refresh();
+                        try {
+                            await driver.navigate().refresh();
+                        } catch (e) {
+                            try {
+                                await driver.switchTo().window(current_handle);
+                                await driver.navigate().refresh();
+                            } catch (e) {
+                                let all_handles = await driver.getAllWindowHandles();
+                                let handle = all_handles[all_handles.length - 1];
+                                await driver.switchTo().window(handle);
+                                await driver.navigate().refresh();
+                            }
+                        }
+
                     }
                 } else if (option == 6) { //切换下拉选项
                     let optionMode = parseInt(parameters.optionMode);
@@ -625,11 +651,11 @@ async function beginInvoke(msg, ws) {
                     execute_js(afterJS, element, afterJSWaitTime);
                 } else if (option == 11) { //单个提取数据参数
                     notify_browser("提示：提取数据操作只能试运行设置的JavaScript语句，且只针对第一个匹配的元素。", "Hint: can only test JavaScript  statement set in the data extraction operation, and only for the first matching element.", "info");
-                    let paras = parameters.paras; //所有的提取数据参数
+                    let params = parameters.params; //所有的提取数据参数
                     let i = parameters.index;
-                    let para = paras[i];
-                    let xpath = para.relativeXPath;
-                    if (para.relative) {
+                    let param = params[i];
+                    let xpath = param.relativeXPath;
+                    if (param.relative) {
                         let parent_node = JSON.parse(msg.message.parentNode);
                         let parent_xpath = parent_node.parameters.xpath;
                         if (parent_node.parameters.loopType == 2) {
@@ -637,11 +663,11 @@ async function beginInvoke(msg, ws) {
                         }
                         xpath = parent_xpath + xpath;
                     }
-                    let elementInfo = {"iframe": para.iframe, "xpath": xpath, "id": -1};
+                    let elementInfo = {"iframe": param.iframe, "xpath": xpath, "id": -1};
                     let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false);
                     if (element != null) {
-                        await execute_js(para.beforeJS, element, para.beforeJSWaitTime);
-                        await execute_js(para.afterJS, element, para.afterJSWaitTime);
+                        await execute_js(param.beforeJS, element, param.beforeJSWaitTime);
+                        await execute_js(param.afterJS, element, param.afterJSWaitTime);
                     }
                 }
             }
@@ -733,7 +759,7 @@ async function execute_js(js, element, wait_time = 3) {
         if (js.indexOf("Field(") >= 0 || js.indexOf("eval(") >= 0) {
             //两秒后通知浏览器
             await new Promise(resolve => setTimeout(resolve, 2000));
-            notify_browser("检测到JavaScript中包含Field(\"\")或eval(\"\")，试运行时无法执行两项表达式，请在任务正式调用阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in JavaScript, and the two expressions cannot be executed during trial operation. Please test whether it is valid in the formal call stage.", "warning");
+            notify_browser("检测到JavaScript中包含Field(\"\")或eval(\"\")，试运行时无法执行两项表达式，请在任务正式运行阶段测试是否有效。", "Field(\"\") or eval(\"\") is detected in JavaScript, and the two expressions cannot be executed during trial operation. Please test whether it is valid in the formal call stage.", "warning");
         }
     }
     return outcome;

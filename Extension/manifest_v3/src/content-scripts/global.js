@@ -326,7 +326,7 @@ function parameterName(value) {
             case "地址":
                 return "address";
             case "参数":
-                return "para";
+                return "param";
             case "_图片":
                 return "_image";
             case "_图片地址":

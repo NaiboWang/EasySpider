@@ -327,7 +327,7 @@
         "scrollWaitTime": 1,
         "clickWay": 0,
         "maxWaitTime": 10,
-        "paras": [],
+        "params": [],
         "allXPaths": [
           "/html/body/div[3]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[2]",
           "//div[contains(., '最近更新：06月2')]",
@@ -406,7 +406,7 @@
         "scrollWaitTime": 1,
         "clickWay": 0,
         "maxWaitTime": 10,
-        "paras": [],
+        "params": [],
         "allXPaths": [
           "/html/body/div[3]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[2]",
           "//div[contains(., '最近更新：06月2')]",
@@ -481,7 +481,7 @@
         "scrollWaitTime": 1,
         "clickWay": 0,
         "maxWaitTime": 10,
-        "paras": [],
+        "params": [],
         "allXPaths": "",
         "loopType": 1
       }
@@ -584,7 +584,7 @@
         "beforeJSWaitTime": 0,
         "afterJS": "",
         "afterJSWaitTime": 0,
-        "paras": [
+        "params": [
           {
             "nodeType": 0,
             "contentType": 1,
@@ -1612,7 +1612,7 @@
         "scrollWaitTime": 1,
         "clickWay": 0,
         "maxWaitTime": 10,
-        "paras": [],
+        "params": [],
         "allXPaths": [
           "/html/body/div[3]/div[2]/div[1]/div[2]/div[2]/div[1]/div[1]/table[1]/tbody[1]/tr[1]/td[2]/div[1]/div[1]/div[1]/span[1]/a[1]/b[1]",
           "//b[contains(., 'Nocturne N')]",
@@ -1642,7 +1642,7 @@
         "beforeJSWaitTime": 0,
         "afterJS": "",
         "afterJSWaitTime": 0,
-        "paras": [
+        "params": [
           {
             "nodeType": 0,
             "contentType": 0,
@@ -1773,7 +1773,7 @@
         "beforeJSWaitTime": 0,
         "afterJS": "",
         "afterJSWaitTime": 0,
-        "paras": [
+        "params": [
           {
             "nodeType": 1,
             "contentType": 0,
@@ -2569,7 +2569,7 @@
         "beforeJSWaitTime": 0,
         "afterJS": "",
         "afterJSWaitTime": 0,
-        "paras": [
+        "params": [
           {
             "nodeType": 1,
             "contentType": 0,

@@ -151,7 +151,7 @@
                 "scrollCount": 1,
                 "scrollWaitTime": 1,
                 "maxWaitTime": 10,
-                "paras": [],
+                "params": [],
                 "allXPaths": [
                     "/html/body/table[1]/tbody[1]/tr[1]/td[1]/table[3]/tbody[1]/tr[1]/td[2]/table[1]/tbody[1]/tr[3]/td[1]/table[13]/tbody[1]/tr[1]/td[1]/a[11]/font[1]",
                     "//font[contains(., '下一页')]"
@@ -221,7 +221,7 @@
                 "scrollCount": 1,
                 "scrollWaitTime": 1,
                 "maxWaitTime": 10,
-                "paras": [],
+                "params": [],
                 "allXPaths": "",
                 "loopType": 1
             }
@@ -246,7 +246,7 @@
                 "beforeJSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 0,
                         "contentType": 0,

@@ -121,7 +121,7 @@ class BrowserThread(Thread):
                                "will start from the last step, before we already collected", self.startSteps, " items.")
         else:
             self.print_and_log("此模式下，任务ID", self.id,
-                               "将从头开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
+                               "将从头F开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
             self.print_and_log("In this mode, task ID", self.id,
                                "will start from the beginning, if you want to start from the last step, please set the option 'start from the last step' to 'yes' when saving the task.")
         stealth_path = driver_path[:driver_path.find(
@@ -175,6 +175,13 @@ class BrowserThread(Thread):
         except:
             self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
+        try:
+            self.dataWriteMode = service["dataWriteMode"] # 数据写入模式，1为追加，2为覆盖
+        except:
+            self.dataWriteMode = 1
+        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx" or self.outputFormat == "json":
+            if self.dataWriteMode == 2 and os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+                os.remove("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat)
         self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
             if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
@@ -184,7 +191,7 @@ class BrowserThread(Thread):
             self.writeMode = 3  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
-            self.mysql.create_table(self.saveName, service["outputParameters"])
+            self.mysql.create_table(self.saveName, service["outputParameters"], remove_if_exists=self.dataWriteMode == 2)
             self.writeMode = 2
         if self.writeMode == 0:
             self.print_and_log("新建模式|Create Mode")
@@ -202,23 +209,23 @@ class BrowserThread(Thread):
         self.dataNotFoundKeys = {}  # 记录没有找到数据的key
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
-        for para in service["outputParameters"]:  # 初始化输出参数
-            if para["name"] not in self.outputParameters.keys():
-                self.outputParameters[para["name"]] = ""
-                self.dataNotFoundKeys[para["name"]] = False
+        for param in service["outputParameters"]:  # 初始化输出参数
+            if param["name"] not in self.outputParameters.keys():
+                self.outputParameters[param["name"]] = ""
+                self.dataNotFoundKeys[param["name"]] = False
                 try:
-                    self.outputParametersTypes.append(para["type"])
+                    self.outputParametersTypes.append(param["type"])
                 except:
                     self.outputParametersTypes.append("text")
                 try:
                     self.outputParametersRecord.append(
-                        bool(para["recordASField"]))
+                        bool(param["recordASField"]))
                 except:
                     self.outputParametersRecord.append(True)
                 # 文件叠加的时候不添加表头
                 if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
                     if self.writeMode == 0:
-                        self.OUTPUT[0].append(para["name"])
+                        self.OUTPUT[0].append(param["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
         try:
@@ -265,7 +272,11 @@ class BrowserThread(Thread):
                                            "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             elif node["option"] == 3:  # 提取数据操作
                 node["parameters"]["recordASField"] = 0
-                paras = node["parameters"]["paras"]
+                try:
+                    params = node["parameters"]["params"]
+                except:
+                    node["parameters"]["params"] = node["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
+                    params = node["parameters"]["params"]
                 try:
                     clear = node["parameters"]["clear"]
                 except:
@@ -274,25 +285,25 @@ class BrowserThread(Thread):
                     newLine = node["parameters"]["newLine"]
                 except:
                     node["parameters"]["newLine"] = 1
-                for para in paras:
+                for param in params:
                     try:
-                        iframe = para["iframe"]
+                        iframe = param["iframe"]
                     except:
-                        para["iframe"] = False
+                        param["iframe"] = False
                     try:
-                        para["relativeXPath"] = lowercase_tags_in_xpath(para["relativeXPath"])
+                        param["relativeXPath"] = lowercase_tags_in_xpath(param["relativeXPath"])
                     except:
                         pass
                     try:
-                        node["parameters"]["recordASField"] += para["recordASField"]
+                        node["parameters"]["recordASField"] += param["recordASField"]
                     except:
                         node["parameters"]["recordASField"] += 1
-                    if para["contentType"] == 8:
+                    if param["contentType"] == 8:
                         self.print_and_log(
                             "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
                         self.print_and_log(
                             "If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
-                    para["optimizable"] = detect_optimizable(para)
+                    param["optimizable"] = detect_optimizable(param)
             elif node["option"] == 4:  # 输入文字
                 try:
                     index = node["parameters"]["index"]  # 索引值
@@ -324,12 +335,18 @@ class BrowserThread(Thread):
                 node["parameters"]["quickExtractable"] = False # 是否可以快速提取
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
-                    paras = self.procedure[node["sequence"][0]]["parameters"]["paras"]
-                    waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
-                    node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
-                    for para in paras:
-                        optimizable = detect_optimizable(para, ignoreWaitElement=False, waitElement=waitElement)
-                        if para["iframe"]: # 如果是iframe，那么不可以快速提取
+                    params = self.procedure[node["sequence"][0]]["parameters"]["params"]
+                    try:
+                        waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
+                    except:
+                        waitElement = ""
+                    if node["parameters"]["iframe"]:
+                        node["parameters"]["quickExtractable"] = False # 如果是iframe，那么不可以快速提取
+                    else:
+                        node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
+                    for param in params:
+                        optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
+                        if param["iframe"] and not param["relative"]: # 如果是iframe，那么不可以快速提取
                             optimizable = False
                         if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
                             node["parameters"]["quickExtractable"] = False
@@ -343,33 +360,33 @@ class BrowserThread(Thread):
                             node["parameters"]["baseXPath"] = node["parameters"]["xpath"]
                         elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
                             node["parameters"]["baseXPath"] = node["parameters"]["pathList"]
-                        node["parameters"]["quickParas"] = []
-                        for para in paras:
+                        node["parameters"]["quickParams"] = []
+                        for param in params:
                             content_type = ""
-                            if para["relativeXPath"].find("/@href") >= 0 or para["relativeXPath"].find("/text()") >= 0 or para["relativeXPath"].find(
+                            if param["relativeXPath"].find("/@href") >= 0 or param["relativeXPath"].find("/text()") >= 0 or param["relativeXPath"].find(
                                     "::text()") >= 0:
                                 content_type = ""
-                            elif para["nodeType"] == 2:
+                            elif param["nodeType"] == 2:
                                 content_type = "//@href"
-                            elif para["nodeType"] == 4: # 图片链接
+                            elif param["nodeType"] == 4: # 图片链接
                                 content_type = "//@src"
-                            elif para["contentType"] == 1:
+                            elif param["contentType"] == 1:
                                 content_type = "/text()"
-                            elif para["contentType"] == 0:
+                            elif param["contentType"] == 0:
                                 content_type = "//text()"
-                            if para["relative"]: # 如果是相对XPath
-                                xpath = "." + para["relativeXPath"] + content_type
+                            if param["relative"]: # 如果是相对XPath
+                                xpath = "." + param["relativeXPath"] + content_type
                             else:
-                                xpath = para["relativeXPath"] + content_type
+                                xpath = param["relativeXPath"] + content_type
                             # 如果是id()或(//div)[1]这种形式，不需要包/html/body
                             # if xpath.find("/body") < 0 and xpath.startswith("/"):
                             #     xpath = "/html/body" + xpath
-                            node["parameters"]["quickParas"].append({
-                                "name": para["name"],
-                                "relative": para["relative"],
+                            node["parameters"]["quickParams"].append({
+                                "name": param["name"],
+                                "relative": param["relative"],
                                 "xpath": xpath,
-                                "nodeType": para["nodeType"],
-                                "default": para["default"],
+                                "nodeType": param["nodeType"],
+                                "default": param["default"],
                             })
         self.print_and_log("预处理完成|Preprocess completed")
 
@@ -519,28 +536,28 @@ class BrowserThread(Thread):
             self.logs.truncate(0)  # 清空日志
             self.logs.seek(0)  # 清空日志
 
-    def scrollDown(self, para, rt=""):
+    def scrollDown(self, param, rt=""):
         try:
-            time.sleep(para["scrollWaitTime"])  # 下拉前等待
+            time.sleep(param["scrollWaitTime"])  # 下拉前等待
         except:
             pass
-        scrollType = int(para["scrollType"])
+        scrollType = int(param["scrollType"])
         try:
-            para["scrollCount"] = int(para["scrollCount"])
+            param["scrollCount"] = int(param["scrollCount"])
         except:
-            para["scrollCount"] = 1
+            param["scrollCount"] = 1
         try:
-            if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
+            if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
                 if scrollType == 1 or scrollType == 2:
-                    for i in range(para["scrollCount"]):
+                    for i in range(param["scrollCount"]):
                         body = self.browser.find_element(
-                            By.CSS_SELECTOR, "body", iframe=para["iframe"])
+                            By.CSS_SELECTOR, "body", iframe=param["iframe"])
                         if scrollType == 1:
                             body.send_keys(Keys.PAGE_DOWN)
                         elif scrollType == 2:
                             body.send_keys(Keys.END)
                         try:
-                            time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                            time.sleep(param["scrollWaitTime"])  # 下拉完等待
                         except:
                             pass
                         self.print_and_log("向下滚动，第", i + 1, "次。")
@@ -552,7 +569,7 @@ class BrowserThread(Thread):
                     while True:
                         newBodyText = self.browser.find_element(
                             By.CSS_SELECTOR, "body", iframe=False).text
-                        if para["iframe"]:  # 如果标记了iframe
+                        if param["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
                             for iframe in iframes:
@@ -570,14 +587,14 @@ class BrowserThread(Thread):
                         else:
                             bodyText = newBodyText
                         body = self.browser.find_element(
-                            By.CSS_SELECTOR, "body", iframe=para["iframe"])
+                            By.CSS_SELECTOR, "body", iframe=param["iframe"])
                         body.send_keys(Keys.END)
                         self.print_and_log("滚动到底部，第", i + 1, "次。")
                         self.print_and_log(
                             "Scroll to the bottom, the", i + 1, "time.")
                         i = i + 1
                         try:
-                            time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                            time.sleep(param["scrollWaitTime"])  # 下拉完等待
                         except:
                             pass
         except:
@@ -586,18 +603,18 @@ class BrowserThread(Thread):
                 self.browser.execute_script('window.stop()')
             except:
                 pass
-            if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-                for i in range(para["scrollCount"]):
+            if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
+                for i in range(param["scrollCount"]):
                     self.print_and_log(
                         "Wait for set second after screen scrolling")
                     body = self.browser.find_element(
-                        By.CSS_SELECTOR, "body", iframe=para["iframe"])
+                        By.CSS_SELECTOR, "body", iframe=param["iframe"])
                     if scrollType == 1:
                         body.send_keys(Keys.PGDN)
                     elif scrollType == 2:
                         body.send_keys(Keys.END)
                     try:
-                        time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                        time.sleep(param["scrollWaitTime"])  # 下拉完等待
                     except:
                         pass
             if rt != "":
@@ -696,22 +713,22 @@ class BrowserThread(Thread):
         return output
 
     def customOperation(self, node, loopValue, loopPath, index):
-        paras = node["parameters"]
-        if paras["clear"] == 1:
+        params = node["parameters"]
+        if params["clear"] == 1:
             self.clearOutputParameters()
-        codeMode = int(paras["codeMode"])
-        code = paras["code"]
+        codeMode = int(params["codeMode"])
+        code = params["code"]
         output = ""
-        max_wait_time = int(paras["waitTime"])
+        max_wait_time = int(params["waitTime"])
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
                 loopPath = replace_field_values(
                     loopPath, self.outputParameters, self)
                 elements = self.browser.find_elements(
-                    By.XPATH, loopPath, iframe=paras["iframe"])
+                    By.XPATH, loopPath, iframe=params["iframe"])
                 element = elements[index]
                 output = self.execute_code(
-                    codeMode, code, max_wait_time, element, iframe=paras["iframe"])
+                    codeMode, code, max_wait_time, element, iframe=params["iframe"])
             except:
                 output = ""
                 self.print_and_log("JavaScript execution failed")
@@ -732,22 +749,22 @@ class BrowserThread(Thread):
             send_email(node["parameters"]["emailConfig"])
         else:  # 0 1 5 6
             output = self.execute_code(
-                codeMode, code, max_wait_time, iframe=paras["iframe"])
-        recordASField = bool(paras["recordASField"])
+                codeMode, code, max_wait_time, iframe=params["iframe"])
+        recordASField = bool(params["recordASField"])
         # if recordASField:
         # self.print_and_log("操作<" + node["title"] + ">的返回值为：" + output)
         # self.print_and_log("The return value of operation <" + node["title"] + "> is: " + output)
         self.outputParameters[node["title"]] = output
-        if recordASField and paras["newLine"]:
+        if recordASField and params["newLine"]:
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
-    def switchSelect(self, para, loopValue):
-        optionMode = para["optionMode"]
-        optionValue = para["optionValue"]
-        if para["useLoop"]:
-            index = para["index"]
+    def switchSelect(self, param, loopValue):
+        optionMode = param["optionMode"]
+        optionValue = param["optionValue"]
+        if param["useLoop"]:
+            index = param["index"]
             if index != 0:
                 try:
                     optionValue = loopValue.split("~")[index - 1]
@@ -760,9 +777,9 @@ class BrowserThread(Thread):
             optionMode = 1
         try:
             xpath = replace_field_values(
-                para["xpath"], self.outputParameters, self)
+                param["xpath"], self.outputParameters, self)
             dropdown = Select(self.browser.find_element(
-                By.XPATH, xpath, iframe=para["iframe"]))
+                By.XPATH, xpath, iframe=param["iframe"]))
             try:
                 if optionMode == 0:
                     # 获取当前选中的选项索引
@@ -781,19 +798,19 @@ class BrowserThread(Thread):
                 # self.recordLog("切换到下拉框选项|Change to drop-down box option:", xpath)
             except:
                 self.print_and_log("切换下拉框选项失败:", xpath,
-                                   para["optionMode"], para["optionValue"])
+                                   param["optionMode"], param["optionValue"])
                 self.print_and_log("Failed to change drop-down box option:",
-                                   xpath, para["optionMode"], para["optionValue"])
+                                   xpath, param["optionMode"], param["optionValue"])
         except:
             self.print_and_log("找不到下拉框元素:", xpath)
             self.print_and_log("Cannot find drop-down box element:", xpath)
 
-    def moveToElement(self, para, loopElement=None, loopPath="", index=0):
+    def moveToElement(self, param, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
         loopPath = replace_field_values(loopPath, self.outputParameters, self)
         xpath = replace_field_values(
-            para["xpath"], self.outputParameters, self)
-        if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+            param["xpath"], self.outputParameters, self)
+        if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             if xpath == "":
                 path = loopPath
             else:
@@ -808,7 +825,7 @@ class BrowserThread(Thread):
         path = replace_field_values(path, self.outputParameters, self)
         try:
             elements = self.browser.find_elements(
-                By.XPATH, path, iframe=para["iframe"])
+                By.XPATH, path, iframe=param["iframe"])
             element = elements[index]
             try:
                 ActionChains(self.browser).move_to_element(element).perform()
@@ -855,40 +872,45 @@ class BrowserThread(Thread):
                 self.recordLog(e)
             self.recordLog("Wait element not found")
         self.recordLog("执行节点|Execute node:", node["title"])
-        # 根据不同选项执行不同操作
-        if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
-            for i in node["sequence"]:  # 从根节点开始向下读取
-                self.executeNode(i, loopValue, loopPath, index)
-        elif node["option"] == 1:  # 打开网页操作
-            # if not (nodeId == 1 and self.service["cloudflare"] == 1):
-            self.openPage(node["parameters"], loopValue)
-        elif node["option"] == 2:  # 点击元素
-            self.clickElement(node["parameters"], loopValue, loopPath, index)
-        elif node["option"] == 3:  # 提取数据
-            # 针对提取数据操作，设置操作开始的步骤，用于不小心关闭后的恢复的增量采集
-            if self.totalSteps >= self.startSteps:
-                self.getData(node["parameters"], loopValue, node["isInLoop"],
-                             parentPath=loopPath, index=index)
+        try:
+            # 根据不同选项执行不同操作
+            if node["option"] == 0 or node["option"] == 10:  # root操作,条件分支操作
+                for i in node["sequence"]:  # 从根节点开始向下读取
+                    self.executeNode(i, loopValue, loopPath, index)
+            elif node["option"] == 1:  # 打开网页操作
+                # if not (nodeId == 1 and self.service["cloudflare"] == 1):
+                self.openPage(node["parameters"], loopValue)
+            elif node["option"] == 2:  # 点击元素
+                self.clickElement(node["parameters"], loopValue, loopPath, index)
+            elif node["option"] == 3:  # 提取数据
+                # 针对提取数据操作，设置操作开始的步骤，用于不小心关闭后的恢复的增量采集
+                if self.totalSteps >= self.startSteps:
+                    self.getData(node["parameters"], loopValue, node["isInLoop"],
+                                parentPath=loopPath, index=index)
+                    self.saveData()
+                else:
+                    # self.getDataStep += 1
+                    self.print_and_log("跳过第" + str(self.totalSteps) + "次提取数据。")
+                    self.print_and_log(
+                        "Skip the " + str(self.totalSteps) + "th data extraction.")
+                self.totalSteps += 1  # 总步数加一
+            elif node["option"] == 4:  # 输入文字
+                self.inputInfo(node["parameters"], loopValue)
+            elif node["option"] == 5:  # 自定义操作
+                self.customOperation(node, loopValue, loopPath, index)
                 self.saveData()
-            else:
-                # self.getDataStep += 1
-                self.print_and_log("跳过第" + str(self.totalSteps) + "次提取数据。")
-                self.print_and_log(
-                    "Skip the " + str(self.totalSteps) + "th data extraction.")
-            self.totalSteps += 1  # 总步数加一
-        elif node["option"] == 4:  # 输入文字
-            self.inputInfo(node["parameters"], loopValue)
-        elif node["option"] == 5:  # 自定义操作
-            self.customOperation(node, loopValue, loopPath, index)
-            self.saveData()
-        elif node["option"] == 6:  # 切换下拉框
-            self.switchSelect(node["parameters"], loopValue)
-        elif node["option"] == 7:  # 鼠标移动到元素上
-            self.moveToElement(node["parameters"], loopValue, loopPath, index)
-        elif node["option"] == 8:  # 循环
-            self.loopExecute(node, loopValue, loopPath, index)  # 执行循环
-        elif node["option"] == 9:  # 条件分支
-            self.judgeExecute(node, loopValue, loopPath, index)
+            elif node["option"] == 6:  # 切换下拉框
+                self.switchSelect(node["parameters"], loopValue)
+            elif node["option"] == 7:  # 鼠标移动到元素上
+                self.moveToElement(node["parameters"], loopValue, loopPath, index)
+            elif node["option"] == 8:  # 循环
+                self.loopExecute(node, loopValue, loopPath, index)  # 执行循环
+            elif node["option"] == 9:  # 条件分支
+                self.judgeExecute(node, loopValue, loopPath, index)
+        except Exception as e:
+            self.print_and_log("执行节点<" + node["title"] + ">时出错，将继续执行，错误为：", e)
+            self.print_and_log("Error executing node <" + node["title"] + ">, will continue to execute, error is:", e)
+        
 
         # 执行完之后进行等待
         if node["option"] != 0 and node["option"] != 2:  # 点击元素操作单独定义等待时间操作
@@ -906,7 +928,6 @@ class BrowserThread(Thread):
         self.event.wait()  # 等待事件结束
 
     # 对判断条件的处理
-
     def judgeExecute(self, node, loopElement, clickPath="", index=0):
         executeBranchId = 0  # 要执行的BranchId
         for i in node["sequence"]:
@@ -1050,22 +1071,22 @@ class BrowserThread(Thread):
             for row in rows:
                 if node["parameters"]["clear"] == 1:
                     self.clearOutputParameters()
-                for para in node["parameters"]["quickParas"]:
-                    xpath = replace_field_values(para["xpath"], self.outputParameters, self)
+                for param in node["parameters"]["quickParams"]:
+                    xpath = replace_field_values(param["xpath"], self.outputParameters, self)
                     content = row.xpath(xpath)
                     try:
                         content = ' '.join(result.strip()
                                         for result in content if result.strip())
                         # 链接或者图片的情况下，合并链接相对路径为绝对路径
-                        if para["nodeType"] == 2 or para["nodeType"] == 4:
+                        if param["nodeType"] == 2 or param["nodeType"] == 4:
                             base_url = self.browser.current_url
                             # 合并链接相对路径为绝对路径
                             content = urljoin(base_url, content)
                         if len(content) == 0:
-                            content = para["default"]
+                            content = param["default"]
                     except:
-                        content = para["default"]
-                    self.outputParameters[para["name"]] = content
+                        content = param["default"]
+                    self.outputParameters[param["name"]] = content
                 if node["parameters"]["newLine"]:
                     line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
@@ -1347,7 +1368,7 @@ class BrowserThread(Thread):
         self.scrollDown(node["parameters"])
 
     # 打开网页事件
-    def openPage(self, para, loopValue):
+    def openPage(self, param, loopValue):
         time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
             self.browser.switch_to.window(
@@ -1359,28 +1380,28 @@ class BrowserThread(Thread):
         self.browser.switch_to.window(
             self.browser.window_handles[0])  # 打开网页操作从第1个页面开始
         self.history["handle"] = self.browser.current_window_handle
-        if para["useLoop"]:
+        if param["useLoop"]:
             url = loopValue
-        elif para["url"] != "about:blank":
+        elif param["url"] != "about:blank":
             url = self.links[self.urlId]
             # clear output parameters
             for key in self.outputParameters:
                 self.outputParameters[key] = ""
         else:  # 在流程图其他位置设置了打开网页的操作，读取的应该是第一个网址，如打开网页后登录，再打开第二个网页
-            url = list(filter(isnotnull, para["links"].split("\n")))[0]
+            url = list(filter(isnotnull, param["links"].split("\n")))[0]
         # 将value中的Field[""]替换为outputParameters中的键值
         url = replace_field_values(url, self.outputParameters, self)
         try:
-            maxWaitTime = int(para["maxWaitTime"])
+            maxWaitTime = int(param["maxWaitTime"])
         except:
             maxWaitTime = 10  # 默认最大等待时间为10秒
         try:
             self.browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
             self.browser.set_script_timeout(maxWaitTime)
             self.browser.get(url)
-            if para["cookies"] != "":
+            if param["cookies"] != "":
                 self.browser.delete_all_cookies()  # 清除所有已有cookie
-                cookies = para["cookies"].split('\n')
+                cookies = param["cookies"].split('\n')
                 for cookie in cookies:
                     name, value = cookie.split('=', 1)
                     cookie_dict = {'name': name, 'value': value}
@@ -1409,20 +1430,20 @@ class BrowserThread(Thread):
         except Exception as e:
             self.print_and_log("History Length Error")
             self.history["index"] = 0
-        self.scrollDown(para)  # 控制屏幕向下滚动
+        self.scrollDown(param)  # 控制屏幕向下滚动
 
     # 键盘输入事件
-    def inputInfo(self, para, loopValue):
+    def inputInfo(self, param, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
             xpath = replace_field_values(
-                para["xpath"], self.outputParameters, self)
+                param["xpath"], self.outputParameters, self)
             textbox = self.browser.find_element(
-                By.XPATH, xpath, iframe=para["iframe"])
+                By.XPATH, xpath, iframe=param["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
             #     textbox.send_keys(Keys.BACKSPACE)
             self.execute_code(
-                2, para["beforeJS"], para["beforeJSWaitTime"], textbox, iframe=para["iframe"])  # 执行前置JS
+                2, param["beforeJS"], param["beforeJSWaitTime"], textbox, iframe=param["iframe"])  # 执行前置JS
             # Send the HOME key
             textbox.send_keys(Keys.HOME)
             # Send the SHIFT + END key combination
@@ -1430,10 +1451,10 @@ class BrowserThread(Thread):
             # Send the DELETE key
             textbox.send_keys(Keys.DELETE)
             value = ""
-            if para["useLoop"]:
+            if param["useLoop"]:
                 value = loopValue
             else:
-                value = para["value"]
+                value = param["value"]
             # 将value中的Field[""]替换为outputParameters中的键值
             pattern = r'Field\["([^"]+)"\]'
             try:
@@ -1443,7 +1464,7 @@ class BrowserThread(Thread):
                     '<enter>', '', replaced_text, flags=re.IGNORECASE)
             except:
                 replaced_text = value
-            index = para["index"]
+            index = param["index"]
             if index != 0:
                 try:
                     replaced_text = replaced_text.split("~")[index - 1]
@@ -1457,16 +1478,16 @@ class BrowserThread(Thread):
             self.recordLog("输入文字|Input text: " +
                            replaced_text + " to " + xpath)
             self.execute_code(
-                2, para["afterJS"], para["afterJSWaitTime"], textbox, iframe=para["iframe"])  # 执行后置js
+                2, param["afterJS"], param["afterJSWaitTime"], textbox, iframe=param["iframe"])  # 执行后置js
         except:
             self.print_and_log("Cannot find input box element:" +
                                xpath + ", please try to set the wait time before executing this operation")
             self.print_and_log("找不到输入框元素:" + xpath + "，请尝试在执行此操作前设置等待时间")
 
     # 点击元素事件
-    def clickElement(self, para, loopElement=None, clickPath="", index=0):
+    def clickElement(self, param, loopElement=None, clickPath="", index=0):
         try:
-            maxWaitTime = int(para["maxWaitTime"])
+            maxWaitTime = int(param["maxWaitTime"])
         except:
             maxWaitTime = 10
         self.browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
@@ -1474,12 +1495,12 @@ class BrowserThread(Thread):
         # 点击前对该元素执行一段JavaScript代码
         try:
             # element = self.browser.find_element(
-            #     By.XPATH, path, iframe=para["iframe"])
+            #     By.XPATH, path, iframe=param["iframe"])
             clickPath = replace_field_values(
                 clickPath, self.outputParameters, self)
             xpath = replace_field_values(
-                para["xpath"], self.outputParameters, self)
-            if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+                param["xpath"], self.outputParameters, self)
+            if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 if xpath == "":
                     path = clickPath
                 else:
@@ -1492,27 +1513,35 @@ class BrowserThread(Thread):
                 index = 0
                 path = xpath  # 不然使用元素定义的xpath
                 # element = self.browser.find_element(
-                #     By.XPATH, path, iframe=para["iframe"])
+                #     By.XPATH, path, iframe=param["iframe"])
             elements = self.browser.find_elements(
-                By.XPATH, path, iframe=para["iframe"])
+                By.XPATH, path, iframe=param["iframe"])
             element = elements[index]
-            if para["beforeJS"] != "":
-                self.execute_code(2, para["beforeJS"],
-                                  para["beforeJSWaitTime"], element, iframe=para["iframe"])
+            if param["beforeJS"] != "":
+                self.execute_code(2, param["beforeJS"],
+                                  param["beforeJSWaitTime"], element, iframe=param["iframe"])
         except:
             self.print_and_log("Cannot find element:" +
                                path + ", please try to set the wait time before executing this operation")
             self.print_and_log("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
         tempHandleNum = len(self.browser.window_handles)  # 记录之前的窗口位置
         try:
-            click_way = int(para["clickWay"])
+            click_way = int(param["clickWay"])
         except:
             click_way = 0
+        try:
+            newTab = int(param["newTab"])
+        except:
+            newTab = 1
         try:
             if click_way == 0:  # 用selenium的点击方法
                 try:
                     actions = ActionChains(self.browser)  # 实例化一个action对象
-                    actions.click(element).perform()
+                    if newTab == 1:  # 在新标签页打开
+                        # Ctrl + Click
+                        actions.key_down(Keys.CONTROL).click(element).key_up(Keys.CONTROL).perform()
+                    else:
+                        actions.click(element).perform()
                 except Exception as e:
                     self.browser.execute_script("arguments[0].scrollIntoView();", element)
                     try:
@@ -1544,11 +1573,11 @@ class BrowserThread(Thread):
             self.print_and_log(e)
 
         # 弹窗处理
-        if para["alertHandleType"] > 0:
+        if param["alertHandleType"] > 0:
             try:
                 time.sleep(1.5)
                 alert = self.browser.switch_to.alert
-                alertHandleType = int(para["alertHandleType"])
+                alertHandleType = int(param["alertHandleType"])
                 if alertHandleType == 1:
                     alert.accept()
                     self.print_and_log("已点击确认|Clicked OK")
@@ -1560,17 +1589,17 @@ class BrowserThread(Thread):
 
         # 点击后对该元素执行一段JavaScript代码
         try:
-            if para["afterJS"] != "":
+            if param["afterJS"] != "":
                 element = self.browser.find_element(
-                    By.XPATH, path, iframe=para["iframe"])
-                self.execute_code(2, para["afterJS"],
-                                  para["afterJSWaitTime"], element, iframe=para["iframe"])
+                    By.XPATH, path, iframe=param["iframe"])
+                self.execute_code(2, param["afterJS"],
+                                  param["afterJSWaitTime"], element, iframe=param["iframe"])
         except:
             self.print_and_log("Cannot find element:" + path)
             self.print_and_log("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
-        waitTime = float(para["wait"]) + 0.01  # 点击之后等待
+        waitTime = float(param["wait"]) + 0.01  # 点击之后等待
         try:
-            waitType = int(para["waitType"])
+            waitType = int(param["waitType"])
         except:
             waitType = 0
         if waitType == 0:  # 固定等待时间
@@ -1609,7 +1638,7 @@ class BrowserThread(Thread):
             except Exception as e:
                 self.print_and_log("History Length Error")
                 self.history["index"] = 0
-        self.scrollDown(para)  # 根据参数配置向下滚动
+        self.scrollDown(param)  # 根据参数配置向下滚动
         # rt.end()
 
     def get_content(self, p, element):
@@ -1637,7 +1666,7 @@ class BrowserThread(Thread):
                     downloadPic = 0
                 if downloadPic == 1:
                     download_image(self, content, "Data/Task_" +
-                                   str(self.id) + "/" + self.saveName + "/")
+                                   str(self.id) + "/" + self.saveName + "/", element)
             else:  # 普通节点
                 content = element.text
         elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
@@ -1662,7 +1691,7 @@ class BrowserThread(Thread):
                     downloadPic = 0
                 if downloadPic == 1:
                     download_image(self, content, "Data/Task_" +
-                                   str(self.id) + "/" + self.saveName + "/")
+                                   str(self.id) + "/" + self.saveName + "/", element)
             else:
                 command = 'var arr = [];\
                 var content = arguments[0];\
@@ -1709,7 +1738,7 @@ class BrowserThread(Thread):
                 location = "Data/Task_" + \
                            str(self.id) + "/" + self.saveName + "/" + temp_name
                 image.save(location)
-                ocr = DdddOcr()
+                ocr = DdddOcr(show_ad=False)
                 with open(location, 'rb') as f:
                     image_bytes = f.read()
                 content = ocr.classification(image_bytes)
@@ -1777,10 +1806,10 @@ class BrowserThread(Thread):
         self.recordLog("清空输出参数|Clear output parameters")
 
     # 提取数据事件
-    def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
+    def getData(self, param, loopElement, isInLoop=True, parentPath="", index=0):
         parentPath = replace_field_values(
             parentPath, self.outputParameters, self)
-        if para["clear"] == 1:
+        if param["clear"] == 1:
             self.clearOutputParameters()
         try:
             pageHTML = etree.HTML(self.browser.page_source)
@@ -1792,7 +1821,7 @@ class BrowserThread(Thread):
             except:
                 try:  # 循环点击每个链接如果没有新标签页打开，loopElement会丢失，此时需要重新获取
                     elements = self.browser.find_elements(
-                        By.XPATH, parentPath, iframe=para["paras"][0]["iframe"])
+                        By.XPATH, parentPath, iframe=param["params"][0]["iframe"])
                     loopElement = elements[index]
                     loopElementOuterHTML = loopElement.get_attribute(
                         'outerHTML')
@@ -1801,7 +1830,7 @@ class BrowserThread(Thread):
         else:
             loopElementOuterHTML = ""
         loopElementHTML = etree.HTML(loopElementOuterHTML)
-        for p in para["paras"]:
+        for p in param["params"]:
             if p["optimizable"]:
                 try:
                     relativeXPath = replace_field_values(
@@ -1890,7 +1919,7 @@ class BrowserThread(Thread):
                 except:
                     self.outputParameters[p["name"]] = p["default"]
         # 对于不能优化的操作，使用selenium执行
-        for p in para["paras"]:
+        for p in param["params"]:
             if not p["optimizable"]:
                 content = ""
                 relativeXPath = replace_field_values(
@@ -1991,7 +2020,7 @@ class BrowserThread(Thread):
                 self.outputParameters[p["name"]] = content
                 self.execute_code(
                     2, p["afterJS"], p["afterJSWaitTime"], element, iframe=p["iframe"])  # 执行后置JS
-        if para["recordASField"] > 0 and para["newLine"]:
+        if param["recordASField"] > 0 and param["newLine"]:
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
@@ -2181,8 +2210,23 @@ if __name__ == '__main__':
                         'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
             except:
                 pass
-            selenium_service = Service(executable_path=driver_path)
-            browser_t = MyChrome(service=selenium_service, options=options)
+            try:
+                browser = service["browser"]
+            except:
+                browser = "chrome"
+            if browser == "chrome":
+                selenium_service = Service(executable_path=driver_path)
+                browser_t = MyChrome(service=selenium_service, options=options)
+            elif browser == "edge":
+                from selenium.webdriver.edge.service import Service as EdgeService
+                from selenium.webdriver.edge.options import Options as EdgeOptions
+                from myChrome import MyEdge
+                selenium_service = EdgeService(executable_path="msedgedriver.exe")
+                options = EdgeOptions()
+                options.use_chromium = True
+                options.add_argument("--ie-mode")
+                options.add_argument("ie.edgepath=msedge.exe")
+                browser_t = MyEdge(service=selenium_service, options=options)
         elif cloudflare == 1:
             if sys.platform == "win32":
                 options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器

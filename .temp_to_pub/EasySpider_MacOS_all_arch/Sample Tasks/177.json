@@ -188,7 +188,7 @@
                 "afterJS": "",
                 "afterJSWaitTime": 0,
                 "clear": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 0,
                         "contentType": 0,

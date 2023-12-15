@@ -50,7 +50,7 @@ let app = new Vue({
         loopType: -1, //点击循环时候用来循环选项
         useLoop: false, //记录是否使用循环内元素
         nowArrow: {"position": -1, "pId": 0, "num": 0},
-        paras: {"parameters": []}, //提取数据的参数列表
+        params: {"parameters": []}, //提取数据的参数列表
         TClass: -1, //条件分支的条件类别
         paraIndex: 0, //当前参数的index
         XPaths: "", //xpath列表
@@ -106,9 +106,9 @@ let app = new Vue({
                 this.nowNode["parameters"]["useLoop"] = newVal;
             }
         },
-        paras: {
+        params: {
             handler: function (newVal, oldVal) {
-                this.nowNode["parameters"]["paras"] = newVal["parameters"];
+                this.nowNode["parameters"]["params"] = newVal["parameters"];
             }
         },
         codeMode: {
@@ -250,8 +250,8 @@ let app = new Vue({
             }
             this.XPaths = result;
         },
-        addPara: function () { //添加参数
-            this.nowNode["parameters"]["paras"].push({
+        addParam: function () { //添加参数
+            this.nowNode["parameters"]["params"].push({
                 "nodeType": 0,
                 "contentType": 0,
                 "relative": false,
@@ -279,41 +279,41 @@ let app = new Vue({
                 "paraType": "text",
             });
             notifyParameterNum(1);
-            this.paraIndex = this.nowNode["parameters"]["paras"].length - 1;
+            this.paraIndex = this.nowNode["parameters"]["params"].length - 1;
             setTimeout(function () {
                 $("#app > div.elements > div.toolkitcontain > table.toolkittb4 > tbody > tr:last-child")[0].scrollIntoView(false); //滚动到底部
             }, 200);
         },
-        modifyPara: function (i) { //修改第i个参数
+        modifyParam: function (i) { //修改第i个参数
             this.paraIndex = i;
             let clone_node = DeepClone(this.nowNode);
             clone_node.option = 11; //单独的提取数据参数节点
             clone_node.parameters.index = i;
             trailElement(clone_node, 0);
         },
-        trailPara: function (i) { //试运行第i个参数
+        trailParam: function (i) { //试运行第i个参数
             let clone_node = DeepClone(this.nowNode);
             clone_node.option = 11; //单独的提取数据参数节点
             clone_node.parameters.index = i;
             trailElement(clone_node, 1);
         },
-        deletePara: function (i) { //删除第i个参数
-            this.nowNode["parameters"]["paras"].splice(i, 1);
+        deleteParam: function (i) { //删除第i个参数
+            this.nowNode["parameters"]["params"].splice(i, 1);
             //如果参数删除完了，就把提取数据也删掉
-            if (this.nowNode["parameters"]["paras"].length == 0) {
+            if (this.nowNode["parameters"]["params"].length == 0) {
                 deleteElement();
             }
         },
-        upPara: function (i) { //上移第i个参数
+        upParam: function (i) { //上移第i个参数
             if (i != 0) {
-                let t = this.nowNode["parameters"]["paras"].splice(i, 1)[0];
-                this.nowNode["parameters"]["paras"].splice(i - 1, 0, t);
+                let t = this.nowNode["parameters"]["params"].splice(i, 1)[0];
+                this.nowNode["parameters"]["params"].splice(i - 1, 0, t);
             }
         },
-        downPara: function (i) { //下移第i个参数
-            if (i != this.nowNode["parameters"]["paras"].length - 1) {
-                let t = this.nowNode["parameters"]["paras"].splice(i, 1)[0];
-                this.nowNode["parameters"]["paras"].splice(i + 1, 0, t);
+        downParam: function (i) { //下移第i个参数
+            if (i != this.nowNode["parameters"]["params"].length - 1) {
+                let t = this.nowNode["parameters"]["params"].splice(i, 1)[0];
+                this.nowNode["parameters"]["params"].splice(i + 1, 0, t);
             }
         },
         getType: function (nodeType, contentType) { //根据类型得到字段名称
@@ -473,7 +473,7 @@ function elementDblClick(e) {
             }
         }
     } catch (e) {
-        showError(LANG("试运行功能只能在设计任务阶段，Chrome浏览器打开时使用！", "The trial run function can only be used when designing tasks and opening in Chrome browser!"));
+        showError(LANG("试运行功能只能在任务设计阶段，Chrome浏览器打开时使用！", "The trial run function can only be used when designing tasks and opening in Chrome browser!"));
     }
     e.stopPropagation(); //防止冒泡
 }
@@ -487,7 +487,7 @@ function arrowClick(e) {
 }
 
 //增加元素函数
-function addElement(op, para) {
+function addElement(op, param) {
     option = op;
     if (option == 1) { //打开网页选项
         title = LANG("打开网页", "Open Page");
@@ -495,11 +495,11 @@ function addElement(op, para) {
         title = $(".options")[option - 1].innerHTML; //获取新增操作名称
     }
 
-    toolBoxKernel(null, para);
+    toolBoxKernel(null, param);
 }
 
 // 工具箱操作函数
-function toolBoxKernel(e, para = null) {
+function toolBoxKernel(e, param = null) {
     if (option == 13) { //调整锚点
         // let tarrow = DeepClone(app.$data.nowArrow);
         // refresh();
@@ -587,7 +587,7 @@ function toolBoxKernel(e, para = null) {
                 l = 5;
             }
             try {
-                content = para["content"];
+                content = param["content"];
             } catch {
                 content = LANG("元素", " Element");
             }
@@ -660,8 +660,8 @@ function toolBoxKernel(e, para = null) {
         //下面是确定添加元素之后下一个要插入的节点的位置
         app._data.nowArrow = {"position": t["position"], "pId": t["parentId"], "num": 0};
         addParameters(t); //增加选项的默认参数
-        if (para != null) {
-            modifyParameters(t, para);
+        if (param != null) {
+            modifyParameters(t, param);
         }
         debuggable = false;
         if (option == 8) //循环情况下应插入在循环里面

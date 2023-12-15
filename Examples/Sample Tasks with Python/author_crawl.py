@@ -96,7 +96,7 @@ def main():
     # result = requests.post(
     #     "http://servicewrapper.naibo.wang/backEnd/invokeService",
     #     data={"id": 6,  # serviceID
-    #           "paras": json.dumps({"loopTimes_Loop_Click_1": c.pages,
+    #           "params": json.dumps({"loopTimes_Loop_Click_1": c.pages,
     #                                "urlList_0": urlList,
     #                                }),
     #           })

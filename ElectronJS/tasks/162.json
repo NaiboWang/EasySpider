@@ -489,7 +489,7 @@
                 "scrollWaitTime": 1,
                 "clickWay": 0,
                 "maxWaitTime": 2,
-                "paras": [],
+                "params": [],
                 "allXPaths": [
                     "/html/body/div[5]/div[2]/div[2]/div[1]/div[1]/div[3]/div[1]/span[1]/a[9]",
                     "//a[contains(., '下一页>')]",
@@ -566,7 +566,7 @@
                 "beforeJSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 1,
                         "contentType": 0,

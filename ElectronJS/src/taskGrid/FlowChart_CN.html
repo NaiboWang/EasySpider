@@ -204,7 +204,7 @@
 
                 <div class="elements" v-if="nodeType==3">
                     <p>
-                        <button class="btn btn-primary" v-on:mousedown= 'addPara'>新增字段</button>
+                        <button class="btn btn-primary" v-on:mousedown= 'addParam'>新增字段</button>
                     </p>
                     <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>提取数据前清空其他操作字段已记录的值</p>
                     <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["newLine"]'></input>此提取数据操作后生成新数据行 <span style="font-size: 30px!important;" title="取消勾选则适用于不想每次提取操作都生成一个新行的场景">☺</span></p>
@@ -218,48 +218,48 @@
                         </table>
                         <table class="toolkittb4" cellspacing="0">
                             <tbody>
-                                <tr v-for="i in paras.parameters.length">
-                                    <td style="padding-left:0px"><input spellcheck=false onkeydown="inputDelete(event)" style='padding-left:2px;font-size:13px!important;height:100%' v-model='paras.parameters[i-1]["name"]'></input>
+                                <tr v-for="i in params.parameters.length">
+                                    <td style="padding-left:0px"><input spellcheck=false onkeydown="inputDelete(event)" style='padding-left:2px;font-size:13px!important;height:100%' v-model='params.parameters[i-1]["name"]'></input>
                                     </td>
-                                    <td style="width:200px">{{paras.parameters[i-1]["exampleValues"][0]["value"]}}</td>
+                                    <td style="width:200px">{{params.parameters[i-1]["exampleValues"][0]["value"]}}</td>
                                     <td>
-                                        <a v-on:mousedown="modifyPara(i-1)">修改</a>
-                                        <a v-on:mousedown="deletePara(i-1)">删除</a>
-                                        <a v-on:mousedown="upPara(i-1)">上移</a>
-                                        <a v-on:mousedown="downPara(i-1)">下移</a>
+                                        <a v-on:mousedown="modifyParam(i-1)">修改</a>
+                                        <a v-on:mousedown="deleteParam(i-1)">删除</a>
+                                        <a v-on:mousedown="upParam(i-1)">上移</a>
+                                        <a v-on:mousedown="downParam(i-1)">下移</a>
                                     </td>
                                 </tr>
                         </table>
                     </div>
-                    <div style="font-size: 13px;" v-if="paraIndex<paras.parameters.length">
+                    <div style="font-size: 13px;" v-if="paraIndex<params.parameters.length">
                         <p>当前编辑字段参数名（点击字段的“修改”选项切换参数）： </p>
-                        <label><strong>{{paras.parameters[paraIndex]["name"]}}</strong></label>
-                        <p v-if="nowNode['isInLoop']"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
-                        <p v-if='!paras.parameters[paraIndex]["relative"]'><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='paras.parameters[paraIndex]["iframe"]'></input>元素在iframe内</p>
+                        <label><strong>{{params.parameters[paraIndex]["name"]}}</strong></label>
+                        <p v-if="nowNode['isInLoop']"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='params.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
+                        <p v-if='!params.parameters[paraIndex]["relative"]'><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='params.parameters[paraIndex]["iframe"]'></input>元素在iframe内</p>
                         <p>XPath（所有XPath内均可用Field["字段名"]表示参数值，用eval("你的代码")来替换成自定义的变量）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='paras.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
-                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(paras.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='params.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
+                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
                                 点此展开/折叠自定义操作
                             </a>
                         </p>
-                        <div :class="{collapse: true, 'show': paras.parameters[paraIndex]['beforeJS'].length!=0 || paras.parameters[paraIndex]['afterJS'].length!=0}" id="elementAdvanced">
+                        <div :class="{collapse: true, 'show': params.parameters[paraIndex]['beforeJS'].length!=0 || params.parameters[paraIndex]['afterJS'].length!=0}" id="elementAdvanced">
                             <div>
-                                <div><a href="#" v-on:mousedown="trailPara(paraIndex)" style="text-decoration: none">试运行</a></div>
+                                <div><a href="#" v-on:mousedown="trailParam(paraIndex)" style="text-decoration: none">试运行</a></div>
                                 <label>提取该元素数据<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
                                 <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='paras.parameters[paraIndex]["beforeJS"]'></textarea>
+                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='params.parameters[paraIndex]["beforeJS"]'></textarea>
                                 <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["beforeJSWaitTime"]'></input>
+                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["beforeJSWaitTime"]'></input>
                                 <label>提取该元素数据<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
-                                <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='paras.parameters[paraIndex]["afterJS"]'></textarea>
+                                <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='params.parameters[paraIndex]["afterJS"]'></textarea>
                                 <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["afterJSWaitTime"]'></input>
+                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["afterJSWaitTime"]'></input>
                             </div>
                         </div>
                         <label>参数类型转换为（用于Excel和数据库）：</label>
-                        <select v-model='paras.parameters[paraIndex]["paraType"]' class="form-control">
+                        <select v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
                             <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
                             <option value = "int">整数（位数在9位以内）</option>
                             <option value = "double">浮点数（小数）</option>
@@ -272,9 +272,9 @@
                             <option value = "bigInt">大整数（位数超过9位）</option>
                         </select>
                         <label>元素找不到时的值：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["default"]'></input>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["default"]'></input>
                         <label>采集内容类型</label>
-                        <select v-model='paras.parameters[paraIndex]["contentType"]' class="form-control">
+                        <select v-model='params.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>文本（包括子元素）</option>
                             <option :value = 1>文本（不包括子元素）</option>
                             <option :value = 2>innerHTML</option>
@@ -291,44 +291,44 @@
                             <option :value = 10>当前选择框选中的选项值</option>
                             <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
-                        <div v-if='paras.parameters[paraIndex]["contentType"] == 14'>
+                        <div v-if='params.parameters[paraIndex]["contentType"] == 14'>
                             <label>属性名称：</label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='paras.parameters[paraIndex]["JS"]' placeholder="属性名称，如class表示当前元素的class属性值，即元素所拥有的类名。"></input>
+                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["JS"]' placeholder="属性名称，如class表示当前元素的class属性值，即元素所拥有的类名。"></input>
                         </div>
-                        <div v-else-if='paras.parameters[paraIndex]["contentType"] == 9 || paras.parameters[paraIndex]["contentType"] >= 12'>
+                        <div v-else-if='params.parameters[paraIndex]["contentType"] == 9 || params.parameters[paraIndex]["contentType"] >= 12'>
                             <label>JavaScript（也可以不针对该元素，直接写return JS代码即可）/系统命令/Python代码：</label>
                             <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='如要针对该元素，则该元素用arguments[0]来表示，示例：return arguments[0].innerText + "美元"，即实现了提取该元素innerText并后面加“美元”的功能；不然直接如写return new Date().toString()即可获得当前时间戳。' v-model='paras.parameters[paraIndex]["JS"]'></textarea>
+                                      placeholder='如要针对该元素，则该元素用arguments[0]来表示，示例：return arguments[0].innerText + "美元"，即实现了提取该元素innerText并后面加“美元”的功能；不然直接如写return new Date().toString()即可获得当前时间戳。' v-model='params.parameters[paraIndex]["JS"]'></textarea>
                             <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='paras.parameters[paraIndex]["JSWaitTime"]'></input>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["JSWaitTime"]'></input>
                         </div>
                         <label>节点类型</label>
-                        <select v-model='paras.parameters[paraIndex]["nodeType"]' class="form-control">
+                        <select v-model='params.parameters[paraIndex]["nodeType"]' class="form-control">
                             <option :value = 0>普通节点</option>
                             <option :value = 1>链接文本</option>
                             <option :value = 2>链接地址</option>
                             <option :value = 3>表单值</option>
                             <option :value = 4>图片地址</option>
                         </select>
-                        <div v-if='paras.parameters[paraIndex]["nodeType"] == 4'>
+                        <div v-if='params.parameters[paraIndex]["nodeType"] == 4'>
                             <label>提取图片地址后是否同时<b>下载图片</b>：</label>
-                            <select v-model='paras.parameters[paraIndex]["downloadPic"]' class="form-control">
+                            <select v-model='params.parameters[paraIndex]["downloadPic"]' class="form-control">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
                             </select>
                         </div>
                         <!--                        <label>提取方式</label>-->
-<!--                        <select v-model='paras.parameters[paraIndex]["extractType"]' class="form-control">-->
+<!--                        <select v-model='params.parameters[paraIndex]["extractType"]' class="form-control">-->
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
                         <label style="margin-top: 15px">是否保存该字段（只想把此字段当变量而不想保存时可选否）：</label>
-                        <select v-model='paras.parameters[paraIndex]["recordASField"]' class="form-control">
+                        <select v-model='params.parameters[paraIndex]["recordASField"]' class="form-control">
                             <option :value = 1>是</option>
                             <option :value = 0>否</option>
                         </select>
                         <label>参数描述：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='paras.parameters[paraIndex]["desc"]'></input>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='params.parameters[paraIndex]["desc"]'></input>
                     </div>
 
                 </div>

@@ -100,7 +100,7 @@
                 "beforeJSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 0,
                         "contentType": 0,

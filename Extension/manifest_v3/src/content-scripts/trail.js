@@ -32,6 +32,9 @@ export function trial(evt) {
             let xpath = parameters.xpath;
             if (parameters.useLoop && option != 4 && option != 6) {
                 let parentXPath = parentNode.parameters.xpath;
+                if (parentNode.parameters.loopType == 2) { //循环项列表
+                    parentXPath = parentNode.parameters.pathList.split("\n")[0].trim();
+                }
                 xpath = parentXPath + xpath;
             }
             let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -44,22 +47,22 @@ export function trial(evt) {
             //     element.scrollIntoView({block: "center", inline: "center"});
             // }
         } else if (option == 3) {
-            let paras = parameters.paras; //所有的提取数据参数
+            let params = parameters.params; //所有的提取数据参数
             clearEl(true);
-            for (let i = 0; i < paras.length; i++) {
-                let para = paras[i];
-                let xpath = para.relativeXPath;
-                let parent_xpaths = "";
+            for (let i = 0; i < params.length; i++) {
+                let param = params[i];
+                let xpath = param.relativeXPath;
+                let parentXPaths = "";
                 let xpaths = [];
-                if (para.relative) {
+                if (param.relative) {
                     if (parentNode.parameters.loopType <= 1) {
-                        parent_xpaths = [parentNode.parameters.xpath];
+                        parentXPaths = [parentNode.parameters.xpath];
                     } else if (parentNode.parameters.loopType == 2) { //循环项列表
-                        parent_xpaths = parentNode.parameters.pathList.split("\n");
+                        parentXPaths = parentNode.parameters.pathList.split("\n");
                     }
-                    for (let j = 0; j < parent_xpaths.length; j++) {
-                        let parent_xpath = parent_xpaths[j];
-                        let realXPath = parent_xpath + xpath;
+                    for (let j = 0; j < parentXPaths.length; j++) {
+                        let parentXPath = parentXPaths[j];
+                        let realXPath = parentXPath + xpath;
                         xpaths.push(realXPath);
                     }
                 } else {
@@ -87,17 +90,16 @@ export function trial(evt) {
                 }
             }
         } else if (option == 11) {
-            let paras = parameters.paras; //所有的提取数据参数
+            let params = parameters.params; //所有的提取数据参数
             let i = parameters.index;
-            let para = paras[i];
-            let xpath = para.relativeXPath;
-            if (para.relative) {
-                let parent_xpath = parentNode.parameters.xpath;
+            let param = params[i];
+            let xpath = param.relativeXPath;
+            if (param.relative) {
+                let parentXPath = parentNode.parameters.xpath;
                 if (parentNode.parameters.loopType == 2) {
-                    let pathList = parentNode.parameters.pathList.split("\n")[0].trim();
-                    parent_xpath = pathList;
+                    parentXPath = parentNode.parameters.pathList.split("\n")[0].trim();
                 }
-                xpath = parent_xpath + xpath;
+                xpath = parentXPath + xpath;
             }
             let elementList = document.evaluate(xpath, document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
             clearEl(true);
@@ -181,8 +183,11 @@ export function trial(evt) {
                 }
             } else if (condition == 3) { //当前循环项包含文本，xpath
                 let value = parameters.value;
-                let xpath = parentNode.parameters.xpath;
-                let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                let parentXPath = parentNode.parameters.xpath;
+                if (parentNode.parameters.loopType == 2) { //循环项列表
+                    parentXPath = parentNode.parameters.pathList.split("\n")[0].trim();
+                }
+                let element = document.evaluate(parentXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if (element != null) {
                     let elementText = element.innerText;
                     let outcome = elementText.indexOf(value) >= 0;
@@ -194,12 +199,15 @@ export function trial(evt) {
                     additionalInfo = LANG("，注意只会检索第一个匹配到的循环项", ", note that only the first matching loop item will be retrieved");
                 }
             } else if (condition == 4) { //当前循环项包含元素，xpath
-                let xpath = parentNode.parameters.xpath;
+                let parentXPath = parentNode.parameters.xpath;
+                if (parentNode.parameters.loopType == 2) { //循环项列表
+                    parentXPath = parentNode.parameters.pathList.split("\n")[0].trim();
+                }
                 let value = parameters.value;
                 // full_path = "(" + parentPath + ")" + \
                 //                             "[" + str(index + 1) + "]" + \
                 //                             relativeXPath + content_type
-                xpath = "(" + xpath + ")" + "[" + "1" + "]" + value;
+                let xpath = "(" + parentXPath + ")" + "[" + "1" + "]" + value;
                 let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                 if (element != null) {
                     result = 1;
@@ -221,7 +229,7 @@ export function trial(evt) {
             } else if (result == 1) {
                 createNotification(LANG("当前页面下，条件分支“" + node.title + "”的条件已满足" + additionalInfo, "The condition of the conditional branch: " + node.title + " is met on the current page" + additionalInfo), "success");
             } else if (result == 2) {
-                createNotification(LANG("不支持此条件判断类型的动态调试，请在任务正式调用阶段测试是否有效。", "Dynamic debugging of this condition judgment type is not supported. Please test whether it is valid in the formal call stage."), "info");
+                createNotification(LANG("不支持此条件判断类型的动态调试，请在任务正式运行阶段测试是否有效。", "Dynamic debugging of this condition judgment type is not supported. Please test whether it is valid in the formal call stage."), "info");
             }
         }
 

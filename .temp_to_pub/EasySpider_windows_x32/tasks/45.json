@@ -105,7 +105,7 @@
                 "afterJSWaitTime": 5,
                 "scrollType": 0,
                 "scrollCount": 0,
-                "paras": [],
+                "params": [],
                 "allXPaths": [
                     "/html/body/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]",
                     "//div[contains(., '/手机/数码')]",

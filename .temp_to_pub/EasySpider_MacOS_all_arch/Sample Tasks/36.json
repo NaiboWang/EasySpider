@@ -99,7 +99,7 @@
                 "useLoop": false,
                 "xpath": "",
                 "wait": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 0,
                         "contentType": 6,

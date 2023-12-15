@@ -265,7 +265,7 @@ exports.start = function(port = 8074) {
                 }
             } else if(pathName == "/manageTask"){
                 body = querystring.parse(body);
-                data = JSON.parse(body.paras);
+                data = JSON.parse(body.params);
                 let id = data["id"];
                 if (data["id"] == -1) {
                     file_names = [];
@@ -317,7 +317,7 @@ exports.start = function(port = 8074) {
                 res.end();
             } else if(pathName == "/invokeTask"){
                 body = querystring.parse(body);
-                let data = JSON.parse(body.paras);
+                let data = JSON.parse(body.params);
                 let id = body.id;
                 let task = fs.readFileSync(path.join(getDir(), `tasks/${id}.json`), 'utf8');
                 task = JSON.parse(task);

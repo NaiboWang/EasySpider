@@ -285,7 +285,7 @@
                 "scrollWaitTime": 1,
                 "clickWay": 0,
                 "maxWaitTime": 10,
-                "paras": [],
+                "params": [],
                 "allXPaths": [
                     "/html/body/div[1]/div[3]/div[1]/div[1]/div[1]/form[1]/div[5]/a[1]",
                     "//a[contains(., '查询')]",
@@ -373,7 +373,7 @@
                 "scrollWaitTime": 1,
                 "clickWay": 0,
                 "maxWaitTime": 10,
-                "paras": [],
+                "params": [],
                 "allXPaths": [
                     "/html/body/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/ul[1]/li[10]/a[1]",
                     "//a[contains(., '»')]",
@@ -457,7 +457,7 @@
                 "waitElementIframeIndex": 0,
                 "clear": 0,
                 "newLine": 1,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 0,
                         "contentType": 1,

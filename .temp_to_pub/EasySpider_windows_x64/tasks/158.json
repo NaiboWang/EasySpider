@@ -165,7 +165,7 @@
                 "scrollWaitTime": 1,
                 "clickWay": 0,
                 "maxWaitTime": 10,
-                "paras": [],
+                "params": [],
                 "allXPaths": [
                     "/html/body/div[4]/div[1]/div[2]/div[1]/button[1]/i[1]",
                     "//i[contains(., '')]",
@@ -240,7 +240,7 @@
                 "beforeJSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 0,
                         "contentType": 1,

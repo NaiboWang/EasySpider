@@ -136,15 +136,15 @@ def on_release_creator(event, press_time):
 #                 event.clear()
 #         time.sleep(1)  # 每秒检查一次
 
-def detect_optimizable(para, ignoreWaitElement=True, waitElement=""):
-    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1:
-        if para["nodeType"] <= 2:
+def detect_optimizable(param, ignoreWaitElement=True, waitElement=""):
+    if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1:
+        if param["nodeType"] <= 2:
             if ignoreWaitElement or waitElement == "":
                 return True
             else:
                 return False
-        elif para["nodeType"] == 4: # 如果是图片
-            if para["downloadPic"]:
+        elif param["nodeType"] == 4: # 如果是图片
+            if param["downloadPic"]:
                 return False
             else:
                 return True

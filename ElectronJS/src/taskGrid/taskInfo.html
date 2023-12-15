@@ -65,7 +65,7 @@
                     </tr>
                     <tr v-if="task.inputParameters.length>0" v-for="i in task.inputParameters.length">
                         <td style="min-width: 50px; text-align: center">{{i}}</td>
-                        <td style="text-align: center">{{task.inputParameters[i-1]["nodeName"]}}</td>
+                        <td style="text-align: center;white-space: initial">{{task.inputParameters[i-1]["nodeName"]}}</td>
                         <td style="text-align: center">{{task.inputParameters[i-1]["name"]}}</td>
                         <td style="text-align: center">{{task.inputParameters[i-1]["type"]}}</td>
                         <td>{{task.inputParameters[i-1]["exampleValue"]}}</td>

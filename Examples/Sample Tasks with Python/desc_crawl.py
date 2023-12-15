@@ -108,7 +108,7 @@ def main():
     # result = requests.post(
     #     "http://servicewrapper.naibo.wang/backEnd/invokeService",
     #     data={"id": 7,  # serviceID
-    #           "paras": json.dumps({"urlList_0": urlList,
+    #           "params": json.dumps({"urlList_0": urlList,
     #                                }),
     #           })
     # descTaskID = int(result.text)

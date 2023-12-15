@@ -17,4 +17,4 @@ execution_instances/
 mysql_config.json
 EasySpider.app/
 TempUserDataFolder/
-
+*.exe

@@ -148,22 +148,22 @@ class BrowserThread(Thread):
         self.log = ""  # 记下现在总共开了多少个标签页
         self.history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
         self.SAVED = False  # 记录是否已经存储了
-        for para in service["outputParameters"]: # 初始化输出参数
-            if para["name"] not in self.outputParameters.keys():
-                self.outputParameters[para["name"]] = ""
-                self.dataNotFoundKeys[para["name"]] = False
+        for param in service["outputParameters"]: # 初始化输出参数
+            if param["name"] not in self.outputParameters.keys():
+                self.outputParameters[param["name"]] = ""
+                self.dataNotFoundKeys[param["name"]] = False
                 try:
-                    self.outputParametersTypes.append(para["type"])
+                    self.outputParametersTypes.append(param["type"])
                 except:
                     self.outputParametersTypes.append("text")
                 try:
-                    self.outputParametersRecord.append(bool(para["recordASField"]))
+                    self.outputParametersRecord.append(bool(param["recordASField"]))
                 except:
                     self.outputParametersRecord.append(True)
                 # 文件叠加的时候不添加表头
                 if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
                     if self.writeMode == 0:
-                        self.OUTPUT[0].append(para["name"])
+                        self.OUTPUT[0].append(param["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
 
@@ -185,20 +185,20 @@ class BrowserThread(Thread):
                 except:
                     node["parameters"]["cookies"] = ""
             if node["option"] == 3:  # 提取数据操作
-                paras = node["parameters"]["paras"]
-                for para in paras:
+                params = node["parameters"]["params"]
+                for param in params:
                     try:
-                        iframe = para["iframe"]
+                        iframe = param["iframe"]
                     except:
-                        para["iframe"] = False
+                        param["iframe"] = False
                     try:
-                        para["relativeXPath"] = lowercase_tags_in_xpath(para["relativeXPath"])
+                        param["relativeXPath"] = lowercase_tags_in_xpath(param["relativeXPath"])
                     except:
                         pass
-                    if para["beforeJS"] == "" and para["afterJS"] == "" and para["contentType"] <= 1 and para["nodeType"] <= 2:
-                        para["optimizable"] = True
+                    if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1 and param["nodeType"] <= 2:
+                        param["optimizable"] = True
                     else:
-                        para["optimizable"] = False
+                        param["optimizable"] = False
 
     def run(self):
         # 挨个执行程序
@@ -256,41 +256,41 @@ class BrowserThread(Thread):
             self.OUTPUT = []
             self.log = ""
 
-    def scrollDown(self, para, rt=""):
+    def scrollDown(self, param, rt=""):
         try:
-            time.sleep(para["scrollWaitTime"])  # 下拉前等待
+            time.sleep(param["scrollWaitTime"])  # 下拉前等待
         except:
             pass
-        scrollType = int(para["scrollType"])
+        scrollType = int(param["scrollType"])
         try:
-            if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-                for i in range(para["scrollCount"]):
+            if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
+                for i in range(param["scrollCount"]):
                     self.Log("Wait for set second after screen scrolling")
                     body = self.browser.find_element(
-                        By.CSS_SELECTOR, "body", iframe=para["iframe"])
+                        By.CSS_SELECTOR, "body", iframe=param["iframe"])
                     if scrollType == 1:
                         body.send_keys(Keys.PAGE_DOWN)
                     elif scrollType == 2:
                         body.send_keys(Keys.END)
                     try:
-                        time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                        time.sleep(param["scrollWaitTime"])  # 下拉完等待
                     except:
                         pass
         except:
             self.Log('Time out after set seconds when scrolling. ')
             self.recordLog('Time out after set seconds when scrolling')
             self.browser.execute_script('window.stop()')
-            if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-                for i in range(para["scrollCount"]):
+            if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
+                for i in range(param["scrollCount"]):
                     self.Log("Wait for set second after screen scrolling")
                     body = self.browser.find_element(
-                        By.CSS_SELECTOR, "body", iframe=para["iframe"])
+                        By.CSS_SELECTOR, "body", iframe=param["iframe"])
                     if scrollType == 1:
                         body.send_keys(Keys.PGDN)
                     elif scrollType == 2:
                         body.send_keys(Keys.END)
                     try:
-                        time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                        time.sleep(param["scrollWaitTime"])  # 下拉完等待
                     except:
                         pass
             if rt != "":
@@ -369,18 +369,18 @@ class BrowserThread(Thread):
         return str(output)
 
     def customOperation(self, node, loopValue, loopPath, index):
-        paras = node["parameters"]
-        codeMode = int(paras["codeMode"])
-        code = paras["code"]
+        params = node["parameters"]
+        codeMode = int(params["codeMode"])
+        code = params["code"]
         output = ""
-        max_wait_time = int(paras["waitTime"])
+        max_wait_time = int(params["waitTime"])
         if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             try:
                 elements = self.browser.find_elements(
-                    By.XPATH, loopPath, iframe=paras["iframe"])
+                    By.XPATH, loopPath, iframe=params["iframe"])
                 element = elements[index]
                 output = self.execute_code(
-                    codeMode, code, max_wait_time, element, iframe=paras["iframe"])
+                    codeMode, code, max_wait_time, element, iframe=params["iframe"])
             except:
                 output = ""
                 print("JavaScript execution failed")
@@ -388,8 +388,8 @@ class BrowserThread(Thread):
             self.BREAK = True
         else: # 0 1
             output = self.execute_code(
-                codeMode, code, max_wait_time, iframe=paras["iframe"])
-        recordASField = bool(paras["recordASField"])
+                codeMode, code, max_wait_time, iframe=params["iframe"])
+        recordASField = bool(params["recordASField"])
         if recordASField:
             print("操作<" + node["title"] + ">的返回值为：" + output)
             print("The return value of operation <" + node["title"] + "> is: " + output)
@@ -398,12 +398,12 @@ class BrowserThread(Thread):
             line = new_line(self.outputParameters, self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
-    def switchSelect(self, para, loopValue):
-        optionMode = int(para["optionMode"])
-        optionValue = para["optionValue"]
+    def switchSelect(self, param, loopValue):
+        optionMode = int(param["optionMode"])
+        optionValue = param["optionValue"]
         try:
             dropdown = Select(self.browser.find_element(
-                By.XPATH, para["xpath"], iframe=para["iframe"]))
+                By.XPATH, param["xpath"], iframe=param["iframe"]))
             try:
                 if optionMode == 0:
                     # 获取当前选中的选项索引
@@ -420,36 +420,36 @@ class BrowserThread(Thread):
                 elif optionMode == 3:
                     dropdown.select_by_visible_text(optionValue)
             except:
-                print("切换下拉框选项失败:", para["xpath"],
-                      para["optionMode"], para["optionValue"])
+                print("切换下拉框选项失败:", param["xpath"],
+                      param["optionMode"], param["optionValue"])
                 print("Failed to change drop-down box option:",
-                      para["xpath"], para["optionMode"], para["optionValue"])
+                      param["xpath"], param["optionMode"], param["optionValue"])
         except:
-            print("找不到下拉框元素:", para["xpath"])
-            print("Cannot find drop-down box element:", para["xpath"])
+            print("找不到下拉框元素:", param["xpath"])
+            print("Cannot find drop-down box element:", param["xpath"])
 
-    def moveToElement(self, para, loopElement=None, loopPath="", index=0):
+    def moveToElement(self, param, loopElement=None, loopPath="", index=0):
         time.sleep(0.1)  # 移动之前等待0.1秒
-        if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+        if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
             path = loopPath
             # element = loopElement
         else:
             index = 0
-            path = para["xpath"]  # 不然使用元素定义的xpath
+            path = param["xpath"]  # 不然使用元素定义的xpath
             # element = self.browser.find_element(
-            # By.XPATH, path, iframe=para["iframe"])
+            # By.XPATH, path, iframe=param["iframe"])
         try:
             elements = self.browser.find_elements(
-                By.XPATH, path, iframe=para["iframe"])
+                By.XPATH, path, iframe=param["iframe"])
             element = elements[index]
             try:
                 ActionChains(self.browser).move_to_element(element).perform()
             except:
-                print("移动鼠标到元素失败:", para["xpath"])
-                print("Failed to move mouse to element:", para["xpath"])
+                print("移动鼠标到元素失败:", param["xpath"])
+                print("Failed to move mouse to element:", param["xpath"])
         except:
-            print("找不到元素:", para["xpath"])
-            print("Cannot find element:", para["xpath"])
+            print("找不到元素:", param["xpath"])
+            print("Cannot find element:", param["xpath"])
 
     # 执行节点关键函数部分
 
@@ -799,7 +799,7 @@ class BrowserThread(Thread):
         self.scrollDown(node["parameters"])
 
     # 打开网页事件
-    def openPage(self, para, loopValue):
+    def openPage(self, param, loopValue):
         time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
             self.browser.switch_to.window(
@@ -808,15 +808,15 @@ class BrowserThread(Thread):
         self.browser.switch_to.window(
             self.browser.window_handles[0])  # 打开网页操作从第1个页面开始
         self.history["handle"] = self.browser.current_window_handle
-        if para["useLoop"]:
+        if param["useLoop"]:
             url = loopValue
-        elif para["url"] != "about:blank":
+        elif param["url"] != "about:blank":
             url = self.links[self.urlId]
             # clear output parameters
             for key in self.outputParameters:
                 self.outputParameters[key] = ""
         else:
-            url = list(filter(isnull, para["links"].split("\n")))[0]
+            url = list(filter(isnull, param["links"].split("\n")))[0]
         # 将value中的Field[""]替换为outputParameters中的键值
         pattern = r'Field\["([^"]+)"\]'
         try:
@@ -826,16 +826,16 @@ class BrowserThread(Thread):
             replaced_text = url
         url = replaced_text
         try:
-            maxWaitTime = int(para["maxWaitTime"])
+            maxWaitTime = int(param["maxWaitTime"])
         except:
             maxWaitTime = 10  # 默认最大等待时间为10秒
         try:
             self.browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
             self.browser.set_script_timeout(maxWaitTime)
             self.browser.get(url)
-            if para["cookies"] != "":
+            if param["cookies"] != "":
                 self.browser.delete_all_cookies()  # 清除所有已有cookie
-                cookies = para["cookies"].split('\n')
+                cookies = param["cookies"].split('\n')
                 for cookie in cookies:
                     name, value = cookie.split('=', 1)
                     cookie_dict = {'name': name, 'value': value}
@@ -864,19 +864,19 @@ class BrowserThread(Thread):
                     "return history.length")
             except:
                 self.history["index"] = 0
-        self.scrollDown(para)  # 控制屏幕向下滚动
+        self.scrollDown(param)  # 控制屏幕向下滚动
 
     # 键盘输入事件
-    def inputInfo(self, para, loopValue):
+    def inputInfo(self, param, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         self.Log("Wait 0.1 second before input")
         try:
             textbox = self.browser.find_element(
-                By.XPATH, para["xpath"], iframe=para["iframe"])
+                By.XPATH, param["xpath"], iframe=param["iframe"])
             #     textbox.send_keys(Keys.CONTROL, 'a')
             #     textbox.send_keys(Keys.BACKSPACE)
             self.execute_code(
-                2, para["beforeJS"], para["beforeJSWaitTime"], textbox, iframe=para["iframe"])  # 执行前置JS
+                2, param["beforeJS"], param["beforeJSWaitTime"], textbox, iframe=param["iframe"])  # 执行前置JS
             # Send the HOME key
             textbox.send_keys(Keys.HOME)
             # Send the SHIFT + END key combination
@@ -884,10 +884,10 @@ class BrowserThread(Thread):
             # Send the DELETE key
             textbox.send_keys(Keys.DELETE)
             value = ""
-            if para["useLoop"]:
+            if param["useLoop"]:
                 value = loopValue
             else:
-                value = para["value"]
+                value = param["value"]
             # 将value中的Field[""]替换为outputParameters中的键值
             pattern = r'Field\["([^"]+)"\]'
             try:
@@ -901,19 +901,19 @@ class BrowserThread(Thread):
             if value.lower().find("<enter>") >= 0:
                 textbox.send_keys(Keys.ENTER)
             self.execute_code(
-                2, para["afterJS"], para["afterJSWaitTime"], textbox, iframe=para["iframe"])  # 执行后置js
+                2, param["afterJS"], param["afterJSWaitTime"], textbox, iframe=param["iframe"])  # 执行后置js
         except:
             print("Cannot find input box element:" +
-                  para["xpath"] + ", please try to set the wait time before executing this operation")
-            print("找不到输入框元素:" + para["xpath"] + "，请尝试在执行此操作前设置等待时间")
+                  param["xpath"] + ", please try to set the wait time before executing this operation")
+            print("找不到输入框元素:" + param["xpath"] + "，请尝试在执行此操作前设置等待时间")
             self.recordLog("Cannot find input box element:" +
-                           para["xpath"] + "Please try to set the wait time before executing this operation")
+                           param["xpath"] + "Please try to set the wait time before executing this operation")
 
     # 点击元素事件
 
-    def clickElement(self, para, loopElement=None, clickPath="", index=0):
+    def clickElement(self, param, loopElement=None, clickPath="", index=0):
         try:
-            maxWaitTime = int(para["maxWaitTime"])
+            maxWaitTime = int(param["maxWaitTime"])
         except:
             maxWaitTime = 10
         self.browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
@@ -921,21 +921,21 @@ class BrowserThread(Thread):
         # 点击前对该元素执行一段JavaScript代码
         try:
             # element = self.browser.find_element(
-            #     By.XPATH, path, iframe=para["iframe"])
-            if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+            #     By.XPATH, path, iframe=param["iframe"])
+            if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 path = clickPath
                 # element = loopElement
             else:
                 index = 0
-                path = para["xpath"]  # 不然使用元素定义的xpath
+                path = param["xpath"]  # 不然使用元素定义的xpath
                 # element = self.browser.find_element(
-                #     By.XPATH, path, iframe=para["iframe"])
+                #     By.XPATH, path, iframe=param["iframe"])
             elements = self.browser.find_elements(
-                By.XPATH, path, iframe=para["iframe"])
+                By.XPATH, path, iframe=param["iframe"])
             element = elements[index]
-            if para["beforeJS"] != "":
-                self.execute_code(2, para["beforeJS"],
-                                  para["beforeJSWaitTime"], element, iframe=para["iframe"])
+            if param["beforeJS"] != "":
+                self.execute_code(2, param["beforeJS"],
+                                  param["beforeJSWaitTime"], element, iframe=param["iframe"])
         except:
             print("Cannot find element:" +
                   path + ", please try to set the wait time before executing this operation")
@@ -944,7 +944,7 @@ class BrowserThread(Thread):
                            path + ", please try to set the wait time before executing this operation")
         tempHandleNum = len(self.browser.window_handles)  # 记录之前的窗口位置
         try:
-            click_way = int(para["clickWay"])
+            click_way = int(param["clickWay"])
         except:
             click_way = 0
         try:
@@ -968,19 +968,19 @@ class BrowserThread(Thread):
             self.recordLog(str(e))
         # 点击后对该元素执行一段JavaScript代码
         try:
-            if para["afterJS"] != "":
+            if param["afterJS"] != "":
                 element = self.browser.find_element(
-                    By.XPATH, path, iframe=para["iframe"])
-                self.execute_code(2, para["afterJS"],
-                                  para["afterJSWaitTime"], element, iframe=para["iframe"])
+                    By.XPATH, path, iframe=param["iframe"])
+                self.execute_code(2, param["afterJS"],
+                                  param["afterJSWaitTime"], element, iframe=param["iframe"])
         except:
             print("Cannot find element:" + path)
             self.recordLog("Cannot find element:" +
                            path + ", please try to set the wait time before executing this operation")
             print("找不到要点击的元素:" + path + "，请尝试在执行此操作前设置等待时间")
-        waitTime = float(para["wait"]) + 0.01  # 点击之后等待
+        waitTime = float(param["wait"]) + 0.01  # 点击之后等待
         try:
-            waitType = int(para["waitType"])
+            waitType = int(param["waitType"])
         except:
             waitType = 0
         if waitType == 0:  # 固定等待时间
@@ -1007,7 +1007,7 @@ class BrowserThread(Thread):
                 self.history["index"] = self.browser.execute_script(
                     "return history.length")
                 # 如果打开了新窗口，切换到新窗口
-        self.scrollDown(para)  # 根据参数配置向下滚动
+        self.scrollDown(param)  # 根据参数配置向下滚动
         # rt.end()
 
     def get_content(self, p, element):
@@ -1143,7 +1143,7 @@ class BrowserThread(Thread):
         return content
 
     # 提取数据事件
-    def getData(self, para, loopElement, isInLoop=True, parentPath="", index=0):
+    def getData(self, param, loopElement, isInLoop=True, parentPath="", index=0):
         try:
             pageHTML = etree.HTML(self.browser.page_source)
         except:
@@ -1154,7 +1154,7 @@ class BrowserThread(Thread):
             except:
                 try:  # 循环点击每个链接如果没有新标签页打开，loopElement会丢失，此时需要重新获取
                     elements = self.browser.find_elements(
-                        By.XPATH, parentPath, iframe=para["paras"][0]["iframe"])
+                        By.XPATH, parentPath, iframe=param["params"][0]["iframe"])
                     loopElement = elements[index]
                     loopElementOuterHTML = loopElement.get_attribute(
                         'outerHTML')
@@ -1163,7 +1163,7 @@ class BrowserThread(Thread):
         else:
             loopElementOuterHTML = ""
         loopElementHTML = etree.HTML(loopElementOuterHTML)
-        for p in para["paras"]:
+        for p in param["params"]:
             if p["optimizable"]:
                 try:
                     # 只有当前环境不变变化才可以快速提取数据
@@ -1228,7 +1228,7 @@ class BrowserThread(Thread):
                 self.outputParameters[p["name"]] = content
 
         # 对于不能优化的操作，使用selenium执行
-        for p in para["paras"]:
+        for p in param["params"]:
             if not p["optimizable"]:
                 content = ""
                 if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素

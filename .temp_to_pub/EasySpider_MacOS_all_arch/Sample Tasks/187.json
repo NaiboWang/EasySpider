@@ -142,7 +142,7 @@
         "waitElementTime": 10,
         "waitElementIframeIndex": 0,
         "clear": 0,
-        "paras": [
+        "params": [
           {
             "nodeType": 0,
             "contentType": 8,

@@ -130,7 +130,7 @@
                 "beforeJSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 1,
                         "contentType": 0,
@@ -271,7 +271,7 @@
                 "beforeJSWaitTime": 0,
                 "afterJS": "",
                 "afterJSWaitTime": 0,
-                "paras": [
+                "params": [
                     {
                         "nodeType": 4,
                         "contentType": 0,

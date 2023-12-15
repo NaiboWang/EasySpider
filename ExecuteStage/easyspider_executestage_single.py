@@ -103,31 +103,31 @@ def download_image(url, save_directory):
         print("Failed to download image, please check if this image link is valid:", url)
 
 
-def scrollDown(para, rt=""):
-    scrollType = int(para["scrollType"])
+def scrollDown(param, rt=""):
+    scrollType = int(param["scrollType"])
     try:
-        if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
+        if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
+            for i in range(param["scrollCount"]):
                 Log("Wait for set second after screen scrolling")
                 body = browser.find_element(By.CSS_SELECTOR, "body")
                 if scrollType == 1:
                     body.send_keys(Keys.PAGE_DOWN)
                 elif scrollType == 2:
                     body.send_keys(Keys.END)
-                time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                time.sleep(param["scrollWaitTime"])  # 下拉完等待
     except TimeoutException:
         Log('time out after set seconds when scrolling. ')
         recordLog('time out after set seconds when scrolling')
         browser.execute_script('window.stop()')
-        if scrollType != 0 and para["scrollCount"] > 0:  # 控制屏幕向下滚动
-            for i in range(para["scrollCount"]):
+        if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
+            for i in range(param["scrollCount"]):
                 Log("Wait for set second after screen scrolling")
                 body = browser.find_element(By.CSS_SELECTOR, "body")
                 if scrollType == 1:
                     body.send_keys(Keys.PGDN)
                 elif scrollType == 2:
                     body.send_keys(Keys.END)
-                time.sleep(para["scrollWaitTime"])  # 下拉完等待
+                time.sleep(param["scrollWaitTime"])  # 下拉完等待
         if rt != "":
             rt.end()
 
@@ -175,10 +175,10 @@ def execute_code(codeMode, code, max_wait_time, element=None):
     return str(output)
 
 def customOperation(node, loopValue, loopPath, index):
-    paras = node["parameters"]
-    codeMode = int(paras["codeMode"])
-    code = paras["code"]
-    max_wait_time = int(paras["waitTime"])
+    params = node["parameters"]
+    codeMode = int(params["codeMode"])
+    code = params["code"]
+    max_wait_time = int(params["waitTime"])
     if codeMode == 2:  # 使用循环的情况下，传入的clickPath就是实际的xpath
         try:
             elements = browser.find_elements(By.XPATH, loopPath)
@@ -189,7 +189,7 @@ def customOperation(node, loopValue, loopPath, index):
             print("JavaScript execution failed")
     else:
         output = execute_code(codeMode, code, max_wait_time)
-    recordASField = int(paras["recordASField"])
+    recordASField = int(params["recordASField"])
     if recordASField:
         global OUTPUT, outputParameters
         outputParameters[node["title"]] = output
@@ -200,11 +200,11 @@ def customOperation(node, loopValue, loopPath, index):
         print("")
         OUTPUT.append(line)
 
-def switchSelect(para, loopValue):
-    optionMode = int(para["optionMode"])
-    optionValue = para["optionValue"]
+def switchSelect(param, loopValue):
+    optionMode = int(param["optionMode"])
+    optionValue = param["optionValue"]
     try:
-        dropdown = Select(browser.find_element(By.XPATH, para["xpath"]))
+        dropdown = Select(browser.find_element(By.XPATH, param["xpath"]))
         try:
             if optionMode == 0:
                 # 获取当前选中的选项索引
@@ -220,31 +220,31 @@ def switchSelect(para, loopValue):
             elif optionMode == 3:
                 dropdown.select_by_visible_text(optionValue)
         except:
-            print("切换下拉框选项失败:", para["xpath"], para["optionMode"], para["optionValue"])
-            print("Failed to change drop-down box option:", para["xpath"], para["optionMode"], para["optionValue"])
+            print("切换下拉框选项失败:", param["xpath"], param["optionMode"], param["optionValue"])
+            print("Failed to change drop-down box option:", param["xpath"], param["optionMode"], param["optionValue"])
     except:
-        print("找不到下拉框元素:", para["xpath"])
-        print("Cannot find drop-down box element:", para["xpath"])
+        print("找不到下拉框元素:", param["xpath"])
+        print("Cannot find drop-down box element:", param["xpath"])
 
 
-def moveToElement(para, loopElement=None, loopPath="", index=0):
+def moveToElement(param, loopElement=None, loopPath="", index=0):
     time.sleep(0.1)  # 移动之前等待0.1秒
-    if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+    if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
         path = loopPath
     else:
         index = 0
-        path = para["xpath"]  # 不然使用元素定义的xpath
+        path = param["xpath"]  # 不然使用元素定义的xpath
     try:
         elements = browser.find_elements(By.XPATH, path)
         element = elements[index]
         try:
             ActionChains(browser).move_to_element(element).perform()
         except:
-            print("移动鼠标到元素失败:", para["xpath"])
-            print("Failed to move mouse to element:", para["xpath"])
+            print("移动鼠标到元素失败:", param["xpath"])
+            print("Failed to move mouse to element:", param["xpath"])
     except:
-        print("找不到元素:", para["xpath"])
-        print("Cannot find element:", para["xpath"])
+        print("找不到元素:", param["xpath"])
+        print("Cannot find element:", param["xpath"])
 
 
 # 执行节点关键函数部分
@@ -545,7 +545,7 @@ def loopExecute(node, loopValue, clickPath="", index=0):
 
 
 # 打开网页事件
-def openPage(para, loopValue):
+def openPage(param, loopValue):
     # rt = Time("打开网页")
     time.sleep(2)  # 打开网页后强行等待至少2秒
     global links
@@ -566,12 +566,12 @@ def openPage(para, loopValue):
         browser.close()
     browser.switch_to.window(browser.window_handles[0])  # 打开网页操作从第1个页面开始
     history["handle"] = browser.current_window_handle
-    if para["useLoop"]:
+    if param["useLoop"]:
         url = loopValue
     else:
         url = links[urlId]
     try:
-        maxWaitTime = int(para["maxWaitTime"])
+        maxWaitTime = int(param["maxWaitTime"])
     except:
         maxWaitTime = 10 # 默认最大等待时间为10秒
     try:
@@ -591,7 +591,7 @@ def openPage(para, loopValue):
         browser.execute_script('window.stop()')
         history["index"] = browser.execute_script("return history.length")
         # rt.end()
-    scrollDown(para)  # 控制屏幕向下滚动
+    scrollDown(param)  # 控制屏幕向下滚动
     if containJudge:
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -619,47 +619,47 @@ def openPage(para, loopValue):
 
 
 # 键盘输入事件
-def inputInfo(para, loopValue):
+def inputInfo(param, loopValue):
     time.sleep(0.1)  # 输入之前等待0.1秒
     Log("Wait 1 second before input")
     try:
-        textbox = browser.find_element(By.XPATH, para["xpath"])
+        textbox = browser.find_element(By.XPATH, param["xpath"])
         #     textbox.send_keys(Keys.CONTROL, 'a')
         #     textbox.send_keys(Keys.BACKSPACE)
-        execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], textbox) # 执行前置JS
+        execute_code(2, param["beforeJS"], param["beforeJSWaitTime"], textbox) # 执行前置JS
         # Send the HOME key
         textbox.send_keys(Keys.HOME)
         # Send the SHIFT + END key combination
         textbox.send_keys(Keys.SHIFT, Keys.END)
         # Send the DELETE key
         textbox.send_keys(Keys.DELETE)
-        if para["useLoop"]:
+        if param["useLoop"]:
             textbox.send_keys(loopValue)
         else:
-            textbox.send_keys(para["value"])
-        execute_code(2, para["afterJS"], para["afterJSWaitTime"], textbox) # 执行后置js
+            textbox.send_keys(param["value"])
+        execute_code(2, param["afterJS"], param["afterJSWaitTime"], textbox) # 执行后置js
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         bodyText = browser.find_element(By.CSS_SELECTOR, "body").text
     except:
         print("Cannot find input box element:" +
-            para["xpath"] + ", please try to set the wait time before executing this operation")
-        print("找不到输入框元素:" + para["xpath"] + "，请尝试在执行此操作前设置等待时间")
+            param["xpath"] + ", please try to set the wait time before executing this operation")
+        print("找不到输入框元素:" + param["xpath"] + "，请尝试在执行此操作前设置等待时间")
         recordLog("Cannot find input box element:" +
-                  para["xpath"] + "Please try to set the wait time before executing this operation")
+                  param["xpath"] + "Please try to set the wait time before executing this operation")
 
 
 # 点击元素事件
-def clickElement(para, loopElement=None, clickPath="", index=0):
+def clickElement(param, loopElement=None, clickPath="", index=0):
     global history
     time.sleep(0.1)  # 点击之前等待0.1秒
     # rt = Time("Click Element")
     Log("Wait 0.1 second before clicking element")
-    if para["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+    if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
         path = clickPath
     else:
-        path = para["xpath"]  # 不然使用元素定义的xpath
+        path = param["xpath"]  # 不然使用元素定义的xpath
     try:
-        maxWaitTime = int(para["maxWaitTime"])
+        maxWaitTime = int(param["maxWaitTime"])
     except:
         maxWaitTime = 10
     browser.set_page_load_timeout(maxWaitTime)  # 加载页面最大超时时间
@@ -667,8 +667,8 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
     # 点击前对该元素执行一段JavaScript代码
     try:
         element = browser.find_element(By.XPATH, path)
-        if para["beforeJS"] != "":
-            execute_code(2, para["beforeJS"], para["beforeJSWaitTime"], element)
+        if param["beforeJS"] != "":
+            execute_code(2, param["beforeJS"], param["beforeJSWaitTime"], element)
     except:
         print("Cannot find element:" +
             path + ", please try to set the wait time before executing this operation")
@@ -693,9 +693,9 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
     time.sleep(random.uniform(1, 2))  # 生成一个a到b的小数等待时间
     # 点击前对该元素执行一段JavaScript代码
     try:
-        if para["afterJS"] != "":
+        if param["afterJS"] != "":
             element = browser.find_element(By.XPATH, path)
-            execute_code(2, para["afterJS"], para["afterJSWaitTime"], element)
+            execute_code(2, param["afterJS"], param["afterJSWaitTime"], element)
     except:
         print("Cannot find element:" + path)
         recordLog("Cannot find element:" +
@@ -718,7 +718,7 @@ def clickElement(para, loopElement=None, clickPath="", index=0):
             history["index"] = browser.execute_script("return history.length")
             # rt.end()
         # 如果打开了新窗口，切换到新窗口
-    scrollDown(para)  # 根据参数配置向下滚动
+    scrollDown(param)  # 根据参数配置向下滚动
     if containJudge:  # 有判断语句才执行以下操作
         global bodyText  # 每次执行点击，输入元素和打开网页操作后，需要更新bodyText
         try:
@@ -829,12 +829,12 @@ def get_content(p, element):
 
 
 # 提取数据事件
-def getData(para, loopElement, isInLoop=True, parentPath="", index=0):
-    if not isInLoop and para["wait"] == 0:
+def getData(param, loopElement, isInLoop=True, parentPath="", index=0):
+    if not isInLoop and param["wait"] == 0:
         time.sleep(1)  # 如果提取数据字段不在循环内而且设置的等待时间为0，默认等待1秒
         Log("Wait 1 second before extracting data")
     # rt = Time("Extract Data")
-    for p in para["paras"]:
+    for p in param["params"]:
         content = ""
         if not (p["contentType"] == 5 or p["contentType"] == 6):  # 如果不是页面标题或URL，去找元素
             try:
@@ -1105,10 +1105,10 @@ if __name__ == '__main__':
     log = ""  # 记下现在总共开了多少个标签页
     history = {"index": 0, "handle": None}  # 记录页面现在所以在的历史记录的位置
     SAVED = False  # 记录是否已经存储了
-    for para in tOut:
-        outputParameters[para["name"]] = ""
-        dataNotFoundKeys[para["name"]] = False
-        OUTPUT[0].append(para["name"])
+    for param in tOut:
+        outputParameters[param["name"]] = ""
+        dataNotFoundKeys[param["name"]] = False
+        OUTPUT[0].append(param["name"])
     # 挨个执行程序
     urlId = 0  # 全局记录变量
     for i in range(len(links)):
