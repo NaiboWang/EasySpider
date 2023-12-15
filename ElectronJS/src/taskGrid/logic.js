@@ -633,6 +633,10 @@ if (sId != null && sId != -1) //加载任务
                 if (!("cookies" in node["parameters"])) {
                     node["parameters"]["cookies"] = "";
                 }
+            } else if(node["option"] == 3){ //提取数据
+                if(node["parameters"]["paras"] != undefined){
+                    node["parameters"]["params"] = node["parameters"]["paras"];
+                }
             }
         }
         $("#serviceName").val(result["name"]);

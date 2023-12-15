@@ -335,7 +335,10 @@ class BrowserThread(Thread):
                 node["parameters"]["quickExtractable"] = False # 是否可以快速提取
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
-                    params = self.procedure[node["sequence"][0]]["parameters"]["params"]
+                    try:
+                        params = self.procedure[node["sequence"][0]]["parameters"]["params"]
+                    except:
+                        params = self.procedure[node["sequence"][0]]["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
                     try:
                         waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
                     except:
