@@ -258,7 +258,7 @@ export function collectMultiWithPattern() {
 }
 
 //循环点击单个元素
-export function sendLoopClickSingle(name="") {
+export function sendLoopClickSingle(name = "") {
     let message = {
         "type": "loopClickSingle",
         "id": global.id,
@@ -275,7 +275,7 @@ export function sendLoopClickSingle(name="") {
     };
     if (name == "下一页元素") {
         message.nextPage = true;
-    } else if(name == "nextPageFromIndexPage") {
+    } else if (name == "nextPageFromIndexPage") {
         message.nextPage = true;
         message.type = "loopClickNextPage";
     }

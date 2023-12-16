@@ -1565,7 +1565,7 @@ class BrowserThread(Thread):
         try:
             newTab = int(param["newTab"])
         except:
-            newTab = 1
+            newTab = 0
         try:
             if click_way == 0:  # 用selenium的点击方法
                 try:

@@ -376,7 +376,17 @@ function modifyParameters(t, param) {
         if (param["nextPage"]) { //循环点击下一页的情况下
             t["title"] = LANG("循环点击下一页", "Loop Click Next Page");
         } else if (param["type"] == "loopClickSingle") { //循环点击单个元素
-            t["title"] = LANG("循环点击单个元素", "Loop Click Single Element");
+            t["title"] = LANG("循环点击", "Loop Click");
+            let content = param["content"].trim();
+            if (content.length > 15) {
+                content = content.substring(0, 15) + "...";
+                content = LANG("：", ": ") + content;
+            } else if(content.length == 0){
+                content = LANG("单个元素", " Single Element");
+            } else {
+                content = LANG("：", ": ") + content;
+            }
+            t["title"] += content;
         } else if (param["type"] == "loopClickEvery") { //循环点击每个元素
             t["title"] = LANG("循环点击每个元素", "Loop click Every Element");
         } else if (param["type"] == "loopMouseMove") { //循环移动到单个元素
