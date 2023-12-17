@@ -55,7 +55,12 @@ function changeOutputFormat(param) {
             if (len > 20000) {
                 if ($("#outputFormat").val() == "xlsx") {
                     $("#outputFormat").val("csv"); //如果有一个参数的示例值长度超过20000，就默认输出为csv
-                    showInfo(LANG("示例值长度超过16000，超出Excel单个单元格存储限制，已自动切换保存为csv格式。", "The length of the example value exceeds 16000, and the csv save format has been automatically switched."));
+                    showInfo(LANG("单个字段示例值长度超过16000，超出Excel单个单元格存储限制，已自动切换保存为csv格式。", "The length of the example value of a single field exceeds 16000, which exceeds the storage limit of a single cell of Excel, and has been automatically switched to save as csv format."), 5000);
+                }
+                break;
+            } else if (len > 500) {
+                if ($("#outputFormat").val() == "xlsx") {
+                    showInfo(LANG("单个字段示例值长度超过300，建议保存为CSV格式，否则可能会出现数据存储不完整的情况（Python Excel写入库openpyxl的Bug）。", "The length of the example value of a single field exceeds 300, it is recommended to save as CSV format, otherwise there may be a situation where the data storage is incomplete (Bug of Python Excel write library openpyxl)."), 10000);
                 }
                 break;
             }
