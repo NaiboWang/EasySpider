@@ -9,8 +9,8 @@ import time
 import uuid
 # import keyboard
 from openpyxl import Workbook, load_workbook
-import pandas as pd
-import xlsxwriter
+# import pandas as pd
+# import xlsxwriter
 import requests
 from urllib.parse import urlparse
 import pymysql

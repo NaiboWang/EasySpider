@@ -146,7 +146,7 @@
                         <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用相对循环内的XPath定位到的元素</p>
                     </div>
                     <div>
-                        <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框等）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     </div>
@@ -691,10 +691,10 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <label>导出数据格式（Excel/CSV/TXT/数据库，<a href="https://www.bilibili.com/video/BV1os4y1679S/" target="_blank">查看MySQL操作教程</a>）：</label>
                     <select id="outputFormat" class="form-control">
                         <option value = "xlsx">XLSX（即EXCEL文件，建议单个单元格长度超过500时使用CSV格式存储）</option>
-                        <option value = "csv">CSV</option>
+                        <option value = "csv">CSV（采集长文章推荐使用此格式）</option>
                         <option value = "txt">TXT</option>
                         <option value = "json">JSON</option>
-                        <option value = "mysql">MySQL数据库</option>
+                        <option value = "mysql">MySQL数据库（大量数据推荐使用）</option>
                     </select>
                     <label>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>

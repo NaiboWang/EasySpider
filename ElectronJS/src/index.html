@@ -94,9 +94,9 @@ For individual users, EasySpider is a completely free and ad-free open-source so
             </div>
             <div v-else-if="step == 1">
                 <h4 style="margin-top: 20px">Please select design mode</h4>
-                <p style="margin-top: 20px; text-align: justify; width:310px; margin-left: 18%">
-                    Clean Mode: Start with a clean browser with no cookie/user data.</p>
-                <p style="text-align: justify; width:310px; margin-left: 18%">
+                <p style="margin-top: 20px; text-align: justify; width:290px; margin-left: 25%">
+                    Clean Mode: Start with a clean browser with no cookies/user data.</p>
+                <p style="text-align: justify; width:290px; margin-left: 25%">
                     Data Mode: Start with a browser that stores user data such as website login information and cookies.</p>
                 <p><a @click="startDesign('en')"
                       class="btn btn-primary btn-lg"
@@ -177,10 +177,10 @@ For individual users, EasySpider is a completely free and ad-free open-source so
             </div>
             <div v-else-if="step == 1">
                 <h4 style="margin-top: 20px">请选择设计模式</h4>
-                <p style="margin-top: 20px; text-align: left; width:320px; margin-left: 18%">
+                <p style="margin-top: 20px; text-align: left; width:310px; margin-left: 24%">
                     纯净版浏览器：无任何用户信息的浏览器。</p>
-                <p style="text-align: left; width:320px; margin-left: 18%">
-                    带用户信息的浏览器：保存有用户数据，如网站的登录信息，cookie的浏览器。</p>
+                <p style="text-align: left; width:310px; margin-left: 24%">
+                    带用户信息的浏览器：保存有用户数据，如网站的登录信息，cookies的浏览器。</p>
                 <p><a @click="startDesign('zh')"
                       class="btn btn-primary btn-lg"
                       style="margin-top: 15px; width: 320px;height:60px;padding-top:12px;color:white;">使用纯净版浏览器设计</a>
@@ -203,7 +203,7 @@ For individual users, EasySpider is a completely free and ad-free open-source so
                 <h4 style="margin-top: 20px">指定用户信息目录</h4>
                 <div style="margin: 0 auto; width:90%">
                     <p style="margin-top: 20px; text-align: left">
-                        请在下方指定用户信息目录。设置后，浏览器将加载目录里的cookie，如用户的登录信息等内容，目录不变的情况下，每次设计和执行时浏览器都会加载此目录里的数据。</p>
+                        请在下方指定用户信息目录。设置后，浏览器将加载目录里的cookies，如用户的登录信息等内容，目录不变的情况下，每次设计和执行时浏览器都会加载此目录里的数据。</p>
                     <p style="margin-top: 10px; text-align: left">例如：设置了./user_data文件夹，并在设计过程中登录了知乎网站，则下次再次设计或者执行任务时指定./user_data文件夹，打开知乎网站页面会仍然保留之前的登录状态。</p>
                     <p style="margin-top: 10px; text-align: left">如果有多套配置，可以设置不同的目录，每个目录为一套，如果目录不存在将会被自动创建。</p>
                     <p><textarea class="form-control" style="min-height: 50px;"

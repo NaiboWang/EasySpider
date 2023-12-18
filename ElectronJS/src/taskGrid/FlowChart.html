@@ -146,7 +146,7 @@
                         <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>Use element located by xpath relative to the loop</p>
                     </div>
                     <div>
-                        <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPath (Or use "point(10,10)" to represent clicking on the web page at coordinate position (10, 10), suitable for the situation when need to click on a blank area to leave popup dialog): <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
                     </div>
@@ -690,11 +690,11 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     <input spellcheck=false onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
                     <label>Export Data Format (Excel/CSV/TXT/Database):</label>
                     <select id="outputFormat" class="form-control">
-                        <option value = "xlsx">XLSX (EXCEL, we suggest using the CSV format if the length of a single cell exceeds 500)</option>
-                        <option value = "csv">CSV</option>
-                        <option value = "txt">TXT</option>
-                        <option value = "json">JSON</option>
-                        <option value = "mysql">MySQL Database</option>
+                        <option value="xlsx">XLSX (Excel file, recommended use CSV format when single cell exceeds 500 characters)</option>
+                        <option value="csv">CSV (Recommended for collecting long articles)</option>
+                        <option value="txt">TXT</option>
+                        <option value="json">JSON</option>
+                        <option value="mysql">MySQL Database (recommended for large amounts of data)</option>
                     </select>
                     <label>Export File Name/Database Table Name (Can use ../ to represent relative path to change the file save location,the keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>

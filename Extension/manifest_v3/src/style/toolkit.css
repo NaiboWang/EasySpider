@@ -188,11 +188,23 @@
 #closeButton {
     position: absolute;
     bottom: 0;
-    right: 0;
+    right: 4px;
     cursor: pointer;
     padding: 5px;
-    opacity: 0.05;
+    opacity: 0.2;
 }
 #closeButton:hover {
+  opacity: 1.0;
+}
+
+#closeButtonLeft {
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.2;
+}
+#closeButtonLeft:hover {
   opacity: 1.0;
 }

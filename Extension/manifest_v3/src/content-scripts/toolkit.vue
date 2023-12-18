@@ -3,6 +3,7 @@
     <!--    <div id="EasySpiderResizer" style="width: 10px; height: 10px; background-color: black; position: absolute; left: 0; bottom: 0; cursor: ne-resize;"></div>-->
     <div id="EasySpiderResizer"
          style="width: 10px; height: 10px; position: absolute; left: 0; top: 0; cursor: nw-resize;"></div>
+    <span id="closeButtonLeft">&#x2716;</span>
     <span id="closeButton">&#x2716;</span>
     <div v-if="lang == 'zh'">
       <div class="tooldrag">✍操作台（点此拖动，左上角调整大小）</div>
@@ -33,7 +34,7 @@
             <p style="color:black; margin-top: 10px">● 操作完成后，如点击”确认采集“后任务流程图内没有”提取数据“操作被添加，<strong>重试一次</strong>即可。
             </p>
             <p style="color:black; margin-top: 10px">●
-              如果此操作台把页面元素挡住了，可以点击此操作台右下角的×按钮键关闭操作台。</p>
+              如果此操作台把页面元素挡住了，可以点击此操作台左下角或右下角的×按钮键关闭操作台。</p>
             {{ initial() }}
           </div>
           <div v-if="list.nl.length==1">
@@ -243,7 +244,7 @@
               again.</p>
             <p style="color:black; margin-top: 10px">● If this toolbox blocks the page element, you can click the ×
               button in the
-              lower right corner of this toolbox to close it.</p>
+              lower left/right corner of this toolbox to close it.</p>
             {{ initial() }}
           </div>
           <div v-if="list.nl.length==1">

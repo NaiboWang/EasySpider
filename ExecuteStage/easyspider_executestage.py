@@ -466,9 +466,9 @@ class BrowserThread(Thread):
     def run(self):
         # 挨个执行程序
         for i in range(len(self.links)):
-            self.print_and_log("正在执行第", i + 1, "/ ", len(self.links), "个链接")
+            self.print_and_log("正在执行第", i + 1, "/", len(self.links), "个链接")
             self.print_and_log("Executing link", i + 1,
-                               "/ ", len(self.links))
+                               "/", len(self.links))
             self.executeNode(0)
             self.urlId = self.urlId + 1
         files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
@@ -1208,7 +1208,7 @@ class BrowserThread(Thread):
                 if len(elements) == 0:
                     self.print_and_log("Loop element not found: ",
                                        xpath)
-                    self.print_and_log("找不到循环元素: ", xpath)
+                    self.print_and_log("找不到循环元素：", xpath)
                 index = 0
                 while index < len(elements):
                     try:
@@ -1258,7 +1258,7 @@ class BrowserThread(Thread):
                     index = index + 1
             except NoSuchElementException:
                 self.print_and_log("Loop element not found: ", xpath)
-                self.print_and_log("找不到循环元素: ", xpath)
+                self.print_and_log("找不到循环元素：", xpath)
             except Exception as e:
                 raise
         elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
@@ -1303,7 +1303,7 @@ class BrowserThread(Thread):
                     index, element = self.handleHistory(node, path, thisHistoryURL, thisHistoryLength, index, element=element)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
-                    self.print_and_log("找不到循环元素: ", path)
+                    self.print_and_log("找不到循环元素：", path)
                     index += 1
                     continue  # 循环中找不到元素就略过操作
                 except Exception as e:
@@ -1533,7 +1533,10 @@ class BrowserThread(Thread):
                 clickPath, self.outputParameters, self)
             xpath = replace_field_values(
                 param["xpath"], self.outputParameters, self)
-            if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+            if xpath.find("point(") >= 0:  # 如果xpath中包含point()，说明是相对坐标的点击
+                index = 0
+                path = "//body"
+            elif param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 if xpath == "":
                     path = clickPath
                 else:
@@ -1567,7 +1570,19 @@ class BrowserThread(Thread):
         except:
             newTab = 0
         try:
-            if click_way == 0:  # 用selenium的点击方法
+            if xpath.find("point(") >= 0:  # 如果xpath中包含point()，说明是相对坐标的点击
+                point = xpath.split("point(")[1].split(")")[0].split(",")
+                x = int(point[0])
+                y = int(point[1])
+                # try:
+                #     actions = ActionChains(self.browser)  # 实例化一个action对象
+                #     actions.move_to_element(element).perform()
+                #     actions.move_by_offset(x, y).perform()
+                #     actions.click().perform()
+                # except Exception as e:
+                script = "document.elementFromPoint(" + str(x) + "," + str(y) + ").click();"
+                self.browser.execute_script(script)
+            elif click_way == 0:  # 用selenium的点击方法
                 try:
                     actions = ActionChains(self.browser)  # 实例化一个action对象
                     if newTab == 1:  # 在新标签页打开

@@ -108,8 +108,8 @@ let invoke_window = null;
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 550,
-        height: 750,
+        width: 600,
+        height: 800,
         webPreferences: {
             preload: path.join(__dirname, 'src/js/preload.js')
         },
@@ -231,7 +231,7 @@ async function findElementAcrossAllWindows(msg, notifyBrowser = true, scrollInto
         xpath = msg.message.xpath;
     } catch {
         //如果msg.pathList存在，说明是循环中的元素
-        if(msg.pathList != undefined && msg.pathList != null && msg.pathList != ""){
+        if (msg.pathList != undefined && msg.pathList != null && msg.pathList != "") {
             xpath = msg.pathList[0].trim();
         } else {
             xpath = msg.xpath;
@@ -301,15 +301,18 @@ async function beginInvoke(msg, ws) {
         // This method has to be called on macOS before changing the window's bounds, otherwise it will throw an error.
         // It will prompt an accessibility permission request dialog, if needed.
         if (process.platform != "linux" && process.platform != "darwin") {
-            const {windowManager} = require("node-window-manager");
-            const window = windowManager.getActiveWindow();
-            console.log(window);
-            windowManager.requestAccessibility();
-            // Sets the active window's bounds.
-            let size = screen.getPrimaryDisplay().workAreaSize
-            let width = parseInt(size.width)
-            let height = parseInt(size.height * 0.6)
-            window.setBounds({x: 0, y: size.height * 0.4, height: height, width: width});
+            // 非用户信息模式下，设置窗口位置
+            if (config.user_data_folder == null || config.user_data_folder == undefined || config.user_data_folder == "") {
+                const {windowManager} = require("node-window-manager");
+                const window = windowManager.getActiveWindow();
+                console.log(window);
+                windowManager.requestAccessibility();
+                // Sets the active window's bounds.
+                let size = screen.getPrimaryDisplay().workAreaSize
+                let width = parseInt(size.width)
+                let height = parseInt(size.height * 0.6)
+                window.setBounds({x: 0, y: size.height * 0.4, height: height, width: width});
+            }
         }
         flowchart_window.show();
         // flowchart_window.openDevTools();
@@ -337,7 +340,7 @@ async function beginInvoke(msg, ws) {
                 if (type.indexOf("Click") >= 0 || type.indexOf("Move") >= 0) {
                     let element = await findElementAcrossAllWindows(message, notifyBrowser = true, scrollIntoView = false);
                     if (type.indexOf("Click") >= 0) {
-                        await click_element(element);
+                        await click_element(element, type);
                     } else if (type.indexOf("Move") >= 0) {
                         await driver.actions().move({origin: element}).perform();
                     }
@@ -365,6 +368,9 @@ async function beginInvoke(msg, ws) {
                         parent_xpath = parent_node.parameters.pathList.split("\n")[0].trim();
                     }
                     xpath = parent_xpath + xpath;
+                }
+                if (xpath.includes("point(")) {
+                    xpath = "//body";
                 }
                 let elementInfo = {"iframe": parameters.iframe, "xpath": xpath, "id": -1};
                 //用于跳转到元素位置
@@ -492,8 +498,13 @@ async function beginInvoke(msg, ws) {
                         }
                     }
                 } else if (option == 2 || option == 7) { //点击事件
-                    let elementInfo = {"iframe": parameters.iframe, "xpath": parameters.xpath, "id": -1};
-                    if (parameters.useLoop) {
+                    let xpath = parameters.xpath;
+                    let point = parameters.xpath;
+                    if (xpath.includes("point(")) {
+                        xpath = "//body"
+                    }
+                    let elementInfo = {"iframe": parameters.iframe, "xpath": xpath, "id": -1};
+                    if (parameters.useLoop && !parameters.xpath.includes("point(")) {
                         let parent_node = JSON.parse(msg.message.parentNode);
                         let parent_xpath = parent_node.parameters.xpath;
                         if (parent_node.parameters.loopType == 2) {
@@ -504,7 +515,11 @@ async function beginInvoke(msg, ws) {
                     let element = await findElementAcrossAllWindows(elementInfo, notifyBrowser = false); //通过此函数找到元素并切换到对应的窗口
                     await execute_js(parameters.beforeJS, element, parameters.beforeJSWaitTime);
                     if (option == 2) {
-                        await click_element(element);
+                        if (parameters.xpath.includes("point(")) {
+                            await click_element(element, point);
+                        } else {
+                            await click_element(element);
+                        }
                         let alertHandleType = parameters.alertHandleType;
                         if (alertHandleType == 1) {
                             try {
@@ -731,11 +746,25 @@ async function beginInvoke(msg, ws) {
     }
 }
 
-async function click_element(element) {
+async function click_element(element, type = "click") {
     try {
-        await element.click();
-        //ctrl+click
-        // await driver.actions().keyDown(Key.CONTROL).click(element).keyUp(Key.CONTROL).perform();
+        if (type == "loopClickEvery") {
+            await driver.actions().keyDown(Key.CONTROL).click(element).keyUp(Key.CONTROL).perform();
+        } else if (type.includes("point(")) {
+            //point(10, 20)表示点击坐标为(10, 20)的位置
+            let point = type.substring(6, type.length - 1).split(",");
+            let x = parseInt(point[0]);
+            let y = parseInt(point[1]);
+            // let actions = driver.actions();
+            // await actions.move({origin: element}).perform();
+            // await actions.move({x: x, y: y}).perform();
+            // await actions.click().perform();
+            let script = `document.elementFromPoint(${x}, ${y}).click();`;
+            await driver.executeScript(script);
+        } else {
+            await element.click();
+        }
+
     } catch (e) {
         console.log(e);
         await driver.executeScript("arguments[0].click();", element);
@@ -819,12 +848,12 @@ wss.on('connection', function (ws) {
                     await driver.switchTo().window(current_handle);
                     console.log("New tab opened, change current_handle to: ", current_handle);
                     // 调整浏览器窗口大小，不然扩展会白屏
-                    // let size = await driver.manage().window().getRect();
-                    // let width = size.width;
-                    // let height = size.height;
-                    // await driver.manage().window().setRect({width: width, height: height + 10});
-                    // // height = height - 1;
-                    // await driver.manage().window().setRect({width: width, height: height});
+                    let size = await driver.manage().window().getRect();
+                    let width = size.width;
+                    let height = size.height;
+                    await driver.manage().window().setRect({width: width, height: height + 10});
+                    // height = height - 1;
+                    await driver.manage().window().setRect({width: width, height: height});
                 }
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 handle_pairs[msg.message.id] = current_handle;
@@ -894,6 +923,8 @@ async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
         options.addArguments("--user-data-dir=" + dir);
         config.user_data_folder = user_data_folder;
         fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
+    } else {
+        config.user_data_folder = "";
     }
     if (mobile) {
         const mobileEmulation = {

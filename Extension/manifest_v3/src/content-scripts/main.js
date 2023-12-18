@@ -320,3 +320,7 @@ let closeButton = document.getElementById("closeButton");
 closeButton.addEventListener("click", function() {
     toolkit.style.display = "none"; // 隐藏元素
 });
+let closeButtonLeft = document.getElementById("closeButtonLeft");
+closeButtonLeft.addEventListener("click", function() {
+    toolkit.style.display = "none"; // 隐藏元素
+});
