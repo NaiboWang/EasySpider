@@ -29,9 +29,7 @@
             <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
                 <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
                 <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
-                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Modification~任务流程修改"
-                    | lang}}
-                </li>
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Flow~任务流程" | lang}}</li>
             </ol>
         </nav>
     </div>
@@ -586,6 +584,12 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
                             </div>
                         </div>
                     </div>
+
+                    <div v-if="parseInt(loopType) < 5 && parseInt(loopType) > 0">
+                        <label>Skip the first few loops (enter 2 to skip the first 2 loops):</label>
+                        <input spellcheck="false" onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["skipCount"]'></input>
+                    </div>
+
                     <label>Waiting time in seconds after a history record rollback: </label>
                     <input spellcheck=false onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
                     <label>After executed, whether scroll down:</label>

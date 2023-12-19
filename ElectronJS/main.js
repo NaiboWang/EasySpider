@@ -15,6 +15,7 @@ const util = require('util');
 
 let config = fs.readFileSync(path.join(task_server.getDir(), `config.json`), 'utf8');
 config = JSON.parse(config);
+let config_context = JSON.parse(fs.readFileSync(path.join(task_server.getDir(), `config.json`), 'utf8')); //仅在当前进程中使用，不会写入文件
 
 if (config.debug) {
     let logPath = 'info.log'
@@ -302,7 +303,7 @@ async function beginInvoke(msg, ws) {
         // It will prompt an accessibility permission request dialog, if needed.
         if (process.platform != "linux" && process.platform != "darwin") {
             // 非用户信息模式下，设置窗口位置
-            if (config.user_data_folder == null || config.user_data_folder == undefined || config.user_data_folder == "") {
+            if (config_context.user_data_folder == null || config_context.user_data_folder == undefined || config_context.user_data_folder == "") {
                 const {windowManager} = require("node-window-manager");
                 const window = windowManager.getActiveWindow();
                 console.log(window);
@@ -815,6 +816,7 @@ function send_message_to_browser(message) {
 
 const WebSocket = require('ws');
 const {all} = require("express/lib/application");
+const {copy} = require("selenium-webdriver/io");
 let wss = new WebSocket.Server({port: websocket_port});
 wss.on('connection', function (ws) {
     ws.on('message', async function (message, isBinary) {
@@ -922,9 +924,10 @@ async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
         console.log(dir);
         options.addArguments("--user-data-dir=" + dir);
         config.user_data_folder = user_data_folder;
+        config_context.user_data_folder = user_data_folder;
         fs.writeFileSync(path.join(task_server.getDir(), "config.json"), JSON.stringify(config));
     } else {
-        config.user_data_folder = "";
+        config_context.user_data_folder = "";
     }
     if (mobile) {
         const mobileEmulation = {

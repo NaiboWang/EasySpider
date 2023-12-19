@@ -333,6 +333,10 @@ class BrowserThread(Thread):
                 except:
                     node["parameters"]["exitElement"] = "//body"
                 node["parameters"]["quickExtractable"] = False # 是否可以快速提取
+                try:
+                    skipCount = node["parameters"]["skipCount"]
+                except:
+                    node["parameters"]["skipCount"] = 0
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
                     try:
@@ -347,6 +351,8 @@ class BrowserThread(Thread):
                         node["parameters"]["quickExtractable"] = False # 如果是iframe，那么不可以快速提取
                     else:
                         node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
+                    if node["parameters"]["skipCount"] > 0:
+                        node["parameters"]["quickExtractable"] = False # 如果有跳过的元素，那么不可以快速提取
                     for param in params:
                         optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
                         try:
@@ -1210,7 +1216,13 @@ class BrowserThread(Thread):
                                        xpath)
                     self.print_and_log("找不到循环元素：", xpath)
                 index = 0
+                skipCount = node["parameters"]["skipCount"]
                 while index < len(elements):
+                    if index < skipCount:
+                        index += 1
+                        self.print_and_log("跳过第" + str(index) + "个元素")
+                        self.print_and_log("Skip the " + str(index) + "th element")
+                        continue
                     try:
                         element = elements[index]
                         element_text = element.text
@@ -1266,7 +1278,13 @@ class BrowserThread(Thread):
             paths = node["parameters"]["pathList"].split("\n")
             # for path in node["parameters"]["pathList"].split("\n"):
             index = 0
+            skipCount = node["parameters"]["skipCount"]
             while index < len(paths):
+                if index < skipCount:
+                    index += 1
+                    self.print_and_log("跳过第" + str(index) + "个元素")
+                    self.print_and_log("Skip the " + str(index) + "th element")
+                    continue
                 path = paths[index]
                 try:
                     path = replace_field_values(
@@ -1322,7 +1340,14 @@ class BrowserThread(Thread):
             if len(textList) == 1:  # 如果固定文本列表只有一行，现在就可以替换变量
                 textList = replace_field_values(
                     node["parameters"]["textList"], self.outputParameters, self).split("\n")
+            skipCount = node["parameters"]["skipCount"]
+            index = 0
             for text in textList:
+                if index < skipCount:
+                    index += 1
+                    self.print_and_log("跳过第" + str(index) + "个文本")
+                    self.print_and_log("Skip the " + str(index) + "th text")
+                    continue
                 text = replace_field_values(text, self.outputParameters, self)
                 # self.recordLog("当前循环文本|Current loop text:", text)
                 for i in node["sequence"]:  # 挨个执行操作
@@ -1348,11 +1373,14 @@ class BrowserThread(Thread):
             if len(urlList) == 1:  # 如果固定网址列表只有一行，现在就可以替换变量
                 urlList = replace_field_values(
                     node["parameters"]["textList"], self.outputParameters, self).split("\n")
-            # urlList = []
-            # for url in tempList:
-            #     if url != "":
-            #         urlList.append(url)
+            skipCount = node["parameters"]["skipCount"]
+            index = 0
             for url in urlList:
+                if index < skipCount:
+                    index += 1
+                    self.print_and_log("跳过第" + str(index) + "个网址")
+                    self.print_and_log("Skip the " + str(index) + "th url")
+                    continue
                 url = replace_field_values(url, self.outputParameters, self)
                 # self.recordLog("当前循环网址|Current loop url:", url)
                 for i in node["sequence"]:
@@ -1400,7 +1428,7 @@ class BrowserThread(Thread):
         self.history["handle"] = self.browser.current_window_handle
         self.scrollDown(node["parameters"])
 
-    # 打开网页事件
+    # 打开网页操作
     def openPage(self, param, loopValue):
         time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
@@ -1465,7 +1493,7 @@ class BrowserThread(Thread):
             self.history["index"] = 0
         self.scrollDown(param)  # 控制屏幕向下滚动
 
-    # 键盘输入事件
+    # 键盘输入操作
     def inputInfo(self, param, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
@@ -1517,7 +1545,7 @@ class BrowserThread(Thread):
                                xpath + ", please try to set the wait time before executing this operation")
             self.print_and_log("找不到输入框元素:" + xpath + "，请尝试在执行此操作前设置等待时间")
 
-    # 点击元素事件
+    # 点击元素操作
     def clickElement(self, param, loopElement=None, clickPath="", index=0):
         try:
             maxWaitTime = int(param["maxWaitTime"])
@@ -1853,7 +1881,7 @@ class BrowserThread(Thread):
             self.outputParameters[key] = ""
         self.recordLog("清空输出参数|Clear output parameters")
 
-    # 提取数据事件
+    # 提取数据操作
     def getData(self, param, loopElement, isInLoop=True, parentPath="", index=0):
         parentPath = replace_field_values(
             parentPath, self.outputParameters, self)

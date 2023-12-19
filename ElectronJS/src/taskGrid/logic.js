@@ -316,6 +316,7 @@ function addParameters(t) {
         t["parameters"]["breakMode"] = 0; //break类型，0代表JS，2代表系统命令
         t["parameters"]["breakCode"] = ""; //break条件
         t["parameters"]["breakCodeWaitTime"] = 0; //break条件等待时间
+        t["parameters"]["skipCount"] = 0; //跳过前多少次循环
     } else if (t.option == 9) { //条件
         t["title"] = LANG("判断条件 - 从左往右依次判断", "Judgment Condition - Judge from Left to Right");
     } else if (t.option == 10) { //条件分支

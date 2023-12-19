@@ -29,9 +29,7 @@
             <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
                 <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
                 <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
-                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Modification~任务流程修改"
-                    | lang}}
-                </li>
+                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Flow~任务流程" | lang}}</li>
             </ol>
         </nav>
     </div>
@@ -146,7 +144,7 @@
                         <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用相对循环内的XPath定位到的元素</p>
                     </div>
                     <div>
-                        <label>XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框等）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
+                        <label>XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框文本列表等）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                     </div>
@@ -586,8 +584,15 @@ print(emotlib.emoji()) # 使用其中的函数。
                             </div>
                         </div>
                     </div>
+
+                    <div v-if="parseInt(loopType) < 5 && parseInt(loopType) > 0">
+                        <label>跳过前几次循环（如要跳过前2个循环则填写2）：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["skipCount"]'></input>
+                    </div>
+
                     <label><b>历史记录回退后</b>等待秒数：</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+
                     <label>执行完是否向下滚动：</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option :value = 0>不滚动</option>

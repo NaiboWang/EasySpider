@@ -368,9 +368,9 @@ exports.start = function(port = 8074) {
                 res.write(eid.toString(), 'utf8');
                 res.end();
             } else if(pathName == "/getConfig"){
-                let config = fs.readFileSync(path.join(getDir(), `config.json`), 'utf8');
-                config = JSON.parse(config);
-                res.write(JSON.stringify(config));
+                let config_file = fs.readFileSync(path.join(getDir(), `config.json`), 'utf8');
+                config_file = JSON.parse(config_file);
+                res.write(JSON.stringify(config_file));
                 res.end();
             } else if(pathName == "/setUserDataFolder"){
                 let config = fs.readFileSync(path.join(getDir(), `config.json`), 'utf8');
