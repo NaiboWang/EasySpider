@@ -362,6 +362,9 @@ exports.start = function(port = 8074) {
                 if (file_names.length != 0) {
                     eid = Math.max(...file_names) + 1;
                 }
+                if(body["EID"]!="" && body["EID"] != undefined){ //覆盖原有的执行实例
+                    eid = parseInt(body["EID"]);
+                }
                 task["id"] = eid;
                 task = JSON.stringify(task);
                 fs.writeFile(path.join(getDir(), `execution_instances/${eid}.json`), task, (err) => {});
