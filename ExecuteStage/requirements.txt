@@ -9,4 +9,5 @@ pymysql==1.1.0
 lxml==4.9.2
 ddddocr==1.4.10
 pynput==1.7.6
+beautifulsoup4==4.12.2
 undetected-chromedriver==3.4.7

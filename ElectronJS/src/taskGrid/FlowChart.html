@@ -320,6 +320,11 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
+                       <label style="margin-top: 15px">Wrap content to new line (set when collecting long articles and wanting to wrap):</label>
+                        <select v-model='params.parameters[paraIndex]["splitLine"]' class="form-control">
+                            <option :value="0">No</option>
+                            <option :value="1">Yes</option>
+                        </select>
                         <label style="margin-top: 15px">Whether to save this field: (Choose 'No' if you only want to treat this field as a variable and not save it):</label>
                         <select v-model='params.parameters[paraIndex]["recordASField"]' class="form-control">
                             <option :value = 1>Yes</option>

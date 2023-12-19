@@ -11,3 +11,5 @@ config.json
 mysql_config.json
 **/Code
 **/user_data
+**/tasks
+**/execution_instances

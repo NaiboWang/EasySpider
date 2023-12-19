@@ -81,6 +81,7 @@ function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["afterJS"] = ""; //执行后执行的js
     msg["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
     msg["parameters"][i]["downloadPic"] = 0; //是否下载图片
+    msg["parameters"][i]["splitLine"] = 0; //是否分割行
 }
 
 

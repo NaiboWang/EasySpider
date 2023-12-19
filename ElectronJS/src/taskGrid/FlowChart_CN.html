@@ -320,6 +320,11 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
+                        <label style="margin-top: 15px">是否将内容换行（长文章采集想要换行时设置）：</label>
+                        <select v-model='params.parameters[paraIndex]["splitLine"]' class="form-control">
+                            <option :value = 0>否</option>
+                            <option :value = 1>是</option>
+                        </select>
                         <label style="margin-top: 15px">是否保存该字段（只想把此字段当变量而不想保存时可选否）：</label>
                         <select v-model='params.parameters[paraIndex]["recordASField"]' class="form-control">
                             <option :value = 1>是</option>

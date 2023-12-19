@@ -6,8 +6,8 @@ import platform
 import shutil
 import string
 import undetected_chromedriver as uc
-from utils import detect_optimizable, download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
-    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, write_to_csv, write_to_excel, write_to_json
+from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
+    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -295,9 +295,13 @@ class BrowserThread(Thread):
                     except:
                         pass
                     try:
-                        node["parameters"]["recordASField"] += param["recordASField"]
+                        node["parameters"]["recordASField"] = param["recordASField"]
                     except:
-                        node["parameters"]["recordASField"] += 1
+                        node["parameters"]["recordASField"] = 1
+                    try:
+                        splitLine = int(param["splitLine"])
+                    except:
+                        param["splitLine"] = 0
                     if param["contentType"] == 8:
                         self.print_and_log(
                             "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
@@ -1754,7 +1758,11 @@ class BrowserThread(Thread):
                     download_image(self, content, "Data/Task_" +
                                    str(self.id) + "/" + self.saveName + "/", element)
             else:  # 普通节点
-                content = element.text
+                if p["splitLine"] == 1:
+                    text = extract_text_from_html(element.get_attribute('outerHTML'))
+                    content = split_text_by_lines(text)
+                else:
+                    content = element.text
         elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
             if p["nodeType"] == 2:
                 if element.get_attribute("href") != None:

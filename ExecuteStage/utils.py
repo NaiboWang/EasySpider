@@ -7,6 +7,7 @@ import sys
 import re
 import time
 import uuid
+from bs4 import BeautifulSoup
 # import keyboard
 from openpyxl import Workbook, load_workbook
 # import pandas as pd
@@ -71,6 +72,22 @@ def is_valid_url(url):
 def lowercase_tags_in_xpath(xpath):
     return re.sub(r"([A-Z]+)(?=[\[\]//]|$)", lambda x: x.group(0).lower(), xpath)
 
+# 提取HTML中的文本内容
+def extract_text_from_html(html_content):
+    soup = BeautifulSoup(html_content, 'lxml') # 使用lxml作为解析器
+    for script in soup(["script", "style"]): # 去除脚本和样式内容
+        script.extract()
+    for p_tag in soup.find_all("p"):
+        p_tag.append(soup.new_tag("br")) # 在每个p标签后添加br标签
+        p_tag.append("\n") # 在每个p标签后添加换行符
+    text = soup.get_text()
+    return text
+
+# 将文本按照行分割并去除额外空白
+def split_text_by_lines(text):
+    lines = text.splitlines()
+    lines = [line.strip() for line in lines if line.strip()]  # 去除空行和首尾空格
+    return "\n".join(lines)
 
 def on_press_creator(press_time, event):
     def on_press(key):
@@ -139,7 +156,7 @@ def on_release_creator(event, press_time):
 #         time.sleep(1)  # 每秒检查一次
 
 def detect_optimizable(param, ignoreWaitElement=True, waitElement=""):
-    if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1:
+    if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1 and param["splitLine"] == 0:
         if param["nodeType"] <= 2:
             if ignoreWaitElement or waitElement == "":
                 return True
