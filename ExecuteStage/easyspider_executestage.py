@@ -469,6 +469,15 @@ class BrowserThread(Thread):
         self.print_and_log(
             "Already read input parameters from Excel and overwrite the original input parameters.")
 
+    def removeDuplicateData(self):
+        try:
+            removeDuplicateData = self.service["removeDuplicate"]
+        except:
+            removeDuplicateData = 0
+        if removeDuplicateData == 1:
+            self.print_and_log("正在去除重复数据，请稍后……")
+            self.print_and_log("Removing duplicate data, please wait...")
+
     def run(self):
         # 挨个执行程序
         for i in range(len(self.links)):
@@ -490,6 +499,7 @@ class BrowserThread(Thread):
             quitWaitTime = self.service["quitWaitTime"]
         except:
             quitWaitTime = 60
+        self.removeDuplicateData()
         self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
         self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
         time.sleep(quitWaitTime)

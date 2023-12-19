@@ -592,6 +592,7 @@ If the expression returns a value greater than 0 or evaluates to True, the loop 
 
                     <label>Waiting time in seconds after a history record rollback: </label>
                     <input spellcheck=false onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
+
                     <label>After executed, whether scroll down:</label>
                     <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
                         <option :value = 0>No Scrolling</option>
@@ -712,6 +713,11 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
 <!--                        <option value=0>No</option>-->
 <!--                        <option value=1>Yes (Only support on Windows x64 platform)</option>-->
 <!--                    </select>-->
+                    <label>Remove duplicates after execution (note that this function will be executed at the end of the task, and leaving the task midway will not perform deduplication):</label>
+                    <select id="removeDuplicate" name="removeDuplicate" class="form-control">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
                     <label>To modify the input parameters of each operation during execution, read the following Excel (.xlsx) file. Please click the "Read Input Parameters from Excel File" button when calling the task to view the file format:</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="If left empty, input parameters will not be read from Excel. The file path is relative to the EasySpider folder, e.g., inputs/task1.xlsx"></input>
                     <label>Browser Emulation Type:</label>

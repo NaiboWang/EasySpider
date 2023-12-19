@@ -611,6 +611,7 @@ function saveService(type) {
         "pauseKey": $("#pauseKey").val(),
         "containJudge": containJudge,
         "browser": $("#browser").val(),
+        "removeDuplicate": parseInt($("#removeDuplicate").val()),
         "desc": serviceDescription,
         "inputParameters": inputParameters,
         "outputParameters": outputParameters,

@@ -713,6 +713,11 @@ print(emotlib.emoji()) # 使用其中的函数。
 <!--                        <option value = 0>否</option>-->
 <!--                        <option value = 1>是（只支持Windows x64系统）</option>-->
 <!--                    </select>-->
+                    <label>执行完成后是否去除重复数据（注意此功能需要等到任务结束时执行，因此执行任务中途退出将无法进行去重）：</label>
+                    <select id="removeDuplicate" name="removeDuplicate" class="form-control">
+                        <option value = 0>否</option>
+                        <option value = 1>是</option>
+                    </select>
                     <label>执行时通过读取以下Excel（.xlsx）文件来修改各个操作的输入参数，文件格式请在调用任务时点击“从Excel文件读取输入参数”按钮查看：</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="为空则不从Excel读取输入参数，文件路径相对于EasySpider文件夹，如inputs/task1.xlsx"></input>
                     <label>浏览器模拟类型：</label>
