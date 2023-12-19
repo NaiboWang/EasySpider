@@ -47,10 +47,11 @@ import requests
 from ddddocr import DdddOcr
 from urllib.parse import urljoin
 from lxml import etree, html
+
 import onnxruntime
 
 onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
-# import pandas as pd
+import pandas as pd
 # import numpy
 # import pytesseract
 # import uuid
@@ -481,6 +482,26 @@ class BrowserThread(Thread):
         if removeDuplicateData == 1:
             self.print_and_log("正在去除重复数据，请稍后……")
             self.print_and_log("Removing duplicate data, please wait...")
+            if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "json" or self.outputFormat == "xlsx":
+                file_name = "Data/Task_" + \
+                            str(self.id) + "/" + self.saveName + \
+                            '.' + self.outputFormat
+                if self.outputFormat == "csv" or self.outputFormat == "txt":
+                    df = pd.read_csv(file_name)
+                    df.drop_duplicates(inplace=True)
+                    df.to_csv(file_name, index=False)
+                elif self.outputFormat == "xlsx":
+                    df = pd.read_excel(file_name)
+                    df.drop_duplicates(inplace=True)
+                    df.to_excel(file_name, index=False)
+                elif self.outputFormat == "json":
+                    df = pd.read_json(file_name)
+                    df.drop_duplicates(inplace=True)
+                    df.to_json(file_name, orient="records", force_ascii=False)
+            elif self.outputFormat == "mysql":
+                self.mysql.remove_duplicate_data()
+            self.print_and_log("去重完成。")
+            self.print_and_log("Duplicate data removed.")
 
     def run(self):
         # 挨个执行程序
@@ -497,13 +518,13 @@ class BrowserThread(Thread):
         self.print_and_log("Done!")
         self.print_and_log("执行完成！")
         self.saveData(exit=True)
+        self.removeDuplicateData()
         if self.outputFormat == "mysql":
             self.mysql.close()
         try:
             quitWaitTime = self.service["quitWaitTime"]
         except:
             quitWaitTime = 60
-        self.removeDuplicateData()
         self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
         self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
         time.sleep(quitWaitTime)

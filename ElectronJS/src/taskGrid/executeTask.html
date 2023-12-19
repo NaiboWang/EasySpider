@@ -264,7 +264,7 @@
         <label style="margin-top: 15px;display: block">{{"如果想进行更复杂的操作，如设置无头模式，设置定时执行等，请使用下方的命令行执行任务选项并配置好命令行参数。~ If you want to perform more complex operations, such as setting headless mode, setting scheduled execution, etc., please use the command line to execute the task and configure the command line parameters below." | lang}}</label>
         </label>
         <div style="margin-bottom: 10px;">
-            <label style="margin-top: 10px;">{{"Execution ID (EID), execution files are stored in 'execution_instances' folder:~执行ID（执行文件存放在execution_instances文件夹内）：" | lang}}</label>
+            <label style="margin-top: 10px;">{{"Execution ID (EID), execution files are stored in 'execution_instances' folder, you can write EID by yourself and the set the filename other than 'current_time to append content to the existing file from the EID to achieve incremental collection:~执行ID（执行文件存放在execution_instances文件夹内，提前在下方写好执行ID且文件名不为current_time时可以追加文件内容以实现增量采集）：" | lang}}</label>
             <input class="form-control" v-model="ID" :placeholder="LANG('如果已在此处写/生成了ID号，则点击执行或获得ID按钮后，任务ID将保持不变且原任务文件将会被新配置覆盖','If already have ID here, the task ID will remain unchanged and the original task file will be overwritten by the new configuration after click buttons')"></input>
             <p></p>
             <!-- <p>提示：点击下方按钮获得任务ID，然后根据此ID进行服务执行；也可自己POST调用接口得到ID，具体参照POST调用文档。</p> -->

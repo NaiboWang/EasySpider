@@ -556,6 +556,10 @@ class myMySQL:
         sql = "CREATE TABLE " + table_name + \
             " (_id INT AUTO_INCREMENT PRIMARY KEY, "
         for item in parameters:
+            try:
+                recordASField = item["recordASField"]
+            except:
+                item["recordASField"] = True
             if item["recordASField"]:
                 name = item['name']
                 if item['type'] == 'int':
@@ -666,6 +670,25 @@ class myMySQL:
         # 提交到数据库执行
         self.conn.commit()
 
+        # 关闭游标和连接
+        self.cursor.close()
+
+    def remove_duplicate_data(self):
+        self.cursor = self.conn.cursor()
+        # 删除重复数据
+        fields = self.field_sql.replace("(", "").replace(")", "")
+        sql = f"CREATE TABLE {self.table_name}_temp AS " + \
+        f"SELECT MIN(_id) AS _id, " + fields + \
+        f" FROM {self.table_name} GROUP BY " + fields + ";"
+        self.cursor.execute(sql)
+        sql = f"DELETE FROM {self.table_name};"
+        self.cursor.execute(sql)
+        sql = f"INSERT INTO {self.table_name} SELECT * FROM {self.table_name}_temp;"
+        self.cursor.execute(sql)
+        sql = f"DROP TABLE {self.table_name}_temp;"
+        self.cursor.execute(sql)
+        # 提交到数据库执行
+        self.conn.commit()
         # 关闭游标和连接
         self.cursor.close()
 
