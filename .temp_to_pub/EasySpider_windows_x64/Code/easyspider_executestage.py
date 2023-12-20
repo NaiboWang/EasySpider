@@ -6,8 +6,8 @@ import platform
 import shutil
 import string
 import undetected_chromedriver as uc
-from utils import detect_optimizable, download_image, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
-    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, write_to_csv, write_to_excel, write_to_json
+from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
+    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -47,10 +47,11 @@ import requests
 from ddddocr import DdddOcr
 from urllib.parse import urljoin
 from lxml import etree, html
+
 import onnxruntime
 
 onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
-# import pandas as pd
+import pandas as pd
 # import numpy
 # import pytesseract
 # import uuid
@@ -295,9 +296,13 @@ class BrowserThread(Thread):
                     except:
                         pass
                     try:
-                        node["parameters"]["recordASField"] += param["recordASField"]
+                        node["parameters"]["recordASField"] = param["recordASField"]
                     except:
-                        node["parameters"]["recordASField"] += 1
+                        node["parameters"]["recordASField"] = 1
+                    try:
+                        splitLine = int(param["splitLine"])
+                    except:
+                        param["splitLine"] = 0
                     if param["contentType"] == 8:
                         self.print_and_log(
                             "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
@@ -333,6 +338,10 @@ class BrowserThread(Thread):
                 except:
                     node["parameters"]["exitElement"] = "//body"
                 node["parameters"]["quickExtractable"] = False # 是否可以快速提取
+                try:
+                    skipCount = node["parameters"]["skipCount"]
+                except:
+                    node["parameters"]["skipCount"] = 0
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
                     try:
@@ -347,6 +356,8 @@ class BrowserThread(Thread):
                         node["parameters"]["quickExtractable"] = False # 如果是iframe，那么不可以快速提取
                     else:
                         node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
+                    if node["parameters"]["skipCount"] > 0:
+                        node["parameters"]["quickExtractable"] = False # 如果有跳过的元素，那么不可以快速提取
                     for param in params:
                         optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
                         try:
@@ -463,21 +474,51 @@ class BrowserThread(Thread):
         self.print_and_log(
             "Already read input parameters from Excel and overwrite the original input parameters.")
 
+    def removeDuplicateData(self):
+        try:
+            removeDuplicateData = self.service["removeDuplicate"]
+        except:
+            removeDuplicateData = 0
+        if removeDuplicateData == 1:
+            self.print_and_log("正在去除重复数据，请稍后……")
+            self.print_and_log("Removing duplicate data, please wait...")
+            if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "json" or self.outputFormat == "xlsx":
+                file_name = "Data/Task_" + \
+                            str(self.id) + "/" + self.saveName + \
+                            '.' + self.outputFormat
+                if self.outputFormat == "csv" or self.outputFormat == "txt":
+                    df = pd.read_csv(file_name)
+                    df.drop_duplicates(inplace=True)
+                    df.to_csv(file_name, index=False)
+                elif self.outputFormat == "xlsx":
+                    df = pd.read_excel(file_name)
+                    df.drop_duplicates(inplace=True)
+                    df.to_excel(file_name, index=False)
+                elif self.outputFormat == "json":
+                    df = pd.read_json(file_name)
+                    df.drop_duplicates(inplace=True)
+                    df.to_json(file_name, orient="records", force_ascii=False)
+            elif self.outputFormat == "mysql":
+                self.mysql.remove_duplicate_data()
+            self.print_and_log("去重完成。")
+            self.print_and_log("Duplicate data removed.")
+
     def run(self):
         # 挨个执行程序
         for i in range(len(self.links)):
-            self.print_and_log("正在执行第", i + 1, "/ ", len(self.links), "个链接")
+            self.print_and_log("正在执行第", i + 1, "/", len(self.links), "个链接")
             self.print_and_log("Executing link", i + 1,
-                               "/ ", len(self.links))
+                               "/", len(self.links))
             self.executeNode(0)
             self.urlId = self.urlId + 1
         files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
-        if not files:
-            os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
+        # if not files:
+        #     os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         self.print_and_log("Done!")
         self.print_and_log("执行完成！")
         self.saveData(exit=True)
+        self.removeDuplicateData()
         if self.outputFormat == "mysql":
             self.mysql.close()
         try:
@@ -1115,10 +1156,18 @@ class BrowserThread(Thread):
                     if node["parameters"]["exitCount"] == 0:
                         # newBodyText = self.browser.find_element(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"]).text
                         # 用find_elements获取所有匹配到的文本
-                        exitElements = self.browser.find_elements(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"])
-                        newBodyText = ""
-                        for exitElement in exitElements:
-                            newBodyText += exitElement.text
+                        try:
+                            exitElements = self.browser.find_elements(By.XPATH, node["parameters"]["exitElement"], iframe=node["parameters"]["iframe"])
+                            newBodyText = ""
+                            for exitElement in exitElements:
+                                newBodyText += exitElement.text
+                        except Exception as e:
+                            self.print_and_log(f"设定的退出循环元素：{node['parameters']['exitElement']}的文本无法获取，本次循环将不再检测元素文本是否变化，将会继续执行，为解决此问题，您可以修改检测元素文本不变的元素为其他元素，或者将循环次数设定为固定次数大于0的值。")
+                            self.print_and_log(f"The text of the exit loop element set: {node['parameters']['exitElement']} cannot be obtained, this loop will no longer check whether the text of the element has changed, and will continue to execute. To solve this problem, you can modify the element whose text does not change to other elements, or set the number of loops to a fixed number greater than 0.")
+                            self.print_and_log(e)
+                            exitElements = []
+                            # newBodyText为随机文本，保证一直执行
+                            newBodyText = str(random.random())
                         if node["parameters"]["iframe"]:  # 如果标记了iframe
                             iframes = self.browser.find_elements(
                                 By.CSS_SELECTOR, "iframe", iframe=False)
@@ -1200,9 +1249,15 @@ class BrowserThread(Thread):
                 if len(elements) == 0:
                     self.print_and_log("Loop element not found: ",
                                        xpath)
-                    self.print_and_log("找不到循环元素: ", xpath)
+                    self.print_and_log("找不到循环元素：", xpath)
                 index = 0
+                skipCount = node["parameters"]["skipCount"]
                 while index < len(elements):
+                    if index < skipCount:
+                        index += 1
+                        self.print_and_log("跳过第" + str(index) + "个元素")
+                        self.print_and_log("Skip the " + str(index) + "th element")
+                        continue
                     try:
                         element = elements[index]
                         element_text = element.text
@@ -1250,7 +1305,7 @@ class BrowserThread(Thread):
                     index = index + 1
             except NoSuchElementException:
                 self.print_and_log("Loop element not found: ", xpath)
-                self.print_and_log("找不到循环元素: ", xpath)
+                self.print_and_log("找不到循环元素：", xpath)
             except Exception as e:
                 raise
         elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
@@ -1258,7 +1313,13 @@ class BrowserThread(Thread):
             paths = node["parameters"]["pathList"].split("\n")
             # for path in node["parameters"]["pathList"].split("\n"):
             index = 0
+            skipCount = node["parameters"]["skipCount"]
             while index < len(paths):
+                if index < skipCount:
+                    index += 1
+                    self.print_and_log("跳过第" + str(index) + "个元素")
+                    self.print_and_log("Skip the " + str(index) + "th element")
+                    continue
                 path = paths[index]
                 try:
                     path = replace_field_values(
@@ -1295,7 +1356,7 @@ class BrowserThread(Thread):
                     index, element = self.handleHistory(node, path, thisHistoryURL, thisHistoryLength, index, element=element)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
-                    self.print_and_log("找不到循环元素: ", path)
+                    self.print_and_log("找不到循环元素：", path)
                     index += 1
                     continue  # 循环中找不到元素就略过操作
                 except Exception as e:
@@ -1314,7 +1375,14 @@ class BrowserThread(Thread):
             if len(textList) == 1:  # 如果固定文本列表只有一行，现在就可以替换变量
                 textList = replace_field_values(
                     node["parameters"]["textList"], self.outputParameters, self).split("\n")
+            skipCount = node["parameters"]["skipCount"]
+            index = 0
             for text in textList:
+                if index < skipCount:
+                    index += 1
+                    self.print_and_log("跳过第" + str(index) + "个文本")
+                    self.print_and_log("Skip the " + str(index) + "th text")
+                    continue
                 text = replace_field_values(text, self.outputParameters, self)
                 # self.recordLog("当前循环文本|Current loop text:", text)
                 for i in node["sequence"]:  # 挨个执行操作
@@ -1340,11 +1408,14 @@ class BrowserThread(Thread):
             if len(urlList) == 1:  # 如果固定网址列表只有一行，现在就可以替换变量
                 urlList = replace_field_values(
                     node["parameters"]["textList"], self.outputParameters, self).split("\n")
-            # urlList = []
-            # for url in tempList:
-            #     if url != "":
-            #         urlList.append(url)
+            skipCount = node["parameters"]["skipCount"]
+            index = 0
             for url in urlList:
+                if index < skipCount:
+                    index += 1
+                    self.print_and_log("跳过第" + str(index) + "个网址")
+                    self.print_and_log("Skip the " + str(index) + "th url")
+                    continue
                 url = replace_field_values(url, self.outputParameters, self)
                 # self.recordLog("当前循环网址|Current loop url:", url)
                 for i in node["sequence"]:
@@ -1392,7 +1463,7 @@ class BrowserThread(Thread):
         self.history["handle"] = self.browser.current_window_handle
         self.scrollDown(node["parameters"])
 
-    # 打开网页事件
+    # 打开网页操作
     def openPage(self, param, loopValue):
         time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
@@ -1457,7 +1528,7 @@ class BrowserThread(Thread):
             self.history["index"] = 0
         self.scrollDown(param)  # 控制屏幕向下滚动
 
-    # 键盘输入事件
+    # 键盘输入操作
     def inputInfo(self, param, loopValue):
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
@@ -1509,7 +1580,7 @@ class BrowserThread(Thread):
                                xpath + ", please try to set the wait time before executing this operation")
             self.print_and_log("找不到输入框元素:" + xpath + "，请尝试在执行此操作前设置等待时间")
 
-    # 点击元素事件
+    # 点击元素操作
     def clickElement(self, param, loopElement=None, clickPath="", index=0):
         try:
             maxWaitTime = int(param["maxWaitTime"])
@@ -1525,7 +1596,10 @@ class BrowserThread(Thread):
                 clickPath, self.outputParameters, self)
             xpath = replace_field_values(
                 param["xpath"], self.outputParameters, self)
-            if param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
+            if xpath.find("point(") >= 0:  # 如果xpath中包含point()，说明是相对坐标的点击
+                index = 0
+                path = "//body"
+            elif param["useLoop"]:  # 使用循环的情况下，传入的clickPath就是实际的xpath
                 if xpath == "":
                     path = clickPath
                 else:
@@ -1557,9 +1631,21 @@ class BrowserThread(Thread):
         try:
             newTab = int(param["newTab"])
         except:
-            newTab = 1
+            newTab = 0
         try:
-            if click_way == 0:  # 用selenium的点击方法
+            if xpath.find("point(") >= 0:  # 如果xpath中包含point()，说明是相对坐标的点击
+                point = xpath.split("point(")[1].split(")")[0].split(",")
+                x = int(point[0])
+                y = int(point[1])
+                # try:
+                #     actions = ActionChains(self.browser)  # 实例化一个action对象
+                #     actions.move_to_element(element).perform()
+                #     actions.move_by_offset(x, y).perform()
+                #     actions.click().perform()
+                # except Exception as e:
+                script = "document.elementFromPoint(" + str(x) + "," + str(y) + ").click();"
+                self.browser.execute_script(script)
+            elif click_way == 0:  # 用selenium的点击方法
                 try:
                     actions = ActionChains(self.browser)  # 实例化一个action对象
                     if newTab == 1:  # 在新标签页打开
@@ -1693,7 +1779,11 @@ class BrowserThread(Thread):
                     download_image(self, content, "Data/Task_" +
                                    str(self.id) + "/" + self.saveName + "/", element)
             else:  # 普通节点
-                content = element.text
+                if p["splitLine"] == 1:
+                    text = extract_text_from_html(element.get_attribute('outerHTML'))
+                    content = split_text_by_lines(text)
+                else:
+                    content = element.text
         elif p["contentType"] == 1:  # 只采集当期元素下的文本，不包括子元素
             if p["nodeType"] == 2:
                 if element.get_attribute("href") != None:
@@ -1830,7 +1920,7 @@ class BrowserThread(Thread):
             self.outputParameters[key] = ""
         self.recordLog("清空输出参数|Clear output parameters")
 
-    # 提取数据事件
+    # 提取数据操作
     def getData(self, param, loopElement, isInLoop=True, parentPath="", index=0):
         parentPath = replace_field_values(
             parentPath, self.outputParameters, self)

@@ -31,6 +31,7 @@ def compress_folder_to_7z(folder_path, output_file):
     #     archive.writeall(folder_path, output_file)
     # 压缩文件夹
     try:
+        # "-mmt4"表示使用4个线程压缩
         subprocess.call(["7z", "a", output_file, folder_path])
     except:
         subprocess.call(["7za", "a", output_file, folder_path])

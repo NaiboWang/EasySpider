@@ -156,6 +156,10 @@ def on_release_creator(event, press_time):
 #         time.sleep(1)  # 每秒检查一次
 
 def detect_optimizable(param, ignoreWaitElement=True, waitElement=""):
+    try:
+        splitLine = param["splitLine"]
+    except:
+        param["splitLine"] = 0
     if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1 and param["splitLine"] == 0:
         if param["nodeType"] <= 2:
             if ignoreWaitElement or waitElement == "":

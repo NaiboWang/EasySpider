@@ -14,6 +14,7 @@ rm -rf out/EasySpider/resources/app/.idea
 rm -rf out/EasySpider/resources/app/tasks
 rm -rf out/EasySpider/resources/app/execution_instances
 rm -rf out/EasySpider/resources/app/user_data
+rm -rf out/EasySpider/resources/app/TempUserDataFolder
 rm -rf ../.temp_to_pub/EasySpider_Linux_x64/EasySpider
 rm out/EasySpider/resources/app/vs_BuildTools.exe
 mv out/EasySpider ../.temp_to_pub/EasySpider_Linux_x64/EasySpider

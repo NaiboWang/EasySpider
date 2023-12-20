@@ -950,13 +950,19 @@ async function runBrowser(lang = "en", user_data_folder = '', mobile = false) {
     await cdpConnection.execute('Page.addScriptToEvaluateOnNewDocument', {
         source: stealth,
     });
+    if (config_context.user_data_folder == "") {
+        //调整浏览器窗口大小
+        let size = await driver.manage().window().getRect();
+        let width = size.width;
+        let height = size.height;
+        await driver.manage().window().setRect({width: width * 1.2, height: height});
+    }
     try {
         if (mobile) {
             await driver.get(server_address + "/taskGrid/taskList.html?wsport=" + websocket_port + "&backEndAddressServiceWrapper=" + server_address + "&mobile=1&lang=" + lang);
         } else {
             await driver.get(server_address + "/taskGrid/taskList.html?wsport=" + websocket_port + "&backEndAddressServiceWrapper=" + server_address + "&lang=" + lang);
         }
-
         old_handles = await driver.getAllWindowHandles();
         current_handle = old_handles[old_handles.length - 1];
     } finally {

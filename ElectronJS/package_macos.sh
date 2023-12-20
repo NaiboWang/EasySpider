@@ -17,6 +17,7 @@ rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resource
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/tasks
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/execution_instances
 rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/user_data
+rm -r ../.temp_to_pub/EasySpider_MacOS_all_arch/EasySpider.app/Contents/Resources/app/TempUserDataFolder
 rm -rf ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 mkdir ../.temp_to_pub/EasySpider_MacOS_all_arch/Code
 cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_MacOS_all_arch/Code

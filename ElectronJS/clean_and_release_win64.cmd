@@ -21,6 +21,7 @@ xcopy ..\ExecuteStage\undetected_chromedriver_ES ..\.temp_to_pub\EasySpider_wind
 xcopy ..\ExecuteStage\.vscode ..\.temp_to_pub\EasySpider_windows_x64\Code\.vscode /E /I /Y
 rmdir /s /Q ..\.temp_to_pub\EasySpider_windows_x64\user_data
 rmdir /s /Q ..\.temp_to_pub\EasySpider_windows_x64\execution_instances
+rmdir /s /Q ..\.temp_to_pub\EasySpider_windows_x64\TempUserDataFolder
 mkdir ..\.temp_to_pub\EasySpider_windows_x64\execution_instances
 rmdir /s /Q ..\.temp_to_pub\EasySpider_windows_x64\Data
 mkdir ..\.temp_to_pub\EasySpider_windows_x64\Data

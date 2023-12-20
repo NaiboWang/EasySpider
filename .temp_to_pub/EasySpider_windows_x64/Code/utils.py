@@ -7,8 +7,11 @@ import sys
 import re
 import time
 import uuid
+from bs4 import BeautifulSoup
 # import keyboard
 from openpyxl import Workbook, load_workbook
+# import pandas as pd
+# import xlsxwriter
 import requests
 from urllib.parse import urlparse
 import pymysql
@@ -69,6 +72,22 @@ def is_valid_url(url):
 def lowercase_tags_in_xpath(xpath):
     return re.sub(r"([A-Z]+)(?=[\[\]//]|$)", lambda x: x.group(0).lower(), xpath)
 
+# 提取HTML中的文本内容
+def extract_text_from_html(html_content):
+    soup = BeautifulSoup(html_content, 'lxml') # 使用lxml作为解析器
+    for script in soup(["script", "style"]): # 去除脚本和样式内容
+        script.extract()
+    for p_tag in soup.find_all("p"):
+        p_tag.append(soup.new_tag("br")) # 在每个p标签后添加br标签
+        p_tag.append("\n") # 在每个p标签后添加换行符
+    text = soup.get_text()
+    return text
+
+# 将文本按照行分割并去除额外空白
+def split_text_by_lines(text):
+    lines = text.splitlines()
+    lines = [line.strip() for line in lines if line.strip()]  # 去除空行和首尾空格
+    return "\n".join(lines)
 
 def on_press_creator(press_time, event):
     def on_press(key):
@@ -137,7 +156,11 @@ def on_release_creator(event, press_time):
 #         time.sleep(1)  # 每秒检查一次
 
 def detect_optimizable(param, ignoreWaitElement=True, waitElement=""):
-    if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1:
+    try:
+        splitLine = param["splitLine"]
+    except:
+        param["splitLine"] = 0
+    if param["beforeJS"] == "" and param["afterJS"] == "" and param["contentType"] <= 1 and param["splitLine"] == 0:
         if param["nodeType"] <= 2:
             if ignoreWaitElement or waitElement == "":
                 return True
@@ -336,11 +359,115 @@ def write_to_json(file_name, data, types, record, keys):
 
 
 def write_to_excel(file_name, data, types, record):
+    # 首先，检查文件是否存在来决定是否处理第一行
+    # first = not os.path.exists(file_name)
+
+    # # 准备新数据
+    # new_data = pd.DataFrame(data)
+
+    # # 如果不是第一行（即文件已存在），对数据应用类型转换
+    # if not first:
+    #     for i, col_type in enumerate(types):
+    #         if col_type == "int" or col_type == "bigInt":
+    #             try:
+    #                 new_data[i] = pd.to_numeric(new_data[i], errors='coerce').astype(int)
+    #             except:
+    #                 new_data[i] = pd.to_numeric("0", errors='coerce').astype(int)
+    #         elif col_type == "double":
+    #             try:
+    #                 new_data[i] = pd.to_numeric(new_data[i], errors='coerce')(0.0)
+    #             except:
+    #                 new_data[i] = pd.to_numeric("0.0", errors='coerce').astype(float)
+    # # 根据 record 筛选列
+    # new_data = new_data.loc[:, record]
+
+    # # 如果文件存在，则读取现有数据并追加新数据
+    # if first:
+    #     combined_data = new_data
+    # else:
+    #     # 使用 Pandas 读取现有数据
+    #     existing_data = pd.read_excel(file_name)
+    #     # 合并现有数据与新数据
+    #     combined_data = pd.concat([existing_data, new_data], ignore_index=True)
+
+    # # 将合并后的数据写入 Excel
+    # combined_data.to_excel(file_name, index=False, engine='openpyxl')
+
+    # existing_data = []
+    # first = True
+    # # 检查文件是否存在
+    # if os.path.exists(file_name):
+    #     # 使用 openpyxl 读取现有数据
+    #     workbook = load_workbook(file_name, read_only=True)
+    #     sheet = workbook.active
+    #     # 读取已有行数
+    #     num_rows = sheet.max_row
+    #     if num_rows > 5000:
+    #         print("Excel文件中的数据行数超过5000行，过多的行数将会导致追加模式写入数据速度变慢，建议更换为CSV文件或MySQL数据库存储数据。正在读取数据，请稍等...")
+    #         print("The number of rows in the Excel file exceeds 5000, too many rows will cause the speed of writing data in append mode to slow down, it is recommended to replace it with CSV file or MySQL database to store data. Reading data, please wait...")
+    #     # existing_data = [[sheet.cell(row=i, column=j).value for j in range(1, sheet.max_column + 1)] for i in range(1, sheet.max_row + 1)]
+    #     for i in range(1, sheet.max_row + 1):
+    #         row_data = []
+    #         if num_rows > 5000 and i % 500 == 0:
+    #             print(f"正在读取第{i}/{num_rows}行的数据...")
+    #             print(f"Reading data of row {i}/{num_rows}...")
+    #         for j in range(1, sheet.max_column + 1):
+    #             cell = sheet.cell(row=i, column=j).value
+    #             if cell is None:
+    #                 cell = ""
+    #             row_data.append(cell)
+    #         existing_data.append(row_data)
+    #     first = False  # 如果文件存在，首行不再是标题行
+
+    # # 使用 xlsxwriter 创建新文件
+    # workbook = xlsxwriter.Workbook(file_name)
+    # worksheet = workbook.add_worksheet()
+
+    # # 写入现有数据
+    # for row_num, row_data in enumerate(existing_data):
+    #     for col_num, cell in enumerate(row_data):
+    #         worksheet.write(row_num, col_num, cell)
+
+    # # 写入新数据
+    # row = len(existing_data)
+    # for line in data:
+    #     to_write = []
+    #     for i in range(len(line)):
+    #         value = line[i]
+    #         if not first:  # 如果不是第一行，需要转换数据类型
+    #             if types[i] == "int" or types[i] == "bigInt":
+    #                 try:
+    #                     value = int(value)
+    #                 except ValueError:
+    #                     value = 0
+    #             elif types[i] == "double":
+    #                 try:
+    #                     value = float(value)
+    #                 except ValueError:
+    #                     value = 0.0
+    #         if record[i]:
+    #             to_write.append(value)
+    #     first = False  # 更新 first 以跳过数据类型转换
+    #     for col, item in enumerate(to_write):
+    #         worksheet.write(row, col, item)
+    #     row += 1
+
+    # # 关闭工作簿
+    # workbook.close()
+
     first = False
     if os.path.exists(file_name):
         # 加载现有的工作簿
         wb = load_workbook(file_name)
+        # 行数读取
+        num_rows = wb.active.max_row
+        if num_rows > 1000:
+            print("Excel文件中的数据行数已超过1000行，过多的行数将会导致追加模式写入数据速度变慢，建议增大任务保存对话框中的“每采集多少条数据保存一次”选项的值以提升采集速度，或者更换为CSV文件或MySQL数据库存储数据。正在读取数据，请稍等...")
+            print("The number of rows in the Excel file already exceeds 1000, too many rows will cause the speed of writing data in append mode to slow down, it is recommended to increase the value of the 'Save every how many data' option in the task save dialog to improve the collection speed, or replace it with CSV file or MySQL database to store data. Reading data, please wait...")
         ws = wb.active
+        if num_rows > 1000:
+            print("读取数据完成，正在追加数据...")
+            print("Reading data completed, appending data...")
     else:
         # 创建新的工作簿和工作表
         wb = Workbook()
@@ -433,6 +560,10 @@ class myMySQL:
         sql = "CREATE TABLE " + table_name + \
             " (_id INT AUTO_INCREMENT PRIMARY KEY, "
         for item in parameters:
+            try:
+                recordASField = item["recordASField"]
+            except:
+                item["recordASField"] = True
             if item["recordASField"]:
                 name = item['name']
                 if item['type'] == 'int':
@@ -543,6 +674,25 @@ class myMySQL:
         # 提交到数据库执行
         self.conn.commit()
 
+        # 关闭游标和连接
+        self.cursor.close()
+
+    def remove_duplicate_data(self):
+        self.cursor = self.conn.cursor()
+        # 删除重复数据
+        fields = self.field_sql.replace("(", "").replace(")", "")
+        sql = f"CREATE TABLE {self.table_name}_temp AS " + \
+        f"SELECT MIN(_id) AS _id, " + fields + \
+        f" FROM {self.table_name} GROUP BY " + fields + ";"
+        self.cursor.execute(sql)
+        sql = f"DELETE FROM {self.table_name};"
+        self.cursor.execute(sql)
+        sql = f"INSERT INTO {self.table_name} SELECT * FROM {self.table_name}_temp;"
+        self.cursor.execute(sql)
+        sql = f"DROP TABLE {self.table_name}_temp;"
+        self.cursor.execute(sql)
+        # 提交到数据库执行
+        self.conn.commit()
         # 关闭游标和连接
         self.cursor.close()
 

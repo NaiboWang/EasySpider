@@ -513,8 +513,8 @@ class BrowserThread(Thread):
             self.urlId = self.urlId + 1
         files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
-        if not files:
-            os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
+        # if not files:
+        #     os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         self.print_and_log("Done!")
         self.print_and_log("执行完成！")
         self.saveData(exit=True)
