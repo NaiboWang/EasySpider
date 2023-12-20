@@ -2,7 +2,7 @@ commandline_config==2.2.3
 requests==2.31.0
 selenium==4.16.0
 pyinstaller==5.13.2
-Pillow==9.5.0
+Pillow==10.0.1
 xlsxwriter==3.1.9
 openpyxl==3.1.2
 pymysql==1.1.0
