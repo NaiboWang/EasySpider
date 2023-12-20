@@ -1913,6 +1913,8 @@ class BrowserThread(Thread):
                 content = element.get_attribute(attribute_name)
             except:
                 content = ""
+        if content == None:
+            content = ""
         return content
 
     def clearOutputParameters(self):

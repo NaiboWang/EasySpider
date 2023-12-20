@@ -71,6 +71,7 @@ function changeOutputFormat(param) {
 }
 
 function changeGetDataParameters(msg, i) {
+    //Flowchart.js的addParam函数要配套跟上！！！
     msg["parameters"][i]["default"] = ""; //找不到元素时候的默认值
     msg["parameters"][i]["paraType"] = "text"; //参数类型
     msg["parameters"][i]["recordASField"] = 1; //是否记录为字段值

@@ -277,6 +277,7 @@ let app = new Vue({
                 "afterJSWaitTime": 0,
                 "downloadPic": 0,
                 "paraType": "text",
+                "splitLine": 0,
             });
             notifyParameterNum(1);
             this.paraIndex = this.nowNode["parameters"]["params"].length - 1;
