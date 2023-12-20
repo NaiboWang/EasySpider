@@ -24,6 +24,11 @@ export function trial(evt) {
         let element = node.element;
         element.style.boxShadow = "none";
     }
+    // 删除所有class为highlight_of_easyspider的元素
+    let elements = document.getElementsByClassName('highlight_of_easyspider');
+    while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+    }
     global.markElements = [];
     if (type == 0) {
         let option = node.option;
@@ -37,8 +42,17 @@ export function trial(evt) {
                 }
                 xpath = parentXPath + xpath;
             }
+            let point = parameters.xpath;
+            if (xpath.includes("point(")) {
+                xpath = "//body"
+            }
             let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-            if (element != null) {
+            if (parameters.xpath.includes("point(")) {
+                point = point.substring(6, point.length - 1).split(",");
+                let x = parseInt(point[0]);
+                let y = parseInt(point[1]);
+                highlightAt(x, y);
+            } else if (element != null) {
                 clearEl(true);
                 addEl(null, element);
             }
@@ -293,4 +307,29 @@ export function createNotification(text, type = "info") {
             }
         });
     }, timeoutInterval + 500); // 通知停留时间加上动画时间
+}
+
+function highlightAt(x, y) {
+    // 创建一个新元素
+    let element = document.createElement('div');
+
+    element.className = 'highlight_of_easyspider'; // 使用 class 方便后续添加样式
+
+    // 设置样式
+    element.style.position = 'absolute';
+    element.style.left = x + 'px';
+    element.style.top = y + 'px';
+    element.style.width = '10px';  // 你可以根据需要设置大小
+    element.style.height = '10px';
+    element.style.backgroundColor = 'blue';  // 高亮颜色
+    element.style.zIndex = '999999999';  // 确保在最上层
+    element.style.pointerEvents = 'none';  // 避免阻挡点击事件
+    //圆形
+    element.style.borderRadius = '50%';
+    // 设置动画
+    element.style.animation = 'blinkAnimation 2s infinite'; // 2秒一个周期的无限循环动画
+    // element.style.border = '1px solid ';    // 边框样式
+
+    // 将元素添加到文档
+    document.body.appendChild(element);
 }

@@ -652,7 +652,7 @@ if (sId != null && sId != -1) //加载任务
                     node["parameters"]["cookies"] = "";
                 }
             } else if(node["option"] == 3){ //提取数据
-                if(node["parameters"]["paras"] != undefined){
+                if(node["parameters"]["paras"] != undefined && node["parameters"]["params"] == undefined){
                     node["parameters"]["params"] = node["parameters"]["paras"];
                 }
             }
