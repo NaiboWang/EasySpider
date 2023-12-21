@@ -13,3 +13,4 @@ mysql_config.json
 **/user_data
 **/tasks
 **/execution_instances
+**/TempUserDataFolder

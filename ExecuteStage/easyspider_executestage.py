@@ -2258,13 +2258,21 @@ if __name__ == '__main__':
             tmp_user_data_folder = os.path.join(tmp_user_folder_parent, "user_data_" + str(id) + "_" + str(time.time()).replace(".","") + "_" + random_string)
             tmp_options[i]["tmp_user_data_folder"] = tmp_user_data_folder
             if os.path.exists(tmp_user_data_folder):
-                shutil.rmtree(tmp_user_data_folder)
+                try:
+                    shutil.rmtree(tmp_user_data_folder)
+                except:
+                    pass
             print(f"Copying user data folder to: {tmp_user_data_folder}, please wait...")
             print(f"正在复制用户信息目录到: {tmp_user_data_folder}，请稍等...")
             if os.path.exists(absolute_user_data_folder):
-                shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
-                print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
-                print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+                try:
+                    shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
+                    print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
+                    print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+                except:
+                    tmp_user_data_folder = absolute_user_data_folder
+                    print("Copy user data folder failed, use the original folder.")
+                    print("复制用户信息目录失败，使用原始目录。")
             else:
                 tmp_user_data_folder = absolute_user_data_folder
                 print("Cannot find user data folder, create a new folder.")
