@@ -1835,16 +1835,20 @@ class BrowserThread(Thread):
             content = self.browser.title
         elif p["contentType"] == 7:
             # 获取整个网页的高度和宽度
-            height = self.browser.execute_script(
-                "return document.body.scrollHeight")
-            width = self.browser.execute_script(
-                "return document.body.scrollWidth")
+            size = self.browser.get_window_size()
+            width = size["width"]
+            height = size["height"]
             # 调整浏览器窗口的大小
             self.browser.set_window_size(width, height)
             element.screenshot("Data/Task_" + str(self.id) + "/" + self.saveName +
                                "/" + str(time.time()) + ".png")
+            # 截图完成后，将浏览器的窗口大小设置为原来的大小
+            self.browser.set_window_size(width, height)
         elif p["contentType"] == 8:
             try:
+                size = self.browser.get_window_size()
+                width = size["width"]
+                height = size["height"]
                 screenshot = element.screenshot_as_png
                 screenshot_stream = io.BytesIO(screenshot)
                 # 使用Pillow库打开截图，并转换为灰度图像
@@ -1858,6 +1862,7 @@ class BrowserThread(Thread):
                     image_bytes = f.read()
                 content = ocr.classification(image_bytes)
                 os.remove(location)
+                self.browser.set_window_size(width, height)
                 # 使用Tesseract OCR引擎识别图像中的文本
                 # content = pytesseract.image_to_string(image,  lang='chi_sim+eng')
             except Exception as e:
@@ -2258,13 +2263,21 @@ if __name__ == '__main__':
             tmp_user_data_folder = os.path.join(tmp_user_folder_parent, "user_data_" + str(id) + "_" + str(time.time()).replace(".","") + "_" + random_string)
             tmp_options[i]["tmp_user_data_folder"] = tmp_user_data_folder
             if os.path.exists(tmp_user_data_folder):
-                shutil.rmtree(tmp_user_data_folder)
+                try:
+                    shutil.rmtree(tmp_user_data_folder)
+                except:
+                    pass
             print(f"Copying user data folder to: {tmp_user_data_folder}, please wait...")
             print(f"正在复制用户信息目录到: {tmp_user_data_folder}，请稍等...")
             if os.path.exists(absolute_user_data_folder):
-                shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
-                print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
-                print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+                try:
+                    shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
+                    print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
+                    print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
+                except:
+                    tmp_user_data_folder = absolute_user_data_folder
+                    print("Copy user data folder failed, use the original folder.")
+                    print("复制用户信息目录失败，使用原始目录。")
             else:
                 tmp_user_data_folder = absolute_user_data_folder
                 print("Cannot find user data folder, create a new folder.")
