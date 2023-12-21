@@ -32,9 +32,9 @@ def compress_folder_to_7z(folder_path, output_file):
     # 压缩文件夹
     try:
         # "-mmt4"表示使用4个线程压缩
-        subprocess.call(["7z", "a", output_file, folder_path])
+        subprocess.call(["7z", "a", "-mx=9", output_file, folder_path])
     except:
-        subprocess.call(["7za", "a", output_file, folder_path])
+        subprocess.call(["7za", "a", "-mx=9", output_file, folder_path])
 
 def compress_folder_to_7z_split(folder_path, output_file):
     if os.path.exists(output_file):
@@ -129,15 +129,20 @@ if __name__ == "__main__":
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         arch = get_processor_info()
         if arch == "Intel":
-            file_name = f"EasySpider_{easyspider_version}_MacOS_Intel_Chip.tar.gz"
+            file_name = f"EasySpider_{easyspider_version}_MacOS_Intel_Chip.7z"
         else:
-            file_name = f"EasySpider_{easyspider_version}_MacOS_Apple_Arm_Chip.tar.gz"
-            if os.path.exists("./EasySpider_MacOS_all_arch/Data"):
-                shutil.rmtree("./EasySpider_MacOS_all_arch/Data")
-            os.mkdir("./EasySpider_MacOS_all_arch/Data")
-        if os.path.exists("./EasySpider_MacOS_all_arch/TempUserDataFolder"):
-            shutil.rmtree("./EasySpider_MacOS_all_arch/TempUserDataFolder")
-        subprocess.call(["tar", "-zcvf", file_name, "./EasySpider_MacOS_all_arch"])
-        # subprocess.call(["7zz", "a", "-v95m", file_name.replace(".tar.gz", ".7z"), file_name, "请继续解压EasySpider_MacOS_all_arch.tar.gz使用.txt"])
+            file_name = f"EasySpider_{easyspider_version}_MacOS_Apple_Arm_Chip.7z"
+            if os.path.exists("./EasySpider_MacOS/Data"):
+                shutil.rmtree("./EasySpider_MacOS/Data")
+            os.mkdir("./EasySpider_MacOS/Data")
+        if os.path.exists("./EasySpider_MacOS/TempUserDataFolder"):
+            shutil.rmtree("./EasySpider_MacOS/TempUserDataFolder")
+        # if os.path.exists(file_name):
+        #     os.remove(file_name)
+        #     print(f"Remove {file_name} successfully!")
+        # subprocess.call(["tar", "-zcvf", file_name, "./EasySpider_MacOS"])
+        # brew install p7zip
+        # subprocess.call(["7z", "a", "-mx=9", file_name, "./EasySpider_MacOS"])
+        compress_folder_to_7z("./EasySpider_MacOS", file_name)
         print(f"Compress {file_name} successfully!")
 

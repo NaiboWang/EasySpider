@@ -1,0 +1,25 @@
+Due to the complex security settings of MacOS, the issue of being unable to open software due to the "unverified developer" message may occur upon the first attempt to open the software. Please refer to the following GitHub document to see how to open software and perform tasks on your MacOS version: 
+
+https://github.com/NaiboWang/EasySpider/wiki/MacOS-Guide
+
+For the Arm version, if it shows "the package is damaged", you need to use the following command to modify the package attributes:
+
+xattr -cr Your EasySpider.app file path
+ 
+For example:
+
+xattr -cr /Users/your_username/Downloads/EasySpider_MacOS/EasySpider.app
+ 
+Then try to open it again.
+
+When executing the xattr command, if an error like the one below occurs, you can ignore it. After the execution is finished, you can open the software:
+
+xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node_modules/node-window-manager/build/node_gyp_bins/python3'
+ 
+File access permissions must be granted, but microphone permissions are not needed at all. The author is also unclear why microphone access would be requested, so it can be refused.
+
+During the execution of tasks, if an error similar to the one below occurs, it can also be ignored:
+
+Traceback (most recent call last):
+  File "multiprocessing/resource_tracker.py", line 209, in main
+KeyError: '/mp-5dxyey7c'

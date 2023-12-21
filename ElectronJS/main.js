@@ -1432,8 +1432,8 @@ app.whenReady().then(() => {
                 // 检查主版本号是否匹配
                 if (chromeVersion.split(".")[0] !== chromedriverVersion.split(".")[0]) {
                     dialog.showErrorBox(
-                        "ChromeDriver版本不匹配|ChromeDriver Version Mismatch",
-                        ` Chrome的版本（${chromeVersion}）与ChromeDriver的版本（${chromedriverVersion}）不匹配，软件将无法正常使用。请阅读文件夹下的“浏览器闪退解决方案.txt”升级ChromeDriver到${chromeVersion}.*版本以正常使用软件。\n\nThe version of Chrome (${chromeVersion}) does not match the version of ChromeDriver (${chromedriverVersion}), this will cause the software to be unable to run normally. Please read the "If Chrome exits when desigining a task.txt" in the folder to upgrade ChromeDriver to ${chromeVersion}.* version to use the software normally.`
+                        "ChromeDriver版本不匹配\nChromeDriver Version Mismatch",
+                        `由于MacOS的自动升级策略，导致了当前的Chrome的版本被自动更新到了${chromeVersion}，与软件自带的ChromeDriver的版本（${chromedriverVersion}）不匹配，软件将无法正常使用。请阅读文件夹下的“浏览器闪退解决方案.txt”升级ChromeDriver到${chromeVersion}.*版本以正常使用软件。\n\nThe current version of Chrome has been automatically updated to ${chromeVersion} due to the automatic update policy of MacOS, which does not match the version of ChromeDriver (${chromedriverVersion}) provided by the software. The software will not work properly. Please read the "Browser Crash Solution.txt" in the folder to upgrade ChromeDriver to ${chromeVersion}.* version to use the software normally.`
                     );
                 } else {
                     // 版本匹配，继续应用流程

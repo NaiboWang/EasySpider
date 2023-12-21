@@ -31,7 +31,7 @@ ws.onmessage = function (evt) {
     if (evt["type"] == "title") { //如果不是特殊处理的话，默认全部是增加元素操作
         if (old_title == "新任务 | New Task") { //只记录第一次的title
             $("#serviceName").val(evt.data.title);
-            $("#create_time").val(new Date().toLocaleString());
+            $("#create_time").val(formatDateTime(new Date()));
         }
         old_title = evt.data.title;
     } else if (evt["type"] == "notify") {
@@ -471,7 +471,7 @@ function saveService(type) {
     let text = LANG("确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task (if you can't use the mouse to click, please press the enter key)?");
     if (type == 1) { //任务另存为
         serviceId = -1;
-        $("#create_time").val(new Date().toLocaleString());
+        $("#create_time").val(formatDateTime(new Date()));
         text = LANG("确认要另存为任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task as (if you can't use the mouse to click, please press the enter key)?");
     }
     // if (confirm(text)) {
@@ -596,7 +596,7 @@ function saveService(type) {
         "url": url,
         "links": links,
         "create_time": $("#create_time").val(),
-        "update_time": new Date().toLocaleString(),
+        "update_time": formatDateTime(new Date()),
         "version": "0.6.0",
         "saveThreshold": saveThreshold,
         // "cloudflare": cloudflare,

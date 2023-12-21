@@ -21,6 +21,19 @@ function DateFormat(datetime) {
     return formatted;
 }
 
+function formatDateTime(date) {
+    const addZero = (num) => (num < 10 ? `0${num}` : num);
+  
+    let year = date.getFullYear();
+    let month = addZero(date.getMonth() + 1); // getMonth() 返回值范围是0-11，所以加1
+    let day = addZero(date.getDate());
+    let hours = addZero(date.getHours());
+    let minutes = addZero(date.getMinutes());
+    let seconds = addZero(date.getSeconds());
+  
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
 function getUrlParam(name) {
     let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
     let r = window.location.search.substr(1).match(reg); //匹配目标参数
