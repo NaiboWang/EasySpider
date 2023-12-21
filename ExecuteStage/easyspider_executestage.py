@@ -1835,16 +1835,20 @@ class BrowserThread(Thread):
             content = self.browser.title
         elif p["contentType"] == 7:
             # 获取整个网页的高度和宽度
-            height = self.browser.execute_script(
-                "return document.body.scrollHeight")
-            width = self.browser.execute_script(
-                "return document.body.scrollWidth")
+            size = self.browser.get_window_size()
+            width = size["width"]
+            height = size["height"]
             # 调整浏览器窗口的大小
             self.browser.set_window_size(width, height)
             element.screenshot("Data/Task_" + str(self.id) + "/" + self.saveName +
                                "/" + str(time.time()) + ".png")
+            # 截图完成后，将浏览器的窗口大小设置为原来的大小
+            self.browser.set_window_size(width, height)
         elif p["contentType"] == 8:
             try:
+                size = self.browser.get_window_size()
+                width = size["width"]
+                height = size["height"]
                 screenshot = element.screenshot_as_png
                 screenshot_stream = io.BytesIO(screenshot)
                 # 使用Pillow库打开截图，并转换为灰度图像
@@ -1858,6 +1862,7 @@ class BrowserThread(Thread):
                     image_bytes = f.read()
                 content = ocr.classification(image_bytes)
                 os.remove(location)
+                self.browser.set_window_size(width, height)
                 # 使用Tesseract OCR引擎识别图像中的文本
                 # content = pytesseract.image_to_string(image,  lang='chi_sim+eng')
             except Exception as e:
