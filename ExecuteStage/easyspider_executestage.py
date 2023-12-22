@@ -658,49 +658,55 @@ class BrowserThread(Thread):
             except:
                 pass
             if scrollType != 0 and param["scrollCount"] > 0:  # 控制屏幕向下滚动
-                for i in range(param["scrollCount"]):
-                    self.print_and_log(
-                        "Wait for set second after screen scrolling")
-                    body = self.browser.find_element(
-                        By.CSS_SELECTOR, "body", iframe=param["iframe"])
-                    if scrollType == 1:
-                        body.send_keys(Keys.PGDN)
-                    elif scrollType == 2:
-                        body.send_keys(Keys.END)
-                    elif scrollType == 3:
-                        bodyText = ""
-                        i = 0
-                        while True:
-                            newBodyText = self.browser.find_element(
-                                By.CSS_SELECTOR, "body", iframe=False).text
-                            if param["iframe"]:  # 如果标记了iframe
-                                iframes = self.browser.find_elements(
-                                    By.CSS_SELECTOR, "iframe", iframe=False)
-                                for iframe in iframes:
-                                    self.browser.switch_to.default_content()
-                                    self.browser.switch_to.frame(iframe)
-                                    iframe_text = super(self.browser.__class__, self.browser).find_element(
-                                        By.CSS_SELECTOR, "body").text  # 用super调用父类的方法
-                                    newBodyText += iframe_text
-                                    self.browser.switch_to.default_content()
-                            if newBodyText == bodyText:
-                                self.print_and_log("页面已检测不到新内容，停止滚动。")
-                                self.print_and_log(
-                                    "No new content detected on the page, stop scrolling.")
-                                break
-                            else:
-                                bodyText = newBodyText
-                            body = self.browser.find_element(
-                                By.CSS_SELECTOR, "body", iframe=param["iframe"])
+                if scrollType == 1 or scrollType == 2:
+                    for i in range(param["scrollCount"]):
+                        body = self.browser.find_element(
+                            By.CSS_SELECTOR, "body", iframe=param["iframe"])
+                        if scrollType == 1:
+                            body.send_keys(Keys.PAGE_DOWN)
+                        elif scrollType == 2:
                             body.send_keys(Keys.END)
-                            self.print_and_log("滚动到底部，第", i + 1, "次。")
+                        try:
+                            time.sleep(param["scrollWaitTime"])  # 下拉完等待
+                        except:
+                            pass
+                        self.print_and_log("向下滚动，第", i + 1, "次。")
+                        self.print_and_log(
+                            "Scroll down, the", i + 1, "time.")
+                elif scrollType == 3:
+                    bodyText = ""
+                    i = 0
+                    while True:
+                        newBodyText = self.browser.find_element(
+                            By.CSS_SELECTOR, "body", iframe=False).text
+                        if param["iframe"]:  # 如果标记了iframe
+                            iframes = self.browser.find_elements(
+                                By.CSS_SELECTOR, "iframe", iframe=False)
+                            for iframe in iframes:
+                                self.browser.switch_to.default_content()
+                                self.browser.switch_to.frame(iframe)
+                                iframe_text = super(self.browser.__class__, self.browser).find_element(
+                                    By.CSS_SELECTOR, "body").text  # 用super调用父类的方法
+                                newBodyText += iframe_text
+                                self.browser.switch_to.default_content()
+                        if newBodyText == bodyText:
+                            self.print_and_log("页面已检测不到新内容，停止滚动。")
                             self.print_and_log(
-                                "Scroll to the bottom, the", i + 1, "time.")
-                            i = i + 1
-                    try:
-                        time.sleep(param["scrollWaitTime"])  # 下拉完等待
-                    except:
-                        pass
+                                "No new content detected on the page, stop scrolling.")
+                            break
+                        else:
+                            bodyText = newBodyText
+                        body = self.browser.find_element(
+                            By.CSS_SELECTOR, "body", iframe=param["iframe"])
+                        body.send_keys(Keys.END)
+                        self.print_and_log("滚动到底部，第", i + 1, "次。")
+                        self.print_and_log(
+                            "Scroll to the bottom, the", i + 1, "time.")
+                        i = i + 1
+                        try:
+                            time.sleep(param["scrollWaitTime"])  # 下拉完等待
+                        except:
+                            pass
             if rt != "":
                 rt.end()
 
