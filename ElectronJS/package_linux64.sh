@@ -36,4 +36,4 @@ rm -rf  ../.temp_to_pub/EasySpider_Linux_x64/Data
 mkdir ../.temp_to_pub/EasySpider_Linux_x64/Data
 rm EasySpider_zh.crx
 rm EasySpider_en.crx
-cp -Rf ../tasks/* ../.temp_to_pub/EasySpider_Linux_x64/tasks
+cp -Rf ./tasks/* ../.temp_to_pub/EasySpider_Linux_x64/tasks
