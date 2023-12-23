@@ -16,13 +16,15 @@ cd ~/Downloads/EasySpider_MacOS
 
 4. In the EasySpider directory, use the following command to modify the software package attributes:
 
-xattr -c YourEasySpider.appFilePath
+xattr -cr YourEasySpider.appFilePath
 
 For example:
 
-xattr -c EasySpider.app
+xattr -cr EasySpider.app
 
-You can now open and use the software.
+When executing the command, errors similar to the one below can be ignored. After the execution is complete, you can open the software:
+
+xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources
 
 
 - Design phase - Intel chip version of MacOS

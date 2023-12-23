@@ -14,13 +14,15 @@ cd ~/Downloads/EasySpider_MacOS
 
 3. 在EasySpider目录下，使用以下命令修改软件包属性：
 
-xattr -c 您的EasySpider.app文件路径
+xattr -cr 您的EasySpider.app文件路径
 
 如：
 
-xattr -c EasySpider.app
+xattr -cr EasySpider.app
 
-即可打开软件。
+执行命令时如果出现类似下面的错误可以忽略，执行完成之后即可打开软件：
+
+xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node_modules/node-window-manager/build/node_gyp_bins/python3'
 
 
 - 设计阶段 - Intel芯片版本MacOS
