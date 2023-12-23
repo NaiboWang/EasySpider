@@ -5,7 +5,7 @@ import copy
 import platform
 import shutil
 import string
-import undetected_chromedriver as uc
+# import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
@@ -2348,7 +2348,13 @@ if __name__ == '__main__':
             service = json.loads(content.text)  # 加载服务信息
         else:
             print("local")
-            with open("execution_instances/" + str(id) + ".json", 'r', encoding='utf-8') as f:
+            local_folder = os.path.join(os.getcwd(), "execution_instances")
+            if sys.platform == "darwin":
+                user_folder = os.path.expanduser(
+                "~/Library/Application Support/EasySpider/")
+                local_folder = os.path.join(user_folder, "execution_instances")
+            file_path = os.path.join(local_folder, str(id) + ".json")
+            with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
                 service = json.loads(content)  # 加载服务信息
         try:

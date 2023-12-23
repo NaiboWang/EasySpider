@@ -29,7 +29,7 @@ You can now open and use the software.
 
 1. Due to MacOS's security policy, the system does not allow EasySpider to run when it is first opened, and it will prompt you to move it to the trash. At this point, you need to click "Cancel".
 
-2. Then open System Settings -> Security & Privacy.
+2. Open System Settings -> Security & Privacy.
 
 3. Click "Open Anyway" (if you can't see it, scroll to the bottom).
 
@@ -38,7 +38,7 @@ Now, you can design tasks as you would in other operating systems.
 
 - Execution phase
 
-The operation is the same as the design phase of the Intel version. When running the 'easyspider_executestage' program for the first time, you need to set "Always Allow" in System Settings -> Security & Privacy, and re-run the "./easyspider_executestage EID" command, and click "Open Anyway" to run the task.
+The operation is the same as the design phase of the Intel version. When running the 'easyspider_executestage' program for the first time, you need to set "Allow Anyway" in System Settings -> Security & Privacy, and re-run the "./easyspider_executestage EID" command, and click "Open" to run the task.
 
 During the execution of the task, if an error similar to the following occurs, it can be ignored:
 

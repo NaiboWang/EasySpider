@@ -27,7 +27,7 @@ xattr -c EasySpider.app
 
 1. 由于MacOS的安全策略，系统首次打开EasySpider时不允许运行，并会提示您移动到废纸篓，这时您需要点击“取消”。
 
-2. 然后打开系统偏好设置 -> 安全性与隐私。
+2. 点击MacOS系统左上角苹果图标 -> 系统设置 -> 安全性与隐私。
 
 3. 点击“仍要打开”（如果看不到，滑动至底部）。
 
@@ -37,7 +37,7 @@ xattr -c EasySpider.app
 
 - 执行阶段
 
-与Intel版本设计阶段操作相同，首次运行'easyspider_executestage'程序时，需要在系统偏好设置 -> 安全性与隐私中设置“始终允许”，并重新运行"./easyspider_executestage EID"命令，并点击“仍要打开”来运行任务。
+与Intel版本设计阶段操作相同，首次运行'easyspider_executestage'程序时，需要在系统设置 -> 安全性与隐私中设置“仍然允许”，并重新运行"./easyspider_executestage EID"命令，并点击“打开”来运行任务。
 
 在执行任务过程中，如果出现类似下面的错误，可以忽略：
 
