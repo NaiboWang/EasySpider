@@ -192,7 +192,32 @@ if __name__ == "__main__":
         finally:
             shutil.rmtree("./chromedrivers")
     elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
-        pass
+        for download in driver_downloads:
+            if download["platform"] == "linux64":
+                url = download["url"]
+                print("ChromeDriver will be downloaded from: ", url)
+                break
+        download_and_extract_zip(url, "./chromedrivers")
+        if os.path.exists("./chrome_linux64"):
+            shutil.rmtree("./chrome_linux64")
+        copy_folder(linux_chrome_path, "./chrome_linux64")
+        copy_file("./execute_linux64.sh", "./chrome_linux64/execute.sh")
+        copy_file("./stealth.min.js", "./chrome_linux64/stealth.min.js")
+        try:
+            copy_file(
+                "./chromedrivers/chromedriver-linux64/chromedriver",
+                "./chrome_linux64/chromedriver_linux64",
+            )
+        except:
+            copy_file(
+                "./chromedrivers/chromedriver",
+                "./chrome_linux64/chromedriver_linux64",
+            )
+        finally:
+            # Change Linux file permissions
+            os.chmod("./chrome_linux64/chromedriver_linux64", 0o755)
+            os.chmod("./chrome_linux64/execute.sh", 0o755)
+            shutil.rmtree("./chromedrivers")
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         processor = get_processor_info()
         if processor == "Intel":
