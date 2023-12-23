@@ -44,14 +44,25 @@ import sys
 # import hashlib
 import time
 import requests
-from ddddocr import DdddOcr
+from multiprocessing import freeze_support
+freeze_support()  # 防止无限死循环多开
+try:
+    from ddddocr import DdddOcr
+    import onnxruntime
+    onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
+except:
+    print("OCR识别无法在当前环境下使用（ddddocr库缺失），请使用完整版执行器easyspider_executestage_full来运行需要OCR识别的任务。")
+    print("OCR recognition cannot be used in the current environment (ddddocr library is missing), please use the executor with ddddocr 'easyspider_executestage_full' to run the task which requires OCR recognition.")
+    time.sleep(2)
 from urllib.parse import urljoin
 from lxml import etree, html
+try:
+    import pandas as pd
+except:
+    print("数据去重无法在当前环境下使用（pandas库缺失），请使用完整版执行器easyspider_executestage_full来运行需要去重的任务。")
+    print("Data deduplication cannot be used in the current environment (pandas library is missing), please use the executor with pandas 'easyspider_executestage_full' to run the task which requires data deduplication.")
+    time.sleep(2)
 
-import onnxruntime
-
-onnxruntime.set_default_logger_severity(3)  # 隐藏onnxruntime的日志
-import pandas as pd
 # import numpy
 # import pytesseract
 # import uuid
@@ -2185,8 +2196,6 @@ class BrowserThread(Thread):
             self.OUTPUT.append(line)
 
 if __name__ == '__main__':
-    from multiprocessing import freeze_support
-    freeze_support()  # 防止无限死循环多开
     # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
     # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
     config = {

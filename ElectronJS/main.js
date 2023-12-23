@@ -59,27 +59,27 @@ let chromeBinaryPath = "";
 let execute_path = "";
 console.log(process.arch);
 
-exec(`wmic os get Caption`, function (error, stdout, stderr) {
-    if (error) {
-        console.error(`执行的错误: ${error}`);
-        return;
-    }
+// exec(`wmic os get Caption`, function (error, stdout, stderr) {
+//     if (error) {
+//         console.error(`执行的错误: ${error}`);
+//         return;
+//     }
 
-    if (stdout.includes("Windows 7")) {
-        console.log("Windows 7");
-        let sys_arch = config.sys_arch;
-        if (sys_arch === "x64") {
-            dialog.showMessageBoxSync({
-                type: "error",
-                title: "Error",
-                message:
-                    "Windows 7系统请下载使用x32版本的软件，不论Win 7系统为x64还是x32版本。\nFor Windows 7, please download and use the x32 version of the software, regardless of whether the Win 7 system is x64 or x32 version.",
-            });
-        }
-    } else {
-        console.log("Not Windows 7");
-    }
-});
+//     if (stdout.includes("Windows 7")) {
+//         console.log("Windows 7");
+//         let sys_arch = config.sys_arch;
+//         if (sys_arch === "x64") {
+//             dialog.showMessageBoxSync({
+//                 type: "error",
+//                 title: "Error",
+//                 message:
+//                     "Windows 7系统请下载使用x32版本的软件，不论Win 7系统为x64还是x32版本。\nFor Windows 7, please download and use the x32 version of the software, regardless of whether the Win 7 system is x64 or x32 version.",
+//             });
+//         }
+//     } else {
+//         console.log("Not Windows 7");
+//     }
+// });
 
 if (process.platform === "win32" && process.arch === "ia32") {
     driverPath = path.join(__dirname, "chrome_win32/chromedriver_win32.exe");
