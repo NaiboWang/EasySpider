@@ -53,7 +53,6 @@ try:
 except:
     print("OCR识别无法在当前环境下使用（ddddocr库缺失），请使用完整版执行器easyspider_executestage_full来运行需要OCR识别的任务。")
     print("OCR recognition cannot be used in the current environment (ddddocr library is missing), please use the executor with ddddocr 'easyspider_executestage_full' to run the task which requires OCR recognition.")
-    time.sleep(2)
 from urllib.parse import urljoin
 from lxml import etree, html
 try:
@@ -61,7 +60,7 @@ try:
 except:
     print("数据去重无法在当前环境下使用（pandas库缺失），请使用完整版执行器easyspider_executestage_full来运行需要去重的任务。")
     print("Data deduplication cannot be used in the current environment (pandas library is missing), please use the executor with pandas 'easyspider_executestage_full' to run the task which requires data deduplication.")
-    time.sleep(2)
+    time.sleep(1)
 
 # import numpy
 # import pytesseract

@@ -2,24 +2,46 @@ Due to the complex security settings of MacOS, the issue of being unable to open
 
 https://github.com/NaiboWang/EasySpider/wiki/MacOS-Guide
 
-For the Arm version, if it shows "the package is damaged", you need to use the following command to modify the package attributes:
+The main steps are as follows:
 
-xattr -cr Your EasySpider.app file path
- 
+- Design phase - Apple Arm chip version of MacOS
+
+1. For the Arm version, if it shows "The package is damaged", you need to do the following to run EasySpider:
+
+2. Open the terminal command line window.
+
+3. Switch to the EasySpider software directory, such as:
+
+cd ~/Downloads/EasySpider_MacOS
+
+4. In the EasySpider directory, use the following command to modify the software package attributes:
+
+xattr -c YourEasySpider.appFilePath
+
 For example:
 
-xattr -cr /Users/your_username/Downloads/EasySpider_MacOS/EasySpider.app
- 
-Then try to open it again.
+xattr -c EasySpider.app
 
-When executing the xattr command, if an error like the one below occurs, you can ignore it. After the execution is finished, you can open the software:
+You can now open and use the software.
 
-xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node_modules/node-window-manager/build/node_gyp_bins/python3'
- 
-File access permissions must be granted, but microphone permissions are not needed at all. The author is also unclear why microphone access would be requested, so it can be refused.
 
-During the execution of tasks, if an error similar to the one below occurs, it can also be ignored:
+- Design phase - Intel chip version of MacOS
 
-Traceback (most recent call last):
-  File "multiprocessing/resource_tracker.py", line 209, in main
-KeyError: '/mp-5dxyey7c'
+1. Due to MacOS's security policy, the system does not allow EasySpider to run when it is first opened, and it will prompt you to move it to the trash. At this point, you need to click "Cancel".
+
+2. Then open System Settings -> Security & Privacy.
+
+3. Click "Open Anyway" (if you can't see it, scroll to the bottom).
+
+Now, you can design tasks as you would in other operating systems.
+
+
+- Execution phase
+
+The operation is the same as the design phase of the Intel version. When running the 'easyspider_executestage' program for the first time, you need to set "Always Allow" in System Settings -> Security & Privacy, and re-run the "./easyspider_executestage EID" command, and click "Open Anyway" to run the task.
+
+During the execution of the task, if an error similar to the following occurs, it can be ignored:
+
+Traceback (most recent call last): File "multiprocessing/resource_tracker.py", line 209, in main KeyError: '/mp-5dxyey7c'
+
+File access permissions must be granted, but microphone permissions are not needed at all. The author is also unclear why microphone access permissions would be requested, so you can refuse.

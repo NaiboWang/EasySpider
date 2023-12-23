@@ -1,23 +1,46 @@
 由于MacOS复杂的安全性设置，初次打开软件会显示未验证开发者从而不允许打开的问题，请参考以下视频来查看MacOS版本如何打开软件和执行任务：https://www.bilibili.com/video/BV1E34y137fT/
 
-对于Arm版本，如果显示“包已损坏”，则需要使用下面的命令修改包属性：
+主要步骤如下：
 
-xattr -cr 你的EasySpider.app文件路径
+- 设计阶段 - Apple Arm芯片版MacOS
+
+对于Arm版本，如果显示“软件包已损坏”，需要进行以下操作以运行EasySpider：
+
+1. 打开系统terminal命令行窗口。
+
+2. 切换到EasySpider软件目录，如：
+
+cd ~/Downloads/EasySpider_MacOS
+
+3. 在EasySpider目录下，使用以下命令修改软件包属性：
+
+xattr -c 您的EasySpider.app文件路径
 
 如：
 
-xattr -cr /Users/你的用户名/Downloads/EasySpider_MacOS/EasySpider.app
+xattr -c EasySpider.app
 
-然后再次尝试打开。
+即可打开软件。
 
-执行xattr命令时如果出现类似下面的错误可以忽略，执行完成之后即可打开软件：
 
-xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node_modules/node-window-manager/build/node_gyp_bins/python3'
+- 设计阶段 - Intel芯片版本MacOS
 
-文件访问权限必须给，麦克风权限完全用不到，作者也不清楚为什么会需要麦克风，因此可以拒绝。
+1. 由于MacOS的安全策略，系统首次打开EasySpider时不允许运行，并会提示您移动到废纸篓，这时您需要点击“取消”。
 
-任务执行过程中，如果出现类似下面的错误，同样可以忽略：
+2. 然后打开系统偏好设置 -> 安全性与隐私。
 
-Traceback (most recent call last):
-  File "multiprocessing/resource_tracker.py", line 209, in main
-KeyError: '/mp-5dxyey7c'
+3. 点击“仍要打开”（如果看不到，滑动至底部）。
+
+现在，您就可以像在其他操作系统中一样设计任务了。
+
+
+
+- 执行阶段
+
+与Intel版本设计阶段操作相同，首次运行'easyspider_executestage'程序时，需要在系统偏好设置 -> 安全性与隐私中设置“始终允许”，并重新运行"./easyspider_executestage EID"命令，并点击“仍要打开”来运行任务。
+
+在执行任务过程中，如果出现类似下面的错误，可以忽略：
+
+Traceback (most recent call last): File "multiprocessing/resource_tracker.py", line 209, in main KeyError: '/mp-5dxyey7c'
+
+必须授予文件访问权限，但根本不需要麦克风权限。作者也不清楚为什么会请求麦克风访问权限，所以可以拒绝。
