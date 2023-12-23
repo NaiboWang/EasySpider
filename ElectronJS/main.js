@@ -741,6 +741,22 @@ async function beginInvoke(msg, ws) {
                         keyInfo = keyInfo.replace(/<enter>/gi, "");
                         enter = true;
                     }
+                    // 如果返回值中包含JS
+                    if (/JS\(/i.test(keyInfo)) {
+                        // 创建一个新的正则表达式来匹配JS语句
+                        let pattern = /JS\("(.+?)"\)/gi;
+
+                        // 找出所有的匹配项
+                        let matches = [...keyInfo.matchAll(pattern)];
+
+                        // 处理每一个匹配项
+                        for (let match of matches) {
+                            // 执行 JS 代码并等待结果
+                            let jsReplacedText = await execute_js(match[1], null, 0);
+                            // 替换匹配到的 JS 语句
+                            keyInfo = keyInfo.replace(match[0], jsReplacedText.toString());
+                        }
+                    }
                     if (keyInfo.indexOf("Field(") >= 0 || keyInfo.indexOf("eval(") >= 0) {
                         //两秒后通知浏览器
                         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -1182,6 +1198,12 @@ wss.on("connection", function (ws) {
             await beginInvoke(msg, ws);
         }
     });
+});
+
+wss.on("error", function (err) {
+    dialog.showErrorBox("端口占用错误 Port Occupied Error", "端口" + websocket_port + "被占用，大概率是重复打开了多个EasySpider程序导致，小概率是其他程序占用了此端口，请关闭所有已打开的EasySpider程序及其他占用此端口的程序，或重启系统后再次尝试打开软件。\nPort " + websocket_port + " is occupied, it is most likely that multiple EasySpider programs are opened repeatedly, or other programs occupy this port. Please close all opened EasySpider programs and other programs that occupy this port, or restart the system and try to open the software again.");
+    //退出程序
+    app.quit();
 });
 
 console.log(process.platform);

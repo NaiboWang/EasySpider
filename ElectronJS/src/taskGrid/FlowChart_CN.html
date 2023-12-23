@@ -349,8 +349,8 @@
                     </div>
 
                     <div v-if='!useLoop'>
-                        <label>输入值（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值，用&lt;enter&gt;或&lt;ENTER&gt;表示模拟按下回车键）：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
+                        <label>输入值（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值，用&lt;enter&gt;或&lt;ENTER&gt;表示模拟按下回车键），用JS("return JS代码")和eval("Python代码")来替换成JavaScript和Python代码返回值：</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></textarea>
                     </div>
 
                     <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>

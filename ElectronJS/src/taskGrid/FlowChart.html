@@ -349,8 +349,8 @@
                     </div>
 
                 <div v-if='!useLoop'>
-                    <label>Input value (Use Field["FieldName"] to input the latest extracted/returned value of a field or custom operation. Use &lt;enter&gt; or &lt;ENTER&gt; to simulate pressing the Enter key):</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></input>
+                    <label>Input value (Use Field["FieldName"] to input the latest extracted/returned value of a field or custom operation. Use &lt;enter&gt; or &lt;ENTER&gt; to simulate pressing the Enter key, use JS("return JS code") and eval("Python code") to replace with the return values of JavaScript and Python code:</label>
+                    <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></textarea>
                 </div>
 
                     <label>XPath: <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>

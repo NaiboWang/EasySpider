@@ -1588,10 +1588,11 @@ class BrowserThread(Thread):
             else:
                 value = param["value"]
             # 将value中的Field[""]替换为outputParameters中的键值
-            pattern = r'Field\["([^"]+)"\]'
+            # pattern = r'Field\["([^"]+)"\]'
             try:
-                replaced_text = re.sub(
-                    pattern, lambda match: self.outputParameters.get(match.group(1), ''), value)
+                # replaced_text = re.sub(
+                    # pattern, lambda match: self.outputParameters.get(match.group(1), ''), value)
+                replaced_text = replace_field_values(value, self.outputParameters, self)
                 replaced_text = re.sub(
                     '<enter>', '', replaced_text, flags=re.IGNORECASE)
             except:
