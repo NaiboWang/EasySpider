@@ -63,7 +63,6 @@ You can support the author by clicking the **Sponsor** button at right side or p
 ![QRCodes](media/QRCODES.png)
 
 
-
 ## 文档/Documentation
 
 请点此进入[教程文档](https://github.com/NaiboWang/EasySpider/wiki)，如有英文可暂时翻译一下，或看作者的[硕士毕业论文](Docs/%E9%9D%A2%E5%90%91WEB%E5%BA%94%E7%94%A8%E7%9A%84%E6%99%BA%E8%83%BD%E5%8C%96%E6%9C%8D%E5%8A%A1%E5%B0%81%E8%A3%85%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0.pdf)（主要看第三章和第五章）。
@@ -141,10 +140,9 @@ Meanwhile, the software is protected by patent rights. If it is used for commerc
 <!-- At the same time, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, etc., please contact [Hangzhou Tianqin Intellectual Property Agency Co., Ltd.](http://www.tqip.com/) for patent authorization and other paid operations. -->
 
 
-
 ## 答疑QQ群
 
-群号：**682921940**，建议通过Github提Issue的方式答疑，如果实在有需要才请加QQ群，因为群人数有上限。
+群号：**682921940**，建议通过Github提Issue的方式答疑，如果实在有需要才请加QQ群，因为群人数有上限，**QQ群不提供软件下载功能**。
 
 ## 出版物/Publications
 
