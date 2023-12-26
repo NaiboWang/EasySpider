@@ -188,20 +188,34 @@ function notifyParameterNum(num) {
     ws.send(JSON.stringify(message));
 }
 
-function trailElement(node, type = 1) {
-    // type=0代表标记节点，type=1代表试运行
-    let parentNode = nodeList[actionSequence[node["parentId"]]];
-    if (node.option == 10) { //条件分支的话，传父元素的父元素
+function updateParentNode() {
+    // console.log("updateParentNode")
+    let parentNode = nodeList[actionSequence[app._data.nowNode["parentId"]]];
+    if (app._data.nowNode.option == 10) { //条件分支的话，传父元素的父元素
         parentNode = nodeList[actionSequence[parentNode["parentId"]]];
     }
     if (parentNode.option == 10) { //如果父元素是条件分支，传父元素的爷爷元素
         parentNode = nodeList[actionSequence[parentNode["parentId"]]];
         parentNode = nodeList[actionSequence[parentNode["parentId"]]];
     }
+    app._data.parentNode = parentNode;
+}
+
+function trailElement(node, type = 1) {
+    // type=0代表标记节点，type=1代表试运行
+    // let parentNode = nodeList[actionSequence[node["parentId"]]];
+    // if (node.option == 10) { //条件分支的话，传父元素的父元素
+    //     parentNode = nodeList[actionSequence[parentNode["parentId"]]];
+    // }
+    // if (parentNode.option == 10) { //如果父元素是条件分支，传父元素的爷爷元素
+    //     parentNode = nodeList[actionSequence[parentNode["parentId"]]];
+    //     parentNode = nodeList[actionSequence[parentNode["parentId"]]];
+    // }
+    updateParentNode();
     let message = {
         type: 4, //消息类型，4代表试运行事件
         from: 1, //0代表从浏览器到流程图，1代表从流程图到浏览器
-        message: {"type": type, "node": JSON.stringify(node), "parentNode": JSON.stringify(parentNode)}
+        message: {"type": type, "node": JSON.stringify(node), "parentNode": JSON.stringify(app._data.parentNode)}
     };
     ws.send(JSON.stringify(message));
     console.log(node);
@@ -214,6 +228,7 @@ function handleElement() {
     app._data["nowNode"] = nodeList[vueData.nowNodeIndex];
     app._data["nodeType"] = app._data["nowNode"]["option"];
     app._data.useLoop = app._data["nowNode"]["parameters"]["useLoop"];
+    app._data.xpath = app._data["nowNode"]["parameters"]["xpath"];
     app._data["codeMode"] = -1; //自定义初始化
     if (app._data["nodeType"] == 8) {
         app._data.loopType = app._data["nowNode"]["parameters"]["loopType"];

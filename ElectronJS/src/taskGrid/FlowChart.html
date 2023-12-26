@@ -145,8 +145,28 @@
                     </div>
                     <div>
                         <label>XPath (Or use "point(10,10)" to represent clicking on the web page at coordinate position (10, 10), suitable for the situation when need to click on a blank area to leave popup dialog): <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
+                        <label>The final XPath of this element when the task is running:</label>
+                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite"></textarea>
+                    </div>
+                                        <p style="margin-top: 10px">
+                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            Click here to expand/collapse advanced operations
+                        </a>
+                    </p>
+                    <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
+                        <div>
+                            <label>Execute a JavaScript script <strong>before</strong> clicking on this element:</label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
+                                      placeholder='The element should be represented by arguments[0]. Here is an example JavaScript code: arguments[0].innerText = arguments[0].innerText.replace("United States","US"). This code replaces occurrences of "United States" with "US" in the text of the element. Subsequently, when extracting data, you will obtain the replaced value.' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
+                            <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
+                            <label>Execute a JavaScript script <strong>after</strong> clicking on this element: </label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='The element should be represented by arguments[0]. Here is an example JavaScript code: arguments[0].click(). This code simulates a click on the element.' v-model='nowNode["parameters"]["afterJS"]'></textarea>
+                            <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
+                        </div>
                     </div>
                     <label>Maximum wait time for page load after clicking (in seconds):</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
@@ -177,24 +197,6 @@
                         <option :value = 1>Accept pop-up window</option>
                         <option :value = 2>Reject pop-up window (only for Confirm pop-up window)</option>
                     </select></p>
-                    <p style="margin-top: 10px">
-                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            Click here to expand/collapse advanced operations
-                        </a>
-                    </p>
-                    <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
-                        <div>
-                            <label>Execute a JavaScript script <strong>before</strong> clicking on this element:</label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='The element should be represented by arguments[0]. Here is an example JavaScript code: arguments[0].innerText = arguments[0].innerText.replace("United States","US"). This code replaces occurrences of "United States" with "US" in the text of the element. Subsequently, when extracting data, you will obtain the replaced value.' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
-                            <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
-                            <label>Execute a JavaScript script <strong>after</strong> clicking on this element: </label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='The element should be represented by arguments[0]. Here is an example JavaScript code: arguments[0].click(). This code simulates a click on the element.' v-model='nowNode["parameters"]["afterJS"]'></textarea>
-                            <label>Maximum wait time for script execution (0 represents unlimited wait time): </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
-                        </div>
-                    </div>
 
 
 
@@ -237,6 +239,8 @@
                         <p>XPATH (Field["FieldName"] and eval("your code") can be used in any XPATHS): <span style="font-size: 30px!important;" title="Relative XPATH writing: start with /, e.g. the loop item XPATH is /html/body/div[1], your input is /*[@id='tab-customer'], then the final addressed xpath is: /html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='params.parameters[paraIndex]["relativeXPath"]' placeholder="If you want to write the XPath relative to the current element in the loop, you can write as *../div[1] which matches the first div child element of the parent of the current element in the loop."></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
+                        <label>Final XPath of this field when the task is running:</label>
+                        <textarea spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite">{{getFinalXPath(params.parameters[paraIndex]['relativeXPath'], params.parameters[paraIndex]['relative'])}}</textarea>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
                                 Click here to expand/collapse advanced operations
@@ -256,21 +260,6 @@
                                 <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["afterJSWaitTime"]'></input>
                             </div>
                         </div>
-                        <label>Parameter type conversion (for Excel and Database):</label>
-                        <select v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
-                            <option value = "text">Text (for single values estimated to exceed 10,000 in length, please choose Large Text)</option>
-                            <option value = "int">Integer (up to 9 digits)</option>
-                            <option value = "double">Floating Number (Decimal)</option>
-                            <option value = "mediumText">Large Text (single value length exceeding 10,000 but less than 1,000,000)</option>
-                            <option value = "datetime">Date Time</option>
-                            <option value = "date">Date</option>
-                            <option value = "time">Time</option>
-                            <option value = "varchar">Small Text (single value length less than 50)</option>
-                            <option value = "longText">Extra Large Text (single value length exceeding 1,000,000)</option>
-                            <option value = "bigInt">Large Integer (more than 9 digits)</option>
-                        </select>
-                        <label>Default value when cannot find this element:</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["default"]'></textarea>
                         <label>Extract Type</label>
                         <select v-model='params.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>Text (include child element)</option>
@@ -320,6 +309,21 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
+                        <label>Parameter type conversion (for Excel and Database):</label>
+                        <select v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
+                            <option value = "text">Text (for single values estimated to exceed 10,000 in length, please choose Large Text)</option>
+                            <option value = "int">Integer (up to 9 digits)</option>
+                            <option value = "double">Floating Number (Decimal)</option>
+                            <option value = "mediumText">Large Text (single value length exceeding 10,000 but less than 1,000,000)</option>
+                            <option value = "datetime">Date Time</option>
+                            <option value = "date">Date</option>
+                            <option value = "time">Time</option>
+                            <option value = "varchar">Small Text (single value length less than 50)</option>
+                            <option value = "longText">Extra Large Text (single value length exceeding 1,000,000)</option>
+                            <option value = "bigInt">Large Integer (more than 9 digits)</option>
+                        </select>
+                        <label>Default value when cannot find this element:</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["default"]'></textarea>
                        <label style="margin-top: 15px">Wrap content to new line (set when collecting long articles and wanting to wrap):</label>
                         <select v-model='params.parameters[paraIndex]["splitLine"]' class="form-control">
                             <option :value="0">No</option>
@@ -519,6 +523,8 @@ Please note that this feature does not support assigning values to variables. In
                         <label>XPath: </label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
+                        <label>The final XPath of this element when the task is running:</label>
+                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite"></textarea>
                     </div>
 
 

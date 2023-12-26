@@ -2,7 +2,7 @@ Official Site: https://www.easyspider.net
 
 Welcome to promote this software to other friends.
 
-This version is for Windows 7 and above, including both 32-bit and 64-bit version. Please note that this version of the Chrome browser will always remain at version 109 and will not update with Chrome updates (for compatibility with Windows 7). Therefore, if you want to use the latest version of the Chrome browser for data scraping, please run the x64 version of EasySpider on Windows 10 x64 or higher systems.
+This version is for Windows 7 and above, including both 32-bit and 64-bit version. Please note that this version of the Chrome browser will always remain at version 109 and will not update with Chrome updates (for compatibility with Windows 7). Therefore, if you want to use the latest version of the Chrome browser for data scraping, please run the x64 version of EasySpider on Windows 10 x64 or higher systems. There is no version support for Windows Server 2012 and below. These systems require manual compilation for execution.
 
 Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
 

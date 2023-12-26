@@ -768,6 +768,8 @@ class BrowserThread(Thread):
         elif int(codeMode) == 5:
             try:
                 code = readCode(code)
+                # global_namespace = globals().copy()
+                # global_namespace["self"] = self
                 output = exec(code)
                 self.recordLog("执行下面的代码:" + code)
                 self.recordLog("Execute the following code:" + code)

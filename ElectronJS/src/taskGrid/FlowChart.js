@@ -46,6 +46,7 @@ let app = new Vue({
         index: vueData,
         nodeType: 0, // 当前元素的类型
         nowNode: null, // 用来临时存储元素的节点
+        parentNode: null, // 用来临时存储元素的父节点
         codeMode: -1, //代码模式
         loopType: -1, //点击循环时候用来循环选项
         useLoop: false, //记录是否使用循环内元素
@@ -53,6 +54,7 @@ let app = new Vue({
         params: {"parameters": []}, //提取数据的参数列表
         TClass: -1, //条件分支的条件类别
         paraIndex: 0, //当前参数的index
+        xpath: "", //当前操作的xpath
         XPaths: "", //xpath列表
     },
     mounted: function () {
@@ -62,6 +64,12 @@ let app = new Vue({
         //     console.log("scroll")
         // }, 500);
     },
+    // computed: {
+    //   finalXPath: function () {
+    //       console.log("Call finalXPath")
+    //         return this.getFinalXPath(this.nowNode["parameters"]["xpath"], this.nowNode["parameters"]["useLoop"]);
+    //   }
+    // },
     watch: {
         nowArrow: { //变量发生变化的时候进行一些操作
             deep: true,
@@ -91,6 +99,11 @@ let app = new Vue({
                 updateUI();
             }
         },
+        'nowNode.parameters.xpath': { //xpath发生变化的时候更新参数值
+            handler: function (newVal, oldVal) {
+                console.log("xpath changed", newVal, oldVal);
+            }
+        },
         loopType: { //循环类型发生变化的时候更新参数值
             handler: function (newVal, oldVal) {
                 // this.nowNode["parameters"]["loopType"] = newVal;
@@ -104,6 +117,11 @@ let app = new Vue({
         useLoop: {
             handler: function (newVal, oldVal) {
                 this.nowNode["parameters"]["useLoop"] = newVal;
+            }
+        },
+        xpath: {
+            handler: function (newVal, oldVal) {
+                this.nowNode["parameters"]["xpath"] = newVal;
             }
         },
         params: {
@@ -123,6 +141,26 @@ let app = new Vue({
         }
     },
     methods: {
+        getFinalXPath: function (xpath, useLoop) { //获取最终的xpath
+            // console.log(xpath, useLoop, this.parentNode);
+            if(this.parentNode == null || this.parentNode.parameters == null || this.parentNode.parameters.xpath == null){
+                return xpath;
+            } else if (useLoop) {
+                let parent_xpath = this.parentNode.parameters.xpath;
+                let final_xpath = "";
+                final_xpath = parent_xpath + xpath;
+                if (this.parentNode.parameters.loopType == 2) {
+                    parent_xpath = this.parentNode.parameters.pathList.split("\n");
+                    final_xpath = "";
+                    for (let i = 0; i < parent_xpath.length; i++) {
+                        final_xpath += parent_xpath[i] + xpath + "\n";
+                    }
+                }
+                return final_xpath;
+            } else {
+                return xpath;
+            }
+        },
         handleCodeModeChange: function () {
             // if (this.codeMode == undefined || this.codeMode == null || this.codeMode == -1) {
             //     return;
@@ -433,7 +471,7 @@ function operationChange(e, theNode) {
     if (nowNode != null) {
         nowNode.style.borderColor = "skyblue";
     }
-    nowNode = theNode
+    nowNode = theNode;
     vueData.nowNodeIndex = actionSequence[theNode.getAttribute("data")];
     theNode.style.borderColor = "blue";
     handleElement(); //处理元素
@@ -676,13 +714,13 @@ function toolBoxKernel(e, param = null) {
         } else {
             $("#" + t["id"]).click();
         }
-
-        if (e != null)
+        if (e != null){
             e.stopPropagation(); //防止冒泡
+        }
         option = 0;
-        return t;
     }
     option = 0;
+    updateParentNode();
 }
 
 $(".options").mousedown(function () {

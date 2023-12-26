@@ -2,7 +2,7 @@
 
 官方网址: https://www.easyspider.cn
 
-支持Windows 7及以上版本，包括32位系统和64位系统。注意此版本的Chrome浏览器永远都是109，不会随着Chrome更新而更新（为了兼容Win 7系统），因此如果想用最新版Chrome浏览器采集数据，请在Windows 10 x64及以上系统上运行x64版本的EasySpider。
+支持Windows 7及以上版本，包括32位系统和64位系统。注意此版本的Chrome浏览器永远都是109，不会随着Chrome更新而更新（为了兼容Win 7系统），因此如果想用最新版Chrome浏览器采集数据，请在Windows 10 x64及以上系统上运行x64版本的EasySpider。无任何版本支持Windows Server 2012及以下版本系统，这些系统下需要自行编译运行。
 
 视频教程：https://www.bilibili.com/video/BV1th411A7ey/
 

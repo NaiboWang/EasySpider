@@ -145,8 +145,28 @@
                     </div>
                     <div>
                         <label>XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框文本列表等）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+                        <label>任务运行时最终定位的本元素XPath：</label>
+                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite"></textarea>
+                    </div>
+                    <p style="margin-top: 10px">
+                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            点此展开/折叠自定义操作
+                        </a>
+                    </p>
+                    <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
+                        <div>
+                            <label>点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
+                            <label>点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]'></textarea>
+                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
+                        </div>
                     </div>
                     <label>点击后页面加载最长等待时间（秒）：</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
@@ -177,24 +197,6 @@
                         <option :value = 1>接受弹窗（点击弹窗确定按钮）</option>
                         <option :value = 2>拒绝弹窗（点击弹窗取消按钮，仅限Confirm弹框）</option>
                     </select></p>
-                    <p style="margin-top: 10px">
-                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠自定义操作
-                        </a>
-                    </p>
-                    <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
-                        <div>
-                            <label>点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
-                            <label>点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
-                        </div>
-                    </div>
 
 
 
@@ -237,6 +239,8 @@
                         <p>XPath（所有XPath内均可用Field["字段名"]表示参数值，用eval("你的代码")来替换成自定义的变量）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='params.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+                        <label>任务运行时最终定位的本字段XPath：</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite">{{getFinalXPath(params.parameters[paraIndex]['relativeXPath'], params.parameters[paraIndex]['relative'])}}</textarea>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
                                 点此展开/折叠自定义操作
@@ -256,21 +260,6 @@
                                 <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["afterJSWaitTime"]'></input>
                             </div>
                         </div>
-                        <label>参数类型转换为（用于Excel和数据库）：</label>
-                        <select v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
-                            <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
-                            <option value = "int">整数（位数在9位以内）</option>
-                            <option value = "double">浮点数（小数）</option>
-                            <option value = "mediumText">大文本（单个值长度超过1万低于100万）</option>
-                            <option value = "datetime">日期时间</option>
-                            <option value = "date">日期</option>
-                            <option value = "time">时间</option>
-                            <option value = "varchar">小文本（单个值长度小于50）</option>
-                            <option value = "longText">超大文本（单个值长度超过100万）</option>
-                            <option value = "bigInt">大整数（位数超过9位）</option>
-                        </select>
-                        <label>元素找不到时的值：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["default"]'></input>
                         <label>采集内容类型</label>
                         <select v-model='params.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>文本（包括子元素）</option>
@@ -320,6 +309,21 @@
 <!--                            <option :value = 0>普通提取</option>-->
 <!--                            <option :value = 1>OCR提取</option>-->
 <!--                        </select>-->
+                        <label>参数类型转换为（用于Excel和数据库）：</label>
+                        <select v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
+                            <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
+                            <option value = "int">整数（位数在9位以内）</option>
+                            <option value = "double">浮点数（小数）</option>
+                            <option value = "mediumText">大文本（单个值长度超过1万低于100万）</option>
+                            <option value = "datetime">日期时间</option>
+                            <option value = "date">日期</option>
+                            <option value = "time">时间</option>
+                            <option value = "varchar">小文本（单个值长度小于50）</option>
+                            <option value = "longText">超大文本（单个值长度超过100万）</option>
+                            <option value = "bigInt">大整数（位数超过9位）</option>
+                        </select>
+                        <label>元素找不到时的值：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["default"]'></input>
                         <label style="margin-top: 15px">是否将内容换行（长文章采集想要换行时设置）：</label>
                         <select v-model='params.parameters[paraIndex]["splitLine"]' class="form-control">
                             <option :value = 0>否</option>
@@ -517,8 +521,10 @@ print(emotlib.emoji()) # 使用其中的函数。
                     </div>
                     <div>
                         <label>XPath： </label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath'></textarea>
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+                        <label>任务运行时最终定位的本元素XPath：</label>
+                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite"></textarea>
                     </div>
 
 
