@@ -1,0 +1,6 @@
+64位版本的易采集EasySpider只支持支持Windows 10/Windows Server 2016 x64及以上版本。
+对于Windows 7任意版本，包括x64和x32版本，以及Windows 10 x32版本请下载Windows的32位版本使用。无任何版本支持Windows Server 2012及以下版本系统，这些系统下需要自行编译运行。
+
+This 64-bit version of EasySpider is for Windows 10/Windows Server 2016 x64 and above.
+If you want to use EasySpider on windows 7, please download the Windows x32 version of EasySpider. There is no version support for Windows Server 2012 and below. These systems require manual compilation for execution.
+
