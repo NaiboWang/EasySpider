@@ -82,6 +82,14 @@ Vue.filter('lang', function (value) {
     }
 })
 
+function LANG(zh, en) {
+    if (window.location.href.indexOf("_CN") != -1) {
+        return zh;
+    } else {
+        return en;
+    }
+}
+
 function isValidMySQLTableName(tableName) {
     // 正则表达式：以字母或汉字开头，后接字母、数字、下划线或汉字的字符串，长度为1到64字符
     const pattern = /^[\u4e00-\u9fa5a-zA-Z][\u4e00-\u9fa5a-zA-Z0-9_]{0,63}$/;

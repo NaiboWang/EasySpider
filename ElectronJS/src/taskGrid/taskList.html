@@ -8,8 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
+    <link rel="stylesheet" href="element-ui/index.css"></link>
+    <script src="element-ui/index.js"></script>
     <title>任务列表 | Task List</title>
-
 </head>
 <style>
     th,td{
@@ -21,6 +22,20 @@
             margin-left:10%!important;
 
         }
+    }
+    .search-header {
+      display: flex;
+      justify-content: flex-end; /* Right align the search box */
+      align-items: center;
+    }
+
+    .search-input {
+      /*margin-right: 8px; !* Optional: Adjust spacing between input and button *!*/
+    }
+
+    .task-links {
+      display: flex;
+      justify-content: space-between; /* Spread links evenly */
     }
 </style>
 <body>
@@ -36,53 +51,112 @@
                 <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/issues/22" target="_blank">{{"See how to run task by schedule~定时执行任务教程" | lang}}</a>
 <!--                <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/wiki/Run-multiple-tasks-in-parallel" target="_blank">{{"See how to run multiple tasks in parallel~同时执行多个任务教程" | lang}}</a>-->
             </div>
-            <div style="margin-bottom: 10px">
-                <table style="table-layout: auto;" class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th style="text-align: center">No.</th>
-                            <th style="text-align: center">ID</th>
-                            <th style="text-align: center">{{"Task Name~任务名称" | lang}}</th>
-                            <th>{{"URL~网址" | lang}}</th>
-                            <th v-bind:colspan="type" style="min-width: 300px">{{"Operations~操作" | lang}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="i in list.length">
-                            <td style="text-align: center">{{i}}</td>
-                            <td style="text-align: center">{{list[i-1]["id"]}}</td>
-<!--                            <td style="overflow: hidden;; max-width: 200px;text-align: center">{{list[i-1]["id"]}}</td>-->
-                            <td style="overflow: hidden;; max-width: 200px;text-align: center">{{list[i-1]["name"]}}</td>
-                            <td style="height: 30px;overflow: hidden; max-width: 200px">{{list[i-1]["url"]}}</td>
-                            <td style="text-align: left"><a href="javascript:void(0)" v-on:click="browseTask(list[i-1]['id'])">{{"Task Information~任务信息" | lang}}</a></td>
-                            <td style="text-align: left;font-weight: bold" v-if="type==3"><a href="javascript:void(0)" v-on:click="modifyTask(list[i-1]['id'],list[i-1]['url'])">{{"Modify Task~修改任务" | lang}}</a></td>
-                            <td style="text-align: left"><a disabled href="javascript:void(0)" v-on:dblclick="deleteTask(list[i-1]['id'])">{{"Delete Task (Double Click)~删除任务（双击）" | lang}}</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
+            <el-table
+                style="width: 100%"
+                :empty-text="LANG('No Task~暂无任务')"
+                :data="list.filter(data => !search || (data.name.toLowerCase().includes(search.toLowerCase())) || (data.url.toLowerCase().includes(search.toLowerCase())) || (data.links.includes(search.toLowerCase())) || (data.desc.includes(search.toLowerCase())))"
+                :default-sort = "{prop: 'mtime', order: 'descending'}"
+                >
+
+                <el-table-column
+                  prop="id"
+                  :label="LANG('Task ID~任务ID')"
+                  sortable
+                  width="120"
+                  align="center"
+                  >
+                </el-table-column>
+                <el-table-column
+                  prop="name"
+                  :label="LANG('Task Name~任务名称')"
+                  sortable
+                  align="center"
+                  >
+                </el-table-column>
+                <el-table-column
+                  prop="url"
+                  label="URL"
+                  sortable
+                >
+                </el-table-column>
+<!--                <el-table-column-->
+<!--                  prop="mtime"-->
+<!--                  :label="LANG('Update Time~更新时间')"-->
+<!--                  sortable-->
+<!--                  :formatter="formatDate"-->
+<!--                  width="170"-->
+<!--                >-->
+                </el-table-column>
+                    <el-table-column
+                            width="350"
+                  align="center">
+                      <!-- Header template for the search input -->
+                      <template slot="header" slot-scope="scope">
+                        <div class="search-header">
+                          <!-- Search input aligned to the right -->
+                          <el-input
+                            v-model="search"
+                            class="search-input"
+                            icon="el-icon-search"
+                            :placeholder="LANG('Please input keywords to search~请输入关键词搜索')">
+                          </el-input>
+<!--                          <el-button icon="el-icon-search"></el-button>-->
+                        </div>
+                      </template>
+                      <template slot-scope="scope">
+                        <!-- Use flex container to justify content space-around -->
+                        <div class="task-links">
+                          <a href="javascript:void(0)" v-on:click="browseTask(scope.$index, scope.row)">{{ "View~任务信息" | lang }}</a>
+                          <a href="javascript:void(0)" v-if="type==3" v-on:click="modifyTask(scope.$index, scope.row)">{{ "Modify~修改任务" | lang }}</a>
+                          <a href="javascript:void(0)" v-on:dblclick="deleteTask(scope.$index, scope.row)">{{ "Delete (Double Click)~删除任务（双击）" | lang }}</a>
+                        </div>
+                      </template>
+                    </el-table-column>
+            </el-table>
         </div>
     </div>
-
 </body>
 
 </html>
 <script src="global.js"></script>
 <script>
-    var app = new Vue({
+    let app = new Vue({
         el: '#taskList',
         data: {
+            search: '',
             list: [],
             type: 3, //记录服务行为
             mobile: getUrlParam("mobile"),
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
         },
         methods: {
+            formatDate: function(row, column) {
+                //2023-01-01 00:00:00
+                let date = row[column.property];
+                // 2023-12-26T12:44:32.599Z
+                let original_time = row.mtime;
+                let year = original_time.substring(0, 4);
+                let month = original_time.substring(5, 7);
+                let day = original_time.substring(8, 10);
+                let hour = original_time.substring(11, 13);
+                let minute = original_time.substring(14, 16);
+                let second = original_time.substring(17, 19);
+                return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+            },
             newTask: function (){
                 window.location.href = "newTask.html?lang="+getUrlParam("lang")+"&mobile="+getUrlParam("mobile")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper;
             },
-            modifyTask: function(id, url) {
+            LANG: function (text){
+                if (getUrlParam("lang") == "en"|| getUrlParam("lang")=="") {
+                    return text.split("~")[0];
+                } else if (getUrlParam("lang") == "zh") {
+                    return text.split("~")[1];
+                }
+            },
+            modifyTask: function(index, row) {
+                let id = row.id;
+                let url = row.url;
+                console.log(index, row)
                 let message = { //显示flowchart
                     type: 1, //消息类型，传递链接
                     message: {
@@ -92,10 +166,12 @@
                 ws.send(JSON.stringify(message));
                 window.location.href = url; //跳转链接
             },
-            browseTask: function(id) {
+            browseTask: function(index, row) {
+                let id = row.id;
                 window.location.href = "taskInfo.html?type="+getUrlParam("type")+"&id=" + id + "&lang="+getUrlParam("lang")+"&wsport="+getUrlParam("wsport")+"&backEndAddressServiceWrapper="+ app.$data.backEndAddressServiceWrapper; //跳转链接
             },
-            deleteTask: function(id) {
+            deleteTask: function(index, row) {
+                let id = row.id;
                 // let text = "Are you sure to remove the selected task?";
                 // if (getUrlParam("lang") == "en"|| getUrlParam("lang")=="") {
                 //     text = "Are you sure to remove the selected task?";
@@ -115,7 +191,7 @@
         }
     });
 
-    var desc = function(x, y) {
+    let desc = function(x, y) {
         return (x["id"] < y["id"]) ? 1 : -1
     }
     $.get(app.$data.backEndAddressServiceWrapper + "/queryTasks", function(re) {

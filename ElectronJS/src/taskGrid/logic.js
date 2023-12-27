@@ -696,10 +696,4 @@ if (sId != null && sId != -1) //加载任务
     refresh(); //新增任务
 }
 
-function LANG(zh, en) {
-    if (window.location.href.indexOf("_CN") != -1) {
-        return zh;
-    } else {
-        return en;
-    }
-}
+

@@ -202,6 +202,8 @@ exports.start = function (port = 8074) {
                 name: task.name,
                 url: task.url,
                 mtime: stat.mtime,
+                links: task.links,
+                desc: task.desc,
               };
               if (item.id != -2) {
                 output.push(item);
