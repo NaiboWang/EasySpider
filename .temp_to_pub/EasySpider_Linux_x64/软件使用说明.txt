@@ -1,4 +1,4 @@
-欢迎将软件宣传给更多需要的朋友！
+欢迎将软件宣传给更多需要的朋友和Star我们的Github仓库！
 
 在此文件夹下打开Linux Terimal, 并输入以下命令运行软件：
 ./easy-spider.sh
@@ -8,99 +8,10 @@
 
 支持Ubuntu 20.04, Debian, Deepin x64及以上版本。
 
+软件开源代码Github库地址：https://github.com/NaiboWang/EasySpider
+
+官方文档地址：https://github.com/NaiboWang/EasySpider/wiki
+
 视频教程：https://www.bilibili.com/video/BV1th411A7ey/
 
 可以从其他机器导入任务，只需要把其他机器的tasks文件夹里的.json文件放入此目录的tasks文件夹里即可。同理执行号文件可以通过复制execution_instances文件夹中的.json文件来导入。注意，两个文件夹里的.json文件只支持命名为大于0的数字。
-
-
-======版本更新说明======
-
-v0.3.2以上版本更新说明请查看Github Release Pages页面：https://github.com/NaiboWang/EasySpider/releases
-
------v0.3.2-----
-
-## 更新说明
-
-1. 选中子元素操作可删除字段并在浏览器中实时取消标记被删除的字段。
-<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/e016c832-6ff9-4814-b86c-38787e73aa30" width=50% />
-
-2. 选中子元素增加选择模式，可以只选择所有块都有的子元素，或者所有块中和第一个选中的块相同的子元素。
-<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/0082b11d-96bc-43f1-acdb-8280decb48b4" width=50% />
-
-3. 输入文字和打开网页选项中可以使用最后一次提取到的字段值**作为变量**进行文字输入，用`Field["字段名"]`表示此变量。
-![image](https://github.com/NaiboWang/EasySpider/assets/30287768/d81cd082-e01a-490e-85f7-9baac93510d8)
-
-4. 可下载文件，如PDF。
-5. 修复打开后有可能会白屏10秒左右的Bug，使得在内网，暗网以及任意局域网都可以使用软件。
-6. 修复提取当前页面URL和标题时可能提取不到的bug。
-7. 修复OCR识别可能提取不到的bug。
-8. 提取逻辑更新为每采集10条本地保存一次。
-9. 修改任务时默认锚点位置为任务流程的最后操作后。
-10. 更新Chrome版本为114。
-
------V0.3.1-----
-
-如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://github.com/NaiboWang/EasySpider/releases/download/v0.3.0/Download_Link_Address_in_China_Mainland.txt)。
-
-### 强烈建议大家观看新特性讲解视频
-
-B站最新版特性视频已上传，新视频非常有用，推荐大家观看。
-
-[【重要】自定义条件判断之使用循环项内的JS命令返回值 - 第二弹](https://www.bilibili.com/video/BV1mu411x7Nn/)
-
-[如何同时执行多个任务（并行多开）](https://www.bilibili.com/video/BV13c411G7LE/)
-
-[如何执行自己写的JS代码和系统代码 （自定义操作）](https://www.bilibili.com/video/BV1qs4y1z7Hc/)
-
-[如何自定义循环和判断条件 - 第一弹](https://www.bilibili.com/video/BV1Ys4y1z777/)
-
-[如何对元素和网页截图及（无头模式）命令行执行指南](https://www.bilibili.com/video/BV1dV4y1z764/)
-
-[OCR识别元素内容功能](https://www.bilibili.com/video/BV1xz4y1b72D/)
-
-注意，v0.3.1版本任务task文件夹内`.json`文件和之前所有版本均不兼容，请重新设计v0.3.1版本任务。
-
-## 更新说明
-1. 自定义操作：
- - 可以在任务流程中**执行自定义脚本**，包括在浏览器中**执行Javascript指令**以及**操作系统级别的脚本调用**并可**得到命令返回值并记录**，大大扩展了可操作空间。
-
-![image](https://github.com/NaiboWang/EasySpider/assets/30287768/06e63a06-328d-4339-b40b-2d57c94cee66)
-
- - 在每一个操作执行前和执行后，都可以指定执行一段针对当前定位元素的JavaScript指令。
- 
-<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/dde64388-5668-40ff-951e-fb8f60655c49" height=50% width=50%> 
-
-2. **判断条件和循环条件**中同样增加了**执行自定义脚本**，并根据自定义脚本的返回值是否为真来作为条件判断和循环的判断条件，同样极大的增加了任务的可操作性。循环中增加了用代码break的操作设定，自定义操作可以操作循环内元素。
-![image](https://github.com/NaiboWang/EasySpider/assets/30287768/9dea0564-1a1c-487d-9fa4-427c5e284796)
-<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/5ce7cf50-e5c9-4714-a83b-9c65934e9c68" width=50%></img>
-
-3. 可同时生成多种XPath供用户选择，并**预装了XPath Helper扩展**供大家调试XPath。
-4. 增加采集元素背景图片地址，当前页面标题，当前页面URL地址功能。
-5. 增加保存元素截图功能，如要截图某元素或整个网页页面，可以用此功能（配合无头模式效果更好）。
-6. 增加下载图片功能。
-7. 增加OCR识别元素功能（使用此功能需首先自行安装Tesseract库：[https://blog.csdn.net/u010454030/article/details/80515501](https://blog.csdn.net/u010454030/article/details/80515501)）
-
-8. 可直接提取对元素执行JavaScript代码后的返回值，实现如正则表达式，获得元素背景颜色等功能。
-9. 增加切换下拉选项功能，采集下拉选项正在选中的值和文本。
-<img src="https://github.com/NaiboWang/EasySpider/assets/30287768/c0b2bec1-2a97-4516-930e-1b310697212b" width=50%></img>
-
-![image](https://github.com/NaiboWang/EasySpider/assets/30287768/42cc0009-00d1-4c5c-af47-0fa6340fba80)
-
-10. 大幅增加使用提示和说明，使软件更易用（如增加了iframe标签的处理方式说明，各个选项的参数意义，以及循环项XPath的修改说明等等）。
-11. 执行命令时增加了如何用命令行执行任务的提示：[https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction)。
-![image](https://github.com/NaiboWang/EasySpider/assets/30287768/a9e774df-e345-4d51-b7c9-2c4dac0ec624)
-12. 增加并行多开模式。
-13. 增加无头模式，即无浏览器界面模式配置。
-14. 修复了使用用户配置浏览器模式下的中文路径不能正确识别的问题。
-15. 修复了条件分支没有无条件分支时会卡死的问题。
-16. 修复了保存任务后会输入框卡死的问题。
-17. 打开网页操作和点击元素操作新增设置页面最长加载等待时间。
-18. 增加了鼠标移动到元素功能。
-19. 找不到元素时会提示。
-20. 修复网页滚动Bug。
-21. 增加新增提取数据字段操作。
-22. 任务名称初始化为第一次进入页面的标题值。
-23. 增加版本更新提示。
-24. 应要求增加出品方信息。
-25. 更新chrome版本为113。
-
