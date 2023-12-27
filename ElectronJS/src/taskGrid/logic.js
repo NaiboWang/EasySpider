@@ -374,7 +374,7 @@ function modifyParameters(t, param) {
         t["parameters"]["xpath"] = param["xpath"];
         t["parameters"]["useLoop"] = param["useLoop"];
         t["parameters"]["allXPaths"] = param["allXPaths"];
-        if(param["type"] == "loopClickEvery"){
+        if (param["type"] == "loopClickEvery") {
             t["parameters"]["newTab"] = 1; //循环点击每个元素，新标签页打开
         }
     } else if (t.option == 4) { //输入文字事件
@@ -404,7 +404,7 @@ function modifyParameters(t, param) {
             if (content.length > 15) {
                 content = content.substring(0, 15) + "...";
                 content = LANG("：", ": ") + content;
-            } else if(content.length == 0){
+            } else if (content.length == 0) {
                 content = LANG("单个元素", " Single Element");
             } else {
                 content = LANG("：", ": ") + content;
@@ -667,8 +667,8 @@ if (sId != null && sId != -1) //加载任务
                 if (!("cookies" in node["parameters"])) {
                     node["parameters"]["cookies"] = "";
                 }
-            } else if(node["option"] == 3){ //提取数据
-                if(node["parameters"]["paras"] != undefined && node["parameters"]["params"] == undefined){
+            } else if (node["option"] == 3) { //提取数据
+                if (node["parameters"]["paras"] != undefined && node["parameters"]["params"] == undefined) {
                     node["parameters"]["params"] = node["parameters"]["paras"];
                 }
             }

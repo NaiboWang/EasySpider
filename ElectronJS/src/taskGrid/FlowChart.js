@@ -143,7 +143,7 @@ let app = new Vue({
     methods: {
         getFinalXPath: function (xpath, useLoop) { //获取最终的xpath
             // console.log(xpath, useLoop, this.parentNode);
-            if(this.parentNode == null || this.parentNode.parameters == null || this.parentNode.parameters.xpath == null){
+            if (this.parentNode == null || this.parentNode.parameters == null || this.parentNode.parameters.xpath == null) {
                 return xpath;
             } else if (useLoop) {
                 let parent_xpath = this.parentNode.parameters.xpath;
@@ -543,8 +543,7 @@ function toolBoxKernel(e, param = null) {
         // let tarrow = DeepClone(app.$data.nowArrow);
         // refresh();
         // app._data.nowArrow =tarrow;
-    }
-    else if (option == 11) { //复制操作
+    } else if (option == 11) { //复制操作
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if (nowNode.getAttribute("dataType") > 0) {
@@ -566,8 +565,7 @@ function toolBoxKernel(e, param = null) {
             $("#" + t["id"]).click(); //复制后点击复制后的元素
             e.stopPropagation(); //防止冒泡
         }
-    }
-    else if (option == 10) { //剪切操作
+    } else if (option == 10) { //剪切操作
         if (nowNode == null) {
             e.stopPropagation(); //防止冒泡
         } else if ($(nowNode).is(".branch")) {
@@ -612,8 +610,7 @@ function toolBoxKernel(e, param = null) {
                 e.stopPropagation(); //防止冒泡
             }
         }
-    }
-    else if (option > 0) { //新增操作
+    } else if (option > 0) { //新增操作
         let l = nodeList.length;
         let nt = null;
         let nt2 = null;
@@ -714,7 +711,7 @@ function toolBoxKernel(e, param = null) {
         } else {
             $("#" + t["id"]).click();
         }
-        if (e != null){
+        if (e != null) {
             e.stopPropagation(); //防止冒泡
         }
         option = 0;

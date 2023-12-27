@@ -23,14 +23,14 @@ function DateFormat(datetime) {
 
 function formatDateTime(date) {
     const addZero = (num) => (num < 10 ? `0${num}` : num);
-  
+
     let year = date.getFullYear();
     let month = addZero(date.getMonth() + 1); // getMonth() 返回值范围是0-11，所以加1
     let day = addZero(date.getDate());
     let hours = addZero(date.getHours());
     let minutes = addZero(date.getMinutes());
     let seconds = addZero(date.getSeconds());
-  
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
@@ -57,7 +57,7 @@ function detectLang(str) {
 
     if (enCount === cnCount) {
         return 2;
-    } else if (cnCount>=3) {
+    } else if (cnCount >= 3) {
         return 1;
     }
     return 0;
@@ -96,9 +96,9 @@ function isValidMySQLTableName(tableName) {
     return pattern.test(tableName);
 }
 
-document.onkeydown = function(e) {
+document.onkeydown = function (e) {
     let t = false;
-    try{
+    try {
         t = nowNode;
     } catch (e) {
         console.log(e);
@@ -117,8 +117,8 @@ document.onkeydown = function(e) {
             location.reload();
         } else if (currKey == 123) {
             console.log("打开devtools")
-            let command = new WebSocket("ws://localhost:"+getUrlParam("wsport"))
-            command.onopen = function() {
+            let command = new WebSocket("ws://localhost:" + getUrlParam("wsport"))
+            command.onopen = function () {
                 let message = {
                     type: 6, //消息类型，0代表连接操作
                 };
