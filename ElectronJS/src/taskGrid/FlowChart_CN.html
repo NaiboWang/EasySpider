@@ -191,6 +191,8 @@
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>滚动后等待时间（秒）：</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
+                    <label>文件下载最长等待时间（秒）：</label>
+                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['downloadWaitTime']" type="number" required></input>
                     <label>点击元素后如有弹窗出现，弹窗处理方式：</label>
                     <p><select v-model='nowNode["parameters"]["alertHandleType"]' class="form-control">
                         <option :value = 0>无弹窗</option>
@@ -718,6 +720,7 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <select id="dataWriteMode" name="dataWriteMode" class="form-control">
                         <option value=1>追加写入（如果文件已存在则在原文件后面追加）</option>
                         <option value=2>覆盖写入（如果文件已存在则覆盖原文件）</option>
+                        <option value=3>重命名写入（如果文件已存在则重命名文件）</option>
                     </select>
 <!--                    <label>是否为Cloudflare等极端反爬网站（<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">查看Cloudflare设计和执行教程</a>）：</label>-->
 <!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->

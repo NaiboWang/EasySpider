@@ -191,6 +191,8 @@
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
                     <label>Wait time after scrolling (in seconds):</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
+                    <label>Maximum file download wait time (in seconds):</label>
+                    <input spellcheck="false" onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['downloadWaitTime']" type="number" required></input>
                     <label>Way to handle pop-up windows after clicking:</label>
                     <p><select v-model='nowNode["parameters"]["alertHandleType"]' class="form-control">
                         <option :value = 0>No pop-up window</option>
@@ -718,6 +720,7 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     <select id="dataWriteMode" name="dataWriteMode" class="form-control">
                         <option value="1">Append (If the file exists, append to it)</option>
                         <option value="2">Overwrite (If the file exists, overwrite it)</option>
+                        <option value=3>Rename on Write (renames file if it already exists)</option>
                     </select>
 <!--                    <label>Is it an extreme anti-scraping website like Cloudflare (<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">Watch Tutorial</a>)?</label>-->
 <!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->

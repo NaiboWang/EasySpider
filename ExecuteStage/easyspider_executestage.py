@@ -112,9 +112,10 @@ class BrowserThread(Thread):
         self.print_and_log("Save Name for task ID", id, "is:", self.saveName)
         if not os.path.exists("Data/Task_" + str(id)):
             os.mkdir("Data/Task_" + str(id))
-        if not os.path.exists("Data/Task_" + str(id) + "/" + self.saveName):
-            os.mkdir("Data/Task_" + str(id) + "/" +
-                     self.saveName)  # 创建保存文件夹用来保存截图
+        self.downloadFolder = "Data/Task_" + str(id) + "/" + self.saveName
+        if not os.path.exists(self.downloadFolder):
+            os.mkdir(self.downloadFolder)  # 创建保存文件夹用来保存截图和文件
+        self.existing_files = sorted([os.path.join(self.downloadFolder, file) for file in os.listdir(self.downloadFolder)], key=os.path.getmtime)
         self.getDataStep = 0
         self.startSteps = 0
         try:
@@ -144,7 +145,7 @@ class BrowserThread(Thread):
             'source': js})  # TMALL 反扒
         WebDriverWait(self.browser, 10)
         self.browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
-        path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id))
+        path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id), self.saveName)
         self.paramss = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': path}}
 
         self.browser.execute("send_command", self.paramss)  # 下载地址改变
@@ -187,12 +188,19 @@ class BrowserThread(Thread):
             self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
         try:
-            self.dataWriteMode = service["dataWriteMode"] # 数据写入模式，1为追加，2为覆盖
+            self.dataWriteMode = service["dataWriteMode"] # 数据写入模式，1为追加，2为覆盖，3为重命名文件
         except:
             self.dataWriteMode = 1
         if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx" or self.outputFormat == "json":
-            if self.dataWriteMode == 2 and os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
-                os.remove("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat)
+            if os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+                if self.dataWriteMode == 2:
+                    os.remove("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat)
+                elif self.dataWriteMode == 3:
+                    i = 2
+                    while os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '_' + str(i) + '.' + self.outputFormat):
+                        i = i + 1
+                    self.saveName = self.saveName + '_' + str(i)
+                    self.print_and_log("文件已存在，已重命名为", self.saveName)
         self.writeMode = 1  # 写入模式，0为新建，1为追加
         if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
             if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
@@ -521,7 +529,7 @@ class BrowserThread(Thread):
                                "/", len(self.links))
             self.executeNode(0)
             self.urlId = self.urlId + 1
-        files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
+        # files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
         # if not files:
         #     os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
@@ -1799,6 +1807,11 @@ class BrowserThread(Thread):
                 self.print_and_log("History Length Error")
                 self.history["index"] = 0
         self.scrollDown(param)  # 根据参数配置向下滚动
+
+        # 处理文件变化，新下载
+        files = os.listdir(self.downloadFolder)
+        latest_file = files[-1]
+        self.existing_files = files
         # rt.end()
 
     def get_content(self, p, element):
@@ -2372,8 +2385,8 @@ if __name__ == '__main__':
             cloudflare = 0
         if cloudflare == 0:
             options.add_argument('log-level=3')  # 隐藏日志
-            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(id))
-            print("Data path:", path)
+            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(id), "files")
+            print("文件下载路径|File Download path:", path)
             options.add_experimental_option("prefs", {
                 # 设置文件下载路径
                 "download.default_directory": path,

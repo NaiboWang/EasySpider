@@ -63,7 +63,7 @@
         <el-table
                 style="width: 100%"
                 :empty-text="LANG('No Task~暂无任务')"
-                :data="list.filter(data => !search || (data.name.toLowerCase().includes(search.toLowerCase())) || (data.url.toLowerCase().includes(search.toLowerCase())) || (data.links.includes(search.toLowerCase())) || (data.desc.includes(search.toLowerCase())))"
+                :data="list.filter(data => !search || (data.name.toLowerCase().includes(search.toLowerCase())) || (data.url.toLowerCase().includes(search.toLowerCase())) || (data.links.includes(search.toLowerCase())) || (data.desc.includes(search.toLowerCase())) || (data.id.toString().includes(search.toLowerCase())))"
                 :default-sort="{prop: 'mtime', order: 'descending'}"
         >
 

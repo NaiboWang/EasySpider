@@ -61,6 +61,40 @@ def send_email(config):
             pass
 
 
+def wait_for_download_complete(download_dir, timeout=3600):
+    """等待下载完成，直到没有.crdownload文件为止，或者超时"""
+    while True:
+        time.sleep(1)  # 每一秒检查一次
+        timeout -= 1
+        is_downloading = False
+        for fname in os.listdir(download_dir):
+            if fname.endswith('.crdownload'):
+                is_downloading = True
+                break
+        # 如果没有下载或超时，则退出
+        if not is_downloading or timeout <= 0:
+            break
+        elif timeout % 10 == 0:
+            print(f"下载文件中，请等待...|Downloading in progress, please wait... {timeout} seconds left")
+            print("可以在点击元素选项中设置下载超时时间。|You can set the download timeout in the 'Click Element' option.")
+    if is_downloading:
+        print("下载可能未完成，但已经超时。|Download may not be completed, but it has timed out.")
+    else:
+        print("下载完成。|Download completed.")
+
+def rename_downloaded_file(download_dir):
+    """重命名下载文件，假设是最新下载的文件"""
+    files = os.listdir(download_dir)
+    paths = [os.path.join(download_dir, basename) for basename in files]
+    latest_file = max(paths, key=os.path.getmtime, default=None)
+
+    if latest_file is not None and not latest_file.endswith('.crdownload'):
+        new_name = latest_file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + latest_file.split('/')[-1]
+        new_path = os.path.join(download_dir, new_name)
+        os.rename(latest_file, new_path)
+        print(f"文件已重命名为: {new_path}")
+        print(f"File has been renamed to: {new_path}")
+
 def is_valid_url(url):
     try:
         result = urlparse(url)

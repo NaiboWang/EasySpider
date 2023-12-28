@@ -282,6 +282,7 @@ function addParameters(t) {
         t["parameters"]["afterJS"] = ""; //执行后执行的js
         t["parameters"]["afterJSWaitTime"] = 0; //执行后js等待时间
         t["parameters"]["alertHandleType"] = 0; //弹窗处理类型，1代表确认，2代表取消
+        t["parameters"]["downloadWaitTime"] = 3600; //下载等待时间
     } else if (t.option == 3) { //提取数据
         t["parameters"]["clear"] = 0; //清空其他字段数据
         t["parameters"]["newLine"] = 1; //生成新行
