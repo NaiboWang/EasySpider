@@ -243,7 +243,7 @@
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">Click here to view other equivalent XPath expressions</button></p>
                         <label>Final XPath of this field when the task is running:</label>
                         <textarea spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite">{{getFinalXPath(params.parameters[paraIndex]['relativeXPath'], params.parameters[paraIndex]['relative'])}}</textarea>
-                        <div style="margin-top: 10px"><a href="#" v-on:mousedown="trailParam(paraIndex)" style="text-decoration: none">Trail Run</a></div>
+                        <div style="margin-top: 10px"><a href="#" v-on:mousedown="trailParam(paraIndex)" style="text-decoration: none">Trail Run (only test the first matched element)</a></div>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
                                 Click here to expand/collapse advanced operations

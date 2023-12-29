@@ -243,7 +243,7 @@
                         <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
                         <label>任务运行时最终定位的本字段XPath：</label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite">{{getFinalXPath(params.parameters[paraIndex]['relativeXPath'], params.parameters[paraIndex]['relative'])}}</textarea>
-                        <div style="margin-top: 10px"><a href="#" v-on:mousedown="trailParam(paraIndex)" style="text-decoration: none">试运行</a></div>
+                        <div style="margin-top: 10px"><a href="#" v-on:mousedown="trailParam(paraIndex)" style="text-decoration: none">试运行（只测试第一个匹配到的元素）</a></div>
                         <p style="margin-top: 10px">
                             <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
                                 点此展开/折叠自定义操作

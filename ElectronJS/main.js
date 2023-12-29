@@ -893,11 +893,11 @@ async function beginInvoke(msg, ws) {
                     execute_js(afterJS, element, afterJSWaitTime);
                 } else if (option == 11) {
                     //单个提取数据参数
-                    notify_browser(
-                        "提示：提取数据字段的试运行操作只能测试设置的JavaScript语句，且只针对第一个匹配的元素。",
-                        "Hint: can only test JavaScript  statement set in the data extraction field operation, and only for the first matching element.",
-                        "info"
-                    );
+                    // notify_browser(
+                    //     "提示：提取数据字段的试运行操作只针对第一个匹配的元素。",
+                    //     "Hint: can only test the trial operation of the data extraction field for the first matching element.",
+                    //     "info"
+                    // );
                     let params = parameters.params; //所有的提取数据参数
                     let i = parameters.index;
                     let param = params[i];
@@ -919,7 +919,50 @@ async function beginInvoke(msg, ws) {
                     );
                     if (element != null) {
                         await execute_js(param.beforeJS, element, param.beforeJSWaitTime);
-                        if(param.contentType == 9){ //针对元素的JavaScript代码返回值
+                        if (param.contentType == 0) {
+                            let result = await element.getText();  // 获取元素及其子元素的文本内容
+                            if (param.nodeType == 2) { //链接地址
+                                result = await element.getAttribute("href");
+                                notify_browser("获取的链接地址：" + result, "Link URL obtained: " + result, "success")
+                            } else if (param.nodeType == 3) { //表单值
+                                result = await element.getAttribute("value");
+                                notify_browser("获取的表单值：" + result, "Form value obtained: " + result, "success")
+                            } else if (param.nodeType == 4) { //图片地址
+                                result = await element.getAttribute("src");
+                                notify_browser("获取的图片地址：" + result, "Image URL obtained: " + result, "success")
+                            } else {
+                                notify_browser("获取的文本内容：" + result, "Text content obtained: " + result, "success");
+                            }
+                        } else if (param.contentType == 1) {
+                            // 对于Selenium，获取不包括子元素的文本可能需要特殊处理，这里假设element是父元素
+                            let command = 'var arr = [];\
+                                var content = arguments[0];\
+                                for(var i = 0, len = content.childNodes.length; i < len; i++) {\
+                                    if(content.childNodes[i].nodeType === 3){  \
+                                        arr.push(content.childNodes[i].nodeValue);\
+                                    }\
+                                }\
+                                var str = arr.join(" "); \
+                                return str;'
+                            let result = await execute_js(command, element, 0);
+                            result = result.replace(/\n/g, "").replace(/\s+/g, " ");
+                            notify_browser("获取的内容：" + result, "Content obtained: " + result, "success");
+                        } else if (param.contentType == 2) {
+                            let result = await element.getAttribute('innerHTML');  // 获取元素的内部HTML内容
+                            notify_browser("获取的innerHTML：" + result, "innerHTML obtained: " + result, "success");
+                        } else if (param.contentType == 3) {
+                            let result = await element.getAttribute('outerHTML');  // 获取元素及其内容的HTML表示
+                            notify_browser("获取的outerHTML：" + result, "outerHTML obtained: " + result, "success");
+                        } else if (param.contentType == 4) {
+                            let result = await element.getCssValue('background-image');  // 获取元素的背景图片地址
+                            notify_browser("获取的背景图片地址：" + result, "Background image URL obtained: " + result, "success");
+                        } else if (param.contentType == 5) {
+                            let result = await driver.getCurrentUrl();  // 获取页面的网址
+                            notify_browser("获取的页面网址：" + result, "Page URL obtained: " + result, "success");
+                        } else if (param.contentType == 6) { //页面标题
+                            let result = await driver.getTitle();
+                            notify_browser("获取的页面标题：" + result, "Page title obtained: " + result, "success");
+                        } else if (param.contentType == 9) { //针对元素的JavaScript代码返回值
                             let result = await execute_js(param.JS, element);
                             let level = "success";
                             if (result == -1) {
@@ -932,6 +975,43 @@ async function beginInvoke(msg, ws) {
                                     level
                                 );
                             }
+                        } else if (param.contentType == 10) {
+                            // 当前选择框选中的选项值
+                            let result = await element.getAttribute("value");
+                            notify_browser(
+                                "获取的选项值：" + result,
+                                "Option value obtained: " + result,
+                                "success"
+                            );
+                        } else if (param.contentType == 11) {
+                            // 当前选择框选中的选项文本
+                            let selectElement = new Select(element);
+                            // 等待选项变得可选，这是可选的，根据页面加载情况
+                            await driver.wait(until.elementIsEnabled(element));
+                            // 获取当前选中的选项元素
+                            let selectedOption = await selectElement.getFirstSelectedOption();
+                            // 获取选项的文本内容
+                            let content = await selectedOption.getText();
+                            notify_browser(
+                                "获取的选项文本：" + content,
+                                "Option text obtained: " + content,
+                                "success"
+                            );
+                        } else if (param.contentType == 14) {
+                            //元素的属性值
+                            let result = await element.getAttribute(param.JS);
+                            notify_browser(
+                                "获取的属性值：" + result,
+                                "Attribute value obtained: " + result,
+                                "success"
+                            );
+                        } else {
+                            //其他暂不支持
+                            notify_browser(
+                                "暂不支持测试此类型的数据提取，请在任务正式运行阶段测试是否有效。",
+                                "This type of data extraction is not supported for testing. Please test whether it is valid in the formal call stage.",
+                                "warning"
+                            );
                         }
                         await execute_js(param.afterJS, element, param.afterJSWaitTime);
                     }
@@ -1111,6 +1191,9 @@ function notify_flowchart(msg_zh, msg_en, level = "info") {
 }
 
 function notify_browser(msg_zh, msg_en, level = "info") {
+    if (msg_zh.split("：").length > 1 && msg_zh.split("：")[1].includes("null")) {
+        level = "warning";
+    }
     send_message_to_browser(
         JSON.stringify({
             type: "notify",
