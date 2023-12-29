@@ -787,7 +787,41 @@ async function beginInvoke(msg, ws) {
                     let waitTime = parameters.waitTime;
                     let element = await driver.findElement(By.tagName("body"));
                     if (codeMode == 0) {
-                        await execute_js(code, element, waitTime);
+                        let result = await execute_js(code, element, waitTime);
+                        let level = "success";
+                        if (result == -1) {
+                            level = "info";
+                        }
+                        if (result != null) {
+                            notify_browser(
+                                "JavaScript操作返回结果：" + result,
+                                "JavaScript operation returns result: " + result,
+                                level
+                            );
+                        }
+                    } else if (codeMode == 2) { // 循环内的JS代码
+                        let parent_node = JSON.parse(msg.message.parentNode);
+                        let parent_xpath = parent_node.parameters.xpath;
+                        if (parent_node.parameters.loopType == 2) {
+                            parent_xpath = parent_node.parameters.pathList
+                                .split("\n")[0]
+                                .trim();
+                        }
+                        let elementInfo = {iframe: parameters.iframe, xpath: parent_xpath, id: -1};
+                        let element = await findElementAcrossAllWindows(
+                            elementInfo, notifyBrowser = false); //通过此函数找到元素并切换到对应的窗口
+                        let result = await execute_js(code, element, waitTime);
+                        let level = "success";
+                        if (result == -1) {
+                            level = "info";
+                        }
+                        if (result != null) {
+                            notify_browser(
+                                "JavaScript操作返回结果：" + result,
+                                "JavaScript operation returns result: " + result,
+                                level
+                            );
+                        }
                     } else if (codeMode == 8) {
                         //刷新页面
                         try {
@@ -860,8 +894,8 @@ async function beginInvoke(msg, ws) {
                 } else if (option == 11) {
                     //单个提取数据参数
                     notify_browser(
-                        "提示：提取数据操作只能试运行设置的JavaScript语句，且只针对第一个匹配的元素。",
-                        "Hint: can only test JavaScript  statement set in the data extraction operation, and only for the first matching element.",
+                        "提示：提取数据字段的试运行操作只能测试设置的JavaScript语句，且只针对第一个匹配的元素。",
+                        "Hint: can only test JavaScript  statement set in the data extraction field operation, and only for the first matching element.",
                         "info"
                     );
                     let params = parameters.params; //所有的提取数据参数
@@ -885,6 +919,20 @@ async function beginInvoke(msg, ws) {
                     );
                     if (element != null) {
                         await execute_js(param.beforeJS, element, param.beforeJSWaitTime);
+                        if(param.contentType == 9){ //针对元素的JavaScript代码返回值
+                            let result = await execute_js(param.JS, element);
+                            let level = "success";
+                            if (result == -1) {
+                                level = "info";
+                            }
+                            if (result != null) {
+                                notify_browser(
+                                    "JavaScript操作返回结果：" + result,
+                                    "JavaScript operation returns result: " + result,
+                                    level
+                                );
+                            }
+                        }
                         await execute_js(param.afterJS, element, param.afterJSWaitTime);
                     }
                 }

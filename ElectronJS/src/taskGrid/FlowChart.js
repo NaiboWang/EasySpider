@@ -175,7 +175,7 @@ let app = new Vue({
                     this.nowNode["title"] = LANG("运行操作系统命令", "Run OS Command");
                     break;
                 case 2:
-                    this.nowNode["title"] = LANG("执行JavaScript", "Run JavaScript");
+                    this.nowNode["title"] = LANG("循环内元素执行JS", "Run JS in Loop");
                     break;
                 case 3:
                     this.nowNode["title"] = LANG("退出循环", "Exit Loop");
@@ -505,7 +505,7 @@ function elementDblClick(e) {
                 showInfo(LANG("试运行功能不适用于循环操作，请试运行循环内部的具体操作，如点击元素。", "The trial run function is not applicable to loop operations. Please try to run the specific operations in the loop, such as clicking elements."));
             }
         } else {
-            if (nodeType == 5 && (app._data.nowNode["parameters"]["codeMode"] != 0 && app._data.nowNode["parameters"]["codeMode"] != 8)) {
+            if (nodeType == 5 && (app._data.nowNode["parameters"]["codeMode"] != 0 && app._data.nowNode["parameters"]["codeMode"] != 2 && app._data.nowNode["parameters"]["codeMode"] != 8)) {
                 showInfo(LANG("试运行自定义操作功能只适用于执行JavaScript和刷新页面操作。", "The trial run custom action function is only applicable to run JavaScript and refresh page operations."));
             } else {
                 trailElement(app._data.nowNode, 1);

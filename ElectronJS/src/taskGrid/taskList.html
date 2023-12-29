@@ -167,7 +167,7 @@
             },
             modifyTask: function (index, row) {
                 let id = row.id;
-                let url = row.url;
+                let url = row.links.split("\n")[0];
                 console.log(index, row)
                 let message = { //显示flowchart
                     type: 1, //消息类型，传递链接
