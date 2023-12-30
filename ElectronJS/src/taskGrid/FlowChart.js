@@ -204,6 +204,9 @@ let app = new Vue({
                 case 11:
                     this.nowNode["title"] = LANG("生成新行", "Generate New Row");
                     break;
+                case 12:
+                    this.nowNode["title"] = LANG("退出程序", "Exit Program");
+                    break;
                 case -1: // 跳转到其他操作时，不改变标题
                     break;
                 default: // 默认情况

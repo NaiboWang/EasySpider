@@ -863,6 +863,17 @@ class BrowserThread(Thread):
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
+        elif codeMode == 12: # 退出程序
+            self.print_and_log("根据设置的自定义操作，任务已退出|Task exited according to custom operation")
+            self.saveData(exit=True)
+            self.browser.quit()
+            self.print_and_log("正在清理临时用户目录……|Cleaning up temporary user directory...")
+            try:
+                shutil.rmtree(self.option["tmp_user_data_folder"])
+            except:
+                pass
+            self.print_and_log("清理完成！|Clean up completed!")
+            os._exit(0)
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=params["iframe"])
@@ -1148,12 +1159,13 @@ class BrowserThread(Thread):
                 if self.browser.current_url == thisHistoryURL or ti > thisHistoryLength:  # 如果执行完一次循环之后网址发生了变化
                     break
             time.sleep(2)
-            if element == None: # 不固定元素列表
-                element = self.browser.find_elements(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
-            else: # 固定元素列表
-                element = self.browser.find_element(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
-            # if index > 0:
-                # index -= 1  # 如果是data:开头的网址，就要重试一次
+            if xpath != "":
+                if element == None: # 不固定元素列表
+                    element = self.browser.find_elements(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
+                else: # 固定元素列表
+                    element = self.browser.find_element(By.XPATH, xpath, iframe=node["parameters"]["iframe"])
+                # if index > 0:
+                    # index -= 1  # 如果是data:开头的网址，就要重试一次
         else:
             if element == None:
                 element = elements
@@ -1463,6 +1475,25 @@ class BrowserThread(Thread):
                     code = get_output_code(output)
                     if code <= 0:
                         break
+                try:
+                    changed_handle = self.browser.current_window_handle != thisHandle
+                except:  # 如果网页被意外关闭了的情况下
+                    self.browser.switch_to.window(
+                        self.browser.window_handles[-1])
+                    changed_handle = self.browser.window_handles[-1] != thisHandle
+                if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
+                    try:
+                        while True:  # 一直关闭窗口直到当前标签页
+                            self.browser.close()  # 关闭使用完的标签页
+                            self.browser.switch_to.window(
+                                self.browser.window_handles[-1])
+                            if self.browser.current_window_handle == thisHandle:
+                                break
+                    except Exception as e:
+                        self.print_and_log("关闭标签页发生错误：", e)
+                        self.print_and_log(
+                            "Error occurred while closing tab: ", e)
+                index, _ = self.handleHistory(node, "", thisHistoryURL, thisHistoryLength, index)
         elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
             # tempList = node["parameters"]["textList"].split("\r\n")
             urlList = list(
