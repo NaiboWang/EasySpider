@@ -396,6 +396,8 @@
                         <option :value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
                         <option :value = 8>刷新页面</option>
                         <option :value = 9>发送邮件</option>
+                        <option :value = 10>清空所有字段值</option>
+                        <option :value = 11>生成新数据行</option>
                     </select>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
@@ -486,7 +488,12 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <label>邮件内容：</label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="这里写邮件内容"></textarea>
                     </div>
-
+                    <div v-if='nowNode["parameters"]["codeMode"] == 10'>
+                        <label>此操作可以清空所有字段值，如用于爬虫任务开始前清空所有字段值。</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 11'>
+                        <label>此操作可以生成新数据行，如用于爬虫任务设计时暂不生成数据行，等所有字段提取结束后统一生成新数据行。</label>
+                    </div>
                 </div>
 
                 <div class="elements" v-if="nodeType==6">
@@ -708,8 +715,8 @@ print(emotlib.emoji()) # 使用其中的函数。
                     <input spellcheck=false onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
                     <label>导出数据格式（Excel/CSV/TXT/数据库，<a href="https://www.bilibili.com/video/BV1os4y1679S/" target="_blank">查看MySQL操作教程</a>）：</label>
                     <select id="outputFormat" class="form-control">
-                        <option value = "xlsx">XLSX（即EXCEL文件，建议单个单元格长度超过500时使用CSV格式存储）</option>
                         <option value = "csv">CSV（采集长文章推荐使用此格式）</option>
+                        <option value = "xlsx">XLSX（即EXCEL文件，建议单个单元格长度超过500时使用CSV格式存储）</option>
                         <option value = "txt">TXT</option>
                         <option value = "json">JSON</option>
                         <option value = "mysql">MySQL数据库（大量数据推荐使用）</option>

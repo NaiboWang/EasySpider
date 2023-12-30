@@ -539,10 +539,17 @@ def write_to_excel(file_name, data, types, record):
         for i in range(len(line)):
             if record[i]:
                 to_write.append(line[i])
-        ws.append(to_write)
+        try:
+            ws.append(to_write)
+        except:
+            print("写入Excel文件失败，请检查数据类型是否正确。")
+            print("Failed to write to Excel file, please check if the data type is correct.")
     # 保存工作簿
-    wb.save(file_name)
-
+    try:
+        wb.save(file_name)
+    except:
+        print("保存Excel文件失败，请检查文件是否被其他程序打开。")
+        print("Failed to save Excel file, please check if the file is opened by other programs.")
 
 class Time:
     def __init__(self, type1=""):

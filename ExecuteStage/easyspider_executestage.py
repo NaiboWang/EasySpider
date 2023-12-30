@@ -857,6 +857,12 @@ class BrowserThread(Thread):
             self.print_and_log("根据设置的自定义操作，任务已刷新页面|Task refreshed page according to custom operation")
         elif codeMode == 9:  # 发送邮件
             send_email(node["parameters"]["emailConfig"])
+        elif codeMode == 10: # 清空所有字段值
+            self.clearOutputParameters()
+        elif codeMode == 11: # 生成新的数据行
+            line = new_line(self.outputParameters,
+                            self.maxViewLength, self.outputParametersRecord)
+            self.OUTPUT.append(line)
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=params["iframe"])

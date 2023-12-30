@@ -198,6 +198,12 @@ let app = new Vue({
                 case 9:
                     this.nowNode["title"] = LANG("发送邮件", "Send Email");
                     break;
+                case 10:
+                    this.nowNode["title"] = LANG("清空字段值", "Clear Field Value");
+                    break;
+                case 11:
+                    this.nowNode["title"] = LANG("生成新行", "Generate New Row");
+                    break;
                 case -1: // 跳转到其他操作时，不改变标题
                     break;
                 default: // 默认情况

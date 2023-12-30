@@ -396,6 +396,8 @@
                         <option :value = 7>Pause program execution (such as when the captcha box appears)</option>
                         <option :value = 8>Refresh page</option>
                         <option :value = 9>Send Email</option>
+                        <option :value = 10>Clear all field values</option>
+                        <option :value = 11>Generate new data row</option>
                     </select>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
@@ -486,7 +488,12 @@ Please note that this feature does not support assigning values to variables. In
                         <label>Email content:</label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="Write the email content here"></textarea>
                     </div>
-
+                    <div v-if='nowNode["parameters"]["codeMode"] == 10'>
+                        <label>This action can clear all field values, such as when used before starting a web scraping task to clear all values.</label>
+                    </div>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 11'>
+                        <label>This action can generate a new row of data, such as when designing a web scraping task to not generate rows of data temporarily, and instead generate a new row of data once all fields have been extracted.</label>
+                    </div>
                 </div>
 
                 <div class="elements" v-if="nodeType==6">
@@ -708,8 +715,8 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                     <input spellcheck=false onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
                     <label>Export Data Format (Excel/CSV/TXT/Database):</label>
                     <select id="outputFormat" class="form-control">
-                        <option value="xlsx">XLSX (Excel file, recommended use CSV format when single cell exceeds 500 characters)</option>
                         <option value="csv">CSV (Recommended for collecting long articles)</option>
+                        <option value="xlsx">XLSX (Excel file, recommended use CSV format when single cell exceeds 500 characters)</option>
                         <option value="txt">TXT</option>
                         <option value="json">JSON</option>
                         <option value="mysql">MySQL Database (recommended for large amounts of data)</option>

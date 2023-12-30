@@ -913,10 +913,7 @@ async function beginInvoke(msg, ws) {
                         xpath = parent_xpath + xpath;
                     }
                     let elementInfo = {iframe: param.iframe, xpath: xpath, id: -1};
-                    let element = await findElementAcrossAllWindows(
-                        elementInfo,
-                        (notifyBrowser = false)
-                    );
+                    let element = await findElementAcrossAllWindows(elementInfo);
                     if (element != null) {
                         await execute_js(param.beforeJS, element, param.beforeJSWaitTime);
                         if (param.contentType == 0) {
