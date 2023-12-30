@@ -1133,7 +1133,25 @@ class BrowserThread(Thread):
             self.recordLog(
                 "判断条件内所有条件分支的条件都不满足|None of the conditions in the judgment condition are met")
 
-    def handleHistory(self, node, xpath, thisHistoryURL, thisHistoryLength, index, element=None, elements=None):
+    def handleHistory(self, node, xpath, thisHandle, thisHistoryURL, thisHistoryLength, index, element=None, elements=None):
+        try:
+            changed_handle = self.browser.current_window_handle != thisHandle
+        except:  # 如果网页被意外关闭了的情况下
+            self.browser.switch_to.window(
+                self.browser.window_handles[-1])
+            changed_handle = self.browser.window_handles[-1] != thisHandle
+        if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
+            try:
+                while True:  # 一直关闭窗口直到当前标签页
+                    self.browser.close()  # 关闭使用完的标签页
+                    self.browser.switch_to.window(
+                        self.browser.window_handles[-1])
+                    if self.browser.current_window_handle == thisHandle:
+                        break
+            except Exception as e:
+                self.print_and_log("关闭标签页发生错误：", e)
+                self.print_and_log(
+                    "Error occurred while closing tab: ", e)
         if self.history["index"] != thisHistoryLength and self.history["handle"] == self.browser.current_window_handle:  # 如果执行完一次循环之后历史记录发生了变化，注意当前页面的判断
             difference = thisHistoryLength - self.history["index"]  # 计算历史记录变化差值
             self.browser.execute_script('history.go(' + str(difference) + ')')  # 回退历史记录
@@ -1349,25 +1367,7 @@ class BrowserThread(Thread):
                     if self.BREAK:
                         self.BREAK = False
                         break
-                    try:
-                        changed_handle = self.browser.current_window_handle != thisHandle
-                    except:  # 如果网页被意外关闭了的情况下
-                        self.browser.switch_to.window(
-                            self.browser.window_handles[-1])
-                        changed_handle = self.browser.window_handles[-1] != thisHandle
-                    if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
-                        try:
-                            while True:  # 一直关闭窗口直到当前标签页
-                                self.browser.close()  # 关闭使用完的标签页
-                                self.browser.switch_to.window(
-                                    self.browser.window_handles[-1])
-                                if self.browser.current_window_handle == thisHandle:
-                                    break
-                        except Exception as e:
-                            self.print_and_log("关闭标签页发生错误：", e)
-                            self.print_and_log(
-                                "Error occurred while closing tab: ", e)
-                    index, elements = self.handleHistory(node, xpath, thisHistoryURL, thisHistoryLength, index, elements=elements)
+                    index, elements = self.handleHistory(node, xpath, thisHandle, thisHistoryURL, thisHistoryLength, index, elements=elements)
                     if int(node["parameters"]["breakMode"]) > 0:  # 如果设置了退出循环的脚本条件
                         output = self.execute_code(int(
                             node["parameters"]["breakMode"]) - 1, node["parameters"]["breakCode"],
@@ -1409,25 +1409,7 @@ class BrowserThread(Thread):
                     if self.BREAK:
                         self.BREAK = False
                         break
-                    try:
-                        changed_handle = self.browser.current_window_handle != thisHandle
-                    except:  # 如果网页被意外关闭了的情况下
-                        self.browser.switch_to.window(
-                            self.browser.window_handles[-1])
-                        changed_handle = self.browser.window_handles[-1] != thisHandle
-                    if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
-                        try:
-                            while True:  # 一直关闭窗口直到当前标签页
-                                self.browser.close()  # 关闭使用完的标签页
-                                self.browser.switch_to.window(
-                                    self.browser.window_handles[-1])
-                                if self.browser.current_window_handle == thisHandle:
-                                    break
-                        except Exception as e:
-                            self.print_and_log("关闭标签页发生错误：", e)
-                            self.print_and_log(
-                                "Error occurred while closing tab: ", e)
-                    index, element = self.handleHistory(node, path, thisHistoryURL, thisHistoryLength, index, element=element)
+                    index, element = self.handleHistory(node, path, thisHandle, thisHistoryURL, thisHistoryLength, index, element=element)
                 except NoSuchElementException:
                     self.print_and_log("Loop element not found: ", path)
                     self.print_and_log("找不到循环元素：", path)
@@ -1475,25 +1457,7 @@ class BrowserThread(Thread):
                     code = get_output_code(output)
                     if code <= 0:
                         break
-                try:
-                    changed_handle = self.browser.current_window_handle != thisHandle
-                except:  # 如果网页被意外关闭了的情况下
-                    self.browser.switch_to.window(
-                        self.browser.window_handles[-1])
-                    changed_handle = self.browser.window_handles[-1] != thisHandle
-                if changed_handle:  # 如果执行完一次循环之后标签页的位置发生了变化
-                    try:
-                        while True:  # 一直关闭窗口直到当前标签页
-                            self.browser.close()  # 关闭使用完的标签页
-                            self.browser.switch_to.window(
-                                self.browser.window_handles[-1])
-                            if self.browser.current_window_handle == thisHandle:
-                                break
-                    except Exception as e:
-                        self.print_and_log("关闭标签页发生错误：", e)
-                        self.print_and_log(
-                            "Error occurred while closing tab: ", e)
-                index, _ = self.handleHistory(node, "", thisHistoryURL, thisHistoryLength, index)
+                index, _ = self.handleHistory(node, "", thisHandle, thisHistoryURL, thisHistoryLength, index)
         elif int(node["parameters"]["loopType"]) == 4:  # 固定网址列表
             # tempList = node["parameters"]["textList"].split("\r\n")
             urlList = list(
