@@ -83,6 +83,18 @@ function changeGetDataParameters(msg, i) {
     msg["parameters"][i]["afterJSWaitTime"] = 0; //执行后js等待时间
     msg["parameters"][i]["downloadPic"] = 0; //是否下载图片
     msg["parameters"][i]["splitLine"] = 0; //是否分割行
+    try {
+        let exampleValue = msg["parameters"][i]["exampleValues"][0]["value"];
+        //计算句子中去掉空格后的长度
+        let len = exampleValue.replace(/\s+/g, "").length;
+        //如果是文本类型的话，长度超过200就默认分割行
+        if (len > 200 && msg["parameters"][i]["nodeType"] == 0 && msg["parameters"][i]["contentType"] == 0) {
+            msg["parameters"][i]["splitLine"] = 1; //如果示例值长度超过200，就默认分割行
+            showInfo(LANG("单个字段示例值长度超过200，已自动开启换行功能。",  "The length of the example value of a single field exceeds 200, and the line break function has been automatically turned on."), 4000);
+        }
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 
