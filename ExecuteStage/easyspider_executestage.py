@@ -116,7 +116,10 @@ class BrowserThread(Thread):
         self.downloadFolder = "Data/Task_" + str(id) + "/" + self.saveName
         if not os.path.exists(self.downloadFolder):
             os.mkdir(self.downloadFolder)  # 创建保存文件夹用来保存截图和文件
-        self.existing_files = sorted([os.path.join(self.downloadFolder, file) for file in os.listdir(self.downloadFolder)], key=os.path.getmtime)
+        if not os.path.exists(self.downloadFolder + "/files"):
+            os.mkdir(self.downloadFolder + "/files")
+        if not os.path.exists(self.downloadFolder + "/images"):
+            os.mkdir(self.downloadFolder + "/images")
         self.getDataStep = 0
         self.startSteps = 0
         try:
@@ -146,11 +149,12 @@ class BrowserThread(Thread):
             'source': js})  # TMALL 反扒
         WebDriverWait(self.browser, 10)
         self.browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
-        path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id), self.saveName)
+        path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id), self.saveName, "files")
         self.paramss = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': path}}
         self.browser.execute("send_command", self.paramss)  # 下载目录改变
-        monitor_thread = threading.Thread(target=rename_downloaded_file, args=(path, )) #path后面的逗号不能省略，是元组固定写法
-        monitor_thread.start()
+        self.monitor_event = threading.Event()
+        self.monitor_thread = threading.Thread(target=rename_downloaded_file, args=(path, self.monitor_event)) #path后面的逗号不能省略，是元组固定写法
+        self.monitor_thread.start()
         # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
         try:
@@ -554,6 +558,7 @@ class BrowserThread(Thread):
             shutil.rmtree(self.option["tmp_user_data_folder"])
         except:
             pass
+        self.monitor_event.set()
         self.print_and_log("清理完成！|Clean up completed!")
         self.print_and_log("您现在可以安全的关闭此窗口了。|You can safely close this window now.")
         
@@ -1811,12 +1816,6 @@ class BrowserThread(Thread):
                 self.history["index"] = 0
         self.scrollDown(param)  # 根据参数配置向下滚动
 
-        # 处理文件变化，新下载
-        files = os.listdir(self.downloadFolder)
-        latest_file = files[-1]
-        self.existing_files = files
-        # rt.end()
-
     def get_content(self, p, element):
         content = ""
         if p["contentType"] == 0:
@@ -1842,7 +1841,7 @@ class BrowserThread(Thread):
                     downloadPic = 0
                 if downloadPic == 1:
                     download_image(self, content, "Data/Task_" +
-                                   str(self.id) + "/" + self.saveName + "/", element)
+                                   str(self.id) + "/" + self.saveName + "/images", element)
             else:  # 普通节点
                 if p["splitLine"] == 1:
                     text = extract_text_from_html(element.get_attribute('outerHTML'))
@@ -1871,7 +1870,7 @@ class BrowserThread(Thread):
                     downloadPic = 0
                 if downloadPic == 1:
                     download_image(self, content, "Data/Task_" +
-                                   str(self.id) + "/" + self.saveName + "/", element)
+                                   str(self.id) + "/" + self.saveName + "/images", element)
             else:
                 command = 'var arr = [];\
                 var content = arguments[0];\

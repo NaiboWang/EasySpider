@@ -60,10 +60,10 @@ def send_email(config):
         except:
             pass
   
-def rename_downloaded_file(download_dir):
+def rename_downloaded_file(download_dir, stop_event):
     original_files = set(os.listdir(download_dir))
 
-    while True:
+    while not stop_event.is_set():
         files = os.listdir(download_dir)
         for file in files:
             if file in original_files:
@@ -71,8 +71,8 @@ def rename_downloaded_file(download_dir):
 
             full_path = os.path.join(download_dir, file)
 
-            if not full_path.endswith('.crdownload') and not full_path.endswith('.htm') and not full_path.endswith('.html'):
-                new_name = file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + file.split('/')[-1]
+            if not full_path.endswith('.crdownload') and not full_path.endswith('.htm') and not full_path.endswith('.html') and not full_path.startswith('esfile_'):
+                new_name = "esfile_" + file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + file.split('/')[-1]
                 new_path = os.path.join(download_dir, new_name)
                 try:
                     os.rename(full_path, new_path)
@@ -83,6 +83,7 @@ def rename_downloaded_file(download_dir):
 
         time.sleep(1)  # 每一秒检查一次
         # print("下载文件重命名监控中，请等待...|Download file rename monitoring, please wait...")
+    print("下载文件重命名监控已停止。|Download file rename monitoring has stopped.")
 
 def is_valid_url(url):
     try:
