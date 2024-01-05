@@ -59,41 +59,30 @@ def send_email(config):
             smtp_server.quit()
         except:
             pass
-
-
-def wait_for_download_complete(download_dir, timeout=3600):
-    """等待下载完成，直到没有.crdownload文件为止，或者超时"""
-    while True:
-        time.sleep(1)  # 每一秒检查一次
-        timeout -= 1
-        is_downloading = False
-        for fname in os.listdir(download_dir):
-            if fname.endswith('.crdownload'):
-                is_downloading = True
-                break
-        # 如果没有下载或超时，则退出
-        if not is_downloading or timeout <= 0:
-            break
-        elif timeout % 10 == 0:
-            print(f"下载文件中，请等待...|Downloading in progress, please wait... {timeout} seconds left")
-            print("可以在点击元素选项中设置下载超时时间。|You can set the download timeout in the 'Click Element' option.")
-    if is_downloading:
-        print("下载可能未完成，但已经超时。|Download may not be completed, but it has timed out.")
-    else:
-        print("下载完成。|Download completed.")
-
+  
 def rename_downloaded_file(download_dir):
-    """重命名下载文件，假设是最新下载的文件"""
-    files = os.listdir(download_dir)
-    paths = [os.path.join(download_dir, basename) for basename in files]
-    latest_file = max(paths, key=os.path.getmtime, default=None)
+    original_files = set(os.listdir(download_dir))
 
-    if latest_file is not None and not latest_file.endswith('.crdownload'):
-        new_name = latest_file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + latest_file.split('/')[-1]
-        new_path = os.path.join(download_dir, new_name)
-        os.rename(latest_file, new_path)
-        print(f"文件已重命名为: {new_path}")
-        print(f"File has been renamed to: {new_path}")
+    while True:
+        files = os.listdir(download_dir)
+        for file in files:
+            if file in original_files:
+                continue  # 跳过原始文件和已重命名的文件
+
+            full_path = os.path.join(download_dir, file)
+
+            if not full_path.endswith('.crdownload') and not full_path.endswith('.htm') and not full_path.endswith('.html'):
+                new_name = file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + file.split('/')[-1]
+                new_path = os.path.join(download_dir, new_name)
+                try:
+                    os.rename(full_path, new_path)
+                    original_files.add(new_name)  # 记录新文件名以避免再次重命名
+                    print(f"文件已重命名为|File has been renamed to: {new_path}")
+                except:
+                    print("文件重命名失败|File rename failed")
+
+        time.sleep(1)  # 每一秒检查一次
+        # print("下载文件重命名监控中，请等待...|Download file rename monitoring, please wait...")
 
 def is_valid_url(url):
     try:

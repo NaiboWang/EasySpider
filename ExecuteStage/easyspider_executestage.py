@@ -5,9 +5,10 @@ import copy
 import platform
 import shutil
 import string
+import threading
 # import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
-    on_press_creator, on_release_creator, readCode, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
+    on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -147,8 +148,9 @@ class BrowserThread(Thread):
         self.browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
         path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id), self.saveName)
         self.paramss = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': path}}
-
-        self.browser.execute("send_command", self.paramss)  # 下载地址改变
+        self.browser.execute("send_command", self.paramss)  # 下载目录改变
+        monitor_thread = threading.Thread(target=rename_downloaded_file, args=(path, )) #path后面的逗号不能省略，是元组固定写法
+        monitor_thread.start()
         # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
         try:
