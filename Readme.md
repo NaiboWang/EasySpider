@@ -12,11 +12,9 @@ A visual browser automation test/data collection/crawler software, which can be 
 
 ## 赞助者/Sponsors
 
-[![Capsolver](media/capsolver.gif)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=asarmor)
+[![Capsolver](media/capsolver.gif)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider)
 
-[Capsolver.com](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=asarmor) is an AI-powered service that provides automatic captcha solving capabilities. It supports a range of captcha types, including reCAPTCHA, hCaptcha, and FunCaptcha, AWS Captcha, Geetest, Akamai Web, BMP, Imperva / Incapsula, image captcha among others. 
-
-上述插件可配合EasySpider进行验证码识别。
+[Capsolver.com](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider)是一家基于人工智能，提供自动captcha解决功能的服务商。支持的captcha类型包括reCAPTCHA、hCaptcha和FunCaptcha、AWS captcha、Geetest、Akamai Web、BMP、Imperva/Incapsula、captcha图像识别等。Capsolver可配合EasySpider进行验证码识别。
 
 
 ## 官方网站/Official Website
