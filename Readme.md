@@ -10,6 +10,14 @@ This software is completely free (except for commercial use). If you think this 
 
 A visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
 
+## 赞助者/Sponsors
+
+[![Capsolver](media/capsolver.gif)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=asarmor)
+
+[Capsolver.com](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=asarmor) is an AI-powered service that provides automatic captcha solving capabilities. It supports a range of captcha types, including reCAPTCHA, hCaptcha, and FunCaptcha, AWS Captcha, Geetest, Akamai Web, BMP, Imperva / Incapsula, image captcha among others. 
+
+上述插件可配合EasySpider进行验证码识别。
+
 
 ## 官方网站/Official Website
 
@@ -80,6 +88,8 @@ Bilibili/B站视频教程:
 [设置页面向下滚动](https://www.bilibili.com/video/BV1G14y1o7Qa/)
 
 [如何无代码可视化的爬取需要登录才能爬的网站 - 知乎网站案例](https://www.bilibili.com/video/BV1BN411t71C/)
+
+[循环点击列表中每个链接进入详情页采集详情页内容+设计时动态调试+动态JS](https://www.bilibili.com/video/BV12V411D7RZ)
 
 [实战采集汽车网文章内容并下载文章内图片](https://www.bilibili.com/video/BV14u4y1x7S5/)
 
