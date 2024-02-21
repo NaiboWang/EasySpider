@@ -1,9 +1,3 @@
-## 欢迎宣传此工具/Welcome to promote this tool
-
-本软件完全免费（商用除外），如果您觉得此工具不错，请您宣传给有需要的朋友，同时，也欢迎您轻轻点击此页面右上角**Star**按钮增加项目曝光度，谢谢！
-
-This software is completely free (except for commercial use). If you think this tool is good, please promote it to friends in need. At the same time, you are also welcome to click the **Star** button at the top right of this page to increase the exposure of the project. Thank you!
-
 # 易采集/EasySpider: Visual Code-Free Web Crawler
 
 一个可视化浏览器自动化测试/数据采集/爬虫软件，可以使用图形化界面，无代码可视化的设计和执行任务。只需要在网页上选择自己想要操作的内容并根据提示框操作即可完成任务的设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
