@@ -14,7 +14,7 @@ A visual browser automation test/data collection/crawler software, which can be 
 
 <a target="_blank" href="https://get.brightdata.com/dnnozwab8yw5"><img src="media/BrightData.png" width=250></img></a>
 
-[亮数据BrightData](https://get.brightdata.com/dnnozwab8yw5)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可以注册后联系中文客服，开通后免费试用，最高可得250美金折扣。BrightData可配合EasySpider进行数据采集。
+[亮数据BrightData](https://get.brightdata.com/dnnozwab8yw5)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**最高可得250美金折扣**。BrightData可配合EasySpider进行数据采集。
 
 [![Capsolver](media/capsolver.gif)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider)
 
