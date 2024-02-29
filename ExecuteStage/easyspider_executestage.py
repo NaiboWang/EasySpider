@@ -147,6 +147,13 @@ class BrowserThread(Thread):
             self.print_and_log("Loading stealth.min.js")
         self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
             'source': js})  # TMALL 反扒
+        self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
+        "source": """
+            Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+            })
+        """
+        })
         WebDriverWait(self.browser, 10)
         self.browser.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
         path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(self.id), self.saveName, "files")
