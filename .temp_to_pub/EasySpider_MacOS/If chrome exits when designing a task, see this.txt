@@ -4,6 +4,6 @@ There is a potential issue with the software for MacOS, in that the Chrome softw
 
 To check the Chrome version, enter the EasySpider software and right-click to "Show Package Contents". Then go to Contents/Resources/app folder and double-click on the chrome_mac64 software to open Chrome. Then go to Settings -> About to check if the Chrome version matches the version of chromedriver_mac64 when you open it manually.
 
-If it is not, you can download the corresponding macOS version of Chromedriver for your current Chrome version from the following website: https://chromedriver.chromium.org/downloads, and then place the downloaded Chromedriver in the Contents/Resources/app folder mentioned above, rename it and replace the "chromedriver_mac64" file to restore normal use of the software.
+If it is not, you can download the corresponding macOS version of Chromedriver for your current Chrome version (just check at the main version number before the first decimal point, such as 122) from the following website: https://chromedriver.chromium.org/downloads, and then place the downloaded Chromedriver in the Contents/Resources/app folder mentioned above, rename it and replace the "chromedriver_mac64" file to restore normal use of the software.
 
 
