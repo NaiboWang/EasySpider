@@ -1740,6 +1740,21 @@ class BrowserThread(Thread):
                 script = 'var result = document.evaluate(`' + path + \
                          '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
                 self.browser.execute_script(script, str(index))  # 用js的点击方法
+            elif click_way == 2: # 双击
+                try:
+                    actions = ActionChains(self.browser)  # 实例化一个action对象
+                    actions.double_click(element).perform()
+                except Exception as e:
+                    self.browser.execute_script("arguments[0].scrollIntoView();", element)
+                    try:
+                        actions = ActionChains(self.browser)  # 实例化一个action对象
+                        actions.double_click(element).perform()
+                    except Exception as e:
+                        self.print_and_log(f"Selenium双击元素{path}失败，将尝试使用JavaScript双击")
+                        self.print_and_log(f"Failed to double click element {path} with Selenium, will try to double click with JavaScript")
+                        script = 'var result = document.evaluate(`' + path + \
+                            '`, document, null, XPathResult.ANY_TYPE, null);for(let i=0;i<arguments[0];i++){result.iterateNext();} result.iterateNext().click();'
+                        self.browser.execute_script(script, str(index))  # 用js的点击方法
             self.recordLog("点击元素|Click element: " + path)
         except TimeoutException:
             self.print_and_log(
@@ -1989,6 +2004,8 @@ class BrowserThread(Thread):
                 content = element.get_attribute(attribute_name)
             except:
                 content = ""
+        elif p["contentType"] == 15:  # 常量值
+            content = p["JS"]
         if content == None:
             content = ""
         return content
@@ -2232,7 +2249,7 @@ if __name__ == '__main__':
         "server_address": "http://localhost:8074",
         "keyboard": True,  # 是否监听键盘输入
         "pause_key": "p",  # 暂停键
-        "version": "0.6.0",
+        "version": "0.6.2",
     }
     c = Config(config)
     print(c)
@@ -2307,7 +2324,9 @@ if __name__ == '__main__':
 
     options.add_argument(
         "--disable-blink-features=AutomationControlled")  # TMALL 反扒
-
+    # 阻止http -> https的重定向
+    options.add_argument("--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process")
+    options.add_argument("--disable-web-security")  # 禁用同源策略
     options.add_argument('-ignore-certificate-errors')
     options.add_argument('-ignore -ssl-errors')
 

@@ -59,7 +59,31 @@ def send_email(config):
             smtp_server.quit()
         except:
             pass
+  
+def rename_downloaded_file(download_dir, stop_event):
+    original_files = set(os.listdir(download_dir))
 
+    while not stop_event.is_set():
+        files = os.listdir(download_dir)
+        for file in files:
+            if file in original_files:
+                continue  # 跳过原始文件和已重命名的文件
+
+            full_path = os.path.join(download_dir, file)
+
+            if not full_path.endswith('.crdownload') and not full_path.endswith('.htm') and not full_path.endswith('.html') and not full_path.startswith('esfile_'):
+                new_name = "esfile_" + file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + file.split('/')[-1]
+                new_path = os.path.join(download_dir, new_name)
+                try:
+                    os.rename(full_path, new_path)
+                    original_files.add(new_name)  # 记录新文件名以避免再次重命名
+                    print(f"文件已重命名为|File has been renamed to: {new_path}")
+                except:
+                    print("文件重命名失败|File rename failed")
+
+        time.sleep(1)  # 每一秒检查一次
+        # print("下载文件重命名监控中，请等待...|Download file rename monitoring, please wait...")
+    print("下载文件重命名监控已停止。|Download file rename monitoring has stopped.")
 
 def is_valid_url(url):
     try:
@@ -505,10 +529,17 @@ def write_to_excel(file_name, data, types, record):
         for i in range(len(line)):
             if record[i]:
                 to_write.append(line[i])
-        ws.append(to_write)
+        try:
+            ws.append(to_write)
+        except:
+            print("写入Excel文件失败，请检查数据类型是否正确。")
+            print("Failed to write to Excel file, please check if the data type is correct.")
     # 保存工作簿
-    wb.save(file_name)
-
+    try:
+        wb.save(file_name)
+    except:
+        print("保存Excel文件失败，请检查文件是否被其他程序打开。")
+        print("Failed to save Excel file, please check if the file is opened by other programs.")
 
 class Time:
     def __init__(self, type1=""):

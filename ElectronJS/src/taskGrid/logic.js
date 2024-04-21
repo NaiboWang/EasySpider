@@ -446,7 +446,7 @@ function modifyParameters(t, param) {
     }
 }
 
-function showSuccess(msg, time = 4000) {
+function showSuccess(msg, time = 1000) {
     $("#tip").text(msg);
     $("#tip").slideDown(); //提示框
     let fadeout = setTimeout(function () {
@@ -491,7 +491,7 @@ if (mobile == "true") {
 }
 
 let serviceInfo = {
-    "version": "0.6.0"
+    "version": "0.6.2"
 };
 
 function saveService(type) {
@@ -625,7 +625,7 @@ function saveService(type) {
         "links": links,
         "create_time": $("#create_time").val(),
         "update_time": formatDateTime(new Date()),
-        "version": "0.6.0",
+        "version": "0.6.2",
         "saveThreshold": saveThreshold,
         // "cloudflare": cloudflare,
         "quitWaitTime": parseInt($("#quitWaitTime").val()),

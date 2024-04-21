@@ -651,7 +651,11 @@ async function beginInvoke(msg, ws) {
                         if (parameters.xpath.includes("point(")) {
                             await click_element(element, point);
                         } else {
-                            await click_element(element);
+                            if (parameters.clickWay == 2){ //双击
+                                await click_element(element, "double");
+                            } else {
+                                await click_element(element); //单击
+                            }
                         }
                         let alertHandleType = parameters.alertHandleType;
                         if (alertHandleType == 1) {
@@ -1002,6 +1006,14 @@ async function beginInvoke(msg, ws) {
                                 "Attribute value obtained: " + result,
                                 "success"
                             );
+                        } else if(param.contentType == 15) {
+                            //元素的属性值
+                            let result = param.JS;
+                            notify_browser(
+                                "获取的常量值：" + result,
+                                "Constant value obtained: " + result,
+                                "success"
+                            );
                         } else {
                             //其他暂不支持
                             notify_browser(
@@ -1130,6 +1142,8 @@ async function click_element(element, type = "click") {
             // await actions.click().perform();
             let script = `document.elementFromPoint(${x}, ${y}).click();`;
             await driver.executeScript(script);
+        } else if (type == "double") {
+            await driver.actions().doubleClick(element).perform();
         } else {
             await element.click();
         }
@@ -1341,6 +1355,8 @@ async function runBrowser(lang = "en", user_data_folder = "", mobile = false) {
     let options = new chrome.Options();
     options.addArguments("--disable-blink-features=AutomationControlled");
     options.addArguments("--disable-infobars");
+    options.addArguments("--disable-web-security");
+    options.addArguments("--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process");
     // 添加实验性选项以排除'enable-automation'开关
     options.set("excludeSwitches", ["enable-automation"]);
     options.excludeSwitches("enable-automation");

@@ -170,10 +170,11 @@
                     </div>
                     <label>Maximum wait time for page load after clicking (in seconds):</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>Click Type:</label>
+                    <label>Click Type (including double-click):</label>
                     <select v-model='nowNode["parameters"]["clickWay"]' class="form-control">
                         <option :value = 0>Selenium</option>
                         <option :value = 1>JavaScript</option>
+                        <option :value = 2>Double-click</option>
                     </select>
                     <label>Open link in new tab:</label>
                     <select v-model='nowNode["parameters"]["newTab"]' class="form-control">
@@ -271,6 +272,7 @@
                             <option :value = 4>Background Image Address</option>
                             <option :value = 5>Webpage URL</option>
                             <option :value = 6>Webpage Title</option>
+                            <option :value = 15>Constant String</option>
                             <option :value = 7>Element Screenshot</option>
                             <option :value = 8>OCR Results</option>
                             <option :value = 14>Properties of elements</option>
@@ -280,7 +282,11 @@
                             <option :value = 10>Selected value of the current select box</option>
                             <option :value = 11>Selected text of the current select box</option>
                         </select>
-                        <div v-if='params.parameters[paraIndex]["contentType"] == 14'>
+                        <div v-if='params.parameters[paraIndex]["contentType"] == 15'>
+                            <label>Constant String:</label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["JS"]' placeholder="This field type is usually used for remarks"></input>
+                        </div>
+                        <div v-else-if='params.parameters[paraIndex]["contentType"] == 14'>
                             <label>Attribute Name:</label>
                             <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["JS"]' placeholder="Attribute names, such as href to represent the href attribute of the current element, that is, the link address."></input>
                         </div>
