@@ -654,7 +654,11 @@ async function beginInvoke(msg, ws) {
                             if (parameters.clickWay == 2){ //双击
                                 await click_element(element, "double");
                             } else {
-                                await click_element(element); //单击
+                                if (parameters.newTab == 1){
+                                    await click_element(element, "loopClickEvery"); //新标签页打开
+                                } else {
+                                    await click_element(element); //单击
+                                }
                             }
                         }
                         let alertHandleType = parameters.alertHandleType;
@@ -1125,12 +1129,21 @@ async function beginInvoke(msg, ws) {
 async function click_element(element, type = "click") {
     try {
         if (type == "loopClickEvery") {
-            await driver
+            if (process.platform === "darwin") {
+                await driver
+                .actions()
+                .keyDown(Key.COMMAND)
+                .click(element)
+                .keyUp(Key.COMMAND)
+                .perform();
+            } else {
+                await driver
                 .actions()
                 .keyDown(Key.CONTROL)
                 .click(element)
                 .keyUp(Key.CONTROL)
                 .perform();
+            }
         } else if (type.includes("point(")) {
             //point(10, 20)表示点击坐标为(10, 20)的位置
             let point = type.substring(6, type.length - 1).split(",");

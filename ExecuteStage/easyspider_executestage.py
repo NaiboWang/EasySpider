@@ -1721,8 +1721,11 @@ class BrowserThread(Thread):
                 try:
                     actions = ActionChains(self.browser)  # 实例化一个action对象
                     if newTab == 1:  # 在新标签页打开
-                        # Ctrl + Click
-                        actions.key_down(Keys.CONTROL).click(element).key_up(Keys.CONTROL).perform()
+                        if sys.platform == "darwin":  # Mac
+                            actions.key_down(Keys.COMMAND).click(element).key_up(Keys.COMMAND).perform()
+                        else:
+                            # Ctrl + Click
+                            actions.key_down(Keys.CONTROL).click(element).key_up(Keys.CONTROL).perform()
                     else:
                         actions.click(element).perform()
                 except Exception as e:
