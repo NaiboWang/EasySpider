@@ -31,7 +31,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from pynput.keyboard import Key, Listener
 from datetime import datetime
 import io  # 遇到错误退出时应执行的代码
 import json
@@ -2450,6 +2449,9 @@ if __name__ == '__main__':
                 else:
                     print("Using remote driver")
                     # Use docker driver, default address is http://localhost:4444/wd/hub
+                    # Headless mode
+                    options.add_argument("--headless")
+                    print("Headless mode")
                     browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
             elif browser == "edge":
                 from selenium.webdriver.edge.service import Service as EdgeService
@@ -2511,6 +2513,7 @@ if __name__ == '__main__':
         #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
     try:
+        from pynput.keyboard import Key, Listener
         if c.keyboard:
             with Listener(on_press=on_press_creator(press_time, event),
                           on_release=on_release_creator(event, press_time)) as listener:
