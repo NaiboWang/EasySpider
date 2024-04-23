@@ -2453,8 +2453,8 @@ if __name__ == '__main__':
                     print("Using remote driver")
                     # Use docker driver, default address is http://localhost:4444/wd/hub
                     # Headless mode
-                    options.add_argument("--headless")
-                    print("Headless mode")
+                    # options.add_argument("--headless")
+                    # print("Headless mode")
                     browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
             elif browser == "edge":
                 from selenium.webdriver.edge.service import Service as EdgeService
