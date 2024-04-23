@@ -558,7 +558,10 @@ class BrowserThread(Thread):
         self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
         self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
         time.sleep(quitWaitTime)
-        self.browser.quit()
+        try:
+            self.browser.quit()
+        except:
+            pass
         self.print_and_log("正在清理临时用户目录……|Cleaning up temporary user directory...")
         try:
             shutil.rmtree(self.option["tmp_user_data_folder"])

@@ -23,6 +23,7 @@ class MyChrome(webdriver.Chrome, webdriver.Remote):
 
     def __init__(self, mode='local_driver', *args, **kwargs):
         self.iframe_env = False  # 现在的环境是root还是iframe
+        self.mode = mode
         if mode == "local_driver":
             webdriver.Chrome.__init__(self, *args, **kwargs)
         elif mode == "remote_driver":
