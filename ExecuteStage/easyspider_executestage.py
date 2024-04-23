@@ -2253,6 +2253,7 @@ if __name__ == '__main__':
         "keyboard": True,  # 是否监听键盘输入
         "pause_key": "p",  # 暂停键
         "version": "0.6.2",
+        "docker_driver": "",
     }
     c = Config(config)
     print(c)
@@ -2442,8 +2443,14 @@ if __name__ == '__main__':
             except:
                 browser = "chrome"
             if browser == "chrome":
-                selenium_service = Service(executable_path=driver_path)
-                browser_t = MyChrome(service=selenium_service, options=options)
+                if c.docker_driver == "":
+                    print("Using local driver")
+                    selenium_service = Service(executable_path=driver_path)
+                    browser_t = MyChrome(service=selenium_service, options=options, mode='local_driver')
+                else:
+                    print("Using remote driver")
+                    # Use docker driver, default address is http://localhost:4444/wd/hub
+                    browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
             elif browser == "edge":
                 from selenium.webdriver.edge.service import Service as EdgeService
                 from selenium.webdriver.edge.options import Options as EdgeOptions
