@@ -412,7 +412,7 @@
                 form_data.append('file', $('#excelFile').prop('files')[0]);
                 // console.log(app.$data.backEndAddressServiceWrapper + "/excelUpload",)
                 $.ajax({
-                    url: app.$data.backEndAddressServiceWrapper.replace("8074", "8075") + "/excelUpload",
+                    url: "http://localhost:8075/excelUpload",
                     type: 'POST',
                     data: form_data,
                     processData: false,
