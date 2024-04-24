@@ -50,7 +50,9 @@ if (config.debug) {
 }
 let allWindowSockets = [];
 let allWindowScoketNames = [];
-task_server.start(config.webserver_port); //start local server
+if(config.webserver_address.includes("localhost") || config.webserver_address.includes("127.0.0.1")) {
+    task_server.start(config.webserver_port); //start local server
+}
 let server_address = `${config.webserver_address}:${config.webserver_port}`;
 const websocket_port = 8084; //目前只支持8084端口，写死，因为扩展里面写死了
 console.log("server_address: " + server_address);
