@@ -75,10 +75,7 @@ class BrowserThread(Thread):
     def __init__(self, browser_t, id, service, version, event, saveName, config, option):
         Thread.__init__(self)
         self.logs = io.StringIO()
-        try:
-            self.log = bool(service["recordLog"])
-        except:
-            self.log = True
+        self.log = bool(service.get("recordLog", True))
         self.browser = browser_t
         self.option = option
         self.config = config
@@ -86,22 +83,13 @@ class BrowserThread(Thread):
         self.totalSteps = 0
         self.id = id
         self.event = event
-        try:
-            self.saveName = service["saveName"]  # 保存文件的名字
-        except:
-            now = datetime.now()
-            # 将时间格式化为精确到秒的字符串
-            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S")
+        now = datetime.now()
+        self.saveName = service.get("saveName", now.strftime("%Y_%m_%d_%H_%M_%S"))  # 保存文件的名字
         self.OUTPUT = ""
         self.SAVED = False
         self.BREAK = False
         self.CONTINUE = False
-        try:
-            maximizeWindow = service["maximizeWindow"]
-        except:
-            maximizeWindow = 0
-        if maximizeWindow == 1:
-            self.browser.maximize_window()
+        self.browser.maximize_window() if service.get("maximizeWindow") == 1 else ...
         # 名称设定
         if saveName != "":  # 命令行覆盖保存名称
             self.saveName = saveName  # 保存文件的名字
@@ -122,13 +110,13 @@ class BrowserThread(Thread):
         self.getDataStep = 0
         self.startSteps = 0
         try:
-            startFromExit = service["startFromExit"]  # 从上次退出的步骤开始
-            if startFromExit == 1:
+            if service.get("startFromExit", 0) == 1:
                 with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'r',
                           encoding='utf-8-sig') as file_obj:
                     self.startSteps = int(file_obj.read())  # 读取已执行步数
-        except:
-            pass
+        except Exception as e:
+            self.print_and_log(f"读取steps.txt失败，原因：{str(e)}")
+
         if self.startSteps != 0:
             self.print_and_log("此模式下，任务ID", self.id, "将从上次退出的步骤开始执行，之前已采集条数为",
                                self.startSteps, "条。")
@@ -163,14 +151,11 @@ class BrowserThread(Thread):
         self.monitor_thread.start()
         # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
-        try:
-            self.maxViewLength = service["maxViewLength"]  # 最大显示长度
-        except:
-            self.maxViewLength = 15
-        try:
-            self.outputFormat = service["outputFormat"]  # 输出格式
-        except:
-            self.outputFormat = "csv"
+        self.maxViewLength = service.get("maxViewLength", 15)  # 最大显示长度
+        self.outputFormat = service.get("outputFormat", "csv")  # 输出格式
+        self.save_threshold = service.get("saveThreshold", 10)  # 保存最低阈值
+        self.dataWriteMode = service.get("dataWriteMode", 1)  # 数据写入模式，1为追加，2为覆盖，3为重命名文件
+
         try:
             self.task_version = service["version"]  # 任务版本
             if service["version"] >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
@@ -185,25 +170,15 @@ class BrowserThread(Thread):
                     sys.exit()
         except:  # 0.2.0版本没有version字段，所以直接退出
             self.print_and_log("版本不一致，请使用v0.2.0版本的EasySpider运行该任务！")
-            self.print_and_log(
-                "Version not match, please use EasySpider v0.2.0 to run this task!")
+            self.print_and_log("Version not match, please use EasySpider v0.2.0 to run this task!")
             self.browser.quit()
             sys.exit()
         try:
-            self.save_threshold = service["saveThreshold"]  # 保存最低阈值
-        except:
-            self.save_threshold = 10
-        try:
-            self.links = list(
-                filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
+            self.links = list(filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
         except:
             self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
-        try:
-            self.dataWriteMode = service["dataWriteMode"] # 数据写入模式，1为追加，2为覆盖，3为重命名文件
-        except:
-            self.dataWriteMode = 1
-        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx" or self.outputFormat == "json":
+        if self.outputFormat in ["csv", "txt", "xlsx", "json"]:
             if os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
                 if self.dataWriteMode == 2:
                     os.remove("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat)
@@ -244,25 +219,14 @@ class BrowserThread(Thread):
             if param["name"] not in self.outputParameters.keys():
                 self.outputParameters[param["name"]] = ""
                 self.dataNotFoundKeys[param["name"]] = False
-                try:
-                    self.outputParametersTypes.append(param["type"])
-                except:
-                    self.outputParametersTypes.append("text")
-                try:
-                    self.outputParametersRecord.append(
-                        bool(param["recordASField"]))
-                except:
-                    self.outputParametersRecord.append(True)
+                self.outputParametersTypes.append(param.get("type", "text"))
+                self.outputParametersRecord.append(bool(param.get("recordASField", True)))
                 # 文件叠加的时候不添加表头
-                if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
-                    if self.writeMode == 0:
-                        self.OUTPUT[0].append(param["name"])
+                if self.outputFormat in ["csv", "txt", "xlsx"] and self.writeMode == 0:
+                    self.OUTPUT[0].append(param["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
-        try:
-            self.inputExcel = service["inputExcel"]  # 输入Excel
-        except:
-            self.inputExcel = ""
+        self.inputExcel = service.get("inputExcel", "")  # 输入Excel
         self.readFromExcel()  # 读取Excel获得参数值
 
     # 检测如果没有复杂的操作，优化提取数据流程
