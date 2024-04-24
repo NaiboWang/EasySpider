@@ -91,7 +91,7 @@
                                value="about:blank"></input>
                         <label><a href="https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction"
                                   target="_blank">{{`Click Here~点击这里` | lang}}</a> {{`Here to see argument instruction.~这里查看参数配置说明。` | lang}}</label>
-                        <label v-if="OS=='darwin'">{{`对于MacOS系统，EasySpider提供了两个不同的执行程序，分别为easyspider_executestage和easyspider_executestage_full，前者执行时加载速度较快，并提供了除OCR识别和数据去重以外的全部功能；后者则提供了包括OCR识别和数据去重在内的全部功能，但运行时加载速度较慢，需要等待2-10分钟才能执行程序，请根据自己的需求选择执行哪个程序。~For MacOS system, EasySpider provides two different execution programs, 'easyspider_executestage' and 'easyspider_executestage_full', the former loads faster when executing, and provides all functions except OCR recognition and data deduplication; the latter provides all functions including OCR recognition and data deduplication, but the loading speed is slower when running, and it takes 2-10 minutes to wait for the program to execute, please choose which program to execute according to your needs.` | lang}}</label>
+                        <label v-if="OS=='MacOS'">{{`对于MacOS系统，EasySpider提供了两个不同的执行程序，分别为easyspider_executestage和easyspider_executestage_full，前者执行时加载速度较快，并提供了除OCR识别和数据去重以外的全部功能；后者则提供了包括OCR识别和数据去重在内的全部功能，但运行时加载速度较慢，需要等待2-10分钟才能执行程序，请根据自己的需求选择执行哪个程序。~For MacOS system, EasySpider provides two different execution programs, 'easyspider_executestage' and 'easyspider_executestage_full', the former loads faster when executing, and provides all functions except OCR recognition and data deduplication; the latter provides all functions including OCR recognition and data deduplication, but the loading speed is slower when running, and it takes 2-10 minutes to wait for the program to execute, please choose which program to execute according to your needs.` | lang}}</label>
                         <label>{{ `Please open a terminal (For Windows, please use PowerShell instead of CMD), go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider can quit when executing command for ease of timed execution, and you can set --read_type to "remote" for remote execution):~请在EasySpider目录下打开命令行工具Terminal （Windows请使用PowerShell而不是CMD），然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时可以退出EasySpider以方便定时执行，如需要远程调用则需要将--read_type设置为remote并设置远程地址）：` | lang }}</label>
                         <textarea class="form-control" style="height:150px">cd {{easyspider_location}}
 {{command}} --config_folder "{{config_folder}}" --headless 0 --read_type local --config_file_name config.json --saved_file_name </textarea>
@@ -348,7 +348,7 @@
             config_folder: "",
             easyspider_location: "",
             mysql_config_path: "",
-            OS: "win32",
+            OS: "Windows",
         }, mounted() {
             $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
                 app.$data.user_data_folder = result.user_data_folder;
@@ -559,12 +559,14 @@
                     };
                     app.$data.ID = result;
                     ws.send(JSON.stringify(message));
-                    $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
-                        if (OSInfo.version == 'darwin') {
-                            changeCommand();
-                            $('#myModal').modal('show');
-                        }
-                    });
+                    // 使用函数并打印结果
+                    const systemInfo = detectOperatingSystemAndArch();
+                    // $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
+                    if (systemInfo.OS == 'MacOS') {
+                        changeCommand();
+                        $('#myModal').modal('show');
+                    }
+                    // });
                 });
                 // }
             },
@@ -574,15 +576,17 @@
     });
 
     function changeCommand() {
-        $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
-            app.$data.OS = OSInfo.version;
-            if (OSInfo.version == 'win32' && OSInfo.bit == 'x64') {
+        // $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
+        //     app.$data.OS = systemInfo.OS;
+        const systemInfo = detectOperatingSystemAndArch();
+        app.$data.OS = systemInfo.OS;
+            if (systemInfo.OS == 'Windows' && systemInfo.architecture == 'x64') {
                 app.$data.command = "./EasySpider/resources/app/chrome_win64/easyspider_executestage.exe --ids [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-            } else if (OSInfo.version == 'win32' && OSInfo.bit == 'ia32') {
+            } else if (systemInfo.OS == 'Windows' && systemInfo.architecture == 'ia32') {
                 app.$data.command = "./EasySpider/resources/app/chrome_win32/easyspider_executestage.exe --ids [" + app.$data.ID.toString() + "] --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-            } else if (OSInfo.version == 'linux') {
+            } else if (systemInfo.OS == 'Linux') {
                 app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --ids '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
-            } else if (OSInfo.version == 'darwin') {
+            } else if (systemInfo.OS == 'MacOS') {
                 if (getUrlParam("lang") == "zh") {
                     app.$data.easyspider_location = "你的EasySpider文件夹，如：cd /Users/" + app.$data.config_folder.split("/")[2] + "/Downloads/EasySpider_MacOS";
                 } else {
@@ -590,7 +594,7 @@
                 }
                 app.$data.command = "./easyspider_executestage --ids '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             }
-        });
+        // });
     }
 
     $.get(app.$data.backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {

@@ -127,3 +127,27 @@ document.onkeydown = function (e) {
         }
     }
 }
+function detectOperatingSystemAndArch() {
+    const platform = navigator.platform.toLowerCase();
+    const userAgent = navigator.userAgent.toLowerCase();
+    let OS = 'Unknown';
+    let architecture = 'Unknown';
+
+    // 判断操作系统类型
+    if (platform.includes('win')) {
+        OS = 'Windows';
+    } else if (platform.includes('mac')) {
+        OS = 'MacOS';
+    } else if (platform.includes('linux')) {
+        OS = 'Linux';
+    }
+
+    // 判断操作系统位数
+    if (userAgent.includes('wow64') || userAgent.includes('win64') || platform.includes('x86_64') || platform.includes('amd64')) {
+        architecture = 'x64';
+    } else {
+        architecture = 'ia32';
+    }
+
+    return { OS, architecture };
+}
