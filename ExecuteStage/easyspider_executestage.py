@@ -9,6 +9,7 @@ import threading
 # import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
+from constants import WriteMode
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -132,13 +133,12 @@ class BrowserThread(Thread):
         with open(stealth_path, 'r') as f:
             js = f.read()
             self.print_and_log("Loading stealth.min.js")
-        self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': js})  # TMALL 反扒
+        self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': js})  # TMALL 反扒
         self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": """
-            Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-            })
+            "source": """
+                Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+                })
         """
         })
         WebDriverWait(self.browser, 10)
@@ -155,27 +155,26 @@ class BrowserThread(Thread):
         self.outputFormat = service.get("outputFormat", "csv")  # 输出格式
         self.save_threshold = service.get("saveThreshold", 10)  # 保存最低阈值
         self.dataWriteMode = service.get("dataWriteMode", 1)  # 数据写入模式，1为追加，2为覆盖，3为重命名文件
+        self.task_version = service.get("version", "")  # 任务版本
 
-        try:
-            self.task_version = service["version"]  # 任务版本
-            if service["version"] >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
-                pass
-            else:  # 0.3.1以下版本的EasySpider不兼容0.3.1及以上版本的EasySpider
-                if service["version"] != version:
-                    self.print_and_log("版本不一致，请使用" +
-                                       service["version"] + "版本的EasySpider运行该任务！")
-                    self.print_and_log("Version not match, please use EasySpider " +
-                                       service["version"] + " to run this task!")
-                    self.browser.quit()
-                    sys.exit()
-        except:  # 0.2.0版本没有version字段，所以直接退出
+        if not self.task_version:
             self.print_and_log("版本不一致，请使用v0.2.0版本的EasySpider运行该任务！")
             self.print_and_log("Version not match, please use EasySpider v0.2.0 to run this task!")
             self.browser.quit()
             sys.exit()
-        try:
-            self.links = list(filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
-        except:
+
+        if self.task_version >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
+            pass
+        elif self.task_version != version:  # 0.3.1以下版本的EasySpider不兼容0.3.1及以上版本的EasySpider
+            self.print_and_log(f"版本不一致，请使用{self.task_version}版本的EasySpider运行该任务！")
+            self.print_and_log(f"Version not match, please use EasySpider {self.task_version} to run this task!")
+            self.browser.quit()
+            sys.exit()
+
+        service_links = service.get("links")
+        if service_links:
+            self.links = list(filter(isnotnull, service_links.split("\n")))  # 要执行的link的列表
+        else:
             self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
         self.OUTPUT = []  # 采集的数据
         if self.outputFormat in ["csv", "txt", "xlsx", "json"]:
@@ -188,24 +187,25 @@ class BrowserThread(Thread):
                         i = i + 1
                     self.saveName = self.saveName + '_' + str(i)
                     self.print_and_log("文件已存在，已重命名为", self.saveName)
-        self.writeMode = 1  # 写入模式，0为新建，1为追加
-        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
-            if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+        self.writeMode = WriteMode.Create_Mode.value   # 写入模式，0为新建，1为追加
+        if self.outputFormat in ['csv', 'txt', 'xlsx']:
+            if not os.path.exists(f"Data/Task_{str(self.id)}/{self.saveName}.{self.outputFormat}"):
                 self.OUTPUT.append([])  # 添加表头
-                self.writeMode = 0
+                self.writeMode = WriteMode.Create_Mode.value
         elif self.outputFormat == "json":
-            self.writeMode = 3  # JSON模式无需判断是否存在文件
+            self.writeMode = WriteMode.Json_Mode.value  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
             self.mysql.create_table(self.saveName, service["outputParameters"], remove_if_exists=self.dataWriteMode == 2)
-            self.writeMode = 2
-        if self.writeMode == 0:
+            self.writeMode = WriteMode.MySQL_Mode.value  # MySQL模式
+
+        if self.writeMode == WriteMode.Create_Mode.value:
             self.print_and_log("新建模式|Create Mode")
-        elif self.writeMode == 1:
+        elif self.writeMode == WriteMode.Append_Mode.value:
             self.print_and_log("追加模式|Append Mode")
-        elif self.writeMode == 2:
+        elif self.writeMode == WriteMode.MySQL_Mode.value:
             self.print_and_log("MySQL模式|MySQL Mode")
-        elif self.writeMode == 3:
+        elif self.writeMode == WriteMode.Json_Mode.value:
             self.print_and_log("JSON模式|JSON Mode")
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         self.outputParameters = {}
@@ -222,7 +222,7 @@ class BrowserThread(Thread):
                 self.outputParametersTypes.append(param.get("type", "text"))
                 self.outputParametersRecord.append(bool(param.get("recordASField", True)))
                 # 文件叠加的时候不添加表头
-                if self.outputFormat in ["csv", "txt", "xlsx"] and self.writeMode == 0:
+                if self.outputFormat in ["csv", "txt", "xlsx"] and self.writeMode == WriteMode.Create_Mode.value:
                     self.OUTPUT[0].append(param["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
