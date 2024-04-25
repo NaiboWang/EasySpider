@@ -124,7 +124,7 @@ class BrowserThread(Thread):
                                "will start from the last step, before we already collected", self.startSteps, " items.")
         else:
             self.print_and_log("此模式下，任务ID", self.id,
-                               "将从头F开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
+                               "将从头开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
             self.print_and_log("In this mode, task ID", self.id,
                                "will start from the beginning, if you want to start from the last step, please set the option 'start from the last step' to 'yes' when saving the task.")
         stealth_path = driver_path[:driver_path.find(
