@@ -23,7 +23,7 @@ For more complex operations, please download the source code and compile it for 
 """
 
 # 请在下面编写你的代码，不要有代码缩进！！！ | Please write your code below, do not indent the code!!!
-
+print(globals())
 # 导包 | Import packages
 from selenium.common.exceptions import ElementClickInterceptedException
 
@@ -56,3 +56,20 @@ finally:
     print("All parameters:", self.outputParameters)
     print(test(3))
     print("执行完毕|Execution completed")
+
+import time
+time.sleep(3)
+
+def new_line(outputParameters, maxViewLength, record):
+    line = []
+    print("Use this function to print a new line in the console")
+    i = 0
+    for value in outputParameters.values():
+        line.append(value)
+        if record[i]:
+            print(value[:maxViewLength], " ", end="")
+        i += 1
+    print("")
+    return line
+
+new_line(self.outputParameters, 10, [True, True, True, True, True, True, True, True, True, True, True, True, True, True, True])

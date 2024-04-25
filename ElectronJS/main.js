@@ -291,12 +291,12 @@ async function findElementAcrossAllWindows(
             xpath = msg.xpath;
         }
     }
-    if (xpath.indexOf("Field(") >= 0 || xpath.indexOf("eval(") >= 0) {
+    if (xpath.indexOf("Field[") >= 0 || xpath.indexOf("eval(") >= 0) {
         //两秒后通知浏览器
         await new Promise((resolve) => setTimeout(resolve, 2000));
         notify_browser(
-            '检测到XPath中包含Field("")或eval("")，试运行时无法正常定位到包含此两项表达式的元素，请在任务正式运行阶段测试是否有效。',
-            'Field("") or eval("") is detected in xpath, and the element containing these two expressions cannot be located normally during trial operation. Please test whether it is valid in the formal call stage.',
+            '检测到XPath中包含Field[""]或eval("")，试运行时无法正常定位到包含此两项表达式的元素，请在任务正式运行阶段测试是否有效。',
+            'Field[""] or eval("") is detected in xpath, and the element containing these two expressions cannot be located normally during trial operation. Please test whether it is valid in the formal call stage.',
             "warning"
         );
         return null;
@@ -767,12 +767,12 @@ async function beginInvoke(msg, ws) {
                             keyInfo = keyInfo.replace(match[0], jsReplacedText.toString());
                         }
                     }
-                    if (keyInfo.indexOf("Field(") >= 0 || keyInfo.indexOf("eval(") >= 0) {
+                    if (keyInfo.indexOf("Field[") >= 0 || keyInfo.indexOf("eval(") >= 0) {
                         //两秒后通知浏览器
                         await new Promise((resolve) => setTimeout(resolve, 2000));
                         notify_browser(
-                            '检测到文字中包含Field("")或eval("")，试运行时无法输入两项表达式的替换值，请在任务正式运行阶段测试是否有效。',
-                            'Field("") or eval("") is detected in the text, and the replacement value of the two expressions cannot be entered during trial operation. Please test whether it is valid in the formal call stage.',
+                            '检测到文字中包含Field[""]或eval("")，试运行时无法输入两项表达式的替换值，请在任务正式运行阶段测试是否有效。',
+                            'Field[""] or eval("") is detected in the text, and the replacement value of the two expressions cannot be entered during trial operation. Please test whether it is valid in the formal call stage.',
                             "warning"
                         );
                     }
@@ -1192,12 +1192,12 @@ async function execute_js(js, element, wait_time = 3) {
             );
             outcome = -1;
         }
-        if (js.indexOf("Field(") >= 0 || js.indexOf("eval(") >= 0) {
+        if (js.indexOf("Field[") >= 0 || js.indexOf("eval(") >= 0) {
             //两秒后通知浏览器
             await new Promise((resolve) => setTimeout(resolve, 2000));
             notify_browser(
-                '检测到JavaScript中包含Field("")或eval("")，试运行时无法执行两项表达式，请在任务正式运行阶段测试是否有效。',
-                'Field("") or eval("") is detected in JavaScript, and the two expressions cannot be executed during trial operation. Please test whether it is valid in the formal call stage.',
+                '检测到JavaScript中包含Field[""]或eval("")，试运行时无法执行两项表达式，请在任务正式运行阶段测试是否有效。',
+                'Field[""] or eval("") is detected in JavaScript, and the two expressions cannot be executed during trial operation. Please test whether it is valid in the formal call stage.',
                 "warning"
             );
         }
