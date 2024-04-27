@@ -9,7 +9,7 @@ import threading
 # import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
-from constants import WriteMode, DataWriteMode
+from constants import WriteMode, DataWriteMode, GraphOption
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -237,6 +237,8 @@ class BrowserThread(Thread):
         for index_node, node in enumerate(self.procedure):
             parameters = node["parameters"]
             iframe = parameters.get('iframe')
+            option = node["option"]
+
             parameters["iframe"] = False if not iframe else ...
             if parameters.get("xpath"):
                 parameters["xpath"] = lowercase_tags_in_xpath(parameters["xpath"])
@@ -248,59 +250,65 @@ class BrowserThread(Thread):
                 parameters["waitElementTime"] = 10
                 parameters["waitElementIframeIndex"] = 0
 
-            if node["option"] == 1:  # 打开网页操作
-                try:
-                    cookies = node["parameters"]["cookies"]
-                except:
-                    node["parameters"]["cookies"] = ""
-            elif node["option"] == 2:  # 点击操作
-                try:
-                    alertHandleType = node["parameters"]["alertHandleType"]
-                except:
-                    node["parameters"]["alertHandleType"] = 0
-                if node["parameters"]["useLoop"]:
+            if option == GraphOption.Get.value:  # 打开网页操作
+                cookies = parameters.get("cookies")
+                if not cookies:
+                    parameters["cookies"] = ""
+            elif option == GraphOption.Click.value:  # 点击操作
+                alertHandleType = parameters.get("alertHandleType")
+                if not alertHandleType:
+                    parameters["alertHandleType"] = 0
+                if parameters.get("useLoop"):
                     if self.task_version <= "0.3.5":
                         # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
-                        node["parameters"]["xpath"] = ""
-                        self.print_and_log("您的任务版本号为" + self.task_version +
-                                           "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
-            elif node["option"] == 3:  # 提取数据操作
-                node["parameters"]["recordASField"] = 0
-                try:
-                    params = node["parameters"]["params"]
-                except:
-                    node["parameters"]["params"] = node["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
-                    params = node["parameters"]["params"]
-                try:
-                    clear = node["parameters"]["clear"]
-                except:
-                    node["parameters"]["clear"] = 0
-                try:
-                    newLine = node["parameters"]["newLine"]
-                except:
-                    node["parameters"]["newLine"] = 1
+                        parameters["xpath"] = ""
+                        self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif option == GraphOption.Extract.value:  # 提取数据操作
+                parameters["recordASField"] = 0
+                params = parameters.get("params")
+                if not params:
+                    parameters["params"] = parameters["paras"]  # 兼容0.5.0及以下版本的EasySpider
+                    params = parameters["params"]
+
+                clear = parameters.get("clear")
+                if not clear:
+                    parameters["clear"] = 0
+
+                newLine = parameters.get("newLine")
+                if not newLine:
+                    parameters["newLine"] = 1
+
                 for param in params:
-                    try:
-                        iframe = param["iframe"]
-                    except:
+                    iframe = param.get("iframe")
+                    if not iframe:
                         param["iframe"] = False
-                    try:
+
+                    if param.get("relativeXPath"):
                         param["relativeXPath"] = lowercase_tags_in_xpath(param["relativeXPath"])
-                    except:
-                        pass
-                    try:
-                        node["parameters"]["recordASField"] = param["recordASField"]
-                    except:
-                        node["parameters"]["recordASField"] = 1
-                    try:
+
+                    if param.get("recordASField"):
+                        parameters["recordASField"] = param["recordASField"]
+                    else:
+                        parameters["recordASField"] = 1
+
+                    if param.get("splitLine"):
                         splitLine = int(param["splitLine"])
-                    except:
+                    else:
                         param["splitLine"] = 0
-                    if param["contentType"] == 8:
-                        self.print_and_log(
-                            "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
-                        self.print_and_log(
-                            "If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
+
+                    if param.get("contentType") == 8:
+                        self.print_and_log("默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType =="
+                                           "8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片"
+                                           "保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用"
+                                           "的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
+                        self.print_and_log("If you think the default ddddocr function is not good enough, you can "
+                                           "modify the source code get_content function -> contentType == 8 position "
+                                           "to your own OCR model and then compile and run it; or you can first set "
+                                           "the content type of the crawler to \"Element Screenshot\" to save the "
+                                           "picture, and then call your own program with custom operations. The "
+                                           "function of the program is to read the latest generated picture, then use "
+                                           "a good model, such as PaddleOCR to recognize the picture, and then return "
+                                           "the return value as a parameter output to the program.")
                     param["optimizable"] = detect_optimizable(param)
             elif node["option"] == 4:  # 输入文字
                 try:
