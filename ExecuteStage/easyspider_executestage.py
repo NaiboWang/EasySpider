@@ -234,24 +234,20 @@ class BrowserThread(Thread):
 
     # 检测如果没有复杂的操作，优化提取数据流程
     def preprocess(self):
-        for node in self.procedure:
-            try:
-                iframe = node["parameters"]["iframe"]
-            except:
-                node["parameters"]["iframe"] = False
+        for index_node, node in enumerate(self.procedure):
+            parameters = node["parameters"]
+            iframe = parameters.get('iframe')
+            parameters["iframe"] = False if not iframe else ...
+            if parameters.get("xpath"):
+                parameters["xpath"] = lowercase_tags_in_xpath(parameters["xpath"])
 
-            try:
-                node["parameters"]["xpath"] = lowercase_tags_in_xpath(
-                    node["parameters"]["xpath"])
-            except:
-                pass
-            try:
-                node["parameters"]["waitElementIframeIndex"] = int(
-                    node["parameters"]["waitElementIframeIndex"])
-            except:
-                node["parameters"]["waitElement"] = ""
-                node["parameters"]["waitElementTime"] = 10
-                node["parameters"]["waitElementIframeIndex"] = 0
+            if parameters.get("waitElementIframeIndex"):
+                parameters["waitElementIframeIndex"] = int(parameters["waitElementIframeIndex"])
+            else:
+                parameters["waitElement"] = ""
+                parameters["waitElementTime"] = 10
+                parameters["waitElementIframeIndex"] = 0
+
             if node["option"] == 1:  # 打开网页操作
                 try:
                     cookies = node["parameters"]["cookies"]
@@ -409,6 +405,7 @@ class BrowserThread(Thread):
                                 "nodeType": param["nodeType"],
                                 "default": param["default"],
                             })
+            self.procedure[index_node]["parameters"] = parameters
         self.print_and_log("预处理完成|Preprocess completed")
 
     def readFromExcel(self):
