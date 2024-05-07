@@ -251,13 +251,9 @@ class BrowserThread(Thread):
                 parameters["waitElementIframeIndex"] = 0
 
             if option == GraphOption.Get.value:  # 打开网页操作
-                cookies = parameters.get("cookies")
-                if not cookies:
-                    parameters["cookies"] = ""
+                parameters["cookies"] = parameters.get("cookies", "")
             elif option == GraphOption.Click.value:  # 点击操作
-                alertHandleType = parameters.get("alertHandleType")
-                if not alertHandleType:
-                    parameters["alertHandleType"] = 0
+                parameters["alertHandleType"] = parameters.get("alertHandleType", 0)
                 if parameters.get("useLoop"):
                     if self.task_version <= "0.3.5":
                         # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
@@ -265,36 +261,20 @@ class BrowserThread(Thread):
                         self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             elif option == GraphOption.Extract.value:  # 提取数据操作
                 parameters["recordASField"] = 0
-                params = parameters.get("params")
-                if not params:
-                    parameters["params"] = parameters["paras"]  # 兼容0.5.0及以下版本的EasySpider
-                    params = parameters["params"]
+                parameters["params"] = parameters.get("params", parameters["paras"])  # 兼容0.5.0及以下版本的EasySpider
+                parameters["clear"] = parameters.get("clear", 0)
+                parameters["newLine"] = parameters.get("newLine", 1)
 
-                clear = parameters.get("clear")
-                if not clear:
-                    parameters["clear"] = 0
-
-                newLine = parameters.get("newLine")
-                if not newLine:
-                    parameters["newLine"] = 1
-
+                params = parameters["params"]
                 for param in params:
-                    iframe = param.get("iframe")
-                    if not iframe:
-                        param["iframe"] = False
+                    param["iframe"] = param.get("iframe", False)
 
                     if param.get("relativeXPath"):
                         param["relativeXPath"] = lowercase_tags_in_xpath(param["relativeXPath"])
 
-                    if param.get("recordASField"):
-                        parameters["recordASField"] = param["recordASField"]
-                    else:
-                        parameters["recordASField"] = 1
+                    parameters["recordASField"] = param.get("recordASField", 1)
 
-                    if param.get("splitLine"):
-                        splitLine = int(param["splitLine"])
-                    else:
-                        param["splitLine"] = 0
+                    param["splitLine"] = 0 if not param.get("splitLine") else ...
 
                     if param.get("contentType") == 8:
                         self.print_and_log("默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType =="
@@ -311,31 +291,19 @@ class BrowserThread(Thread):
                                            "the return value as a parameter output to the program.")
                     param["optimizable"] = detect_optimizable(param)
             elif option == GraphOption.Input.value:  # 输入文字
-                index = parameters.get('index')
-                if not index:
-                    parameters['index'] = 0
+                parameters['index'] = parameters.get('index', 0)
             elif option == GraphOption.Custom.value:  # 自定义操作
-                clear = parameters.get('clear')
-                if not clear:
-                    parameters['clear'] = 0
-                newLine = parameters.get('newLine')
-                if not newLine:
-                    parameters['newLine'] = 1
+                parameters['clear'] = parameters.get('clear', 0)
+                parameters['newLine'] = parameters.get('newLine', 1)
             elif option == GraphOption.Move.value:  # 移动到元素
                 if parameters.get('useLoop'):
-                    if self.task_version <= "0.3.5":
-                        # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
+                    if self.task_version <= "0.3.5":  # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
                         parameters["xpath"] = ""
                         self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             elif option == GraphOption.Loop.value:  # 循环操作
-                exitElement = parameters.get('exitElement')
-                if not exitElement or exitElement == "":
-                    parameters['exitElement'] = "//body"
+                parameters['exitElement'] = "//body" if not parameters.get('exitElement') or parameters.get('exitElement') == "" else ...
                 parameters["quickExtractable"] = False  # 是否可以快速提取
-
-                skipCount = parameters.get('skipCount')
-                if not skipCount:
-                    parameters['skipCount'] = 0
+                parameters['skipCount'] = parameters.get('skipCount', 1)
 
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 \
@@ -356,10 +324,7 @@ class BrowserThread(Thread):
 
                     for param in params:
                         optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
-                        iframe = param.get('iframe')
-                        if not iframe:
-                            param['iframe'] = False
-
+                        param['iframe'] = param.get('iframe', False)
                         if param["iframe"] and not param["relative"]:  # 如果是iframe，那么不可以快速提取
                             optimizable = False
                         if not optimizable:  # 如果有一个不满足优化条件，那么就不能快速提取
@@ -368,7 +333,7 @@ class BrowserThread(Thread):
 
                     if parameters["quickExtractable"]:
                         self.print_and_log(f"循环操作<{node['title']}>可以快速提取数据")
-                        self.print_and_log(f"Loop operation <{node["title"]}> can extract data quickly")
+                        self.print_and_log(f"Loop operation <{node['title']}> can extract data quickly")
                         parameters["clear"] = self.procedure[node["sequence"][0]]["parameters"].get("clear", 0)
                         parameters["newLine"] = self.procedure[node["sequence"][0]]["parameters"].get("newLine", 1)
 
@@ -384,13 +349,13 @@ class BrowserThread(Thread):
                                 content_type = ""
                             elif param["nodeType"] == 2:
                                 content_type = "//@href"
-                            elif param["nodeType"] == 4: # 图片链接
+                            elif param["nodeType"] == 4:  # 图片链接
                                 content_type = "//@src"
                             elif param["contentType"] == 1:
                                 content_type = "/text()"
                             elif param["contentType"] == 0:
                                 content_type = "//text()"
-                            if param["relative"]: # 如果是相对XPath
+                            if param["relative"]:  # 如果是相对XPath
                                 xpath = "." + param["relativeXPath"] + content_type
                             else:
                                 xpath = param["relativeXPath"] + content_type
