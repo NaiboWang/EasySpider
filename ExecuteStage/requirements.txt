@@ -1,5 +1,5 @@
 commandline_config==2.2.3
-requests==2.31.0
+requests==2.32.0
 selenium==4.16.0
 pyinstaller==5.13.2
 Pillow==10.2.0
