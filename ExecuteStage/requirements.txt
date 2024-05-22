@@ -5,7 +5,7 @@ pyinstaller==5.13.2
 Pillow==10.2.0
 xlsxwriter==3.1.9
 openpyxl==3.1.2
-pymysql==1.1.0
+pymysql==1.1.1
 lxml==4.9.2
 ddddocr==1.4.10
 pynput==1.7.6
