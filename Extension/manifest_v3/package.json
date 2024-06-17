@@ -34,7 +34,7 @@
         "@types/node": "^16.11.10",
         "@vitejs/plugin-vue": "^1.9.3",
         "esno": "^0.12.1",
-        "firebase": "^9.18.0",
+        "firebase": "^10.12.2",
         "fs-extra": "^10.0.0",
         "npm-run-all": "^4.1.5",
         "rimraf": "^3.0.2",
