@@ -57,13 +57,13 @@ export function getElementXPaths(element, parentElement = document.body) {
         paths.push(pre_xpath + `id("${element.id}")`);
     }
     if (element.className) {
-        paths.push(pre_xpath + "//" + element.tagName + "[@class='" + element.className + "']");
+        paths.push(pre_xpath + "//" + element.tagName.toLowerCase() + "[@class='" + element.className + "']");
     }
     if (element.name) {
-        paths.push(pre_xpath + "//" + element.tagName + "[@name='" + element.name + "']");
+        paths.push(pre_xpath + "//" + element.tagName.toLowerCase() + "[@name='" + element.name + "']");
     }
     if (element.alt) {
-        paths.push(pre_xpath + "//" + element.tagName + "[@alt='" + element.alt + "']");
+        paths.push(pre_xpath + "//" + element.tagName.toLowerCase() + "[@alt='" + element.alt + "']");
     }
     paths.push(getAbsoluteXPathWithReverseIndex(element));
     console.log("ALL PATHS: " + paths);
