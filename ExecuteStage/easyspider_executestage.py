@@ -239,7 +239,7 @@ class BrowserThread(Thread):
             iframe = parameters.get('iframe')
             option = node["option"]
 
-            parameters["iframe"] = False if not iframe else ...
+            parameters["iframe"] = False if not iframe else parameters.get('iframe', False)
             if parameters.get("xpath"):
                 parameters["xpath"] = lowercase_tags_in_xpath(parameters["xpath"])
 
@@ -274,7 +274,7 @@ class BrowserThread(Thread):
 
                     parameters["recordASField"] = param.get("recordASField", 1)
 
-                    param["splitLine"] = 0 if not param.get("splitLine") else ...
+                    param["splitLine"] = 0 if not param.get("splitLine") else param.get("splitLine")
 
                     if param.get("contentType") == 8:
                         self.print_and_log("默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType =="
@@ -301,7 +301,7 @@ class BrowserThread(Thread):
                         parameters["xpath"] = ""
                         self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             elif option == GraphOption.Loop.value:  # 循环操作
-                parameters['exitElement'] = "//body" if not parameters.get('exitElement') or parameters.get('exitElement') == "" else ...
+                parameters['exitElement'] = "//body" if not parameters.get('exitElement') or parameters.get('exitElement') == "" else parameters.get('exitElement')
                 parameters["quickExtractable"] = False  # 是否可以快速提取
                 parameters['skipCount'] = parameters.get('skipCount', 0)
 
