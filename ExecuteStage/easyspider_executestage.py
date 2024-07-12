@@ -261,7 +261,7 @@ class BrowserThread(Thread):
                         self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
             elif option == GraphOption.Extract.value:  # 提取数据操作
                 parameters["recordASField"] = 0
-                parameters["params"] = parameters.get("params", parameters["paras"])  # 兼容0.5.0及以下版本的EasySpider
+                parameters["params"] = parameters.get("params", parameters.get("paras"))  # 兼容0.5.0及以下版本的EasySpider
                 parameters["clear"] = parameters.get("clear", 0)
                 parameters["newLine"] = parameters.get("newLine", 1)
 

@@ -120,7 +120,7 @@ Bilibili/B站视频教程:
 
 [写入MySQL数据库教程](https://www.bilibili.com/video/BV1os4y1679S/)
 
-[Cloudflare等极端反爬网站如何爬取](https://www.bilibili.com/video/BV1Ph4y1E7R9/)
+[从源代码编译程序并设计运行和调试任务指南（基于Ubuntu24.04）](https://www.bilibili.com/video/BV1VE421P7yj/)
 
 Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp) to see the video tutorials of EasySpider.
 

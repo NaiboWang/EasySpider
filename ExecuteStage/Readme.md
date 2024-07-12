@@ -1,3 +1,7 @@
+## 视频教程
+
+[从源代码编译程序并设计运行和调试任务指南（基于Ubuntu24.04）](https://www.bilibili.com/video/BV1VE421P7yj/)
+
 # 环境编译说明|Environment Compilation Instruction
 
 EasySpider分三部分：

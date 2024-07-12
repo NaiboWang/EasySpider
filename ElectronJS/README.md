@@ -1,3 +1,7 @@
+## 视频教程
+
+[从源代码编译程序并设计运行和调试任务指南（基于Ubuntu24.04）](https://www.bilibili.com/video/BV1VE421P7yj/)
+
 # 环境编译说明|Environment Compilation Instruction
 
 EasySpider分三部分：
@@ -66,7 +70,7 @@ chrome_linux64/ # for linux x64
 chrome_mac64/ # for mac x64
 ```
 
-然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)，把chromedriver放入刚刚的`chrome`文件夹内，并更名为下面的格式：
+然后，从下面的页面下载和**自己安装的Chrome版本一致**的Chromedriver：[https://googlechromelabs.github.io/chrome-for-testing/](https://googlechromelabs.github.io/chrome-for-testing/)，把chromedriver放入刚刚的`chrome`文件夹内，并更名为下面的格式：
 
 ```
 chromedriver_win32.exe # for windows x32
@@ -184,10 +188,4 @@ Execute the following two CMD commands sequentially to package and publish the p
 ```
 package_win64.cmd
 clean_and_release_win64.cmd
-```
-
-### （可选）编译成安装包|(Optional) Compile to an installation package
-
-```
-npm run make
 ```
