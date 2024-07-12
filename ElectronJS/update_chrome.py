@@ -90,6 +90,8 @@ old_driver_version = {
 }
 
 if __name__ == "__main__":
+    os.system("npm install -g extract-stealth-evasions") # 安装stealth.min.js
+    os.system("npx extract-stealth-evasions") # 提取stealth.min.js
     driver_downloads = []
     response = requests.get(chrome_driver_url)
     if response.status_code == 200:
