@@ -303,7 +303,7 @@ class BrowserThread(Thread):
             elif option == GraphOption.Loop.value:  # 循环操作
                 parameters['exitElement'] = "//body" if not parameters.get('exitElement') or parameters.get('exitElement') == "" else ...
                 parameters["quickExtractable"] = False  # 是否可以快速提取
-                parameters['skipCount'] = parameters.get('skipCount', 1)
+                parameters['skipCount'] = parameters.get('skipCount', 0)
 
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
                 if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 \
