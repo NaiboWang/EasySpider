@@ -9,7 +9,7 @@ import threading
 # import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
-from constants import WriteMode, DataWriteMode
+from constants import WriteMode, DataWriteMode, GraphOption
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -235,8 +235,10 @@ class BrowserThread(Thread):
     # 检测如果没有复杂的操作，优化提取数据流程
     def preprocess(self):
         for index_node, node in enumerate(self.procedure):
-            parameters = node["parameters"]
+            parameters: dict = node["parameters"]
             iframe = parameters.get('iframe')
+            option = node["option"]
+
             parameters["iframe"] = False if not iframe else ...
             if parameters.get("xpath"):
                 parameters["xpath"] = lowercase_tags_in_xpath(parameters["xpath"])
@@ -248,150 +250,112 @@ class BrowserThread(Thread):
                 parameters["waitElementTime"] = 10
                 parameters["waitElementIframeIndex"] = 0
 
-            if node["option"] == 1:  # 打开网页操作
-                try:
-                    cookies = node["parameters"]["cookies"]
-                except:
-                    node["parameters"]["cookies"] = ""
-            elif node["option"] == 2:  # 点击操作
-                try:
-                    alertHandleType = node["parameters"]["alertHandleType"]
-                except:
-                    node["parameters"]["alertHandleType"] = 0
-                if node["parameters"]["useLoop"]:
+            if option == GraphOption.Get.value:  # 打开网页操作
+                parameters["cookies"] = parameters.get("cookies", "")
+            elif option == GraphOption.Click.value:  # 点击操作
+                parameters["alertHandleType"] = parameters.get("alertHandleType", 0)
+                if parameters.get("useLoop"):
                     if self.task_version <= "0.3.5":
                         # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
-                        node["parameters"]["xpath"] = ""
-                        self.print_and_log("您的任务版本号为" + self.task_version +
-                                           "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
-            elif node["option"] == 3:  # 提取数据操作
-                node["parameters"]["recordASField"] = 0
-                try:
-                    params = node["parameters"]["params"]
-                except:
-                    node["parameters"]["params"] = node["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
-                    params = node["parameters"]["params"]
-                try:
-                    clear = node["parameters"]["clear"]
-                except:
-                    node["parameters"]["clear"] = 0
-                try:
-                    newLine = node["parameters"]["newLine"]
-                except:
-                    node["parameters"]["newLine"] = 1
+                        parameters["xpath"] = ""
+                        self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif option == GraphOption.Extract.value:  # 提取数据操作
+                parameters["recordASField"] = 0
+                parameters["params"] = parameters.get("params", parameters["paras"])  # 兼容0.5.0及以下版本的EasySpider
+                parameters["clear"] = parameters.get("clear", 0)
+                parameters["newLine"] = parameters.get("newLine", 1)
+
+                params = parameters["params"]
                 for param in params:
-                    try:
-                        iframe = param["iframe"]
-                    except:
-                        param["iframe"] = False
-                    try:
+                    param["iframe"] = param.get("iframe", False)
+
+                    if param.get("relativeXPath"):
                         param["relativeXPath"] = lowercase_tags_in_xpath(param["relativeXPath"])
-                    except:
-                        pass
-                    try:
-                        node["parameters"]["recordASField"] = param["recordASField"]
-                    except:
-                        node["parameters"]["recordASField"] = 1
-                    try:
-                        splitLine = int(param["splitLine"])
-                    except:
-                        param["splitLine"] = 0
-                    if param["contentType"] == 8:
-                        self.print_and_log(
-                            "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
-                        self.print_and_log(
-                            "If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
+
+                    parameters["recordASField"] = param.get("recordASField", 1)
+
+                    param["splitLine"] = 0 if not param.get("splitLine") else ...
+
+                    if param.get("contentType") == 8:
+                        self.print_and_log("默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType =="
+                                           "8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片"
+                                           "保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用"
+                                           "的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
+                        self.print_and_log("If you think the default ddddocr function is not good enough, you can "
+                                           "modify the source code get_content function -> contentType == 8 position "
+                                           "to your own OCR model and then compile and run it; or you can first set "
+                                           "the content type of the crawler to \"Element Screenshot\" to save the "
+                                           "picture, and then call your own program with custom operations. The "
+                                           "function of the program is to read the latest generated picture, then use "
+                                           "a good model, such as PaddleOCR to recognize the picture, and then return "
+                                           "the return value as a parameter output to the program.")
                     param["optimizable"] = detect_optimizable(param)
-            elif node["option"] == 4:  # 输入文字
-                try:
-                    index = node["parameters"]["index"]  # 索引值
-                except:
-                    node["parameters"]["index"] = 0
-            elif node["option"] == 5:  # 自定义操作
-                try:
-                    clear = node["parameters"]["clear"]
-                except:
-                    node["parameters"]["clear"] = 0
-                try:
-                    newLine = node["parameters"]["newLine"]
-                except:
-                    node["parameters"]["newLine"] = 1
-            elif node["option"] == 7:  # 移动到元素
-                if node["parameters"]["useLoop"]:
-                    if self.task_version <= "0.3.5":
-                        # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
-                        node["parameters"]["xpath"] = ""
-                        self.print_and_log("您的任务版本号为" + self.task_version +
-                                           "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
-            elif node["option"] == 8:  # 循环操作
-                try:
-                    exitElement = node["parameters"]["exitElement"]
-                    if exitElement == "":
-                        node["parameters"]["exitElement"] = "//body"
-                except:
-                    node["parameters"]["exitElement"] = "//body"
-                node["parameters"]["quickExtractable"] = False # 是否可以快速提取
-                try:
-                    skipCount = node["parameters"]["skipCount"]
-                except:
-                    node["parameters"]["skipCount"] = 0
+            elif option == GraphOption.Input.value:  # 输入文字
+                parameters['index'] = parameters.get('index', 0)
+            elif option == GraphOption.Custom.value:  # 自定义操作
+                parameters['clear'] = parameters.get('clear', 0)
+                parameters['newLine'] = parameters.get('newLine', 1)
+            elif option == GraphOption.Move.value:  # 移动到元素
+                if parameters.get('useLoop'):
+                    if self.task_version <= "0.3.5":  # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
+                        parameters["xpath"] = ""
+                        self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif option == GraphOption.Loop.value:  # 循环操作
+                parameters['exitElement'] = "//body" if not parameters.get('exitElement') or parameters.get('exitElement') == "" else ...
+                parameters["quickExtractable"] = False  # 是否可以快速提取
+                parameters['skipCount'] = parameters.get('skipCount', 0)
+
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
-                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
-                    try:
-                        params = self.procedure[node["sequence"][0]]["parameters"]["params"]
-                    except:
-                        params = self.procedure[node["sequence"][0]]["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
-                    try:
-                        waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
-                    except:
-                        waitElement = ""
-                    if node["parameters"]["iframe"]:
-                        node["parameters"]["quickExtractable"] = False # 如果是iframe，那么不可以快速提取
+                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 \
+                        and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
+                    params = self.procedure[node["sequence"][0]].get("parameters").get("params")
+                    if not params:
+                        params = self.procedure[node["sequence"][0]]["parameters"]["paras"]  # 兼容0.5.0及以下版本的EasySpider
+
+                    waitElement = self.procedure[node["sequence"][0]]["parameters"].get("waitElement", "")
+
+                    if parameters["iframe"]:
+                        parameters["quickExtractable"] = False  # 如果是iframe，那么不可以快速提取
                     else:
-                        node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
-                    if node["parameters"]["skipCount"] > 0:
-                        node["parameters"]["quickExtractable"] = False # 如果有跳过的元素，那么不可以快速提取
+                        parameters["quickExtractable"] = True  # 先假设可以快速提取
+
+                    if parameters["skipCount"] > 0:
+                        parameters["quickExtractable"] = False  # 如果有跳过的元素，那么不可以快速提取
+
                     for param in params:
                         optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
-                        try:
-                            iframe = param["iframe"]
-                        except:
-                            param["iframe"] = False
-                        if param["iframe"] and not param["relative"]: # 如果是iframe，那么不可以快速提取
+                        param['iframe'] = param.get('iframe', False)
+                        if param["iframe"] and not param["relative"]:  # 如果是iframe，那么不可以快速提取
                             optimizable = False
-                        if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
-                            node["parameters"]["quickExtractable"] = False
+                        if not optimizable:  # 如果有一个不满足优化条件，那么就不能快速提取
+                            parameters["quickExtractable"] = False
                             break
-                    if node["parameters"]["quickExtractable"]:
-                        self.print_and_log("循环操作<" + node["title"] + ">可以快速提取数据")
-                        self.print_and_log("Loop operation <" + node["title"] + "> can extract data quickly")
-                        try:
-                            node["parameters"]["clear"] = self.procedure[node["sequence"][0]]["parameters"]["clear"]
-                        except:
-                            node["parameters"]["clear"] = 0
-                        try:
-                            node["parameters"]["newLine"] = self.procedure[node["sequence"][0]]["parameters"]["newLine"]
-                        except:
-                            node["parameters"]["newLine"] = 1
-                        if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
+
+                    if parameters["quickExtractable"]:
+                        self.print_and_log(f"循环操作<{node['title']}>可以快速提取数据")
+                        self.print_and_log(f"Loop operation <{node['title']}> can extract data quickly")
+                        parameters["clear"] = self.procedure[node["sequence"][0]]["parameters"].get("clear", 0)
+                        parameters["newLine"] = self.procedure[node["sequence"][0]]["parameters"].get("newLine", 1)
+
+                        if int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
                             node["parameters"]["baseXPath"] = node["parameters"]["xpath"]
-                        elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
+                        elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
                             node["parameters"]["baseXPath"] = node["parameters"]["pathList"]
                         node["parameters"]["quickParams"] = []
                         for param in params:
                             content_type = ""
-                            if param["relativeXPath"].find("/@href") >= 0 or param["relativeXPath"].find("/text()") >= 0 or param["relativeXPath"].find(
-                                    "::text()") >= 0:
+                            if param["relativeXPath"].find("/@href") >= 0 or param["relativeXPath"].find("/text()") >= 0 \
+                                    or param["relativeXPath"].find("::text()") >= 0:
                                 content_type = ""
                             elif param["nodeType"] == 2:
                                 content_type = "//@href"
-                            elif param["nodeType"] == 4: # 图片链接
+                            elif param["nodeType"] == 4:  # 图片链接
                                 content_type = "//@src"
                             elif param["contentType"] == 1:
                                 content_type = "/text()"
                             elif param["contentType"] == 0:
                                 content_type = "//text()"
-                            if param["relative"]: # 如果是相对XPath
+                            if param["relative"]:  # 如果是相对XPath
                                 xpath = "." + param["relativeXPath"] + content_type
                             else:
                                 xpath = param["relativeXPath"] + content_type
