@@ -37,10 +37,13 @@ if [ "$os_name" == "Ubuntu" ] && [ "$major_version" -gt 24 ] || { [ "$major_vers
 else
 	echo "如果报错“The SUID sandbox helper binary was found, but is not configured correctly”，请尝试执行以下命令后再次运行EasySpider："
 	echo "If you encounter the error message “The SUID sandbox helper binary was found, but is not configured correctly”, please try run the following commands and run EasySpider again:"
+	echo ""
 	echo "sudo chown root:root ./EasySpider/chrome-sandbox"
 	echo "sudo chmod 4755 ./EasySpider/chrome-sandbox"
 	echo "sudo chown root:root ./EasySpider/resources/app/chrome_linux64/chrome-sandbox"
 	echo "sudo chmod 4755 ./EasySpider/resources/app/chrome_linux64/chrome-sandbox"
+	echo ""
+	echo ""
 fi
 
 
