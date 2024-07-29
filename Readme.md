@@ -24,7 +24,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [亮数据BrightData](https://get.brightdata.com/naibowang)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**最高可得250美金折扣**。BrightData可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=400></img></a>
+<a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=600></img></a>
 
 <!-- [![Capsolver](media/capsolver.jpg)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) -->
 
