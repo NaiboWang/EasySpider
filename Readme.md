@@ -4,6 +4,12 @@
 
 A visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
 
+## 下载易采集/Download EasySpider
+
+进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
+
+Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
+
 ## 赞助者/Sponsors
 
 <a target="_blank" href="https://www.proxy302.com/"><img src="media/Proxy302.jpg" width=850></img></a>
@@ -53,12 +59,6 @@ At the same time, if you select the 'Loop-click every element' option after sele
 更多特性请翻到页面底部查看。
 
 More features please scroll to the bottom of this page to view.
-
-## 下载易采集/Download EasySpider
-
-进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
-
-Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
 ## 支持作者/Support Author
 
