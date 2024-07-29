@@ -6,6 +6,10 @@ A visual browser automation test/data collection/crawler software, which can be 
 
 ## 赞助者/Sponsors
 
+<a target="_blank" href="https://www.proxy302.com/"><img src="media/Proxy302.jpg" width=400></img></a>
+
+[Proxy302](https://www.proxy302.com/)是一个全球代理IP自助超市。按需付费，无需套餐捆绑购买；无阶梯式定价，充值即可使用所有类型的代理IP；免费测试，注册获取$1测试额度。覆盖全球240＋国家和地区，6500万个住宅IP可供选择。Proxy302可配合EasySpider进行数据采集。
+
 <a target="_blank" href="https://get.brightdata.com/naibowang"><img src="media/BrightData.png" width=250></img></a>
 
 [亮数据BrightData](https://get.brightdata.com/naibowang)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**最高可得250美金折扣**。BrightData可配合EasySpider进行数据采集。
