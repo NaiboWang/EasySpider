@@ -18,7 +18,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 <a target="_blank" href="https://www.123proxy.cn/?utm_source=EasySpider"><img src="media/123proxy.png" width=850></img></a>
 
-[123Proxy](https://www.123proxy.cn/?utm_source=EasySpider)是企业级海外代理IP提供商, 拥有独家的8000万+代理IP池，190+国家覆盖，真实家庭住宅IP，适合各种用途的数据采集类任务。它支持免费测试2-4小时，**点击上方图片注册**联系客服即可获取；它还支持15%返现活动，给公司购买代理可以返现到个人，直接微信/支付宝返现，打工人的小福利。Proxy302可配合EasySpider进行数据采集。
+[123Proxy](https://www.123proxy.cn/?utm_source=EasySpider)是企业级海外代理IP提供商, 拥有独家的8000万+代理IP池，190+国家覆盖，真实家庭住宅IP，适合各种用途的数据采集类任务。它支持免费测试2-4小时，**点击上方图片注册**联系客服即可获取；它还支持15%返现活动，给公司购买代理可以返现到个人，直接微信/支付宝返现，打工人的小福利。123Proxy可配合EasySpider进行数据采集。
 
 <a target="_blank" href="https://get.brightdata.com/naibowang"><img src="media/BrightData.png" width=250></img></a>
 
