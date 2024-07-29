@@ -34,6 +34,8 @@ For developers, Capsolver offers API integration options detailed in their [docu
 
 Visit the official website of EasySpider: www.easyspider.net
 
+## 软件使用示例/Software Usage Example
+
 ### 示例1/Example 1
 
 （右键）选中一个大商品块 -> 软件自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。
