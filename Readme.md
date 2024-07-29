@@ -6,7 +6,7 @@ A visual browser automation test/data collection/crawler software, which can be 
 
 ## 赞助者/Sponsors
 
-<a target="_blank" href="https://www.proxy302.com/"><img src="media/Proxy302.jpg" width=600></img></a>
+<a target="_blank" href="https://www.proxy302.com/"><img src="media/Proxy302.jpg" width=850></img></a>
 
 [Proxy302](https://www.proxy302.com/)是一个全球代理IP自助超市。按需付费，无需套餐捆绑购买；无阶梯式定价，充值即可使用所有类型的代理IP；免费测试，注册获取$1测试额度。覆盖全球240＋国家和地区，6500万个住宅IP可供选择。Proxy302可配合EasySpider进行数据采集。
 
