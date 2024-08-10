@@ -121,6 +121,12 @@ exports.start = function (port = 8074) {
       res.setHeader("Access-Control-Allow-Origin", "*"); // 设置可访问的源
       // 解析参数
       const pathName = url.parse(req.url).pathname;
+      const safeBase = path.join(__dirname, "src");
+
+      const safeJoin = (base, target) => {
+        const targetPath = "." + path.posix.normalize("/" + target);
+        return path.join(base, targetPath);
+      };
       if (pathName == "/excelUpload" && req.method.toLowerCase() === "post") {
         // // parse a file upload
         // let form = new formidable.IncomingForm();
@@ -160,8 +166,16 @@ exports.start = function (port = 8074) {
       else {
         //如果有后缀名, 则为前端请求
         // console.log(path.join(__dirname,"src/taskGrid", pathName));
+        const filePath = safeJoin(safeBase, pathName);
+
+        if (!filePath.startsWith(safeBase)) {
+          res.writeHead(400, { "Content-Type": 'text/html;charset="utf-8"' });
+          res.end("Invalid path");
+          return;
+        }
+        
         fs.readFile(
-          path.join(__dirname, "src", pathName),
+          filePath,
           async (err, data) => {
             if (err) {
               res.writeHead(404, {
