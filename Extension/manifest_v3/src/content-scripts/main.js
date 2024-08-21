@@ -170,7 +170,7 @@ window.addEventListener('DOMContentLoaded', () => {
 document.onkeydown = function(event) {
     // console.log("keydown");
     var e = event || window.event || arguments.callee.caller.arguments[0];
-    if (e && e.keyCode == 118) { // 按 F7
+    if (e && e.keyCode == 113) { // 按 F2
         addEl();
     } else if (e && e.keyCode == 119) { //按F8
         clearEl();
