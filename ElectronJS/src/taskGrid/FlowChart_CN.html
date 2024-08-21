@@ -579,8 +579,8 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='parseInt(loopType) == 7'>请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
 根据Python代码的表达式值来决定是否循环，示例：
 1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"，表示判断当前页面是否为123这个文本。
-2. 返回自定义全局变量的值：self.myVar，如果
-3. 返回条件判断的值：self.myVar == 1
+2. 返回自定义全局变量的值：self.myVar
+3. 返回条件判断的值：self.myVar > 1
 4. 判断某个字段提取的值是否等于某个变量的值：self.outputParameters["字段名"] == self.myVar
 以上表达式返回值大于0或为真则继续循环，否则停止循环。
                         </pre>

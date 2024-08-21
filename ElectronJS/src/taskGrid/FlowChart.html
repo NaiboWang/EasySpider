@@ -580,7 +580,7 @@ Please note that this feature does not support assigning values to variables. In
 Loop based on the expression value of Python code. Here are some examples:
 1. Return relevant values of the current browser object. Use `self.browser` to refer to the current browser being operated. You can directly use Selenium's API to perform operations, such as `self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"`, which checks whether the current page contains the text "123".
 2. Return the value of a custom global variable: `self.myVar`
-3. Return the result of a conditional statement: `self.myVar == 1`
+3. Return the result of a conditional statement: `self.myVar > 1`
 4. Determining whether the value extracted from a certain field is equal to the value of a certain variable: self.outputParameters["field name"] == self.myVar
 If the expression returns a value greater than 0 or evaluates to True, the loop continues; otherwise, it stops.
                         </pre>
