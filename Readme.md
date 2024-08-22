@@ -20,7 +20,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [123Proxy](https://www.123proxy.cn/?utm_source=EasySpider)是企业级海外代理IP提供商, 拥有独家的8000万+代理IP池，190+国家覆盖，真实家庭住宅IP，适合各种用途的数据采集类任务。它支持免费测试2-4小时，**点击上方图片注册**联系客服即可获取；它还支持15%返现活动，给公司购买代理可以返现到个人，直接微信/支付宝返现，打工人的小福利。123Proxy可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://get.brightdata.com/naibowang"><img src="media/BrightData.png" width=250></img></a>
+<a target="_blank" href="https://get.brightdata.com/naibowang"><img src="media/BrightData.png" width=500></img></a>
 
 [亮数据BrightData](https://get.brightdata.com/naibowang)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**最高可得250美金折扣**。BrightData可配合EasySpider进行数据采集。
 
@@ -29,7 +29,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 [98IP](https://98ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.98ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[98IP（中文）](https://zh-cn.98ip.com/) 都能满足你的所有需求。[立即注册98IP](https://98ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
 
 
-<a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=600></img></a>
+<a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=850></img></a>
 
 <!-- [![Capsolver](media/capsolver.jpg)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) -->
 
