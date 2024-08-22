@@ -26,7 +26,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 <a target="_blank" href="https://98ip.com/"><img src="media/98IP.png" width=650></img></a>
 
-[98IP](https://98ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.98ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[98IP](https://98ip.com/)（中文） 都能满足你的所有需求。[立即注册98IP](https://98ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
+[98IP](https://98ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.98ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[98IP（中文）](https://zh-cn.98ip.com/) 都能满足你的所有需求。[立即注册98IP](https://98ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
 
 
 <a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=600></img></a>
