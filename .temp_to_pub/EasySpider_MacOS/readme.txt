@@ -12,6 +12,11 @@ Official documentation can be found at: https://github.com/NaiboWang/EasySpider/
 
 Video Tutorial: https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUlEBV2DTo1QsaanUTp
 
-You can import tasks from other machines by simply opening the EasySpider software in this directory, right-clicking "Show Package Contents", and then placing the .json files from the tasks folder in the /Users/your user name/Library/Application Support/EasySpider/tasks folder of the other machine. Similarly, execution ID files can be imported by copying the .json files from the execution_instances folder. Please note that the .json files in both folders only support names greater than 0.
+You can import tasks from other machines by simply opening the EasySpider software in this directory, right-clicking "Show Package Contents", and then placing the .json files from the tasks folder in the /Users/Your User Name/Library/Application Support/EasySpider/tasks folder of the other machine. Similarly, execution ID files can be imported by copying the .json files from the execution_instances folder. Please note that the .json files in both folders only support names greater than 0.
+
+You can quickly navigate to the tasks folder using the following commands:
+
+cd /Users/$(whoami)/Library/Application\ Support/EasySpider/tasks
+open .
 
 If you need to press p one the keyboard to pause and continue the execution of the task, you need to grant the program keyboard monitoring permission.

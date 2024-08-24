@@ -14,4 +14,9 @@
 
 可以从其他机器导入任务，只需要把其他机器的tasks文件夹里的.json文件放入/Users/你的用户名/Library/Application Support/EasySpider/tasks文件夹里即可。同理执行号文件可以通过复制execution_instances文件夹中的.json文件来导入。注意，两个文件夹里的.json文件只支持命名为大于0的数字。
 
+可通过以下命令快速进入tasks文件夹：
+
+cd /Users/$(whoami)/Library/Application\ Support/EasySpider/tasks
+open .
+
 如果需要按p键暂停和继续任务的执行,需要赋予程序键盘监控权限。
