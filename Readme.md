@@ -10,7 +10,7 @@ A visual browser automation test/data collection/crawler software, which can be 
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
-## 赞助者/Sponsors
+## 赞助者/Sponsors | [First Sponsor: CapSolver](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider)
 
 <a target="_blank" href="https://www.proxy302.com/"><img src="media/Proxy302.jpg" width=850></img></a>
 
