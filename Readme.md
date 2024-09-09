@@ -24,9 +24,9 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [亮数据BrightData](https://get.brightdata.com/naibowang)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**最高可得250美金折扣**。BrightData可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://98ip.com/"><img src="media/98IP.png" width=850></img></a>
+<a target="_blank" href="https://koala-ip.com/"><img src="media/Koala-IP.png" width=850></img></a>
 
-[98IP](https://98ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.98ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[98IP（中文）](https://zh-cn.98ip.com/) 都能满足你的所有需求。[立即注册98IP](https://98ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
+[Koala-IP](https://koala-ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.koala-ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[Koala-IP（中文）](https://zh-cn.koala-ip.com/) 都能满足你的所有需求。[立即注册Koala-IP](https://koala-ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
 
 
 <a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=850></img></a>
