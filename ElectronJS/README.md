@@ -108,7 +108,7 @@ Finally, copy the `stealth.min.js` and `execute.bat` (for Windows x64) file in t
 
 ### NodeJS环境|NodeJS Environment
 
-1. Windows环境下需要先安装`VS Build Tools 2017` （[https://aka.ms/vs/15/release/vs_buildtools.exe](https://aka.ms/vs/15/release/vs_buildtools.exe)）的`Visual C++ Build Tools`组件，不然下面的命令无法执行，其他系统不需要。
+1. Windows环境下需要先下载`VS Build Tools 2017` （[https://aka.ms/vs/15/release/vs_buildtools.exe](https://aka.ms/vs/15/release/vs_buildtools.exe)）并勾选安装其中的`Visual C++ Build Tools（Visual C++生成工具）`组件，不然下面的命令无法执行，其他系统不需要。
 2. 安装`NodeJS`：[https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)。
 3. 运行下面的命令来安装依赖：
 
@@ -121,7 +121,7 @@ npm install @electron-forge/cli -g
 
 -----
 
-1. On Windows, you need to install `VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe, select and install the `Visual C++ Build Tools` component) first for node-gyp to install `node-windows-manager` (No need for other OS).
+1. On Windows, you need to download `VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe, select and install the `Visual C++ Build Tools` component) first for node-gyp to install `node-windows-manager` (No need for other OS).
 2. Install `NodeJS`: [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
 3. Run the following commands to install NodeJS packages:
 
