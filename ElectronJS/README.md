@@ -117,7 +117,7 @@ npm install
 npm install @electron-forge/cli -g
 ```
 
-如果上面的命令运行速度很慢可以参考NodeJS换源说明：[https://blog.csdn.net/qq_23211463/article/details/123769061](https://blog.csdn.net/qq_23211463/article/details/123769061)。
+如果上面的命令运行速度很慢可以参考NodeJS换源说明：[https://blog.csdn.net/qq_23211463/article/details/123769061](https://blog.csdn.net/qq_23211463/article/details/123769061)，[https://blog.csdn.net/weixin_59246157/article/details/140079199](https://blog.csdn.net/weixin_59246157/article/details/140079199)。
 
 -----
 
@@ -160,6 +160,8 @@ But so far can only design the task, can not execute the task, want to execute t
 npx electron-forge import
 npm run package
 ```
+
+如果任务执行到`npm install electron-squirrel-startup`的步骤时卡死，请参考下面的换源教程：[https://blog.csdn.net/weixin_59246157/article/details/140079199](https://blog.csdn.net/weixin_59246157/article/details/140079199)。
 
 -----
 
