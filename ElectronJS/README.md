@@ -108,26 +108,24 @@ Finally, copy the `stealth.min.js` and `execute.bat` (for Windows x64) file in t
 
 ### NodeJS环境|NodeJS Environment
 
-1. Windows环境下需要先下载`VS Build Tools 2017` （[https://aka.ms/vs/15/release/vs_buildtools.exe](https://aka.ms/vs/15/release/vs_buildtools.exe)）并勾选安装其中的`Visual C++ Build Tools（Visual C++生成工具）`组件，不然下面的命令无法执行，其他系统不需要。
+1. Windows环境下需要先下载`VS Build Tools 2017` （[https://aka.ms/vs/15/release/vs_buildtools.exe](https://aka.ms/vs/15/release/vs_buildtools.exe)）并勾选安装其中的`Visual C++ Build Tools（Visual C++生成工具）`组件，不然下面的命令无法执行，其他系统不需要。同时，Python3也需要安装在系统中并配置好环境变量。
 2. 安装`NodeJS`：[https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)。
 3. 运行下面的命令来安装依赖：
 
 ```
 npm install
-npm install @electron-forge/cli -g
 ```
 
-如果上面的命令运行速度很慢可以参考NodeJS换源说明：[https://blog.csdn.net/qq_23211463/article/details/123769061](https://blog.csdn.net/qq_23211463/article/details/123769061)，[https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803)。
+如果上面的命令运行速度很慢可以参考使用NodeJS和Electron包的换源说明来加速安装：[https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803)。
 
 -----
 
-1. On Windows, you need to download `VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe, select and install the `Visual C++ Build Tools` component) first for node-gyp to install `node-windows-manager` (No need for other OS).
+1. On Windows, you need to download `VS Build Tools 2017` (https://aka.ms/vs/15/release/vs_buildtools.exe, select and install the `Visual C++ Build Tools` component) first for node-gyp to install `node-windows-manager` (No need for other OS). Meanwhile, Python3 needs to be installed and the environment variables need to be configured.
 2. Install `NodeJS`: [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
 3. Run the following commands to install NodeJS packages:
 
 ```
 npm install
-npm install @electron-forge/cli -g
 ```
 
 ## 运行说明|Run Instruction
@@ -154,23 +152,19 @@ But so far can only design the task, can not execute the task, want to execute t
 
 打包发布前，确保执行阶段程序`easyspider_executestage(.exe)`已放入`chrome(_win64)`文件夹内，且浏览器插件`EasySpider_zh.crx`已经是最新版本。
 
-执行下面的命令即可打包：
+执行下面的命令即可打包（需要安装Git）：
 
 ```
-npx electron-forge import
 npm run package
 ```
 
-如果任务执行到`npm install electron-squirrel-startup`的步骤时卡死，请参考下面的换源教程：[https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803)。
-
 -----
 
-Before packaging and releasing, make sure that the task execution program `easyspider_executestage(.exe)` is placed inside the `chrome(_win64)` folder and that the browser extension `EasySpider_en.crx` is the latest version.
+Before packaging and releasing, make sure that the task execution program `easyspider_executestage(.exe)` is placed inside the `chrome(_win64)` folder and that the browser extension `EasySpider_en.crx` is the latest version. 
 
-After finishing developing, package software by the following command:
+After finishing developing, package software by the following command (Git is required):
 
 ```
-npx electron-forge import
 npm run package
 ```
 
@@ -191,3 +185,44 @@ Execute the following two CMD commands sequentially to package and publish the p
 package_win64.cmd
 clean_and_release_win64.cmd
 ```
+
+## 可能出现的问题|Troubleshooting
+
+以下命令一般不需要执行，但打包时可能会用到：
+
+```sh
+npm install @electron-forge/cli -g
+npx electron-forge import
+```
+
+如果任务执行到`npm install electron-squirrel-startup`的步骤时卡死，请参考下面的换源教程：[https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803)。
+
+Windows端如果在运行`npm run package`的时候提示`node-gyp`相关的错误，可以安装`electron-rebuild`：
+
+```sh
+npm install --save-dev electron-rebuild
+npx electron-rebuild
+```
+
+然后再次运行`npm run package`。
+
+-----
+
+The following commands are generally not required, but may be used during packaging:
+
+```sh
+npm install @electron-forge/cli -g
+npx electron-forge import
+```
+
+If the task is stuck at the `npm install electron-squirrel-startup` step, please refer to the following tutorial on changing the source: [https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803).
+
+If you encounter `node-gyp` related errors when running `npm run package` on Windows, you can install `electron-rebuild`:
+
+```sh
+npm install --save-dev electron-rebuild
+npx electron-rebuild
+```
+
+Then run `npm run package` again.
+
