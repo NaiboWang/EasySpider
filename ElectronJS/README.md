@@ -197,7 +197,7 @@ npx electron-forge import
 
 如果任务执行到`npm install electron-squirrel-startup`的步骤时卡死，请参考下面的换源教程：[https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803)。
 
-Windows端如果在运行`npm run package`的时候提示`node-gyp`相关的错误，可以安装`electron-rebuild`：
+Windows端如果在运行`npm run package`的时候提示`node-gyp`相关的错误，可以安装`electron-rebuild`并重新编译相关模块：
 
 ```sh
 npm install --save-dev electron-rebuild
@@ -217,7 +217,7 @@ npx electron-forge import
 
 If the task is stuck at the `npm install electron-squirrel-startup` step, please refer to the following tutorial on changing the source: [https://blog.csdn.net/qq_38463737/article/details/140277803](https://blog.csdn.net/qq_38463737/article/details/140277803).
 
-If you encounter `node-gyp` related errors when running `npm run package` on Windows, you can install `electron-rebuild`:
+If you encounter `node-gyp` related errors when running `npm run package` on Windows, you can install `electron-rebuild` and recompile the relevant modules:
 
 ```sh
 npm install --save-dev electron-rebuild
