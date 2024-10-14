@@ -26,13 +26,13 @@ This section covers the compilation instructions for the `Browser extension`, **
 
 1. 编译浏览器扩展，否则在主程序执行时会提示找不到`EasySpider_zh.crx`的错误。
 2. 编译主程序，此时主程序可以正常运行，但无法执行任务，只能设计任务。
-3. 编译执行阶段程序，否则无法执行程序，只能设计程序。
+3. 编译执行阶段程序，否则无法执行任务，只能设计任务。
 
 -----
 
 1. Compile the browser extension, otherwise an error will be prompted when the main program is executed that `EasySpider_en.crx` cannot be found.
 2. Compile the main program, at this time the main program can run normally, but can not execute the task, can only design the task.
-3. Compile the execution stage program, otherwise the program cannot be executed, can only design the program.
+3. Compile the execution stage program, otherwise the task cannot be executed, can only design the task.
 
 
 ## 环境构建|Environment Setup
