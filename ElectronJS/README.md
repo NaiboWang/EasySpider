@@ -152,7 +152,7 @@ But so far can only design the task, can not execute the task, want to execute t
 
 打包发布前，确保执行阶段程序`easyspider_executestage(.exe)`已放入`chrome(_win64)`文件夹内，且浏览器插件`EasySpider_zh.crx`已经是最新版本。
 
-执行下面的命令即可打包（需要安装Git）：
+执行下面的命令即可打包（需要安装`Git`）：
 
 ```
 npm run package
@@ -162,7 +162,7 @@ npm run package
 
 Before packaging and releasing, make sure that the task execution program `easyspider_executestage(.exe)` is placed inside the `chrome(_win64)` folder and that the browser extension `EasySpider_en.crx` is the latest version. 
 
-After finishing developing, package software by the following command (Git is required):
+After finishing developing, package software by the following command (`Git` is required):
 
 ```
 npm run package
