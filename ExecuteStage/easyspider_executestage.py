@@ -705,18 +705,20 @@ class BrowserThread(Thread):
             self.browser.set_script_timeout(max_wait_time)
             try:
                 output = self.browser.execute_script(code)
-            except:
+            except Exception as e:
                 output = ""
-                self.recordLog("JavaScript execution failed")
+                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", str(e))
+                self.print_and_log("Error executing the following code:" + code, ", error is:", str(e))
         elif int(codeMode) == 2:
             self.recordLog("Execute JavaScript for element:" + code)
             self.recordLog("对元素执行JavaScript:" + code)
             self.browser.set_script_timeout(max_wait_time)
             try:
                 output = self.browser.execute_script(code, element)
-            except:
+            except Exception as e:
                 output = ""
-                self.recordLog("JavaScript execution failed")
+                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", str(e))
+                self.print_and_log("Error executing the following code:" + code, ", error is:", str(e))
         elif int(codeMode) == 5:
             try:
                 code = readCode(code)
@@ -726,9 +728,9 @@ class BrowserThread(Thread):
                 self.recordLog("执行下面的代码:" + code)
                 self.recordLog("Execute the following code:" + code)
             except Exception as e:
-                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", e)
+                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", str(e))
                 self.print_and_log("Error executing the following code:" +
-                                   code, ", error is:", e)
+                                   code, ", error is:", str(e))
         elif int(codeMode) == 6:
             try:
                 code = readCode(code)
