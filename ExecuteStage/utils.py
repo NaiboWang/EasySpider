@@ -60,14 +60,19 @@ def send_email(config):
         except:
             pass
   
-def rename_downloaded_file(download_dir, stop_event):
+def rename_downloaded_file(stop_event):
     """
-    监控下载目录，重命名下载完成的文件为 'ivt-result' 并保持原文件扩展名。
+    监控E:\report目录,重命名下载完成的文件为 'ivt-result' 并保持原文件扩展名。
     确保下载目录中始终只有一个文件。
     
-    :param download_dir: 下载目录路径
     :param stop_event: 用于停止监控的事件
     """
+    download_dir = r"E:\report"
+    
+    # 确保目录存在
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+        
     while not stop_event.is_set():
         try:
             files = os.listdir(download_dir)
@@ -87,21 +92,21 @@ def rename_downloaded_file(download_dir, stop_event):
                 new_name = f"ivt-result{ext}"
                 new_path = os.path.join(download_dir, new_name)
 
-                # 如果已存在旧文件，删除它
+                # 如果已存在旧文件,删除它
                 if os.path.exists(new_path):
                     try:
                         os.remove(new_path)
                         print(f"已删除旧文件: {new_path}")
                     except Exception as e:
-                        print(f"无法删除旧文件 {new_path}，错误: {e}")
-                        continue  # 如果无法删除旧文件，则跳过当前文件
+                        print(f"无法删除旧文件 {new_path},错误: {e}")
+                        continue  # 如果无法删除旧文件,则跳过当前文件
 
                 # 重命名新文件
                 try:
                     os.rename(full_path, new_path)
                     print(f"文件已重命名为: {new_path}")
                 except Exception as e:
-                    print(f"文件重命名失败: {full_path} -> {new_path}，错误: {e}")
+                    print(f"文件重命名失败: {full_path} -> {new_path},错误: {e}")
 
         except Exception as e:
             print(f"监控下载目录时出错: {e}")
