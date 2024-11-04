@@ -16,17 +16,9 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [Proxy302](https://www.proxy302.com/?ref=wangnaibo)是一个全球代理IP自助超市。按需付费，无需套餐捆绑购买；无阶梯式定价，充值即可使用所有类型的代理IP；免费测试，注册获取$1测试额度。覆盖全球240＋国家和地区，6500万个住宅IP可供选择。Proxy302可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://www.123proxy.cn/?utm_source=EasySpider"><img src="media/123proxy.png" width=850></img></a>
-
-[123Proxy](https://www.123proxy.cn/?utm_source=EasySpider)是企业级海外代理IP提供商, 拥有独家的8000万+代理IP池，190+国家覆盖，真实家庭住宅IP，适合各种用途的数据采集类任务。它支持免费测试2-4小时，**点击上方图片注册**联系客服即可获取；它还支持15%返现活动，给公司购买代理可以返现到个人，直接微信/支付宝返现，打工人的小福利。123Proxy可配合EasySpider进行数据采集。
-
 <a target="_blank" href="https://get.brightdata.com/naibowang"><img src="media/BrightData.png" width=850></img></a>
 
 [亮数据BrightData](https://get.brightdata.com/naibowang)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
-
-<a target="_blank" href="https://koala-ip.com/"><img src="media/Koala-IP.png" width=850></img></a>
-
-[Koala-IP](https://koala-ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.koala-ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[Koala-IP（中文）](https://zh-cn.koala-ip.com/) 都能满足你的所有需求。[立即注册Koala-IP](https://koala-ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
 
 
 <a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=850></img></a>
@@ -36,6 +28,13 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 [Capsolver.com](https://www.capsolver.com/?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) is an AI-powered service that specializes in solving various types of captchas automatically. It supports captchas such as [reCAPTCHA V2](https://docs.capsolver.com/guide/captcha/ReCaptchaV2.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [reCAPTCHA V3](https://docs.capsolver.com/guide/captcha/ReCaptchaV3.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [hCaptcha](https://docs.capsolver.com/guide/captcha/HCaptcha.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [FunCaptcha](https://docs.capsolver.com/guide/captcha/FunCaptcha.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [DataDome](https://docs.capsolver.com/guide/captcha/DataDome.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [AWS Captcha](https://docs.capsolver.com/guide/captcha/awsWaf.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [Geetest](https://docs.capsolver.com/guide/captcha/Geetest.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), and Cloudflare [Captcha](https://docs.capsolver.com/guide/antibots/cloudflare_turnstile.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) / [Challenge 5s](https://docs.capsolver.com/guide/antibots/cloudflare_challenge.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [Imperva / Incapsula](https://docs.capsolver.com/guide/antibots/imperva.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), among others.
 For developers, Capsolver offers API integration options detailed in their [documentation](https://docs.capsolver.com/?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), facilitating the integration of captcha solving into applications. They also provide browser extensions for [Chrome](https://chromewebstore.google.com/detail/captcha-solver-auto-captc/pgojnojmmhpofjgdmaebadhbocahppod) and [Firefox](https://addons.mozilla.org/es/firefox/addon/capsolver-captcha-solver/), making it easy to use their service directly within a browser. Different pricing packages are available to accommodate varying needs, ensuring flexibility for users.
 
+<a target="_blank" href="https://www.123proxy.cn/?utm_source=EasySpider"><img src="media/123proxy.png" width=850></img></a>
+
+[123Proxy](https://www.123proxy.cn/?utm_source=EasySpider)是企业级海外代理IP提供商, 拥有独家的8000万+代理IP池，190+国家覆盖，真实家庭住宅IP，适合各种用途的数据采集类任务。它支持免费测试2-4小时，**点击上方图片注册**联系客服即可获取；它还支持15%返现活动，给公司购买代理可以返现到个人，直接微信/支付宝返现，打工人的小福利。123Proxy可配合EasySpider进行数据采集。
+
+<a target="_blank" href="https://koala-ip.com/"><img src="media/Koala-IP.png" width=850></img></a>
+
+[Koala-IP](https://koala-ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.koala-ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[Koala-IP（中文）](https://zh-cn.koala-ip.com/) 都能满足你的所有需求。[立即注册Koala-IP](https://koala-ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！
 
 ## 官方网站/Official Website
 
