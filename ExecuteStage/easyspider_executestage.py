@@ -9,7 +9,7 @@ import threading
 # import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
-from constants import WriteMode, DataWriteMode, GraphOption
+from constants import WriteMode, DataWriteMode, GraphOption, Platform, Architecture
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -2170,9 +2170,61 @@ class BrowserThread(Thread):
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
+
+def get_extension_binary_driver_location():
+    current_system = platform.system()
+    current_architecture = platform.architecture()[0]
+    pwd = os.getcwd()
+    print(f'system info: {current_system}, {current_architecture}')
+    if current_system == Platform.MacOS.value and current_architecture == Architecture.Bit64.value:
+        extension_path = "EasySpider.app/Contents/Resources/app/XPathHelper.crx"
+        binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
+        driver_location = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
+    elif os.path.exists(pwd + "/EasySpider/resources"):  # 打包后的路径
+        print("Finding chromedriver in EasySpider", pwd + "/EasySpider")
+        extension_path = "EasySpider/resources/app/XPathHelper.crx"
+        if current_system == Platform.Windows.value and current_architecture == Architecture.Bit32.value:
+            binary_location = os.path.join(pwd, "EasySpider/resources/app/chrome_win32/chrome.exe")
+            driver_location = os.path.join(pwd, "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
+        elif current_system == Platform.Windows.value and current_architecture == Architecture.Bit64.value:
+            binary_location = os.path.join(pwd, "EasySpider/resources/app/chrome_win64/chrome.exe")
+            driver_location = os.path.join(pwd, "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
+        elif current_system == Platform.Linux.value and current_architecture == Architecture.Bit64.value:
+            binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
+            driver_location = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
+        else:
+            print("Unsupported platform")
+            sys.exit()
+    elif os.path.exists(pwd + "/../ElectronJS"):  # 软件dev用
+        print("Finding chromedriver in EasySpider", pwd + "/ElectronJS")
+        extension_path = "../ElectronJS/XPathHelper.crx"
+        if current_system == Platform.Windows.value and current_architecture == Architecture.Bit64.value:
+            binary_location = "../ElectronJS/chrome_win64/chrome.exe"
+            driver_location = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
+        elif current_system == Platform.Windows.value and current_architecture == Architecture.Bit32.value:
+            binary_location = "../ElectronJS/chrome_win32/chrome.exe"
+            driver_location = "../ElectronJS/chrome_win32/chromedriver_win32.exe"
+        elif current_system == Platform.Linux.value and current_architecture == Architecture.Bit64.value:
+            binary_location = "../ElectronJS/chrome_linux64/chrome"
+            driver_location = "../ElectronJS/chrome_linux64/chromedriver_linux64"
+        else:
+            print("Unsupported platform in dev")
+            sys.exit()
+    else:
+        binary_location = "./chrome.exe"  # 指定chrome位置
+        driver_location = "./chromedriver.exe"
+        extension_path = "XPathHelper.crx"
+    print(f'extension_path: {extension_path}')
+    print(f'Chrome location: {binary_location}')
+    print(f'Chromedriver location: {driver_location}')
+    return extension_path, binary_location, driver_location
+
+
 if __name__ == '__main__':
-    # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
-    # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
+    """
+    如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
+    If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
+    """
     config = {
         "ids": [0],
         "saved_file_name": "",
@@ -2191,57 +2243,19 @@ if __name__ == '__main__':
     print(c)
     options = webdriver.ChromeOptions()
     driver_path = "chromedriver.exe"
-    print(sys.platform, platform.architecture())
+
     if not os.path.exists(os.getcwd() + "/Data"):
         os.mkdir(os.getcwd() + "/Data")
-    if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-        options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        options.add_extension(
-            "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
-        driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
-        print(driver_path)
-        if c.config_folder == "":
-            c.config_folder = os.path.expanduser(
-                "~/Library/Application Support/EasySpider/")
-    elif os.path.exists(os.getcwd() + "/EasySpider/resources"):  # 打包后的路径
-        print("Finding chromedriver in EasySpider",
-              os.getcwd() + "/EasySpider")
-        if sys.platform == "win32" and platform.architecture()[0] == "32bit":
-            options.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
-            driver_path = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
-        elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
-            options.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
-            driver_path = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
-        elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
-            options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
-            driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
-        else:
-            print("Unsupported platform")
-            sys.exit()
-        print("Chrome location:", options.binary_location)
-        print("Chromedriver location:", driver_path)
-    elif os.path.exists(os.getcwd() + "/../ElectronJS"):
-        # 软件dev用
-        print("Finding chromedriver in EasySpider",
-              os.getcwd() + "/ElectronJS")
-        options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
-        driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        options.add_extension("../ElectronJS/XPathHelper.crx")
-    else:
-        options.binary_location = "./chrome.exe"  # 指定chrome位置
-        driver_path = "./chromedriver.exe"
-        options.add_extension("XPathHelper.crx")
 
-    options.add_experimental_option(
-        'excludeSwitches', ['enable-automation'])  # 以开发者模式
+    extension_location, binary_path, driver_path_location = get_extension_binary_driver_location()
+    options.add_extension(extension_location)
+    options.binary_location = binary_path
+    driver_path = driver_path_location
+    if platform.system() == Platform.MacOS.value and platform.architecture()[0] == Architecture.Bit64.value and \
+            c.config_folder == "":
+        c.config_folder = os.path.expanduser("~/Library/Application Support/EasySpider/")
 
+    options.add_experimental_option('excludeSwitches', ['enable-automation'])  # 以开发者模式
 
     # 总结：
     # 0. 带Cookie需要用userdatadir
@@ -2258,8 +2272,7 @@ if __name__ == '__main__':
     except:
         pass
 
-    options.add_argument(
-        "--disable-blink-features=AutomationControlled")  # TMALL 反扒
+    options.add_argument("--disable-blink-features=AutomationControlled")  # TMALL 反扒
     # 阻止http -> https的重定向
     options.add_argument("--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process")
     options.add_argument("--disable-web-security")  # 禁用同源策略
