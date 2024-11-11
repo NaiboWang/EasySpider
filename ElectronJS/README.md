@@ -2,6 +2,10 @@
 
 [从源代码编译程序并设计运行和调试任务指南（基于Ubuntu24.04）](https://www.bilibili.com/video/BV1VE421P7yj/)
 
+## 在类Unix系统上使用Makefile | Use Makefile in Unix-like system 
+    
+[Makefile Readme](MAKEFILE_README.md)
+
 # 环境编译说明|Environment Compilation Instruction
 
 EasySpider分三部分：
@@ -36,10 +40,9 @@ This section covers the compilation instructions for the `main program`.
 3. Compile the execution stage program, otherwise the task cannot be executed, can only design the task.
 
 ## 注意事项|Note
-
-请记住，每当EasySpider扩展程序和执行程序更新时，都要更新`EasySpider.crx`和`easyspider_executestage`文件。
-
-Remember to update the `EasySpider.crx` and `easyspider_executestage` files whenever the EasySpider extension and execution program are updated.
+> [!Important]
+> 请记住，每当EasySpider扩展程序和执行程序更新时，都要更新`EasySpider.crx`和`easyspider_executestage`文件。  
+> Remember to update the `EasySpider.crx` and `easyspider_executestage` files whenever the EasySpider extension and execution program are updated.
 
 ## 环境构建|Environment Setup
 
