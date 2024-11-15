@@ -21,6 +21,8 @@ extension:
 chrome:
 	@echo "=====> 复制Chrome文件夹到ElectronJS/chrome_xxx | Copy the Chrome folder to ElectronJS/chrome_xxx"
 	cp -rfT $(CHROME_DIR) $(ROOT_DIR)/ElectronJS/chrome_$(SYSTEM)
+	cp -rf $(ROOT_DIR)/ElectronJS/stealth.min.js $(ROOT_DIR)/ElectronJS/chrome_$(SYSTEM)
+	cp -rf $(ROOT_DIR)/ElectronJS/execute_${SYSTEM}.sh $(ROOT_DIR)/ElectronJS/chrome_$(SYSTEM)
 	@echo "=====> 复制Chrome文件夹完成 | Copy the Chrome folder finish\n\n\n"
 
 chromedriver:
