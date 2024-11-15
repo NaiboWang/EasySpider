@@ -4,6 +4,8 @@
 
 A visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
 
+<a href="https://trendshift.io/repositories/3367" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3367" alt="NaiboWang%2FEasySpider | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
 ## 下载易采集/Download EasySpider
 
 进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
