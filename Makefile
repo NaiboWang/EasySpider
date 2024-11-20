@@ -1,3 +1,5 @@
+.PHONY: all dependency extension chrome chromedriver electron clean_extension clean_electron dev
+
 ROOT_DIR ?= $(shell pwd)
 CHROME_DIR ?= /opt/google/chrome
 SYSTEM ?= linux64
