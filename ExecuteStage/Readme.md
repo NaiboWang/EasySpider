@@ -2,7 +2,7 @@
 
 [从源代码编译程序并设计运行和调试任务指南（基于Ubuntu24.04）](https://www.bilibili.com/video/BV1VE421P7yj/)
 
-# 环境编译说明|Environment Compilation Instruction
+# 环境编译说明 | Environment Compilation Instruction
 
 EasySpider分三部分：
 
@@ -22,7 +22,7 @@ EasySpider is divided into three parts:
 
 This section covers the compilation instructions for the `Execution stage program`.
 
-## 建议编译顺序|Suggested Compilation Order
+## 建议编译顺序 | Suggested Compilation Order
 
 1. 编译浏览器扩展，否则在主程序执行时会提示找不到`EasySpider_zh.crx`的错误。
 2. 编译主程序，此时主程序可以正常运行，但无法执行任务，只能设计任务。
@@ -35,7 +35,7 @@ This section covers the compilation instructions for the `Execution stage progra
 3. Compile the execution stage program, otherwise the task cannot be executed, can only design the task.
 
 
-## 环境构建|Environment Setup
+## 环境构建 | Environment Setup
 
 1. 安装Python 3.7及以上版本并添加至系统环境变量：[https://www.python.org/downloads/](https://www.python.org/downloads/)。
 2. 安装`pip3`并添加至系统环境变量（Windows安装python后会自带pip，Linux和MacOS安装方式请自行搜索）。
@@ -55,7 +55,7 @@ This section covers the compilation instructions for the `Execution stage progra
     pip3 install -r requirements.txt
     ```
 
-## 运行说明|Run Instruction
+## 运行说明 | Run Instruction
 
 运行程序前，确保已经完成了`ElectronJS`文件夹下`主程序`的编译，保证`chrome`文件夹和`chromedriver`环境已经就绪，同时**EasySpider主程序已在运行中**。
 
@@ -79,13 +79,13 @@ python3 easyspider_executestage.py --ids [1]
 
 The above is an example command to run a task with the ID of `1`. For more information on command-line parameters, please refer to: [Argument Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction) on the project's GitHub Wiki.
 
-### VS Code调试|VS Code Debug
+### VS Code调试 | VS Code Debug
 
 可以用VS Code打开此文件夹即可调试程序，可修改`.vscode`下的`launch.json`文件中的调试参数，调试说明参考：[https://zhuanlan.zhihu.com/p/41189402](https://zhuanlan.zhihu.com/p/41189402)。
 
 You can use VS Code to open this folder and debug the program. You can modify the debugging parameters in the launch.json file located under the .vscode folder. For instructions on debugging with VSCode, you can refer to this guide: [Debugging Python with Visual Studio Code](https://code.visualstudio.com/docs/python/debugging).
 
-## 打包说明|Package Instruction
+## 打包说明 | Package Instruction
 
 如果想要在主程序直接点击`本地直接运行`按钮即可执行程序，则需要打包程序为可执行程序。
 
