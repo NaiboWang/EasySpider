@@ -86,11 +86,11 @@ console.log(process.arch);
 if (process.platform === "win32" && process.arch === "ia32") {
     driverPath = path.join(__dirname, "chrome_win32/chromedriver_win32.exe");
     chromeBinaryPath = path.join(__dirname, "chrome_win32/chrome.exe");
-    execute_path = path.join(__dirname, "chrome_win32/execute.bat");
+    execute_path = path.join(__dirname, "chrome_win32/execute_win32.bat");
 } else if (process.platform === "win32" && process.arch === "x64") {
     driverPath = path.join(__dirname, "chrome_win64/chromedriver_win64.exe");
     chromeBinaryPath = path.join(__dirname, "chrome_win64/chrome.exe");
-    execute_path = path.join(__dirname, "chrome_win64/execute.bat");
+    execute_path = path.join(__dirname, "chrome_win64/execute_win64.bat");
 } else if (process.platform === "darwin") {
     driverPath = path.join(__dirname, "chromedriver_mac64");
     chromeBinaryPath = path.join(
@@ -101,7 +101,7 @@ if (process.platform === "win32" && process.arch === "ia32") {
 } else if (process.platform === "linux") {
     driverPath = path.join(__dirname, "chrome_linux64/chromedriver_linux64");
     chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
-    execute_path = path.join(__dirname, "chrome_linux64/execute.sh");
+    execute_path = path.join(__dirname, "chrome_linux64/execute_linux64.sh");
 }
 console.log(driverPath, chromeBinaryPath, execute_path);
 let language = "en";
