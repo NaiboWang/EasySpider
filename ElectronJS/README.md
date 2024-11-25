@@ -2,7 +2,7 @@
 
 [从源代码编译程序并设计运行和调试任务指南（基于Ubuntu24.04）](https://www.bilibili.com/video/BV1VE421P7yj/)
 
-# 环境编译说明|Environment Compilation Instruction
+# 环境编译说明 | Environment Compilation Instruction
 
 EasySpider分三部分：
 
@@ -23,7 +23,7 @@ EasySpider is divided into three parts:
 This section covers the compilation instructions for the `main program`.
 
 
-## 建议编译顺序|Suggested Compilation Order
+## 建议编译顺序 | Suggested Compilation Order
 
 1. 编译浏览器扩展，否则在主程序执行时会提示找不到`EasySpider_zh.crx`的错误。
 2. 编译主程序，此时主程序可以正常运行，但无法执行任务，只能设计任务。
@@ -35,19 +35,19 @@ This section covers the compilation instructions for the `main program`.
 2. Compile the main program, at this time the main program can run normally, but can not execute the task, can only design the task.
 3. Compile the execution stage program, otherwise the task cannot be executed, can only design the task.
 
-## 注意事项|Note
+## 注意事项 | Note
 
 请记住，每当EasySpider扩展程序和执行程序更新时，都要更新`EasySpider.crx`和`easyspider_executestage`文件。
 
 Remember to update the `EasySpider.crx` and `easyspider_executestage` files whenever the EasySpider extension and execution program are updated.
 
-## 环境构建|Environment Setup
+## 环境构建 | Environment Setup
 
 以下以Windows x64版本为例。
 
 Taking the example of Windows x64 version.
 
-### 浏览器和驱动|Browser and Driver
+### 浏览器和驱动 | Browser and Driver
 
 实在搞不定本节的情况下，下载一个直接能用的EasySpider，并把文件夹内的`EasySpider\resources\app\chrome_win64`文件夹拷贝到此`ElectronJS`文件夹下，并把`chrome_win64`文件夹下的`execute.sh`在原文件夹下复制一份并命名为`execute_win64.sh`即可。
 
@@ -106,7 +106,7 @@ For example, if you want to build this software on Windows x64 platform, then yo
 
 Finally, copy the `stealth.min.js` and `execute_win64.bat` file in this `ElectronJS` folder to the `chrome_win64` folder **(do not forget this step)**.
 
-### NodeJS环境|NodeJS Environment
+### NodeJS环境 | NodeJS Environment
 
 1. Windows环境下需要先下载`VS Build Tools 2017` （[https://aka.ms/vs/15/release/vs_buildtools.exe](https://aka.ms/vs/15/release/vs_buildtools.exe)）并勾选安装其中的`Visual C++ Build Tools（Visual C++生成工具）`组件以便`node-gyp`模块来安装`node-windows-manager`，不然下面的命令无法执行，其他系统不需要。同时，`Python3`也需要安装在系统中并配置好环境变量。
 2. 安装`NodeJS`：[https://nodejs.org/zh-cn/download/](https://nodejs.org/zh-cn/download/)。
@@ -128,7 +128,7 @@ npm install
 npm install
 ```
 
-## 运行说明|Run Instruction
+## 运行说明 | Run Instruction
 
 在当前文件夹执行以下命令即可在开发模式下运行程序：
 
@@ -148,7 +148,7 @@ npm run start_direct
 
 But so far can only design the task, can not execute the task, want to execute the task also need to complete the 'ExecuteStage' folder of the execution of the task program compilation instructions can be executed.
 
-## 打包发布说明|Package Instruction
+## 打包发布说明 | Package Instruction
 
 打包发布前，确保执行阶段程序`easyspider_executestage(.exe)`已放入`chrome(_win64)`文件夹内，且浏览器插件`EasySpider_zh.crx`已经是最新版本。
 
@@ -186,7 +186,7 @@ package_win64.cmd
 clean_and_release_win64.cmd
 ```
 
-## 可能出现的问题|Troubleshooting
+## 可能出现的问题 | Troubleshooting
 
 以下命令一般不需要执行，但打包时可能会用到：
 
