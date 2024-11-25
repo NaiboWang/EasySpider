@@ -49,9 +49,9 @@ Taking the example of Windows x64 version.
 
 ### 浏览器和驱动|Browser and Driver
 
-实在搞不定本节的情况下，下载一个直接能用的EasySpider，并把文件夹内的`EasySpider\resources\app\chrome_win64`文件夹拷贝到此`ElectronJS`文件夹下即可。
+实在搞不定本节的情况下，下载一个直接能用的EasySpider，并把文件夹内的`EasySpider\resources\app\chrome_win64`文件夹拷贝到此`ElectronJS`文件夹下，并把`chrome_win64`文件夹下的`execute.sh`在原文件夹下复制一份并命名为`execute_win64.sh`即可。
 
-If you're unable to handle the tasks in this section, you can download a ready-to-use EasySpider. Simply copy the `EasySpider\resources\app\chrome_win64` folder from the downloaded files and paste it into the ElectronJS folder.
+If you're unable to handle the tasks in this section, you can download a ready-to-use EasySpider, and copy the `EasySpider\resources\app\chrome_win64` folder to this `ElectronJS` folder, then copy the `execute.sh` script found in the `chrome_win64` folder and rename it as `execute_win64.sh` in the same location.
 
 ------
 
@@ -81,7 +81,7 @@ chromedriver_mac64 # for mac x64
 
 例如，如果您想在Windows x64平台上构建此软件，那么您首先需要下载适用于Windows x64的Chrome浏览器，并将整个`chrome`文件夹复制到`ElectronJS`文件夹中，然后将文件夹重命名为`chrome_win64`。假设您下载的Chrome版本是110。接下来，下载一个适用于Windows x64的110版本的ChromeDriver，并将其放入`chrome_win64`文件夹中，然后将其重命名为`chromedriver_win64.exe`。
 
-最后，把此文件夹内的`stealth.min.js`和`execute.bat`文件拷贝入`chrome`文件夹内。 
+最后，把此`ElectronJS`文件夹内的`stealth.min.js`和`execute_win64.bat`文件拷贝入`chrome_win64`文件夹内，**这一步不要忘**。 
 
 
 Download a Chrome from the Internet: https://www.google.com/chrome/, and then put them into this folder, with name format of the following:
@@ -104,7 +104,7 @@ chromedriver_mac64 # for mac x64
 
 For example, if you want to build this software on Windows x64 platform, then you should first download a Chrome for Windows x64, then copy the whole `chrome` folder to this `ElectronJS` folder and rename the folder to `chrome_win64`, assume the Chrome version you downloaded is 110; then, download a `chromedriver.exe` with version 110 for Windows x64, and put it into the `chrome_win64` folder, then rename it to `chromedriver_win64.exe`.
 
-Finally, copy the `stealth.min.js` and `execute.bat` (for Windows x64) file in this folder to these `chrome` folders.
+Finally, copy the `stealth.min.js` and `execute_win64.bat` file in this `ElectronJS` folder to the `chrome_win64` folder **(do not forget this step)**.
 
 ### NodeJS环境|NodeJS Environment
 
