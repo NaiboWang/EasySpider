@@ -1148,6 +1148,14 @@ class BrowserThread(Thread):
         self.history["handle"] = thisHandle
         thisHistoryURL = self.browser.current_url
         # 快速提取处理
+        # start = time.time()
+        try:
+            tree = html.fromstring(self.browser.page_source)
+        except Exception as e:
+            self.print_and_log("解析页面时出错，将切换普通提取模式|Error parsing page, will switch to normal extraction mode")
+            node["parameters"]["quickExtractable"] = False
+        # end = time.time()
+        # print("解析页面秒数：", end - start)
         if node["parameters"]["quickExtractable"]:
             self.browser.switch_to.default_content() # 切换到主页面
             tree = html.fromstring(self.browser.page_source)
