@@ -1,4 +1,4 @@
-from enum import unique, IntEnum
+from enum import unique, IntEnum, Enum
 
 
 @unique
@@ -25,3 +25,17 @@ class GraphOption(IntEnum):
     Custom = 5  # 自定义操作|Custom
     Move = 7  # 移动操作|Move
     Loop = 8  # 循环操作|Loop
+
+
+@unique
+class Platform(Enum):
+    Windows = 'Windows'
+    Linux = 'Linux'
+    MacOS = 'Darwin'
+
+
+@unique
+class Architecture(Enum):
+    Bit64 = '64bit'
+    Bit32 = '32bit'
+
