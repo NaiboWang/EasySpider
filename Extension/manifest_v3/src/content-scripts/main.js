@@ -337,7 +337,7 @@ generateToolkit();
 
 function closeToolkit() {
     toolkit.style.display = "none"; // 隐藏元素
-    createNotification(LANG("EasySpider操作控制台已隐藏，可点击浏览器右上角扩展程序区域的EasySpider图标重新打开。", "EasySpider Toolkit is hidden. Click the EasySpider icon in the extension list (upper right corner) of the browser to reopen."));
+    createNotification(LANG("EasySpider操作控制台已隐藏，可点击浏览器右上角扩展程序区域的EasySpider图标重新显示。", "EasySpider Toolkit is hidden. Click the EasySpider icon in the extension list (upper right corner) of the browser to reopen."));
 }
 
 let closeButton = document.getElementById("closeButton");

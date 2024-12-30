@@ -3,11 +3,11 @@ import config from './content-scripts/config.json';
 if (config.language == 'zh') {
     document.getElementById('title').innerText = '可执行操作';
     document.getElementById('show-toolkit').innerText = '显示EasySpider操作台';
-    document.getElementById('close-toolkit').innerText = '关闭EasySpider操作台';
+    document.getElementById('close-toolkit').innerText = '隐藏EasySpider操作台';
 } else {
     document.getElementById('title').innerText = 'Executable Operations';
     document.getElementById('show-toolkit').innerText = 'Show EasySpider Toolkit';
-    document.getElementById('close-toolkit').innerText = 'Close EasySpider Toolkit';
+    document.getElementById('close-toolkit').innerText = 'Hide EasySpider Toolkit';
 }
 
 document.getElementById('show-toolkit').addEventListener('click', async () => {
