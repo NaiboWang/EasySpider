@@ -2192,7 +2192,7 @@ if __name__ == '__main__':
         "server_address": "http://localhost:8074",
         "keyboard": True,  # 是否监听键盘输入
         "pause_key": "p",  # 暂停键
-        "version": "0.6.2",
+        "version": "0.6.3",
         "docker_driver": "",
     }
     c = Config(config)
@@ -2330,9 +2330,13 @@ if __name__ == '__main__':
         print("id: ", id)
         if c.read_type == "remote":
             print("remote")
-            content = requests.get(
+            try:
+                content = requests.get(
                 c.server_address + "/queryExecutionInstance?id=" + str(id))
-            service = json.loads(content.text)  # 加载服务信息
+                service = json.loads(content.text)  # 加载服务信息
+            except:
+                print("Cannot connect to the server, please make sure that the EasySpider Main Program is running, or you can change the --read_type parameter to 'local' to read the task information from the local task file without keeping the EasySpider Main Program running.")
+                print("无法连接到服务器，请确保EasySpider主程序正在运行，或者您可以将--read_type参数更改为'local'，以实现从本地任务文件中读取任务信息而无需保持EasySpider主程序运行。")
         else:
             print("local")
             local_folder = os.path.join(os.getcwd(), "execution_instances")

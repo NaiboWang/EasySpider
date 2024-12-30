@@ -1,5 +1,6 @@
 import config from './config.json';
 
+
 export var global = {
     nodeList: [], //已被选中的节点列表
     readyList: [], //预备选中的list

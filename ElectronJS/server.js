@@ -66,6 +66,7 @@ if (!fs.existsSync(path.join(getDir(), "config.json"))) {
       webserver_port: 8074,
       user_data_folder: "./user_data",
       debug: false,
+      lang: "-",
       copyright: 0,
       sys_arch: require("os").arch(),
       mysql_config_path: "./mysql_config.json",
@@ -459,6 +460,10 @@ exports.start = function (port = 8074) {
             "utf8"
           );
           config_file = JSON.parse(config_file);
+          let lang = config_file["lang"];
+          if(lang == undefined){
+            lang = "-";
+          }
           res.write(JSON.stringify(config_file));
           res.end();
         } else if (pathName == "/setUserDataFolder") {

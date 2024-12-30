@@ -150,8 +150,8 @@ function createWindow() {
         server_address +
         "/index.html?user_data_folder=" +
         config.user_data_folder +
-        "&copyright=" +
-        config.copyright,
+        "&copyright=" + config.copyright +
+        "&lang=" + config.lang,
         {extraHeaders: "pragma: no-cache\n"}
     );
     // 隐藏菜单栏
@@ -162,9 +162,8 @@ function createWindow() {
             app.quit();
         }
     });
+    //调试模式
     // mainWindow.webContents.openDevTools();
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
 }
 
 async function findElementRecursive(driver, by, value, frames) {
@@ -1558,6 +1557,17 @@ app.whenReady().then(() => {
             path.join(task_server.getDir(), "config.json"),
             JSON.stringify(config)
         );
+        //重新读取配置文件
+        config = JSON.parse(fs.readFileSync(path.join(task_server.getDir(), "config.json")));
+    });
+    ipcMain.on("change-lang", function (event, arg) {
+        config.lang = arg;
+        fs.writeFileSync(
+            path.join(task_server.getDir(), "config.json"),
+            JSON.stringify(config)
+        );
+        //重新读取配置文件
+        config = JSON.parse(fs.readFileSync(path.join(task_server.getDir(), "config.json")));
     });
     createWindow();
 

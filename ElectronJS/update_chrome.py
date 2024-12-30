@@ -152,7 +152,7 @@ if __name__ == "__main__":
         for folder in os.listdir("./chrome_win64"):
             if folder[0].isdigit() and os.path.isdir("./chrome_win64/"+folder):
                 shutil.rmtree("./chrome_win64/"+folder+"/Installer") # 删除Installer文件夹
-        copy_file("./execute_win64.bat", "./chrome_win64/execute.bat")
+        copy_file("./execute_win64.bat", "./chrome_win64/execute_win64.bat")
         copy_file("./stealth.min.js", "./chrome_win64/stealth.min.js")
         try:
             copy_file(
@@ -179,7 +179,7 @@ if __name__ == "__main__":
         for folder in os.listdir("./chrome_win32"):
             if folder[0].isdigit() and os.path.isdir("./chrome_win32/"+folder):
                 shutil.rmtree("./chrome_win32/"+folder+"/Installer") # 删除Installer文件夹
-        copy_file("./execute_win32.bat", "./chrome_win32/execute.bat")
+        copy_file("./execute_win32.bat", "./chrome_win32/execute_win32.bat")
         copy_file("./stealth.min.js", "./chrome_win32/stealth.min.js")
         try:
             copy_file(
@@ -203,7 +203,7 @@ if __name__ == "__main__":
         if os.path.exists("./chrome_linux64"):
             shutil.rmtree("./chrome_linux64")
         copy_folder(linux_chrome_path, "./chrome_linux64")
-        copy_file("./execute_linux64.sh", "./chrome_linux64/execute.sh")
+        copy_file("./execute_linux64.sh", "./chrome_linux64/execute_linux64.sh")
         copy_file("./stealth.min.js", "./chrome_linux64/stealth.min.js")
         try:
             copy_file(
@@ -218,7 +218,7 @@ if __name__ == "__main__":
         finally:
             # Change Linux file permissions
             os.chmod("./chrome_linux64/chromedriver_linux64", 0o755)
-            os.chmod("./chrome_linux64/execute.sh", 0o755)
+            os.chmod("./chrome_linux64/execute_linux64.sh", 0o755)
             shutil.rmtree("./chromedrivers")
     elif sys.platform == "darwin" and platform.architecture()[0] == "64bit":
         processor = get_processor_info()

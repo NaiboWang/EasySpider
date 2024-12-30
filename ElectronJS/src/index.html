@@ -32,7 +32,7 @@
 <body>
 <div id="app">
 
-    <div style="padding: 10px; text-align: center;vertical-align: middle;" v-if="init">
+    <div style="padding: 10px; text-align: center;vertical-align: middle;" v-if="lang=='-'">
         <h5 style="margin-top: 20px">选择语言/Select Language</h5>
 
         <p><a @click="changeLang('zh')" class="btn btn-outline-primary btn-lg"
@@ -40,9 +40,6 @@
 
         <p><a @click="changeLang('en')" class="btn btn-outline-primary btn-lg"
               style="margin-top: 15px; width: 300px;height:60px;padding-top:12px;">English</a></p>
-        <p style="font-size: 17px">当前版本/Current Version: <b>v0.6.2</b></p>
-        <p style="font-size: 17px"><a href="https://github.com/NaiboWang/EasySpider/releases"
-                                      target="_blank">Github</a>最新版本/Newest Version：<b>{{newest_version}}</b></p>
         <!--        <p>如发现新版本更新，可从以下Github仓库下载最新版本使用/If a new version is found, you can download the latest version from the following Github repository:</p>-->
         <!--        <p></p>-->
         <div class="img-container">
@@ -92,6 +89,9 @@ For individual users, EasySpider is a completely free and ad-free open-source so
                     <a href="https://www.easyspider.cn/index_english.html" target="_blank"
                        style="text-align: center; font-size: 18px">Browse official website to watch tutorials</a>
                 </p>
+                <p style="font-size: 17px">Current Version: <b>v0.6.3</b></p>
+        <p style="font-size: 17px"><a href="https://github.com/NaiboWang/EasySpider/releases"
+                                      target="_blank">Newest</a> Version: <b>{{newest_version}}</b></p>
                 <div class="img-container">
                     <!--                    <h5>Producer</h5>-->
                     <a href="https://www.zju.edu.cn" alt="Zhejiang University" target="_blank"><img
@@ -191,6 +191,9 @@ For individual users, EasySpider is a completely free and ad-free open-source so
                     <a href="https://www.easyspider.cn?lang=zh" target="_blank"
                        style="text-align: center; font-size: 18px">点此访问官网查看文档/视频教程</a>
                 </p>
+                <p style="font-size: 17px">软件当前版本：<b>v0.6.3</b></p>
+                <p style="font-size: 17px"><a href="https://github.com/NaiboWang/EasySpider/releases"
+                                      target="_blank">官网</a>最新版本：<b>{{newest_version}}</b></p>
                 <div class="img-container">
                     <!--                    <h5>出品方</h5>-->
                     <a href="https://www.zju.edu.cn" alt="浙江大学" target="_blank"><img src="img/zju.png"></a>

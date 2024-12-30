@@ -22,7 +22,7 @@ let app = Vue.createApp({
     data() {
         return {
             init: true,
-            lang: 'zh',
+            lang: '-',
             user_data_folder: getUrlParam("user_data_folder"),
             copyright: 0,
             step: 0,
@@ -33,6 +33,10 @@ let app = Vue.createApp({
         this.copyright = parseInt(getUrlParam("copyright"));
         if(this.copyright == 0){
             this.step = -1;
+        }
+        this.lang = getUrlParam("lang");
+        if (this.lang == 'undefined' || this.lang == '') {
+            this.lang = '-';
         }
         // 发送GET请求获取GitHub的Release API响应
         const request = new XMLHttpRequest();
@@ -52,8 +56,9 @@ let app = Vue.createApp({
     },
     methods: {
         changeLang(lang = 'zh') {
-            this.init = false;
+            // this.init = false;
             this.lang = lang;
+            window.electronAPI.changeLang(lang);
         },
         acceptAgreement() {
             this.step = 0;

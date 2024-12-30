@@ -12,7 +12,7 @@
             "justMyCode": false,
             //  "args": ["--ids", "[7]", "--read_type", "remote", "--headless", "0"]
             // "args": ["--ids", "[9]", "--read_type", "remote", "--headless", "0", "--saved_file_name", "YOUTUBE"]
-            "args": ["--ids", "[35]", "--headless", "0", "--user_data", "0", "--keyboard", "0",
+            "args": ["--ids", "[89]", "--headless", "0", "--user_data", "0", "--keyboard", "0",
         "--read_type", "remote", 
     ]
             // "args": "--ids '[97]' --user_data 1 --server_address http://localhost:8074 --config_folder '/Users/naibo/Documents/EasySpider/ElectronJS/' --headless 0 --read_type remote --config_file_name config.json --saved_file_name"

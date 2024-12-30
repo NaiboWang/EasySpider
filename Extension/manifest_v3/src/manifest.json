@@ -1,6 +1,6 @@
 {
     "name": "EasySpider",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "description": "EasySpider's chrome extension",
     "author": "Naibo Wang",
     "manifest_version": 3,
@@ -11,6 +11,7 @@
             "38": "assets/icon-38.png",
             "128": "assets/icon-128.png"
         },
+        "default_popup": "popup.html",
         "default_title": "EasySpider"
     },
     "icons": {
@@ -53,6 +54,7 @@
         "storage",
         "tabs",
         "scripting",
+        "activeTab",
         "notifications"
     ]
 }

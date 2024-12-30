@@ -9,6 +9,7 @@ import threading
 # import undetected_chromedriver as uc
 from utils import detect_optimizable, download_image, extract_text_from_html, get_output_code, isnotnull, lowercase_tags_in_xpath, myMySQL, new_line, \
     on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
+from constants import WriteMode, DataWriteMode, GraphOption
 from myChrome import MyChrome
 from threading import Thread, Event
 from PIL import Image
@@ -31,7 +32,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from pynput.keyboard import Key, Listener
 from datetime import datetime
 import io  # 遇到错误退出时应执行的代码
 import json
@@ -76,10 +76,7 @@ class BrowserThread(Thread):
     def __init__(self, browser_t, id, service, version, event, saveName, config, option):
         Thread.__init__(self)
         self.logs = io.StringIO()
-        try:
-            self.log = bool(service["recordLog"])
-        except:
-            self.log = True
+        self.log = bool(service.get("recordLog", True))
         self.browser = browser_t
         self.option = option
         self.config = config
@@ -87,22 +84,13 @@ class BrowserThread(Thread):
         self.totalSteps = 0
         self.id = id
         self.event = event
-        try:
-            self.saveName = service["saveName"]  # 保存文件的名字
-        except:
-            now = datetime.now()
-            # 将时间格式化为精确到秒的字符串
-            self.saveName = now.strftime("%Y_%m_%d_%H_%M_%S")
+        now = datetime.now()
+        self.saveName = service.get("saveName", now.strftime("%Y_%m_%d_%H_%M_%S"))  # 保存文件的名字
         self.OUTPUT = ""
         self.SAVED = False
         self.BREAK = False
         self.CONTINUE = False
-        try:
-            maximizeWindow = service["maximizeWindow"]
-        except:
-            maximizeWindow = 0
-        if maximizeWindow == 1:
-            self.browser.maximize_window()
+        self.browser.maximize_window() if service.get("maximizeWindow") == 1 else ...
         # 名称设定
         if saveName != "":  # 命令行覆盖保存名称
             self.saveName = saveName  # 保存文件的名字
@@ -123,13 +111,13 @@ class BrowserThread(Thread):
         self.getDataStep = 0
         self.startSteps = 0
         try:
-            startFromExit = service["startFromExit"]  # 从上次退出的步骤开始
-            if startFromExit == 1:
+            if service.get("startFromExit", 0) == 1:
                 with open("Data/Task_" + str(self.id) + "/" + self.saveName + '_steps.txt', 'r',
                           encoding='utf-8-sig') as file_obj:
                     self.startSteps = int(file_obj.read())  # 读取已执行步数
-        except:
-            pass
+        except Exception as e:
+            self.print_and_log(f"读取steps.txt失败，原因：{str(e)}")
+
         if self.startSteps != 0:
             self.print_and_log("此模式下，任务ID", self.id, "将从上次退出的步骤开始执行，之前已采集条数为",
                                self.startSteps, "条。")
@@ -137,7 +125,7 @@ class BrowserThread(Thread):
                                "will start from the last step, before we already collected", self.startSteps, " items.")
         else:
             self.print_and_log("此模式下，任务ID", self.id,
-                               "将从头F开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
+                               "将从头开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
             self.print_and_log("In this mode, task ID", self.id,
                                "will start from the beginning, if you want to start from the last step, please set the option 'start from the last step' to 'yes' when saving the task.")
         stealth_path = driver_path[:driver_path.find(
@@ -145,13 +133,12 @@ class BrowserThread(Thread):
         with open(stealth_path, 'r') as f:
             js = f.read()
             self.print_and_log("Loading stealth.min.js")
-        self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
-            'source': js})  # TMALL 反扒
+        self.browser.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {'source': js})  # TMALL 反扒
         self.browser.execute_cdp_cmd("Page.addScriptToEvaluateOnNewDocument", {
-        "source": """
-            Object.defineProperty(navigator, 'webdriver', {
-            get: () => undefined
-            })
+            "source": """
+                Object.defineProperty(navigator, 'webdriver', {
+                get: () => undefined
+                })
         """
         })
         WebDriverWait(self.browser, 10)
@@ -164,75 +151,65 @@ class BrowserThread(Thread):
         self.monitor_thread.start()
         # self.browser.get('about:blank')
         self.procedure = service["graph"]  # 程序执行流程
-        try:
-            self.maxViewLength = service["maxViewLength"]  # 最大显示长度
-        except:
-            self.maxViewLength = 15
-        try:
-            self.outputFormat = service["outputFormat"]  # 输出格式
-        except:
-            self.outputFormat = "csv"
-        try:
-            self.task_version = service["version"]  # 任务版本
-            if service["version"] >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
-                pass
-            else:  # 0.3.1以下版本的EasySpider不兼容0.3.1及以上版本的EasySpider
-                if service["version"] != version:
-                    self.print_and_log("版本不一致，请使用" +
-                                       service["version"] + "版本的EasySpider运行该任务！")
-                    self.print_and_log("Version not match, please use EasySpider " +
-                                       service["version"] + " to run this task!")
-                    self.browser.quit()
-                    sys.exit()
-        except:  # 0.2.0版本没有version字段，所以直接退出
+        self.maxViewLength = service.get("maxViewLength", 15)  # 最大显示长度
+        self.outputFormat = service.get("outputFormat", "csv")  # 输出格式
+        self.save_threshold = service.get("saveThreshold", 10)  # 保存最低阈值
+        self.dataWriteMode = service.get("dataWriteMode", DataWriteMode.Append.value)  # 数据写入模式，1为追加，2为覆盖，3为重命名文件
+        self.task_version = service.get("version", "")  # 任务版本
+
+        if not self.task_version:
             self.print_and_log("版本不一致，请使用v0.2.0版本的EasySpider运行该任务！")
-            self.print_and_log(
-                "Version not match, please use EasySpider v0.2.0 to run this task!")
+            self.print_and_log("Version not match, please use EasySpider v0.2.0 to run this task!")
             self.browser.quit()
             sys.exit()
-        try:
-            self.save_threshold = service["saveThreshold"]  # 保存最低阈值
-        except:
-            self.save_threshold = 10
-        try:
-            self.links = list(
-                filter(isnotnull, service["links"].split("\n")))  # 要执行的link的列表
-        except:
+
+        if self.task_version >= "0.3.1":  # 0.3.1及以上版本以上的EasySpider兼容从0.3.1版本开始的所有版本
+            pass
+        elif self.task_version != version:  # 0.3.1以下版本的EasySpider不兼容0.3.1及以上版本的EasySpider
+            self.print_and_log(f"版本不一致，请使用{self.task_version}版本的EasySpider运行该任务！")
+            self.print_and_log(f"Version not match, please use EasySpider {self.task_version} to run this task!")
+            self.browser.quit()
+            sys.exit()
+
+        service_links = service.get("links")
+        if service_links:
+            self.links = list(filter(isnotnull, service_links.split("\n")))  # 要执行的link的列表
+        else:
             self.links = list(filter(isnotnull, service["url"]))  # 要执行的link
+
         self.OUTPUT = []  # 采集的数据
-        try:
-            self.dataWriteMode = service["dataWriteMode"] # 数据写入模式，1为追加，2为覆盖，3为重命名文件
-        except:
-            self.dataWriteMode = 1
-        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx" or self.outputFormat == "json":
+        if self.outputFormat in ["csv", "txt", "xlsx", "json"]:
             if os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
-                if self.dataWriteMode == 2:
+                if self.dataWriteMode == DataWriteMode.Cover.value:
                     os.remove("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat)
-                elif self.dataWriteMode == 3:
+                elif self.dataWriteMode == DataWriteMode.Rename.value:
                     i = 2
                     while os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '_' + str(i) + '.' + self.outputFormat):
                         i = i + 1
                     self.saveName = self.saveName + '_' + str(i)
                     self.print_and_log("文件已存在，已重命名为", self.saveName)
-        self.writeMode = 1  # 写入模式，0为新建，1为追加
-        if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
-            if not os.path.exists("Data/Task_" + str(self.id) + "/" + self.saveName + '.' + self.outputFormat):
+        self.writeMode = WriteMode.Create.value   # 写入模式，0为新建，1为追加
+        if self.outputFormat in ['csv', 'txt', 'xlsx']:
+            if not os.path.exists(f"Data/Task_{str(self.id)}/{self.saveName}.{self.outputFormat}"):
                 self.OUTPUT.append([])  # 添加表头
-                self.writeMode = 0
+                self.writeMode = WriteMode.Create.value
         elif self.outputFormat == "json":
-            self.writeMode = 3  # JSON模式无需判断是否存在文件
+            self.writeMode = WriteMode.Json.value  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
             self.mysql = myMySQL(config["mysql_config_path"])
-            self.mysql.create_table(self.saveName, service["outputParameters"], remove_if_exists=self.dataWriteMode == 2)
-            self.writeMode = 2
-        if self.writeMode == 0:
+            self.mysql.create_table(self.saveName, service["outputParameters"],
+                                    remove_if_exists=self.dataWriteMode == DataWriteMode.Cover.value)
+            self.writeMode = WriteMode.MySQL.value  # MySQL模式
+
+        if self.writeMode == WriteMode.Create.value:
             self.print_and_log("新建模式|Create Mode")
-        elif self.writeMode == 1:
+        elif self.writeMode == WriteMode.Append.value:
             self.print_and_log("追加模式|Append Mode")
-        elif self.writeMode == 2:
+        elif self.writeMode == WriteMode.MySQL.value:
             self.print_and_log("MySQL模式|MySQL Mode")
-        elif self.writeMode == 3:
+        elif self.writeMode == WriteMode.Json.value:
             self.print_and_log("JSON模式|JSON Mode")
+
         self.containJudge = service["containJudge"]  # 是否含有判断语句
         self.outputParameters = {}
         self.service = service
@@ -245,191 +222,140 @@ class BrowserThread(Thread):
             if param["name"] not in self.outputParameters.keys():
                 self.outputParameters[param["name"]] = ""
                 self.dataNotFoundKeys[param["name"]] = False
-                try:
-                    self.outputParametersTypes.append(param["type"])
-                except:
-                    self.outputParametersTypes.append("text")
-                try:
-                    self.outputParametersRecord.append(
-                        bool(param["recordASField"]))
-                except:
-                    self.outputParametersRecord.append(True)
+                self.outputParametersTypes.append(param.get("type", "text"))
+                self.outputParametersRecord.append(bool(param.get("recordASField", True)))
                 # 文件叠加的时候不添加表头
-                if self.outputFormat == "csv" or self.outputFormat == "txt" or self.outputFormat == "xlsx":
-                    if self.writeMode == 0:
-                        self.OUTPUT[0].append(param["name"])
+                if self.outputFormat in ["csv", "txt", "xlsx"] and self.writeMode == WriteMode.Create.value:
+                    self.OUTPUT[0].append(param["name"])
         self.urlId = 0  # 全局记录变量
         self.preprocess()  # 预处理，优化提取数据流程
-        try:
-            self.inputExcel = service["inputExcel"]  # 输入Excel
-        except:
-            self.inputExcel = ""
+        self.inputExcel = service.get("inputExcel", "")  # 输入Excel
         self.readFromExcel()  # 读取Excel获得参数值
 
     # 检测如果没有复杂的操作，优化提取数据流程
     def preprocess(self):
-        for node in self.procedure:
-            try:
-                iframe = node["parameters"]["iframe"]
-            except:
-                node["parameters"]["iframe"] = False
+        for index_node, node in enumerate(self.procedure):
+            parameters: dict = node["parameters"]
+            iframe = parameters.get('iframe')
+            option = node["option"]
 
-            try:
-                node["parameters"]["xpath"] = lowercase_tags_in_xpath(
-                    node["parameters"]["xpath"])
-            except:
-                pass
-            try:
-                node["parameters"]["waitElementIframeIndex"] = int(
-                    node["parameters"]["waitElementIframeIndex"])
-            except:
-                node["parameters"]["waitElement"] = ""
-                node["parameters"]["waitElementTime"] = 10
-                node["parameters"]["waitElementIframeIndex"] = 0
-            if node["option"] == 1:  # 打开网页操作
-                try:
-                    cookies = node["parameters"]["cookies"]
-                except:
-                    node["parameters"]["cookies"] = ""
-            elif node["option"] == 2:  # 点击操作
-                try:
-                    alertHandleType = node["parameters"]["alertHandleType"]
-                except:
-                    node["parameters"]["alertHandleType"] = 0
-                if node["parameters"]["useLoop"]:
+            parameters["iframe"] = False if not iframe else parameters.get('iframe', False)
+            if parameters.get("xpath"):
+                parameters["xpath"] = lowercase_tags_in_xpath(parameters["xpath"])
+
+            if parameters.get("waitElementIframeIndex"):
+                parameters["waitElementIframeIndex"] = int(parameters["waitElementIframeIndex"])
+            else:
+                parameters["waitElement"] = ""
+                parameters["waitElementTime"] = 10
+                parameters["waitElementIframeIndex"] = 0
+
+            if option == GraphOption.Get.value:  # 打开网页操作
+                parameters["cookies"] = parameters.get("cookies", "")
+            elif option == GraphOption.Click.value:  # 点击操作
+                parameters["alertHandleType"] = parameters.get("alertHandleType", 0)
+                if parameters.get("useLoop"):
                     if self.task_version <= "0.3.5":
                         # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
-                        node["parameters"]["xpath"] = ""
-                        self.print_and_log("您的任务版本号为" + self.task_version +
-                                           "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
-            elif node["option"] == 3:  # 提取数据操作
-                node["parameters"]["recordASField"] = 0
-                try:
-                    params = node["parameters"]["params"]
-                except:
-                    node["parameters"]["params"] = node["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
-                    params = node["parameters"]["params"]
-                try:
-                    clear = node["parameters"]["clear"]
-                except:
-                    node["parameters"]["clear"] = 0
-                try:
-                    newLine = node["parameters"]["newLine"]
-                except:
-                    node["parameters"]["newLine"] = 1
+                        parameters["xpath"] = ""
+                        self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif option == GraphOption.Extract.value:  # 提取数据操作
+                parameters["recordASField"] = 0
+                parameters["params"] = parameters.get("params", parameters.get("paras"))  # 兼容0.5.0及以下版本的EasySpider
+                parameters["clear"] = parameters.get("clear", 0)
+                parameters["newLine"] = parameters.get("newLine", 1)
+
+                params = parameters["params"]
                 for param in params:
-                    try:
-                        iframe = param["iframe"]
-                    except:
-                        param["iframe"] = False
-                    try:
+                    param["iframe"] = param.get("iframe", False)
+
+                    if param.get("relativeXPath"):
                         param["relativeXPath"] = lowercase_tags_in_xpath(param["relativeXPath"])
-                    except:
-                        pass
-                    try:
-                        node["parameters"]["recordASField"] = param["recordASField"]
-                    except:
-                        node["parameters"]["recordASField"] = 1
-                    try:
-                        splitLine = int(param["splitLine"])
-                    except:
-                        param["splitLine"] = 0
-                    if param["contentType"] == 8:
-                        self.print_and_log(
-                            "默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType == 8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
-                        self.print_and_log(
-                            "If you think the default ddddocr function is not good enough, you can modify the source code get_content function -> contentType == 8 position to your own OCR model and then compile and run it; or you can first set the content type of the crawler to \"Element Screenshot\" to save the picture, and then call your own program with custom operations. The function of the program is to read the latest generated picture, then use a good model, such as PaddleOCR to recognize the picture, and then return the return value as a parameter output to the program.")
+
+                    parameters["recordASField"] = param.get("recordASField", 1)
+
+                    param["splitLine"] = 0 if not param.get("splitLine") else param.get("splitLine")
+
+                    if param.get("contentType") == 8:
+                        self.print_and_log("默认的ddddocr识别功能如果觉得不好用，可以自行修改源码get_content函数->contentType =="
+                                           "8的位置换成自己想要的OCR模型然后自己编译运行；或者可以先设置采集内容类型为“元素截图”把图片"
+                                           "保存下来，然后用自定义操作调用自己写的程序，程序的功能是读取这个最新生成的图片，然后用好用"
+                                           "的模型，如PaddleOCR把图片识别出来，然后把返回值返回给程序作为参数输出。")
+                        self.print_and_log("If you think the default ddddocr function is not good enough, you can "
+                                           "modify the source code get_content function -> contentType == 8 position "
+                                           "to your own OCR model and then compile and run it; or you can first set "
+                                           "the content type of the crawler to \"Element Screenshot\" to save the "
+                                           "picture, and then call your own program with custom operations. The "
+                                           "function of the program is to read the latest generated picture, then use "
+                                           "a good model, such as PaddleOCR to recognize the picture, and then return "
+                                           "the return value as a parameter output to the program.")
                     param["optimizable"] = detect_optimizable(param)
-            elif node["option"] == 4:  # 输入文字
-                try:
-                    index = node["parameters"]["index"]  # 索引值
-                except:
-                    node["parameters"]["index"] = 0
-            elif node["option"] == 5:  # 自定义操作
-                try:
-                    clear = node["parameters"]["clear"]
-                except:
-                    node["parameters"]["clear"] = 0
-                try:
-                    newLine = node["parameters"]["newLine"]
-                except:
-                    node["parameters"]["newLine"] = 1
-            elif node["option"] == 7:  # 移动到元素
-                if node["parameters"]["useLoop"]:
-                    if self.task_version <= "0.3.5":
-                        # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
-                        node["parameters"]["xpath"] = ""
-                        self.print_and_log("您的任务版本号为" + self.task_version +
-                                           "，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
-            elif node["option"] == 8:  # 循环操作
-                try:
-                    exitElement = node["parameters"]["exitElement"]
-                    if exitElement == "":
-                        node["parameters"]["exitElement"] = "//body"
-                except:
-                    node["parameters"]["exitElement"] = "//body"
-                node["parameters"]["quickExtractable"] = False # 是否可以快速提取
-                try:
-                    skipCount = node["parameters"]["skipCount"]
-                except:
-                    node["parameters"]["skipCount"] = 0
+            elif option == GraphOption.Input.value:  # 输入文字
+                parameters['index'] = parameters.get('index', 0)
+            elif option == GraphOption.Custom.value:  # 自定义操作
+                parameters['clear'] = parameters.get('clear', 0)
+                parameters['newLine'] = parameters.get('newLine', 1)
+            elif option == GraphOption.Move.value:  # 移动到元素
+                if parameters.get('useLoop'):
+                    if self.task_version <= "0.3.5":  # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
+                        parameters["xpath"] = ""
+                        self.print_and_log(f"您的任务版本号为{self.task_version}，循环点击不支持相对XPath写法，已自动切换为纯循环的XPath")
+            elif option == GraphOption.Loop.value:  # 循环操作
+                parameters['exitElement'] = "//body" if not parameters.get('exitElement') or parameters.get('exitElement') == "" else parameters.get('exitElement')
+                parameters["quickExtractable"] = False  # 是否可以快速提取
+                parameters['skipCount'] = parameters.get('skipCount', 0)
+
                 # 如果（不）固定元素列表循环中只有一个提取数据操作，且提取数据操作的提取内容为元素截图，那么可以快速提取
-                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
-                    try:
-                        params = self.procedure[node["sequence"][0]]["parameters"]["params"]
-                    except:
-                        params = self.procedure[node["sequence"][0]]["parameters"]["paras"] # 兼容0.5.0及以下版本的EasySpider
-                    try:
-                        waitElement = self.procedure[node["sequence"][0]]["parameters"]["waitElement"]
-                    except:
-                        waitElement = ""
-                    if node["parameters"]["iframe"]:
-                        node["parameters"]["quickExtractable"] = False # 如果是iframe，那么不可以快速提取
+                if len(node["sequence"]) == 1 and self.procedure[node["sequence"][0]]["option"] == 3 \
+                        and (int(node["parameters"]["loopType"]) == 1 or int(node["parameters"]["loopType"]) == 2):
+                    params = self.procedure[node["sequence"][0]].get("parameters").get("params")
+                    if not params:
+                        params = self.procedure[node["sequence"][0]]["parameters"]["paras"]  # 兼容0.5.0及以下版本的EasySpider
+
+                    waitElement = self.procedure[node["sequence"][0]]["parameters"].get("waitElement", "")
+
+                    if parameters["iframe"]:
+                        parameters["quickExtractable"] = False  # 如果是iframe，那么不可以快速提取
                     else:
-                        node["parameters"]["quickExtractable"] = True # 先假设可以快速提取
-                    if node["parameters"]["skipCount"] > 0:
-                        node["parameters"]["quickExtractable"] = False # 如果有跳过的元素，那么不可以快速提取
+                        parameters["quickExtractable"] = True  # 先假设可以快速提取
+
+                    if parameters["skipCount"] > 0:
+                        parameters["quickExtractable"] = False  # 如果有跳过的元素，那么不可以快速提取
+
                     for param in params:
                         optimizable = detect_optimizable(param, ignoreWaitElement=False, waitElement=waitElement)
-                        try:
-                            iframe = param["iframe"]
-                        except:
-                            param["iframe"] = False
-                        if param["iframe"] and not param["relative"]: # 如果是iframe，那么不可以快速提取
+                        param['iframe'] = param.get('iframe', False)
+                        if param["iframe"] and not param["relative"]:  # 如果是iframe，那么不可以快速提取
                             optimizable = False
-                        if not optimizable: # 如果有一个不满足优化条件，那么就不能快速提取
-                            node["parameters"]["quickExtractable"] = False
+                        if not optimizable:  # 如果有一个不满足优化条件，那么就不能快速提取
+                            parameters["quickExtractable"] = False
                             break
-                    if node["parameters"]["quickExtractable"]:
-                        self.print_and_log("循环操作<" + node["title"] + ">可以快速提取数据")
-                        self.print_and_log("Loop operation <" + node["title"] + "> can extract data quickly")
-                        try:
-                            node["parameters"]["clear"] = self.procedure[node["sequence"][0]]["parameters"]["clear"]
-                        except:
-                            node["parameters"]["clear"] = 0
-                        try:
-                            node["parameters"]["newLine"] = self.procedure[node["sequence"][0]]["parameters"]["newLine"]
-                        except:
-                            node["parameters"]["newLine"] = 1
-                        if int(node["parameters"]["loopType"]) == 1: # 不固定元素列表
+
+                    if parameters["quickExtractable"]:
+                        self.print_and_log(f"循环操作<{node['title']}>可以快速提取数据")
+                        self.print_and_log(f"Loop operation <{node['title']}> can extract data quickly")
+                        parameters["clear"] = self.procedure[node["sequence"][0]]["parameters"].get("clear", 0)
+                        parameters["newLine"] = self.procedure[node["sequence"][0]]["parameters"].get("newLine", 1)
+
+                        if int(node["parameters"]["loopType"]) == 1:  # 不固定元素列表
                             node["parameters"]["baseXPath"] = node["parameters"]["xpath"]
-                        elif int(node["parameters"]["loopType"]) == 2: # 固定元素列表
+                        elif int(node["parameters"]["loopType"]) == 2:  # 固定元素列表
                             node["parameters"]["baseXPath"] = node["parameters"]["pathList"]
                         node["parameters"]["quickParams"] = []
                         for param in params:
                             content_type = ""
-                            if param["relativeXPath"].find("/@href") >= 0 or param["relativeXPath"].find("/text()") >= 0 or param["relativeXPath"].find(
-                                    "::text()") >= 0:
+                            if param["relativeXPath"].find("/@href") >= 0 or param["relativeXPath"].find("/text()") >= 0 \
+                                    or param["relativeXPath"].find("::text()") >= 0:
                                 content_type = ""
                             elif param["nodeType"] == 2:
                                 content_type = "//@href"
-                            elif param["nodeType"] == 4: # 图片链接
+                            elif param["nodeType"] == 4:  # 图片链接
                                 content_type = "//@src"
                             elif param["contentType"] == 1:
                                 content_type = "/text()"
                             elif param["contentType"] == 0:
                                 content_type = "//text()"
-                            if param["relative"]: # 如果是相对XPath
+                            if param["relative"]:  # 如果是相对XPath
                                 xpath = "." + param["relativeXPath"] + content_type
                             else:
                                 xpath = param["relativeXPath"] + content_type
@@ -443,6 +369,7 @@ class BrowserThread(Thread):
                                 "nodeType": param["nodeType"],
                                 "default": param["default"],
                             })
+            self.procedure[index_node]["parameters"] = parameters
         self.print_and_log("预处理完成|Preprocess completed")
 
     def readFromExcel(self):
@@ -559,7 +486,10 @@ class BrowserThread(Thread):
         self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
         self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
         time.sleep(quitWaitTime)
-        self.browser.quit()
+        try:
+            self.browser.quit()
+        except:
+            pass
         self.print_and_log("正在清理临时用户目录……|Cleaning up temporary user directory...")
         try:
             shutil.rmtree(self.option["tmp_user_data_folder"])
@@ -775,18 +705,20 @@ class BrowserThread(Thread):
             self.browser.set_script_timeout(max_wait_time)
             try:
                 output = self.browser.execute_script(code)
-            except:
+            except Exception as e:
                 output = ""
-                self.recordLog("JavaScript execution failed")
+                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", str(e))
+                self.print_and_log("Error executing the following code:" + code, ", error is:", str(e))
         elif int(codeMode) == 2:
             self.recordLog("Execute JavaScript for element:" + code)
             self.recordLog("对元素执行JavaScript:" + code)
             self.browser.set_script_timeout(max_wait_time)
             try:
                 output = self.browser.execute_script(code, element)
-            except:
+            except Exception as e:
                 output = ""
-                self.recordLog("JavaScript execution failed")
+                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", str(e))
+                self.print_and_log("Error executing the following code:" + code, ", error is:", str(e))
         elif int(codeMode) == 5:
             try:
                 code = readCode(code)
@@ -796,9 +728,9 @@ class BrowserThread(Thread):
                 self.recordLog("执行下面的代码:" + code)
                 self.recordLog("Execute the following code:" + code)
             except Exception as e:
-                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", e)
+                self.print_and_log("执行下面的代码时出错:" + code, "，错误为：", str(e))
                 self.print_and_log("Error executing the following code:" +
-                                   code, ", error is:", e)
+                                   code, ", error is:", str(e))
         elif int(codeMode) == 6:
             try:
                 code = readCode(code)
@@ -1216,6 +1148,14 @@ class BrowserThread(Thread):
         self.history["handle"] = thisHandle
         thisHistoryURL = self.browser.current_url
         # 快速提取处理
+        # start = time.time()
+        try:
+            tree = html.fromstring(self.browser.page_source)
+        except Exception as e:
+            self.print_and_log("解析页面时出错，将切换普通提取模式|Error parsing page, will switch to normal extraction mode")
+            node["parameters"]["quickExtractable"] = False
+        # end = time.time()
+        # print("解析页面秒数：", end - start)
         if node["parameters"]["quickExtractable"]:
             self.browser.switch_to.default_content() # 切换到主页面
             tree = html.fromstring(self.browser.page_source)
@@ -2252,7 +2192,8 @@ if __name__ == '__main__':
         "server_address": "http://localhost:8074",
         "keyboard": True,  # 是否监听键盘输入
         "pause_key": "p",  # 暂停键
-        "version": "0.6.2",
+        "version": "0.6.3",
+        "docker_driver": "",
     }
     c = Config(config)
     print(c)
@@ -2389,9 +2330,13 @@ if __name__ == '__main__':
         print("id: ", id)
         if c.read_type == "remote":
             print("remote")
-            content = requests.get(
+            try:
+                content = requests.get(
                 c.server_address + "/queryExecutionInstance?id=" + str(id))
-            service = json.loads(content.text)  # 加载服务信息
+                service = json.loads(content.text)  # 加载服务信息
+            except:
+                print("Cannot connect to the server, please make sure that the EasySpider Main Program is running, or you can change the --read_type parameter to 'local' to read the task information from the local task file without keeping the EasySpider Main Program running.")
+                print("无法连接到服务器，请确保EasySpider主程序正在运行，或者您可以将--read_type参数更改为'local'，以实现从本地任务文件中读取任务信息而无需保持EasySpider主程序运行。")
         else:
             print("local")
             local_folder = os.path.join(os.getcwd(), "execution_instances")
@@ -2442,8 +2387,17 @@ if __name__ == '__main__':
             except:
                 browser = "chrome"
             if browser == "chrome":
-                selenium_service = Service(executable_path=driver_path)
-                browser_t = MyChrome(service=selenium_service, options=options)
+                if c.docker_driver == "":
+                    print("Using local driver")
+                    selenium_service = Service(executable_path=driver_path)
+                    browser_t = MyChrome(service=selenium_service, options=options, mode='local_driver')
+                else:
+                    print("Using remote driver")
+                    # Use docker driver, default address is http://localhost:4444/wd/hub
+                    # Headless mode
+                    # options.add_argument("--headless")
+                    # print("Headless mode")
+                    browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
             elif browser == "edge":
                 from selenium.webdriver.edge.service import Service as EdgeService
                 from selenium.webdriver.edge.options import Options as EdgeOptions
@@ -2504,6 +2458,7 @@ if __name__ == '__main__':
         #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
     try:
+        from pynput.keyboard import Key, Listener
         if c.keyboard:
             with Listener(on_press=on_press_creator(press_time, event),
                           on_release=on_release_creator(event, press_time)) as listener:

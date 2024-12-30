@@ -1,9 +1,28 @@
 import $ from "jquery";
 import Vue from "vue";
-import {global, getOS, readXPath, addEl, clearEl, clearReady, handleElement, clearParameters, generateParameters, generateMultiParameters, handleDescendents, generateValTable, findRelated, pushToReadyList, readyToList, combineXpath, relatedTest} from "./global.js";
+import {
+    global,
+    getOS,
+    readXPath,
+    addEl,
+    clearEl,
+    clearReady,
+    handleElement,
+    clearParameters,
+    generateParameters,
+    generateMultiParameters,
+    handleDescendents,
+    generateValTable,
+    findRelated,
+    pushToReadyList,
+    readyToList,
+    combineXpath,
+    relatedTest,
+    LANG
+} from "./global.js";
 import ToolKit from "./toolkit.vue";
 import iframe from "./iframe.vue";
-
+import {createNotification} from './trail.js';
 
 //表现逻辑层的处理
 
@@ -316,11 +335,16 @@ function generateToolkit() {
 //Vue元素
 generateToolkit();
 
+function closeToolkit() {
+    toolkit.style.display = "none"; // 隐藏元素
+    createNotification(LANG("EasySpider操作控制台已隐藏，可点击浏览器右上角扩展程序区域的EasySpider图标重新打开。", "EasySpider Toolkit is hidden. Click the EasySpider icon in the extension list (upper right corner) of the browser to reopen."));
+}
+
 let closeButton = document.getElementById("closeButton");
 closeButton.addEventListener("click", function() {
-    toolkit.style.display = "none"; // 隐藏元素
+    closeToolkit();
 });
 let closeButtonLeft = document.getElementById("closeButtonLeft");
 closeButtonLeft.addEventListener("click", function() {
-    toolkit.style.display = "none"; // 隐藏元素
+    closeToolkit();
 });

@@ -30,7 +30,7 @@ def update_file_version(file_path, new_version, key="当前版本/Current Versio
             file.write(line)
 
 
-version = "0.6.2"
+version = "0.6.3"
 
 # py html js
 
@@ -47,7 +47,8 @@ if __name__ == "__main__":
 
     # index.html
     file_path = "./src/index.html"
-    update_file_version(file_path, version, key="当前版本/Current Version: <b>v")
+    update_file_version(file_path, version, key="软件当前版本：<b>v")
+    update_file_version(file_path, version, key="Current Version: <b>v")
 
     # package.json
     file_path = "./package.json"

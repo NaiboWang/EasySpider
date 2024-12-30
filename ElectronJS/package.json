@@ -1,7 +1,7 @@
 {
     "name": "easy-spider",
     "productName": "EasySpider",
-    "version": "0.6.2",
+    "version": "0.6.3",
     "icon": "./favicon",
     "description": "NoCode Visual Web Crawler",
     "main": "main.js",
@@ -39,8 +39,8 @@
         "multer": "^1.4.5-lts.1",
         "node-abi": "^3.52.0",
         "node-window-manager": "^2.2.4",
-        "selenium-webdriver": "^4.16.0",
-        "ws": "^8.17.1",
+        "selenium-webdriver": "^4.27.0",
+        "ws": "^8.18.0",
         "xlsx": "^0.18.5"
     },
     "config": {
@@ -67,7 +67,7 @@
             ],
             "packagerConfig": {
                 "icon": "./favicon",
-                "appVersion": "0.6.2",
+                "appVersion": "0.6.3",
                 "name": "EasySpider",
                 "executableName": "EasySpider",
                 "appCopyright": "Naibo Wang (naibowang@foxmail.com)",

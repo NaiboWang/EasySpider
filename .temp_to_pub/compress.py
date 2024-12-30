@@ -64,7 +64,7 @@ def compress_folder_to_7z_split(folder_path, output_file):
         except:
             subprocess.call(["7zz", "a", "-v95m", output_file, folder_path])
 
-easyspider_version = "0.6.2"
+easyspider_version = "0.6.3"
 
 if __name__ == "__main__":
 
