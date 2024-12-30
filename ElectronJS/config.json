@@ -1,1 +1,1 @@
-{"webserver_address":"http://localhost","webserver_port":8074,"user_data_folder":"./user_data","debug":false,"lang":"en","copyright":1,"sys_arch":"x64","mysql_config_path":"./mysql_config.json","absolute_user_data_folder":"D:\\Document\\Projects\\EasySpider\\ElectronJS\\user_data"}
+{"webserver_address":"http://localhost","webserver_port":8074,"user_data_folder":"./user_data","debug":false,"copyright":1,"sys_version":"x64","mysql_config_path":"./mysql_config.json","absolute_user_data_folder":"D:\\Documents\\Projects\\EasySpider\\ElectronJS\\user_data","lang":"zh"}
