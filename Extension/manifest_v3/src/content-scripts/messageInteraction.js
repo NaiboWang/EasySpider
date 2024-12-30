@@ -27,6 +27,10 @@ global.ws.onmessage = function (evt) {
         clearEl();
     } else if (evt["type"] == "trial") {
         trial(evt);
+    } else if (evt["type"] == "showAllToolboxes") {
+        document.getElementById("wrapperToolkit").style.display = "block";
+    } else if (evt["type"] == "hideAllToolboxes") {
+        document.getElementById("wrapperToolkit").style.display = "none";
     }
 };
 
