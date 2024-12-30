@@ -31,7 +31,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from pynput.keyboard import Key, Listener
 from datetime import datetime
 import io  # 遇到错误退出时应执行的代码
 import json
@@ -559,7 +558,10 @@ class BrowserThread(Thread):
         self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
         self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
         time.sleep(quitWaitTime)
-        self.browser.quit()
+        try:
+            self.browser.quit()
+        except:
+            pass
         self.print_and_log("正在清理临时用户目录……|Cleaning up temporary user directory...")
         try:
             shutil.rmtree(self.option["tmp_user_data_folder"])
@@ -2253,6 +2255,7 @@ if __name__ == '__main__':
         "keyboard": True,  # 是否监听键盘输入
         "pause_key": "p",  # 暂停键
         "version": "0.6.2",
+        "docker_driver": "",
     }
     c = Config(config)
     print(c)
@@ -2442,8 +2445,17 @@ if __name__ == '__main__':
             except:
                 browser = "chrome"
             if browser == "chrome":
-                selenium_service = Service(executable_path=driver_path)
-                browser_t = MyChrome(service=selenium_service, options=options)
+                if c.docker_driver == "":
+                    print("Using local driver")
+                    selenium_service = Service(executable_path=driver_path)
+                    browser_t = MyChrome(service=selenium_service, options=options, mode='local_driver')
+                else:
+                    print("Using remote driver")
+                    # Use docker driver, default address is http://localhost:4444/wd/hub
+                    # Headless mode
+                    options.add_argument("--headless")
+                    print("Headless mode")
+                    browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
             elif browser == "edge":
                 from selenium.webdriver.edge.service import Service as EdgeService
                 from selenium.webdriver.edge.options import Options as EdgeOptions
@@ -2504,6 +2516,7 @@ if __name__ == '__main__':
         #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
     try:
+        from pynput.keyboard import Key, Listener
         if c.keyboard:
             with Listener(on_press=on_press_creator(press_time, event),
                           on_release=on_release_creator(event, press_time)) as listener:

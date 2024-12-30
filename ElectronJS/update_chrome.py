@@ -48,7 +48,7 @@ def copy_folder(source_folder, destination_folder):
 
 
 def get_chrome_version():
-    version = "124"
+    version = "131"
     if sys.platform == "win32":
         version_re = re.compile(r"^[1-9]\d*\.\d*.\d*")
         try:
