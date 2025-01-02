@@ -1,6 +1,26 @@
-由于MacOS复杂的安全性设置，初次打开软件会显示未验证开发者从而不允许打开的问题，请参考以下视频来查看MacOS版本如何打开软件和执行任务：https://www.bilibili.com/video/BV1E34y137fT/
+由于MacOS复杂的安全性设置，初次打开软件会显示未验证开发者从而不允许打开的问题，请通过以下方式来解锁：
 
-主要步骤如下：
+1. 打开系统terminal命令行窗口。
+
+2. 切换到EasySpider软件目录，如：
+
+cd ~/Downloads/EasySpider_MacOS
+
+3. 在EasySpider目录下，使用以下命令修改软件包属性：
+
+bash first_time_run.sh
+
+即可一键解锁并正常使用EasySpider，包括设计阶段程序和执行阶段程序。
+
+
+执行命令时如果出现类似下面的错误可以忽略，执行完成之后即可打开软件：
+
+xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node_modules/node-window-manager/build/node_gyp_bins/python3'
+
+
+
+
+以下是另一种方案，请参考以下视频来查看MacOS版本如何打开软件和执行任务：https://www.bilibili.com/video/BV1E34y137fT/
 
 - 设计阶段 - Apple Arm芯片版MacOS
 

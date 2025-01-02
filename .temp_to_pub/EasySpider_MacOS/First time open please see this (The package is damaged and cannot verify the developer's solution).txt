@@ -1,8 +1,29 @@
-Due to the complex security settings of MacOS, the issue of being unable to open software due to the "unverified developer" message may occur upon the first attempt to open the software. Please refer to the following GitHub document to see how to open software and perform tasks on your MacOS version: 
+Due to MacOS's complex security settings, software downloaded for the first time will warn that the developer is unverified and will not allow the application to run. Please follow these steps to unlock:
 
-https://github.com/NaiboWang/EasySpider/wiki/MacOS-Guide
+1. Open the system Terminal.
 
-The main steps are as follows:
+2. Navigate to the EasySpider software directory, such as:
+
+cd ~/Downloads/EasySpider_MacOS
+
+3. In the EasySpider directory, use the following command to modify the software's attributes:
+
+bash first_time_run.sh
+
+
+
+This will unlock EasySpider for both design and execution stages.
+
+If you encounter errors such as the one below during the command execution, they can be ignored, and you may proceed to open the software after the command completes:
+
+xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node_modules/node-window-manager/build/node_gyp_bins/python3'
+
+
+
+
+
+ 
+For another solution, refer to this video on how to open software and execute tasks in MacOS version: https://www.bilibili.com/video/BV1E34y137fT/
 
 - Design phase - Apple Arm chip version of MacOS
 
