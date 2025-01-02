@@ -6,7 +6,7 @@ Due to MacOS's complex security settings, software downloaded for the first time
 
 cd ~/Downloads/EasySpider_MacOS
 
-3. In the EasySpider directory, use the following command to modify the software's attributes:
+3. In the EasySpider directory, run the `first_time_run.sh` script to modify the package properties by using the following command:
 
 bash first_time_run.sh
 

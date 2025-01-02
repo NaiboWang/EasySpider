@@ -2325,8 +2325,8 @@ if __name__ == '__main__':
             else:
                 options.add_argument(
                     f'--user-data-dir={c.user_folder}')
-                print(f"Use specifed user data folder: {c.user_folder}", ", please note if you are using docker, this user folder path should be the path inside the docker container.")
-                print(f"使用指定的用户信息目录: {c.user_folder}", "，请注意如果您正在使用docker，此用户文件夹路径应是容器内的路径。")
+                print(f"Use specifed user data folder: {c.user_folder}, please note if you are using docker, this user folder path should be the path inside the docker container.")
+                print(f"使用指定的用户信息目录: {c.user_folder}，请注意如果您正在使用docker，此用户文件夹路径应是容器内的路径。")
     print(
         "如果报错Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally，说明有之前运行的Chrome实例没有正常关闭，请关闭之前打开的所有Chrome实例后再运行程序即可。")
     print(

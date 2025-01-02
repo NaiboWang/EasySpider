@@ -6,7 +6,7 @@
 
 cd ~/Downloads/EasySpider_MacOS
 
-3. 在EasySpider目录下，使用以下命令修改软件包属性：
+3. 在EasySpider目录下，使用以下命令运行目录下的`first_time_run.sh`脚本修改软件包属性：
 
 bash first_time_run.sh
 
