@@ -20,9 +20,10 @@ rm -r ../.temp_to_pub/EasySpider_MacOS/EasySpider.app/Contents/Resources/app/use
 rm -r ../.temp_to_pub/EasySpider_MacOS/EasySpider.app/Contents/Resources/app/TempUserDataFolder
 rm -rf ../.temp_to_pub/EasySpider_MacOS/Code
 mkdir ../.temp_to_pub/EasySpider_MacOS/Code
-cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_MacOS/Code
-cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_MacOS/Code
-cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_MacOS/Code
+# cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_MacOS/Code
+# cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_MacOS/Code
+# cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_MacOS/Code
+cp ../ExecuteStage/*.py ../.temp_to_pub/EasySpider_MacOS/Code
 cp ../ExecuteStage/requirements.txt ../.temp_to_pub/EasySpider_MacOS/Code
 cp ../ExecuteStage/Readme.md ../.temp_to_pub/EasySpider_MacOS/Code
 cp ../ExecuteStage/myCode.py ../.temp_to_pub/EasySpider_MacOS

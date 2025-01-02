@@ -11,9 +11,10 @@ del out\EasySpider\resources\app\vs_BuildTools.exe
 move out\EasySpider ..\.temp_to_pub\EasySpider_windows_x32\EasySpider
 rmdir /s /q ..\.temp_to_pub\EasySpider_windows_x32\Code
 mkdir ..\.temp_to_pub\EasySpider_windows_x32\Code
-copy ..\ExecuteStage\easyspider_executestage.py ..\.temp_to_pub\EasySpider_windows_x32\Code
-copy ..\ExecuteStage\myChrome.py ..\.temp_to_pub\EasySpider_windows_x32\Code
-copy ..\ExecuteStage\utils.py ..\.temp_to_pub\EasySpider_windows_x32\Code
+@REM copy ..\ExecuteStage\easyspider_executestage.py ..\.temp_to_pub\EasySpider_windows_x32\Code
+@REM copy ..\ExecuteStage\myChrome.py ..\.temp_to_pub\EasySpider_windows_x32\Code
+@REM copy ..\ExecuteStage\utils.py ..\.temp_to_pub\EasySpider_windows_x32\Code
+copy ..\ExecuteStage\*.py ..\.temp_to_pub\EasySpider_windows_x32\Code
 copy ..\ExecuteStage\requirements.txt ..\.temp_to_pub\EasySpider_windows_x32\Code
 copy ..\ExecuteStage\Readme.md ..\.temp_to_pub\EasySpider_windows_x32\Code
 copy ..\ExecuteStage\myCode.py ..\.temp_to_pub\EasySpider_windows_x32

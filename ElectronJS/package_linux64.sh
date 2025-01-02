@@ -20,9 +20,10 @@ rm out/EasySpider/resources/app/vs_BuildTools.exe
 mv out/EasySpider ../.temp_to_pub/EasySpider_Linux_x64/EasySpider
 rm -rf ../.temp_to_pub/EasySpider_Linux_x64/Code
 mkdir ../.temp_to_pub/EasySpider_Linux_x64/Code
-cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_Linux_x64/Code
-cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_Linux_x64/Code
-cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+# cp ../ExecuteStage/easyspider_executestage.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+# cp ../ExecuteStage/myChrome.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+# cp ../ExecuteStage/utils.py ../.temp_to_pub/EasySpider_Linux_x64/Code
+cp ../ExecuteStage/*.py ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/requirements.txt ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/Readme.md ../.temp_to_pub/EasySpider_Linux_x64/Code
 cp ../ExecuteStage/myCode.py ../.temp_to_pub/EasySpider_Linux_x64
