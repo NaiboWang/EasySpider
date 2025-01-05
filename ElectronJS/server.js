@@ -215,7 +215,7 @@ exports.start = function (port = 8074) {
               let item = {
                 id: task.id,
                 name: task.name,
-                url: task.url,
+                url: task.links.split("\n")[0],
                 mtime: stat.mtime,
                 links: task.links,
                 desc: task.desc,
