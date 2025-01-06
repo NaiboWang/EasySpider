@@ -245,6 +245,7 @@ async function findElementAcrossAllWindows(
     let handles = await driver.getAllWindowHandles();
     // console.log("handles", handles);
     let content_handle = current_handle;
+    let old_handle = current_handle;
     let id = -1;
     try {
         id = msg.message.id;
@@ -310,7 +311,7 @@ async function findElementAcrossAllWindows(
             if (h != null && handles.includes(h)) {
                 await driver.switchTo().window(h);
                 current_handle = h;
-                console.log("switch to handle: ", h);
+                console.log("Switch to handle: ", h);
             }
             element = await findElement(driver, By.xpath, xpath, iframe);
             break;
@@ -327,6 +328,12 @@ async function findElementAcrossAllWindows(
         }
     }
     if (element == null && notifyBrowser) {
+        // 如果找不到元素，切换回原来的窗口
+        if (old_handle != null && handles.includes(old_handle)) {
+                await driver.switchTo().window(old_handle);
+                current_handle = old_handle;
+                console.log("Switch to handle: ", old_handle);
+        }
         notify_browser(
             "无法找到元素，请检查XPath是否正确：" + xpath,
             "Cannot find the element, please check if the XPath is correct: " + xpath,
