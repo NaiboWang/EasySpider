@@ -1136,7 +1136,7 @@ class BrowserThread(Thread):
         return index, element
 
     # 对循环的处理
-    def loopExecute(self, node, loopValue, clickPath="", index=0):
+    def loopExecute(self, node, loopValue, loopPath="", index=0):
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
         thisHandle = self.browser.current_window_handle  # 记录本次循环内的标签页的ID
         try:
