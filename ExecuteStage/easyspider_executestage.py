@@ -108,6 +108,8 @@ class BrowserThread(Thread):
             os.mkdir(self.downloadFolder + "/files")
         if not os.path.exists(self.downloadFolder + "/images"):
             os.mkdir(self.downloadFolder + "/images")
+        if not os.path.exists(self.downloadFolder + "/screenshots"):
+            os.mkdir(self.downloadFolder + "/screenshots")
         self.getDataStep = 0
         self.startSteps = 0
         try:
@@ -1870,7 +1872,7 @@ class BrowserThread(Thread):
             # 调整浏览器窗口的大小
             self.browser.set_window_size(width, height)
             element.screenshot("Data/Task_" + str(self.id) + "/" + self.saveName +
-                               "/" + str(time.time()) + ".png")
+                               "/screenshots/" + str(time.time()) + ".png")
             # 截图完成后，将浏览器的窗口大小设置为原来的大小
             self.browser.set_window_size(width, height)
         elif p["contentType"] == 8:
