@@ -32,7 +32,7 @@
         "@types/chrome": "0.0.164",
         "@types/fs-extra": "^9.0.13",
         "@types/node": "^16.11.10",
-        "@vitejs/plugin-vue": "^1.9.3",
+        "@vitejs/plugin-vue": "^5.2.1",
         "esno": "^0.12.1",
         "firebase": "^10.12.2",
         "fs-extra": "^10.0.0",
