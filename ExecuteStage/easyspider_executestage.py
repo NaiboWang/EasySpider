@@ -73,13 +73,13 @@ desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class BrowserThread(Thread):
-    def __init__(self, browser_t, id, service, version, event, saveName, config, option):
+    def __init__(self, browser_t, id, service, version, event, saveName, config, option, commandline_config=""):
         Thread.__init__(self)
         self.logs = io.StringIO()
         self.log = bool(service.get("recordLog", True))
         self.browser = browser_t
         self.option = option
-        self.config = config
+        self.commandline_config = commandline_config
         self.version = version
         self.totalSteps = 0
         self.id = id
@@ -108,6 +108,8 @@ class BrowserThread(Thread):
             os.mkdir(self.downloadFolder + "/files")
         if not os.path.exists(self.downloadFolder + "/images"):
             os.mkdir(self.downloadFolder + "/images")
+        if not os.path.exists(self.downloadFolder + "/screenshots"):
+            os.mkdir(self.downloadFolder + "/screenshots")
         self.getDataStep = 0
         self.startSteps = 0
         try:
@@ -1136,7 +1138,7 @@ class BrowserThread(Thread):
         return index, element
 
     # 对循环的处理
-    def loopExecute(self, node, loopValue, clickPath="", index=0):
+    def loopExecute(self, node, loopValue, loopPath="", index=0):
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
         thisHandle = self.browser.current_window_handle  # 记录本次循环内的标签页的ID
         try:
@@ -1868,9 +1870,17 @@ class BrowserThread(Thread):
             width = size["width"]
             height = size["height"]
             # 调整浏览器窗口的大小
-            self.browser.set_window_size(width, height)
+            if self.commandline_config["headless"] == 1: # 无头模式下，截取整个网页的高度
+                page_width = self.browser.execute_script(
+                    "return document.body.scrollWidth")
+                page_height = self.browser.execute_script(
+                    "return document.body.scrollHeight")
+                self.browser.set_window_size(page_width, page_height)
+                time.sleep(1)
+            else:
+                self.browser.set_window_size(width, height)
             element.screenshot("Data/Task_" + str(self.id) + "/" + self.saveName +
-                               "/" + str(time.time()) + ".png")
+                               "/screenshots/" + str(time.time()) + ".png")
             # 截图完成后，将浏览器的窗口大小设置为原来的大小
             self.browser.set_window_size(width, height)
         elif p["contentType"] == 8:
@@ -2181,7 +2191,7 @@ class BrowserThread(Thread):
 if __name__ == '__main__':
     # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
     # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
-    config = {
+    commandline_config = {
         "ids": [0],
         "saved_file_name": "",
         "user_data": False,
@@ -2196,7 +2206,7 @@ if __name__ == '__main__':
         "docker_driver": "",
         "user_folder": "",
     }
-    c = Config(config)
+    c = Config(commandline_config)
     print(c)
     options = webdriver.ChromeOptions()
     driver_path = "chromedriver.exe"
@@ -2438,7 +2448,7 @@ if __name__ == '__main__':
         event = Event()
         event.set()
         thread = BrowserThread(browser_t, id, service,
-                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i])
+                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i], commandline_config=c)
         print("Thread with task id: ", id, " is created")
         threads.append(thread)
         thread.start()
