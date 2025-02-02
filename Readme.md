@@ -18,18 +18,16 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [亮数据BrightData](https://get.brightdata.com/naibowang)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
 
-
-<a target="_blank" href="https://www.proxy302.com/?ref=wangnaibo"><img src="media/Proxy302.jpg" width=850></img></a>
-
-[Proxy302](https://www.proxy302.com/?ref=wangnaibo)是一个全球代理IP自助超市。按需付费，无需套餐捆绑购买；无阶梯式定价，充值即可使用所有类型的代理IP；免费测试，注册获取$1测试额度。覆盖全球240＋国家和地区，6500万个住宅IP可供选择。Proxy302可配合EasySpider进行数据采集。
-
-
 <a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=850></img></a>
 
 <!-- [![Capsolver](media/capsolver.jpg)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) -->
 
 [Capsolver.com](https://www.capsolver.com/?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) is an AI-powered service that specializes in solving various types of captchas automatically. It supports captchas such as [reCAPTCHA V2](https://docs.capsolver.com/guide/captcha/ReCaptchaV2.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [reCAPTCHA V3](https://docs.capsolver.com/guide/captcha/ReCaptchaV3.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [DataDome](https://docs.capsolver.com/guide/captcha/DataDome.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [AWS Captcha](https://docs.capsolver.com/guide/captcha/awsWaf.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [Geetest](https://docs.capsolver.com/guide/captcha/Geetest.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), and Cloudflare [Captcha](https://docs.capsolver.com/guide/antibots/cloudflare_turnstile.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) / [Challenge 5s](https://docs.capsolver.com/guide/antibots/cloudflare_challenge.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [Imperva / Incapsula](https://docs.capsolver.com/guide/antibots/imperva.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), among others.
 For developers, Capsolver offers API integration options detailed in their [documentation](https://docs.capsolver.com/?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), facilitating the integration of captcha solving into applications. They also provide browser extensions for [Chrome](https://chromewebstore.google.com/detail/captcha-solver-auto-captc/pgojnojmmhpofjgdmaebadhbocahppod) and [Firefox](https://addons.mozilla.org/es/firefox/addon/capsolver-captcha-solver/), making it easy to use their service directly within a browser. Different pricing packages are available to accommodate varying needs, ensuring flexibility for users.
+
+<a target="_blank" href="https://www.proxy302.com/?ref=wangnaibo"><img src="media/Proxy302.jpg" width=850></img></a>
+
+[Proxy302](https://www.proxy302.com/?ref=wangnaibo)是一个全球代理IP自助超市。按需付费，无需套餐捆绑购买；无阶梯式定价，充值即可使用所有类型的代理IP；免费测试，注册获取$1测试额度。覆盖全球240＋国家和地区，6500万个住宅IP可供选择。Proxy302可配合EasySpider进行数据采集。
 
 <a target="_blank" href="https://www.123proxy.cn/?utm_source=EasySpider"><img src="media/123proxy.png" width=850></img></a>
 
