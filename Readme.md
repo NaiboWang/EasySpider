@@ -71,7 +71,7 @@ At the same time, if you select the 'Loop-click every element' option after sele
 
 More features please scroll to the bottom of this page to view.
 
-## 支持作者/Support Author
+<!-- ## 支持作者/Support Author
 
 易采集EasySpider是一款完全免费无广告的开源软件，软件开发和维护全靠作者用爱发电，因此您可以选择支持作者让作者有更多的热情和精力维护此软件，或者您使用了此软件进行了盈利，欢迎您通过下面的方式支持作者：
 
@@ -82,7 +82,7 @@ More features please scroll to the bottom of this page to view.
 
 You can support the author by clicking the **Sponsor** button at right side or pay via paypal: naibowang.
 
-![QRCodes](media/QRCODES.png)
+![QRCodes](media/QRCODES.png) -->
 
 
 ## 文档/Documentation
