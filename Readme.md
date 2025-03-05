@@ -39,9 +39,9 @@ For developers, Capsolver offers API integration options detailed in their [docu
 
 ## 官方网站/Official Website
 
-访问易采集官网：[www.easyspider.cn](www.easyspider.cn)
+访问易采集官网：[www.easyspider.cn](http://www.easyspider.cn)
 
-Visit the official website of EasySpider: [www.easyspider.net](www.easyspider.net)
+Visit the official website of EasySpider: [www.easyspider.net](http://www.easyspider.net)
 
 ## 软件使用示例/Software Usage Example
 
