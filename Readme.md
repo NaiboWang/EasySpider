@@ -1,14 +1,16 @@
 # 易采集/EasySpider: Visual Code-Free Web Crawler
 
-一个可视化浏览器自动化测试/数据采集/爬虫软件，可以使用图形化界面，无代码可视化的设计和执行任务。只需要在网页上选择自己想要操作的内容并根据提示框操作即可完成任务的设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
+一个完全免费（**包括商业使用**）的可视化浏览器自动化测试/数据采集/爬虫软件，可以使用图形化界面，无代码可视化的设计和执行任务。只需要在网页上选择自己想要操作的内容并根据提示框操作即可完成任务的设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
 
-A visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
+A completely free (including for **commercial use**) visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
+
+
 
 <a href="https://trendshift.io/repositories/3367" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3367" alt="NaiboWang%2FEasySpider | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 ## 下载易采集/Download EasySpider
 
-进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
+进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.net/download.html)。
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
@@ -75,9 +77,9 @@ At the same time, if you select the 'Loop-click every element' option after sele
 
 More features please scroll to the bottom of this page to view.
 
-<!-- ## 支持作者/Support Author
+## 支持作者/Support Author
 
-易采集EasySpider是一款完全免费无广告的开源软件，软件开发和维护全靠作者用爱发电，因此您可以选择支持作者让作者有更多的热情和精力维护此软件，或者您使用了此软件进行了盈利，欢迎您通过下面的方式支持作者：
+易采集EasySpider是一款完全免费且使用中无广告的开源软件，软件开发和维护全靠作者用爱发电，因此您可以选择支持作者让作者有更多的热情和精力维护此软件，或者您使用了此软件进行了盈利，欢迎您通过下面的方式支持作者：
 
 1. Github Sponsor：直接点击右侧**Sponsor**按钮赞助。
 2. 支付宝账号：naibowang@foxmail.com，也可以扫描下方二维码。
@@ -86,7 +88,7 @@ More features please scroll to the bottom of this page to view.
 
 You can support the author by clicking the **Sponsor** button at right side or pay via paypal: naibowang.
 
-![QRCodes](media/QRCODES.png) -->
+![QRCodes](media/QRCODES.png)
 
 
 ## 文档/Documentation
@@ -166,6 +168,42 @@ For the crawler operations of government and military websites, **the author wil
 <!-- [杭州天勤知识产权代理有限公司](http://www.tqip.com/)进行专利授权等付费操作。 -->
 
 <!-- At the same time, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, etc., please contact [Hangzhou Tianqin Intellectual Property Agency Co., Ltd.](http://www.tqip.com/) for patent authorization and other paid operations. -->
+
+EasySpider遵循AGPL-3.0协议，任何个人和企业都可以免费使用软件及使用软件源代码进行二次开发，无需联系作者进行商业（专利）授权，但需要注意AGPL-3.0协议的以下规则：
+
+EasySpider complies with the AGPL-3.0 agreement. Any individual or enterprise can use the software for free and use the software source code for secondary development without contacting the author for commercial (patent) authorization. However, it is necessary to pay attention to the following rules of the AGPL-3.0 agreement:
+
+### 1. Copyleft（传染性） / Copyleft (Viral Clause)
+- **衍生作品 / Derivative Works**  
+  - 任何基于 AGPL 代码的修改或衍生作品，必须**以相同许可证（AGPL-3.0）发布**。  
+  - Any modifications or derivative works based on AGPL code must be **licensed under AGPL-3.0**.  
+- **联动范围 / Scope of Copyleft**  
+  - 若 AGPL 代码与其他代码结合（如静态链接、紧密集成），整个作品需遵守 AGPL。  
+  - If AGPL code is combined with other code (e.g., static linking), the entire work must comply with AGPL.  
+
+### 2. 网络使用条款 / Network Use Clause
+- **SaaS 触发开源义务 / SaaS Trigger**  
+  - 若软件以服务形式提供（如网站、API），必须向所有用户公开**完整对应源代码**（包括修改后的代码）。  
+  - If the software is provided as a service (e.g., website, API), the **full corresponding source code** (including modifications) must be made available to all users.  
+- **用户权利 / User Rights**  
+  - 服务的接收者可通过下载或书面请求获取源码。  
+  - Service recipients may obtain the source code via download or written request.  
+
+### 3. 源码提供要求 / Source Code Provision
+- **二进制分发 / Binary Distribution**  
+  - 必须附带源码或提供获取渠道（如下载链接）。  
+  - Source code must be included or a download link provided.  
+- **网络服务场景 / Network Service Scenario**  
+  - 需通过服务界面**显式提供源码链接**，或向用户书面承诺提供源码。  
+  - The service interface must **explicitly provide a source code link** or offer a written offer for source code.  
+
+### 4. 专利授权 / Patent Grant
+- 贡献者自动授予用户与软件相关的专利许可，禁止专利诉讼。  
+- Contributors automatically grant users patent rights related to the software, and prohibit patent litigation.  
+
+### 5. 免责声明 / Disclaimer
+- 软件按“原样”提供，作者**不承担任何责任**（无担保条款）。  
+- The software is provided "as is" with **no warranties or liabilities**.  
 
 
 ## 答疑QQ群
