@@ -161,9 +161,9 @@ This software is for learning and communication only. **It is strictly forbidden
 
 For the crawler operations of government and military websites, **the author will not answer any questions** in order to avoid violating relevant national laws, regulations and policies.
 
-EasySpider遵循AGPL-3.0协议，任何个人和企业都可以免费使用软件及使用软件源代码进行二次开发，无需联系作者进行商业（专利）授权，但需要注意AGPL-3.0协议的以下规则：
+EasySpider遵循AGPL-3.0协议，**任何个人和企业都可以免费使用软件本身或使用源代码进行二次开发，无需联系作者进行商业（专利）授权**，但需要注意AGPL-3.0协议的相关规则：
 
-EasySpider complies with the AGPL-3.0 agreement. Any individual or enterprise can use the software for free and use the software source code for secondary development without contacting the author for commercial (patent) authorization. However, it is necessary to pay attention to the following rules of the AGPL-3.0 agreement:
+EasySpider complies with the AGPL-3.0 agreement. **Any individual or enterprise can use the software for free and use the software source code for secondary development without contacting the author for commercial (patent) authorization.** However, it is necessary to pay attention to the related rules of the AGPL-3.0 agreement:
 
 ### 1. Copyleft（传染性） / Copyleft (Viral Clause)
 - **衍生作品 / Derivative Works**  
