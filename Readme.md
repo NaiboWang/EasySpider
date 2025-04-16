@@ -1,8 +1,8 @@
 # 易采集/EasySpider: Visual Code-Free Web Crawler
 
-一个完全免费（**包括商业使用**）的可视化浏览器自动化测试/数据采集/爬虫软件，可以使用图形化界面，无代码可视化的设计和执行任务。只需要在网页上选择自己想要操作的内容并根据提示框操作即可完成任务的设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
+一个**完全免费（包括商业使用和二次开发）**的可视化浏览器自动化测试/数据采集/爬虫软件，可以使用图形化界面，无代码可视化的设计和执行任务。只需要在网页上选择自己想要操作的内容并根据提示框操作即可完成任务的设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
 
-A completely free (including for **commercial use**) visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
+A **completely free (including for commercial use and secondary development)** visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
 
 
 
@@ -160,14 +160,6 @@ This software is for learning and communication only. **It is strictly forbidden
 对于政府和军事机关等网站的爬虫操作，**作者将不会进行任何答疑**，以免违反国家相关法律法规和政策。
 
 For the crawler operations of government and military websites, **the author will not answer any questions** in order to avoid violating relevant national laws, regulations and policies.
-
-<!-- 同时，软件受到专利权保护，如要用于商业用途，如使用软件进行盈利接单，出售采集到的数据，或将软件集成到自己的系统中等，请邮件联系作者：naibowang@foxmail.com -->
-
-<!-- Meanwhile, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, or integrating the software into your own system, please contact the author by email: naibowang@foxmail.com -->
-
-<!-- [杭州天勤知识产权代理有限公司](http://www.tqip.com/)进行专利授权等付费操作。 -->
-
-<!-- At the same time, the software is protected by patent rights. If it is used for commercial purposes, such as using the software to make profits, selling the collected data, etc., please contact [Hangzhou Tianqin Intellectual Property Agency Co., Ltd.](http://www.tqip.com/) for patent authorization and other paid operations. -->
 
 EasySpider遵循AGPL-3.0协议，任何个人和企业都可以免费使用软件及使用软件源代码进行二次开发，无需联系作者进行商业（专利）授权，但需要注意AGPL-3.0协议的以下规则：
 
