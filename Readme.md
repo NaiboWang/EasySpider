@@ -10,7 +10,7 @@ A **completely free (including for commercial use and secondary development)** v
 
 ## 下载易采集/Download EasySpider
 
-进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.net/download.html)。
+进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
 
