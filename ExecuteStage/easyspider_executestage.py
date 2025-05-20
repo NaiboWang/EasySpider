@@ -190,7 +190,7 @@ class BrowserThread(Thread):
                         i = i + 1
                     self.saveName = self.saveName + '_' + str(i)
                     self.print_and_log("文件已存在，已重命名为", self.saveName)
-        self.writeMode = WriteMode.Create.value   # 写入模式，0为新建，1为追加
+        self.writeMode = WriteMode.Append.value   # 写入模式，0为新建，1为追加
         if self.outputFormat in ['csv', 'txt', 'xlsx']:
             if not os.path.exists(f"Data/Task_{str(self.id)}/{self.saveName}.{self.outputFormat}"):
                 self.OUTPUT.append([])  # 添加表头

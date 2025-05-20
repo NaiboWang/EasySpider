@@ -1,1 +1,8 @@
-{"webserver_address":"http://localhost","webserver_port":8074,"user_data_folder":"./user_data","debug":false,"mysql_config_path":"./mysql_config.json","absolute_user_data_folder":"D:\\Documents\\Projects\\EasySpider\\ElectronJS\\user_data"}
+{
+  "webserver_address": "http://localhost",
+  "webserver_port": 8074,
+  "user_data_folder": "./user_data",
+  "debug": false,
+  "mysql_config_path": "./mysql_config.json",
+  "absolute_user_data_folder": "D:\\Documents\\Projects\\EasySpider\\ElectronJS\\user_data"
+}
