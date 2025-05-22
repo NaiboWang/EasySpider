@@ -36,7 +36,7 @@
         "express": "^4.21.2",
         "formidable": "^3.5.0",
         "http": "^0.0.1-security",
-        "multer": "^1.4.5-lts.1",
+        "multer": "^2.0.0",
         "node-abi": "^3.52.0",
         "node-window-manager": "^2.2.4",
         "selenium-webdriver": "^4.27.0",
