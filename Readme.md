@@ -20,7 +20,7 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
 
-<!-- <a target="_blank" href="https://www.ipwo.net/?code=KK9YVWI2L"><img src="media/IPWO_Proxy.gif" width=850></img></a>
+<a target="_blank" href="https://www.ipwo.net/?code=KK9YVWI2L"><img src="media/IPWO_Proxy.gif" width=850></img></a>
 
 [IPWO](https://www.ipwo.net/?code=KK9YVWI2L)支持免费测试，作为行业领先的代理IP提供商，拥有 9000万+真实住宅IP，覆盖200+国家和地区，支持无限并发，可用率高达99.9%，帮助用户轻松突破地理限制，实现高效、安全的全球网络访问，与EasySpider完美结合，助力数据采集，尽享无缝体验。 -->
 
