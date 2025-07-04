@@ -8,6 +8,11 @@ rm -rf out
 rm -r ../.temp_to_pub/EasySpider_MacOS/EasySpider.app
 npm run make
 unzip out/make/zip/darwin/*64/EasySpider-darwin* -d ../.temp_to_pub/EasySpider_MacOS/
+# 使用 adhoc 签名
+# 这样程序在 macOS 就会显示为“无法验证开发者，你应将其移动到废纸篓”而不是“此应用已损坏，无法打开”了。
+# 这样软件就可以直接在设置-隐私与安全性中批准打开，而不需要 `xattr -d` 强行清除属性
+# 这不是一个真正的签名，只是一个空签名，不能让软件通过门禁认证。
+codesign --force --deep --sign - ../.temp_to_pub/EasySpider_MacOS/EasySpider.app
 # mv out/EasySpider-darwin-*64/EasySpider.app ../.temp_to_pub/EasySpider_MacOS/
 rm ../.temp_to_pub/EasySpider_MacOS/EasySpider.app/Contents/Resources/app/VS_BuildTools.exe
 rm -r ../.temp_to_pub/EasySpider_MacOS/EasySpider.app/Contents/Resources/app/chrome_win64
