@@ -264,7 +264,7 @@ if __name__ == "__main__":
         finally:
             shutil.rmtree("./chromedrivers")
         os.chmod("./chromedriver_mac64", 0o755)
-        os.chmod("./chrome_mac64.app", 0o555)
-        os.chmod("./chrome_mac64.app/Contents/MacOS/Google Chrome", 0o555)
+        os.chmod("./chrome_mac64.app", 0o755)
+        os.chmod("./chrome_mac64.app/Contents/MacOS/Google Chrome", 0o755)
 
     print("Done and don't forget to generate executestage EXEcutable program!")
