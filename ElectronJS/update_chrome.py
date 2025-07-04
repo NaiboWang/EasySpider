@@ -99,8 +99,8 @@ old_driver_version = {
 }
 
 if __name__ == "__main__":
-    #os.system("npm install -g extract-stealth-evasions") # 安装stealth.min.js
-    #os.system("npx extract-stealth-evasions") # 提取stealth.min.js
+    os.system("npm install -g extract-stealth-evasions") # 安装stealth.min.js
+    os.system("npx extract-stealth-evasions") # 提取stealth.min.js
 
     # chromedriver 在 chrome 114 版本之后，提供了一个新的 API 来获取已知的 Chrome 版本和下载链接
     # 之前的版本需要手动维护下载链接
