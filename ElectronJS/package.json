@@ -6,7 +6,7 @@
     "description": "NoCode Visual Web Crawler",
     "main": "main.js",
     "scripts": {
-        "start_direct": "electron .",
+        "start_direct": "NODE_ENV=development electron .",
         "change_version": "node change_version.js",
         "start": "electron-forge start",
         "package": "electron-forge package",

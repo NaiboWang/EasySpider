@@ -9,6 +9,7 @@ const formidable = require("formidable");
 const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
+const { param } = require("express/lib/router");
 
 function travel(dir, callback) {
   fs.readdirSync(dir).forEach((file) => {
@@ -115,6 +116,64 @@ fileServer.listen(8075, () => {
   console.log("Server listening on http://localhost:8075");
 });
 
+
+/**
+ * Write single data and success header to a response and end the response.
+ * @param {Response} res default response object
+ * @param {any} data response data
+ * @param {number} statusCode response status code
+ * @param {string} contentType response content type
+ */
+function writeAndEnd(res, data, statusCode = 200, contentType = 'application/json') {
+  res.writeHead(statusCode, { 'Content-Type': contentType });
+  res.write(data);
+  res.end();
+}
+
+
+/**
+ * Write a success response with JSON content type.
+ * @param {Response} res default response object
+ * @param {any} data response data
+ * @param {string} successMessage success message(optional)
+ */
+function writeSuccess(res, data, successMessage = "") {
+  // Write a success response with JSON content type
+  writeAndEnd(res, JSON.stringify({ success: successMessage, status: true, ...data}), 200, 'application/json');
+}
+
+
+/**
+ * Write an error response with JSON content type.
+ * @param {Response} res default response object
+ * @param {number} errorCode error code
+ * @param {string} errorMessage error message(optional)
+ */
+function writeError(res, errorCode, errorMessage="Internal Server Error") {
+  // Write an error response with JSON content type
+  writeAndEnd(res, JSON.stringify({ error: errorMessage, status: false }), errorCode, 'application/json');
+}
+
+// When error occurs in the handler, it will be caught and logged, and a 500 response will be sent if headers have not been sent yet.
+// This is useful to prevent the server from crashing due to unhandled exceptions in the request handlers
+function safeHandler(handler, res) {
+  return (...args) => {
+    try {
+      handler(...args);
+    } catch (err) {
+      console.error("Error handling request:", err);
+      if (!res.headersSent) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        if (process.env.NODE_ENV === 'development') {
+          res.end(`Internal Server Error: \n${err.stack}`);
+        } else {
+          res.end("Internal Server Error");
+        }
+      }
+    }
+  };
+}
+
 exports.start = function (port = 8074) {
   http
     .createServer(function (req, res) {
@@ -143,9 +202,6 @@ exports.start = function (port = 8074) {
         //     console.log(data);
         //     res.end('File uploaded and read successfully.');
         // });
-      } else if (pathName.indexOf(".") < 0) {
-        //如果没有后缀名, 则为后台请求
-        res.writeHead(200, { "Content-Type": "application/json" });
       }
       // else if(pathName.indexOf("index.html") >= 0) {
       //     fs.readFile(path.join(__dirname,"src", pathName), async (err, data) => {
@@ -164,7 +220,7 @@ exports.start = function (port = 8074) {
       //         }
       //     })
       // }
-      else {
+      else if (pathName.indexOf(".") >= 0) {
         //如果有后缀名, 则为前端请求
         // console.log(path.join(__dirname,"src/taskGrid", pathName));
         const filePath = safeJoin(safeBase, pathName);
@@ -200,7 +256,7 @@ exports.start = function (port = 8074) {
       req.on("data", function (chunk) {
         body += chunk;
       });
-      req.on("end", function () {
+      req.on("end", safeHandler(() => {
         // 设置响应头部信息及编码
         if (pathName == "/queryTasks") {
           //查询所有服务信息，只包括id和服务名称
@@ -226,9 +282,12 @@ exports.start = function (port = 8074) {
             }
           });
           output.sort(compare("mtime"));
+          // 只修改外层为 {} 的响应增加 status 字段，其他响应不变，否则就和之前不兼容了
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.write(JSON.stringify(output));
           res.end();
         } else if (pathName == "/queryOSVersion") {
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.write(
             JSON.stringify({ version: process.platform, bit: process.arch })
           );
@@ -252,6 +311,7 @@ exports.start = function (port = 8074) {
               }
             }
           );
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.write(JSON.stringify(output));
           res.end();
         } else if (pathName == "/queryTask") {
@@ -263,15 +323,11 @@ exports.start = function (port = 8074) {
               "utf8"
             );
             // parse JSON string to JSON object
+            res.writeHead(200, { "Content-Type": "application/json" });
             res.write(data);
             res.end();
           } catch (error) {
-            res.write(
-              JSON.stringify({
-                error: "Cannot find task based on specified task ID.",
-              })
-            );
-            res.end();
+            writeError(res, 404, "Cannot find task based on specified task ID.");
           }
         } else if (pathName == "/queryExecutionInstance") {
           let params = url.parse(req.url, true).query;
@@ -282,18 +338,14 @@ exports.start = function (port = 8074) {
               "utf8"
             );
             // parse JSON string to JSON object
+            res.writeHead(200, { "Content-Type": "application/json" });
             res.write(data);
             res.end();
           } catch (error) {
-            res.write(
-              JSON.stringify({
-                error:
-                  "Cannot find execution instance based on specified execution ID.",
-              })
-            );
-            res.end();
+            writeError(res, 404, "Cannot find execution instance based on specified execution ID.");
           }
         } else if (pathName == "/") {
+          res.writeHead(200, { "Content-Type": "text/plain" });
           res.write("Hello World!", "utf8");
           res.end();
         } else if (pathName == "/deleteTask") {
@@ -317,17 +369,9 @@ exports.start = function (port = 8074) {
                 }
               }
             );
-            res.write(
-              JSON.stringify({ success: "Task has been deleted successfully." })
-            );
-            res.end();
+            writeSuccess(res, {}, "Task has been deleted successfully.");
           } catch (error) {
-            res.write(
-              JSON.stringify({
-                error: "Cannot find task based on specified task ID.",
-              })
-            );
-            res.end();
+            writeError(res, 404, "Cannot find task based on specified task ID.")
           }
         } else if (pathName == "/manageTask") {
           body = querystring.parse(body);
@@ -384,25 +428,40 @@ exports.start = function (port = 8074) {
             data,
             (err) => {}
           );
-
+          
+          res.writeHead(200, { "Content-Type": "text/plain" });
           res.write(id.toString(), "utf8");
           res.end();
         } else if (pathName == "/invokeTask") {
           body = querystring.parse(body);
-          let data = JSON.parse(body.params);
+          let data;
+          if (body.params === undefined || body.params == "") {
+            data = {};
+          } else {
+            try{
+              data = JSON.parse(body.params);
+            } catch (error) {
+              console.error(error);
+              writeError(res, 400, "Fail to parse parameters from json string.");
+              return;
+            }
+          }
           let id = body.id;
+          if (id === undefined || id == "") {
+            writeError(res, 400, "Task ID is required.");
+            return;
+          }
           let task = fs.readFileSync(
             path.join(getDir(), `tasks/${id}.json`),
             "utf8"
           );
           task = JSON.parse(task);
-          try {
-            task["links"] = data["urlList_0"];
-            if (task["links"] == undefined) {
-              task["links"] = "about:blank";
+          // 允许不填写 urlList_0，此时采用任务中的默认值
+          if (data["urlList_0"] !== undefined && data["urlList_0"] != "") {
+              try {
+                task["links"] = data["urlList_0"];
+              } catch (error) {
             }
-          } catch (error) {
-            task["links"] = "about:blank";
           }
           for (const [key, value] of Object.entries(data)) {
             for (let i = 0; i < task["inputParameters"].length; i++) {
@@ -434,7 +493,9 @@ exports.start = function (port = 8074) {
                   file_names.push(parseInt(file.split(".")[0]));
                 }
                 console.log(file);
-              } catch (error) {}
+              } catch (error) {
+                console.error(error);
+              }
             }
           );
           let eid = 0;
@@ -452,6 +513,9 @@ exports.start = function (port = 8074) {
             task,
             (err) => {}
           );
+          console.log(`Task ${id} has been generated to file ${path.join(getDir(), `execution_instances/${eid}.json`)}`);
+          // res.writeHead
+          res.writeHead(200, { "Content-Type": "text/plain" });
           res.write(eid.toString(), "utf8");
           res.end();
         } else if (pathName == "/getConfig") {
@@ -464,6 +528,7 @@ exports.start = function (port = 8074) {
           if(lang == undefined){
             lang = "-";
           }
+          res.writeHead(200, { "Content-Type": "application/json" });
           res.write(JSON.stringify(config_file));
           res.end();
         } else if (pathName == "/setUserDataFolder") {
@@ -476,15 +541,83 @@ exports.start = function (port = 8074) {
           config["user_data_folder"] = body["user_data_folder"];
           config = JSON.stringify(config);
           fs.writeFile(path.join(getDir(), `config.json`), config, (err) => {});
-          res.write(
-            JSON.stringify({
-              success: "User data folder has been set successfully.",
-            })
-          );
-          res.end();
+          writeSuccess(res, {}, "User data folder has been set successfully.");
+        } else if (pathName == "/executeTask") {
+          if (process.platform == "darwin") {
+            writeError(res, 400, "Executing from remote control is not supported on macOS.");
+            return;
+          }
+          let params = url.parse(req.url, true).query;
+          if (params === undefined || params.id === undefined || params.id == "") {
+            writeError(res, 400, "Execution instance ID is required.");
+            return;
+          }
+          if (params.use_user_data == "true" || params.use_user_data == "1") {
+            params.use_user_data = 1;
+          } else {
+            params.use_user_data = 0;
+          }
+          try{
+            // 尝试读取一次任务文件
+            let eid = parseInt(params.id);
+            let file = fs.readFileSync(
+              path.join(getDir(), `execution_instances/${eid}.json`),
+              "utf8"
+            );
+            let task = JSON.parse(file);
+            // 忽略逻辑删除的任务
+            if (task == undefined || task.id == -2) {
+              writeError(res, 404, "Cannot find execution instance based on specified execution ID.");
+              return;
+            }
+          } catch (error) {
+            writeError(res, 404, "Cannot find execution instance based on specified execution ID.");
+            return;
+          }
+          let config;
+          try{
+            config = fs.readFileSync(
+              path.join(getDir(), `config.json`),
+              "utf8"
+            );
+            config = JSON.parse(config);
+          } catch (error) {
+            writeError(res, 500, "Fail to parse config.json.");
+            return;
+          }
+          ws.send(JSON.stringify(
+            {
+              type: 5, //消息类型，调用执行程序
+              message: {
+                id: parseInt(params.id),
+                user_data_folder: params.use_user_data ? config.user_data_folder : "",
+                mysql_config_path: config.mysql_config_path,
+                execute_type: 1
+              }
+            }
+          ))
+          writeSuccess(res, {id: parseInt(params.id)}, "Execution instance has been invoked successfully.");
         }
-      });
+      }, res));
     })
     .listen(port);
   console.log("Server has started.");
+};
+
+
+let ws = new WebSocket("ws://localhost:8084");
+ws.onopen = function () {
+    // Web Socket 已连接上，使用 send() 方法发送数据
+    console.log("backend websocket 已连接");
+    message = {
+        type: 0, //消息类型，0代表链接操作
+        message: {
+            id: 4, //socket id
+        }
+    };
+    this.send(JSON.stringify(message));
+};
+ws.onclose = function () {
+    // 关闭 websocket
+    console.log("连接已关闭...");
 };
