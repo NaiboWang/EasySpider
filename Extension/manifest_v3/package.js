@@ -99,7 +99,7 @@ function removeDir(dir) {
         if(stat.isDirectory()){
             //如果是文件夹就递归下去
             removeDir(newPath);
-        }else {
+        } else {
             //删除文件
             fs.unlinkSync(newPath);
         }
