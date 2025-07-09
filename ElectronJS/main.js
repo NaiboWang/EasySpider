@@ -27,6 +27,10 @@ const iconPath = path.join(__dirname, "favicon.ico");
 const task_server = require(path.join(__dirname, "server.js"));
 const util = require("util");
 
+// 导入安全工具类和错误处理器
+const SecurityUtils = require("./src/utils/SecurityUtils");
+const { ErrorHandler, globalErrorHandler } = require("./src/utils/ErrorHandler");
+
 let config = fs.readFileSync(
     path.join(task_server.getDir(), `config.json`),
     "utf8"
@@ -292,6 +296,22 @@ async function findElementAcrossAllWindows(
             xpath = msg.xpath;
         }
     }
+    // 验证 XPath 安全性
+    if (!SecurityUtils.validateXPath(xpath)) {
+        globalErrorHandler.handleError(
+            `Unsafe XPath detected: ${xpath}`,
+            ErrorHandler.ErrorTypes.SECURITY_ERROR,
+            ErrorHandler.Severity.HIGH,
+            { xpath, iframe }
+        );
+        notify_browser(
+            "XPath安全检查失败，检测到可能的安全风险：" + xpath,
+            "XPath security check failed, potential security risk detected: " + xpath,
+            "error"
+        );
+        return null;
+    }
+
     if (xpath.indexOf("Field[") >= 0 || xpath.indexOf("eval(") >= 0) {
         //两秒后通知浏览器
         await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -1193,6 +1213,23 @@ async function execute_js(js, element, wait_time = 3) {
     let outcome = 0;
     if (js.length != 0) {
         try {
+            // 安全验证 JavaScript 代码
+            const validation = SecurityUtils.validateJavaScript(js);
+            if (!validation.valid) {
+                globalErrorHandler.handleError(
+                    `Unsafe JavaScript code detected: ${validation.reason}`,
+                    ErrorHandler.ErrorTypes.SECURITY_ERROR,
+                    ErrorHandler.Severity.HIGH,
+                    { jsCode: js }
+                );
+                notify_browser(
+                    `JavaScript安全检查失败：${validation.reason}\n代码：${js}`,
+                    `JavaScript security check failed: ${validation.reason}\nCode: ${js}`,
+                    "error"
+                );
+                return -1;
+            }
+
             outcome = await driver.executeScript(js, element);
             if (wait_time == 0) {
                 wait_time = 30000;
@@ -1200,6 +1237,12 @@ async function execute_js(js, element, wait_time = 3) {
             // await new Promise(resolve => setTimeout(resolve, wait_time));
         } catch (e) {
             // await new Promise(resolve => setTimeout(resolve, 2000));
+            globalErrorHandler.handleError(
+                e,
+                ErrorHandler.ErrorTypes.BROWSER_ERROR,
+                ErrorHandler.Severity.MEDIUM,
+                { jsCode: js, element: element ? element.toString() : null }
+            );
             notify_browser(
                 "执行JavaScript出错，请检查JavaScript语句是否正确：" +
                 js +

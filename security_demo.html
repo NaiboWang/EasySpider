@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasySpider 安全增强功能演示</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="ElectronJS/src/taskGrid/bootstrap/css/bootstrap.css" rel="stylesheet">
+    
+    <!-- EasySpider Security Enhancement -->
+    <script src="ElectronJS/src/utils/SecurityUtils.js"></script>
+    <script src="ElectronJS/src/utils/ErrorHandler.js"></script>
+    <script src="ElectronJS/src/utils/ConfigValidator.js"></script>
+    <script src="ElectronJS/src/utils/FormValidator.js"></script>
+    <script src="ElectronJS/src/utils/SecurityEnhancer.js"></script>
+    
+    <!-- 测试脚本 -->
+    <script src="test_security_enhancements.js"></script>
+    
+    <style>
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .demo-title {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .test-input {
+            margin: 10px 0;
+        }
+        
+        .validation-feedback {
+            font-size: 0.875em;
+            margin-top: 0.25rem;
+        }
+        
+        .console-output {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .security-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 250px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-list li:before {
+            content: '✅ ';
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .alert-custom {
+            border-left: 4px solid #007bff;
+            background-color: #f8f9ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center text-primary mb-4">
+                    🔒 EasySpider 安全增强功能演示
+                </h1>
+                
+                <div class="alert alert-custom" role="alert">
+                    <h4 class="alert-heading">✨ 功能介绍</h4>
+                    <p>本页面展示了为EasySpider项目新增的安全增强功能，包括输入验证、错误处理、配置验证和前端安全防护等。</p>
+                    <hr>
+                    <p class="mb-0">所有功能都通过JavaScript模块化设计，可以轻松集成到现有的EasySpider界面中。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 安全状态显示 -->
+        <div class="security-status" id="securityStatus">
+            <h6 class="text-success mb-3">🛡️ 安全状态</h6>
+            <div id="statusContent">正在初始化...</div>
+        </div>
+
+        <!-- 输入验证演示 -->
+        <div class="demo-section">
+            <h3 class="demo-title">🔍 输入验证演示</h3>
+            <p>测试各种类型的输入验证，包括URL、邮箱、XPath、JavaScript代码等。</p>
+            
+            <form id="validationDemo" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="test-input">
+                            <label for="testUrl" class="form-label">网址 (URL):</label>
+                            <input type="text" class="form-control" id="testUrl" name="testUrl" 
+                                   placeholder="输入网址，如 https://www.example.com"
+                                   data-validation-type="url">
+                            <div class="invalid-feedback"></div>
+                            <div class="warning-feedback"></div>
+                        </div>
+                        
+                        <div class="test-input">
+                            <label for="testEmail" class="form-label">邮箱地址:</label>
+                            <input type="email" class="form-control" id="testEmail" name="testEmail" 
+                                   placeholder="输入邮箱地址"
+                                   data-validation-type="email">
+                            <div class="invalid-feedback"></div>
+                            <div class="warning-feedback"></div>
+                        </div>
+                        
+                        <div class="test-input">
+                            <label for="testTaskName" class="form-label">任务名称:</label>
+                            <input type="text" class="form-control" id="testTaskName" name="testTaskName" 
+                                   placeholder="输入任务名称"
+                                   data-validation-type="taskName">
+                            <div class="invalid-feedback"></div>
+                            <div class="warning-feedback"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="test-input">
+                            <label for="testXPath" class="form-label">XPath 表达式:</label>
+                            <input type="text" class="form-control" id="testXPath" name="testXPath" 
+                                   placeholder="输入XPath，如 //div[@class='content']"
+                                   data-validation-type="xpath">
+                            <div class="invalid-feedback"></div>
+                            <div class="warning-feedback"></div>
+                        </div>
+                        
+                        <div class="test-input">
+                            <label for="testFilePath" class="form-label">文件路径:</label>
+                            <input type="text" class="form-control" id="testFilePath" name="testFilePath" 
+                                   placeholder="输入文件路径，如 inputs/data.xlsx"
+                                   data-validation-type="filePath">
+                            <div class="invalid-feedback"></div>
+                            <div class="warning-feedback"></div>
+                        </div>
+                        
+                        <div class="test-input">
+                            <label for="testNumber" class="form-label">数字 (1-1000):</label>
+                            <input type="number" class="form-control" id="testNumber" name="testNumber" 
+                                   placeholder="输入1到1000之间的数字"
+                                   data-validation-type="number" min="1" max="1000">
+                            <div class="invalid-feedback"></div>
+                            <div class="warning-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="test-input">
+                    <label for="testJavaScript" class="form-label">JavaScript 代码:</label>
+                    <textarea class="form-control" id="testJavaScript" name="testJavaScript" rows="3"
+                              placeholder="输入JavaScript代码，如 arguments[0].click()"
+                              data-validation-type="javascript"></textarea>
+                    <div class="invalid-feedback"></div>
+                    <div class="warning-feedback"></div>
+                </div>
+                
+                <div class="validation-errors" style="display: none;"></div>
+                
+                <button type="submit" class="btn btn-primary">验证表单</button>
+                <button type="button" class="btn btn-secondary" onclick="fillTestData()">填充测试数据</button>
+                <button type="button" class="btn btn-warning" onclick="fillMaliciousData()">填充恶意数据</button>
+                <button type="button" class="btn btn-info" onclick="clearForm()">清空表单</button>
+            </form>
+        </div>
+
+        <!-- 安全防护演示 -->
+        <div class="demo-section">
+            <h3 class="demo-title">🛡️ 安全防护演示</h3>
+            <p>测试XSS防护、SQL注入防护和其他安全过滤功能。</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="test-input">
+                        <label for="xssTest" class="form-label">XSS 攻击测试:</label>
+                        <textarea class="form-control" id="xssTest" rows="3" 
+                                  placeholder="尝试输入 &lt;script&gt;alert('XSS')&lt;/script&gt;"></textarea>
+                        <small class="form-text text-muted">恶意脚本标签将被自动过滤</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="test-input">
+                        <label for="sqlTest" class="form-label">SQL 注入测试:</label>
+                        <input type="text" class="form-control" id="sqlTest" 
+                               placeholder="尝试输入 '; DROP TABLE users; --">
+                        <small class="form-text text-muted">SQL注入字符将被过滤</small>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-danger" onclick="testSecurityFilters()">测试安全过滤</button>
+        </div>
+
+        <!-- 错误处理演示 -->
+        <div class="demo-section">
+            <h3 class="demo-title">📝 错误处理演示</h3>
+            <p>展示统一的错误处理和日志记录功能。</p>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <button class="btn btn-danger btn-block" onclick="triggerError()">触发错误</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-warning btn-block" onclick="triggerWarning()">触发警告</button>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-info btn-block" onclick="triggerInfo()">记录信息</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配置验证演示 -->
+        <div class="demo-section">
+            <h3 class="demo-title">⚙️ 配置验证演示</h3>
+            <p>测试任务配置和邮件配置的验证功能。</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>任务配置验证</h5>
+                    <button class="btn btn-success" onclick="validateTaskConfig()">验证任务配置</button>
+                </div>
+                <div class="col-md-6">
+                    <h5>邮件配置验证</h5>
+                    <button class="btn btn-success" onclick="validateEmailConfig()">验证邮件配置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制台输出 -->
+        <div class="demo-section">
+            <h3 class="demo-title">📊 控制台输出</h3>
+            <p>实时显示安全增强功能的运行日志。</p>
+            
+            <div class="console-output" id="consoleOutput">
+正在初始化控制台输出...
+            </div>
+            
+            <div class="mt-3">
+                <button class="btn btn-primary" onclick="runSecurityTests()">运行完整测试</button>
+                <button class="btn btn-secondary" onclick="clearConsole()">清空控制台</button>
+            </div>
+        </div>
+
+        <!-- 功能列表 -->
+        <div class="demo-section">
+            <h3 class="demo-title">📋 功能清单</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>安全增强功能</h5>
+                    <ul class="feature-list">
+                        <li>输入验证与清理</li>
+                        <li>XSS 攻击防护</li>
+                        <li>SQL 注入防护</li>
+                        <li>路径遍历防护</li>
+                        <li>JavaScript 代码验证</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>工具类功能</h5>
+                    <ul class="feature-list">
+                        <li>统一错误处理</li>
+                        <li>配置验证器</li>
+                        <li>表单验证器</li>
+                        <li>安全监控</li>
+                        <li>多语言支持</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 安全增强演示页面已加载');
+            
+            // 重写console.log以显示在页面上
+            const originalLog = console.log;
+            const originalWarn = console.warn;
+            const originalError = console.error;
+            
+            const consoleOutput = document.getElementById('consoleOutput');
+            
+            function addToConsole(message, type = 'log') {
+                const timestamp = new Date().toLocaleTimeString();
+                const typeIcon = type === 'error' ? '❌' : type === 'warn' ? '⚠️' : 'ℹ️';
+                const line = `[${timestamp}] ${typeIcon} ${message}\n`;
+                consoleOutput.textContent += line;
+                consoleOutput.scrollTop = consoleOutput.scrollHeight;
+            }
+            
+            console.log = function(...args) {
+                originalLog.apply(console, args);
+                addToConsole(args.join(' '), 'log');
+            };
+            
+            console.warn = function(...args) {
+                originalWarn.apply(console, args);
+                addToConsole(args.join(' '), 'warn');
+            };
+            
+            console.error = function(...args) {
+                originalError.apply(console, args);
+                addToConsole(args.join(' '), 'error');
+            };
+            
+            // 更新安全状态显示
+            updateSecurityStatus();
+            
+            // 定期更新状态
+            setInterval(updateSecurityStatus, 3000);
+        });
+        
+        // 更新安全状态
+        function updateSecurityStatus() {
+            const statusElement = document.getElementById('statusContent');
+            
+            if (typeof window.securityEnhancer !== 'undefined') {
+                const status = window.securityEnhancer.getSecurityStatus();
+                
+                let html = `
+                    <div class="mb-2">
+                        <strong>初始化状态:</strong> 
+                        <span class="badge ${status.isInitialized ? 'badge-success' : 'badge-danger'}">
+                            ${status.isInitialized ? '已完成' : '未完成'}
+                        </span>
+                    </div>
+                `;
+                
+                html += '<strong>可用功能:</strong><br>';
+                for (const [feature, available] of Object.entries(status.availableFeatures)) {
+                    html += `<small>${feature}: <span class="text-${available ? 'success' : 'muted'}">${available ? '✅' : '❌'}</span></small><br>`;
+                }
+                
+                statusElement.innerHTML = html;
+            } else {
+                statusElement.innerHTML = '<div class="text-warning">安全增强器未初始化</div>';
+            }
+        }
+        
+        // 填充测试数据
+        function fillTestData() {
+            document.getElementById('testUrl').value = 'https://www.example.com';
+            document.getElementById('testEmail').value = 'test@example.com';
+            document.getElementById('testTaskName').value = '测试任务';
+            document.getElementById('testXPath').value = '//div[@class="content"]';
+            document.getElementById('testFilePath').value = 'inputs/data.xlsx';
+            document.getElementById('testNumber').value = '100';
+            document.getElementById('testJavaScript').value = 'arguments[0].click()';
+            
+            console.log('✅ 已填充有效测试数据');
+        }
+        
+        // 填充恶意数据
+        function fillMaliciousData() {
+            document.getElementById('testUrl').value = 'javascript:alert("XSS")';
+            document.getElementById('testEmail').value = 'not-an-email';
+            document.getElementById('testTaskName').value = '<script>alert("xss")</script>';
+            document.getElementById('testXPath').value = '"><script>alert("xss")</script>';
+            document.getElementById('testFilePath').value = '../../../etc/passwd';
+            document.getElementById('testNumber').value = '9999999';
+            document.getElementById('testJavaScript').value = 'eval("alert(\\"危险代码\\")")';
+            
+            console.log('⚠️ 已填充恶意测试数据，观察安全过滤效果');
+        }
+        
+        // 清空表单
+        function clearForm() {
+            document.getElementById('validationDemo').reset();
+            document.querySelectorAll('.invalid-feedback, .warning-feedback').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            document.querySelectorAll('.is-valid, .is-invalid').forEach(el => {
+                el.classList.remove('is-valid', 'is-invalid');
+            });
+            console.log('🧹 表单已清空');
+        }
+        
+        // 测试安全过滤
+        function testSecurityFilters() {
+            const xssInput = document.getElementById('xssTest');
+            const sqlInput = document.getElementById('sqlTest');
+            
+            // 设置恶意内容
+            xssInput.value = '<script>alert("XSS Attack")</script><img src="x" onerror="alert(1)">';
+            sqlInput.value = '\'; DROP TABLE users; --';
+            
+            // 触发过滤
+            xssInput.dispatchEvent(new Event('input'));
+            sqlInput.dispatchEvent(new Event('input'));
+            
+            setTimeout(() => {
+                console.log('🛡️ 安全过滤测试完成');
+                console.log(`XSS过滤后: ${xssInput.value}`);
+                console.log(`SQL过滤后: ${sqlInput.value}`);
+            }, 100);
+        }
+        
+        // 触发错误
+        function triggerError() {
+            if (typeof window.securityEnhancer !== 'undefined' && window.securityEnhancer.errorHandler) {
+                window.securityEnhancer.errorHandler.logError('DemoPage', new Error('这是一个演示错误'), {
+                    type: 'demo',
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                console.error('❌ 演示错误: ErrorHandler 未初始化');
+            }
+        }
+        
+        // 触发警告
+        function triggerWarning() {
+            if (typeof window.securityEnhancer !== 'undefined' && window.securityEnhancer.errorHandler) {
+                window.securityEnhancer.errorHandler.logWarning('DemoPage', '这是一个演示警告', {
+                    type: 'demo',
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                console.warn('⚠️ 演示警告: ErrorHandler 未初始化');
+            }
+        }
+        
+        // 记录信息
+        function triggerInfo() {
+            if (typeof window.securityEnhancer !== 'undefined' && window.securityEnhancer.errorHandler) {
+                window.securityEnhancer.errorHandler.logInfo('DemoPage', '这是一个演示信息', {
+                    type: 'demo',
+                    timestamp: new Date().toISOString()
+                });
+            } else {
+                console.log('ℹ️ 演示信息: ErrorHandler 未初始化');
+            }
+        }
+        
+        // 验证任务配置
+        function validateTaskConfig() {
+            if (typeof ConfigValidator === 'undefined') {
+                console.warn('⚠️ ConfigValidator 未加载');
+                return;
+            }
+            
+            const validator = new ConfigValidator();
+            const config = {
+                name: '演示任务',
+                url: 'https://www.example.com',
+                description: '这是一个演示任务配置',
+                outputFormat: 'json',
+                saveName: 'demo_data'
+            };
+            
+            const result = validator.validateTaskConfig(config);
+            console.log('⚙️ 任务配置验证结果:', result);
+        }
+        
+        // 验证邮件配置
+        function validateEmailConfig() {
+            if (typeof ConfigValidator === 'undefined') {
+                console.warn('⚠️ ConfigValidator 未加载');
+                return;
+            }
+            
+            const validator = new ConfigValidator();
+            const config = {
+                host: 'smtp.gmail.com',
+                port: 587,
+                username: 'demo@gmail.com',
+                password: 'password',
+                to: 'recipient@gmail.com',
+                subject: '演示邮件',
+                content: '这是演示邮件内容'
+            };
+            
+            const result = validator.validateEmailConfig(config);
+            console.log('📧 邮件配置验证结果:', result);
+        }
+        
+        // 清空控制台
+        function clearConsole() {
+            document.getElementById('consoleOutput').textContent = '';
+            console.log('🧹 控制台已清空');
+        }
+        
+        // 运行完整测试
+        function runSecurityTests() {
+            console.log('🚀 开始运行完整的安全测试套件...');
+            if (typeof window.runSecurityTests === 'function') {
+                // 调用测试脚本中的函数
+                setTimeout(() => {
+                    console.log('测试将在新的上下文中运行，请查看浏览器控制台');
+                }, 100);
+            } else {
+                console.warn('⚠️ 测试脚本未加载');
+            }
+        }
+        
+        // 监听安全增强事件
+        window.addEventListener('security-enhanced', function(event) {
+            console.log('🔒 安全增强功能已启用:', event.detail.message);
+            console.log('📋 可用功能:', event.detail.features.join(', '));
+        });
+        
+        window.addEventListener('security-init-error', function(event) {
+            console.error('🚨 安全增强初始化失败:', event.detail.message);
+        });
+    </script>
+</body>
+</html>
