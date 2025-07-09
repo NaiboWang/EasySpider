@@ -47,6 +47,30 @@ import time
 import requests
 from multiprocessing import freeze_support
 freeze_support()  # 防止无限死循环多开
+
+# 导入安全工具类
+try:
+    from security_utils import SecurityUtils, ErrorReporter, global_error_reporter
+except ImportError:
+    print("Warning: Security utilities not available")
+    # 创建一个简单的占位类
+    class SecurityUtils:
+        @staticmethod
+        def validate_xpath(xpath): return True
+        @staticmethod
+        def validate_javascript(js_code): return True, ""
+        @staticmethod
+        def validate_file_path(file_path): return True
+        @staticmethod
+        def sanitize_input(input_str, max_length=1000): return str(input_str)[:max_length]
+    
+    class ErrorReporter:
+        def report_error(self, error_msg, error_type=None, severity=None, context=None):
+            print(f"ERROR: {error_msg}")
+            return {}
+    
+    global_error_reporter = ErrorReporter()
+
 try:
     from ddddocr import DdddOcr
     import onnxruntime
@@ -2187,306 +2211,3 @@ class BrowserThread(Thread):
             line = new_line(self.outputParameters,
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
-
-if __name__ == '__main__':
-    # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
-    # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
-    commandline_config = {
-        "ids": [0],
-        "saved_file_name": "",
-        "user_data": False,
-        "config_folder": "",
-        "config_file_name": "config.json",
-        "read_type": "remote",
-        "headless": False,
-        "server_address": "http://localhost:8074",
-        "keyboard": True,  # 是否监听键盘输入
-        "pause_key": "p",  # 暂停键
-        "version": "0.6.3",
-        "docker_driver": "",
-        "user_folder": "",
-    }
-    c = Config(commandline_config)
-    print(c)
-    options = webdriver.ChromeOptions()
-    driver_path = "chromedriver.exe"
-    print(sys.platform, platform.architecture())
-    if not os.path.exists(os.getcwd() + "/Data"):
-        os.mkdir(os.getcwd() + "/Data")
-    if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-        options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        options.add_extension(
-            "EasySpider.app/Contents/Resources/app/XPathHelper.crx")
-        driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
-        print(driver_path)
-        if c.config_folder == "":
-            c.config_folder = os.path.expanduser(
-                "~/Library/Application Support/EasySpider/")
-    elif os.path.exists(os.getcwd() + "/EasySpider/resources"):  # 打包后的路径
-        print("Finding chromedriver in EasySpider",
-              os.getcwd() + "/EasySpider")
-        if sys.platform == "win32" and platform.architecture()[0] == "32bit":
-            options.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
-            driver_path = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
-        elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
-            options.binary_location = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win64/chrome.exe")
-            driver_path = os.path.join(
-                os.getcwd(), "EasySpider/resources/app/chrome_win64/chromedriver_win64.exe")
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
-        elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
-            options.binary_location = "EasySpider/resources/app/chrome_linux64/chrome"
-            driver_path = "EasySpider/resources/app/chrome_linux64/chromedriver_linux64"
-            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
-        else:
-            print("Unsupported platform")
-            sys.exit()
-        print("Chrome location:", options.binary_location)
-        print("Chromedriver location:", driver_path)
-    elif os.path.exists(os.getcwd() + "/../ElectronJS"):
-        # 软件dev用
-        print("Finding chromedriver in EasySpider",
-              os.getcwd() + "/ElectronJS")
-        options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
-        driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        options.add_extension("../ElectronJS/XPathHelper.crx")
-    else:
-        options.binary_location = "./chrome.exe"  # 指定chrome位置
-        driver_path = "./chromedriver.exe"
-        options.add_extension("XPathHelper.crx")
-
-    options.add_experimental_option(
-        'excludeSwitches', ['enable-automation'])  # 以开发者模式
-
-
-    # 总结：
-    # 0. 带Cookie需要用userdatadir
-    # 1. chrome_options才是配置用户文件和chrome文件地址的正确选项
-    # 2. User Profile文件夹的路径是：C:\Users\用户名\AppData\Local\Google\Chrome\User Data不要加Default
-    # 3. 就算User Profile相同，chrome版本不同所存储的cookie信息也不同，也不能爬
-    # 4. TMALL如果一直弹出验证码，而且无法通过验证，那么需要在其他浏览器上用
-    try:
-        with open(c.config_folder + c.config_file_name, "r", encoding='utf-8') as f:
-            config = json.load(f)
-            print("Config file path: " +
-                  c.config_folder + c.config_file_name)
-            absolute_user_data_folder = config["absolute_user_data_folder"]
-    except:
-        pass
-
-    options.add_argument(
-        "--disable-blink-features=AutomationControlled")  # TMALL 反扒
-    # 阻止http -> https的重定向
-    options.add_argument("--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process")
-    options.add_argument("--disable-web-security")  # 禁用同源策略
-    options.add_argument('-ignore-certificate-errors')
-    options.add_argument('-ignore -ssl-errors')
-
-    if c.headless:
-        print("Headless mode")
-        print("无头模式")
-        options.add_argument("--headless")
-
-    tmp_options = []
-    for id in c.ids:
-        tmp_options.append({"options": copy.deepcopy(options), "tmp_user_data_folder": ""})
-
-    if c.user_data:
-        tmp_user_folder_parent = os.path.join(os.getcwd(), "TempUserDataFolder")
-        if not os.path.exists(tmp_user_folder_parent):
-            os.mkdir(tmp_user_folder_parent)
-        characters = string.ascii_letters + string.digits
-        for i in range(len(c.ids)):
-            options = tmp_options[i]["options"]
-            options.add_argument("--profile-directory=Default")
-            if c.user_folder == "":
-                id = c.ids[i]
-                # 从字符集中随机选择字符构成字符串
-                random_string = ''.join(random.choice(characters) for i in range(10))
-                tmp_user_data_folder = os.path.join(tmp_user_folder_parent, "user_data_" + str(id) + "_" + str(time.time()).replace(".","") + "_" + random_string)
-                tmp_options[i]["tmp_user_data_folder"] = tmp_user_data_folder
-                if os.path.exists(tmp_user_data_folder):
-                    try:
-                        shutil.rmtree(tmp_user_data_folder)
-                    except:
-                        pass
-                print(f"Copying user data folder to: {tmp_user_data_folder}, please wait...")
-                print(f"正在复制用户信息目录到: {tmp_user_data_folder}，请稍等...")
-                if os.path.exists(absolute_user_data_folder):
-                    try:
-                        shutil.copytree(absolute_user_data_folder, tmp_user_data_folder)
-                        print("User data folder copied successfully, if you exit the program before it finishes, please delete the temporary user data folder manually.")
-                        print("用户信息目录复制成功，如果程序在运行过程中被手动退出，请手动删除临时用户信息目录。")
-                    except:
-                        tmp_user_data_folder = absolute_user_data_folder
-                        print("Copy user data folder failed, use the original folder.")
-                        print("复制用户信息目录失败，使用原始目录。")
-                else:
-                    tmp_user_data_folder = absolute_user_data_folder
-                    print("Cannot find user data folder, create a new folder.")
-                    print("未找到用户信息目录，创建新目录。")
-                options.add_argument(
-                    f'--user-data-dir={tmp_user_data_folder}')  # TMALL 反扒
-                print(f"Use local user data folder: {tmp_user_data_folder}")
-                print(f"使用本地用户信息目录: {tmp_user_data_folder}")
-            else:
-                options.add_argument(
-                    f'--user-data-dir={c.user_folder}')
-                print(f"Use specifed user data folder: {c.user_folder}, please note if you are using docker, this user folder path should be the path inside the docker container.")
-                print(f"使用指定的用户信息目录: {c.user_folder}，请注意如果您正在使用docker，此用户文件夹路径应是容器内的路径。")
-    print(
-        "如果报错Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally，说明有之前运行的Chrome实例没有正常关闭，请关闭之前打开的所有Chrome实例后再运行程序即可。")
-    print(
-        "If you get an error Selenium.common.exceptions.WebDriverException: Message: unknown error: Chrome failed to start: exited abnormally, it means that there is a Chrome instance that was not closed properly before, please close all Chrome instances that were opened before running the program.")
-
-    threads = []
-    for i in range(len(c.ids)):
-        id = c.ids[i]
-        options = tmp_options[i]["options"]
-        print("id: ", id)
-        if c.read_type == "remote":
-            print("remote")
-            try:
-                content = requests.get(
-                c.server_address + "/queryExecutionInstance?id=" + str(id))
-                service = json.loads(content.text)  # 加载服务信息
-            except:
-                print("Cannot connect to the server, please make sure that the EasySpider Main Program is running, or you can change the --read_type parameter to 'local' to read the task information from the local task file without keeping the EasySpider Main Program running.")
-                print("无法连接到服务器，请确保EasySpider主程序正在运行，或者您可以将--read_type参数更改为'local'，以实现从本地任务文件中读取任务信息而无需保持EasySpider主程序运行。")
-        else:
-            print("local")
-            local_folder = os.path.join(os.getcwd(), "execution_instances")
-            if sys.platform == "darwin":
-                user_folder = os.path.expanduser(
-                "~/Library/Application Support/EasySpider/")
-                local_folder = os.path.join(user_folder, "execution_instances")
-            file_path = os.path.join(local_folder, str(id) + ".json")
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                service = json.loads(content)  # 加载服务信息
-        try:
-            print("Task Name:", service["name"])
-            print("任务名称:", service["name"])
-        except:
-            print(f"Cannot find task with id: {str(id)}, please check whether {str(id)}.json exists in the 'execution_instances' folder.")
-            print(f"未找到id为{str(id)}的任务，请检查'execution_instances'文件夹中是否存在{str(id)}.json文件。")
-            continue
-        try:
-            cloudflare = service["cloudflare"]
-        except:
-            cloudflare = 0
-        if cloudflare == 0:
-            options.add_argument('log-level=3')  # 隐藏日志
-            path = os.path.join(os.path.abspath("./"), "Data", "Task_" + str(id), "files")
-            print("文件下载路径|File Download path:", path)
-            options.add_experimental_option("prefs", {
-                # 设置文件下载路径
-                "download.default_directory": path,
-                "download.prompt_for_download": False,  # 禁止下载提示框
-                "plugins.plugins_list": [{"enabled": False, "name": "Chrome PDF Viewer"}],
-                "download.directory_upgrade": True,
-                "download.extensions_to_open": "applications/pdf",
-                "plugins.always_open_pdf_externally": True,  # 总是在外部程序中打开PDF
-                "safebrowsing_for_trusted_sources_enabled": False,
-                "safebrowsing.enabled": False,
-                'safebrowsing.disable_download_protection': True,
-                'profile.default_content_settings.popups': 0,
-            })
-            try:
-                if service["environment"] == 1:
-                    options.add_experimental_option(
-                        'mobileEmulation', {'deviceName': 'iPhone X'})  # 模拟iPhone X浏览
-            except:
-                pass
-            try:
-                browser = service["browser"]
-            except:
-                browser = "chrome"
-            if browser == "chrome":
-                if c.docker_driver == "":
-                    print("Using local driver")
-                    selenium_service = Service(executable_path=driver_path)
-                    browser_t = MyChrome(service=selenium_service, options=options, mode='local_driver')
-                else:
-                    print("Using remote driver")
-                    # Use docker driver, default address is http://localhost:4444/wd/hub
-                    # Headless mode
-                    # options.add_argument("--headless")
-                    # print("Headless mode")
-                    browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
-            elif browser == "edge":
-                from selenium.webdriver.edge.service import Service as EdgeService
-                from selenium.webdriver.edge.options import Options as EdgeOptions
-                from myChrome import MyEdge
-                selenium_service = EdgeService(executable_path="msedgedriver.exe")
-                options = EdgeOptions()
-                options.use_chromium = True
-                options.add_argument("--ie-mode")
-                options.add_argument("ie.edgepath=msedge.exe")
-                browser_t = MyEdge(service=selenium_service, options=options)
-        elif cloudflare == 1:
-            if sys.platform == "win32":
-                options.binary_location = "C:\\Program Files\\Google\\Chrome Beta\\Application\\chrome.exe"  # 需要用自己的浏览器
-                browser_t = MyUCChrome(
-                    options=options, driver_executable_path=driver_path)
-                links = list(filter(isnotnull, service["links"].split("\n")))
-                # open page in new tab
-                browser_t.execute_script(
-                    'window.open("' + links[0] + '","_blank");')
-                time.sleep(5)  # wait until page has loaded
-                browser_t.switch_to.window(
-                    browser_t.window_handles[1])  # switch to new tab
-                # browser_t = uc.Chrome()
-            else:
-                print("Cloudflare模式只支持Windows x64平台。")
-                print(
-                    "Cloudflare Mode only support on Windows x64 platform.")
-                sys.exit()
-        event = Event()
-        event.set()
-        thread = BrowserThread(browser_t, id, service,
-                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i], commandline_config=c)
-        print("Thread with task id: ", id, " is created")
-        threads.append(thread)
-        thread.start()
-        # Set the pause operation
-        # if sys.platform != "linux":
-        #     time.sleep(3)
-        #     Thread(target=check_pause, args=("p", event)).start()
-        # else:
-        time.sleep(3)
-        if c.pause_key == "p":
-            try:
-                pause_key = service["pauseKey"]
-            except:
-                pause_key = "p"
-        else:
-            pause_key = c.pause_key
-        press_time = {"duration": 0, "is_pressed": False, "pause_key": pause_key}
-        print("\n\n----------------------------------")
-        print(
-            "正在运行任务，长按键盘" + pause_key + "键可暂停任务的执行以便手工操作浏览器如输入验证码；如果想恢复任务的执行，请再次长按" + pause_key + "键。")
-        print(
-            "Running task, long press '" + pause_key + "' to pause the task for manual operation of the browser such as entering the verification code; If you want to resume the execution of the task, please long press '" + pause_key + "' again.")
-        print("----------------------------------\n\n")
-        # if cloudflare:
-        #     print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
-        #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
-        # 使用监听器监听键盘输入
-    try:
-        from pynput.keyboard import Key, Listener
-        if c.keyboard:
-            with Listener(on_press=on_press_creator(press_time, event),
-                          on_release=on_release_creator(event, press_time)) as listener:
-                listener.join()
-    except:
-        pass
-        # print("您的操作系统不支持暂停功能。")
-        # print("Your operating system does not support the pause function.")
-
-    for thread in threads:
-        print()
-        thread.join()

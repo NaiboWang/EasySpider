@@ -10,6 +10,10 @@ const express = require("express");
 const multer = require("multer");
 const cors = require("cors");
 
+// 导入安全工具类和错误处理器
+const SecurityUtils = require("./src/utils/SecurityUtils");
+const { ErrorHandler, globalErrorHandler } = require("./src/utils/ErrorHandler");
+
 function travel(dir, callback) {
   fs.readdirSync(dir).forEach((file) => {
     const pathname = path.join(dir, file);
@@ -125,8 +129,16 @@ exports.start = function (port = 8074) {
       const safeBase = path.join(__dirname, "src");
 
       const safeJoin = (base, target) => {
-        const targetPath = "." + path.posix.normalize("/" + target);
-        return path.join(base, targetPath);
+        // 安全的路径拼接，防止路径遍历攻击
+        const targetPath = path.normalize(target).replace(/^(\.\.[\/\\])+/, "");
+        const fullPath = path.join(base, targetPath);
+
+        // 确保结果路径在基础目录内
+        if (!fullPath.startsWith(path.resolve(base))) {
+          throw new Error("Path traversal attempt detected");
+        }
+
+        return fullPath;
       };
       if (pathName == "/excelUpload" && req.method.toLowerCase() === "post") {
         // // parse a file upload
@@ -166,35 +178,64 @@ exports.start = function (port = 8074) {
       // }
       else {
         //如果有后缀名, 则为前端请求
-        // console.log(path.join(__dirname,"src/taskGrid", pathName));
-        const filePath = safeJoin(safeBase, pathName);
+        try {
+          // 验证路径安全性
+          if (!SecurityUtils.validateFilePath(pathName)) {
+            globalErrorHandler.handleError(
+              `Unsafe file path detected: ${pathName}`,
+              ErrorHandler.ErrorTypes.SECURITY_ERROR,
+              ErrorHandler.Severity.HIGH
+            );
+            res.writeHead(400, { "Content-Type": 'text/html;charset="utf-8"' });
+            res.end("Invalid file path");
+            return;
+          }
 
-        if (!filePath.startsWith(safeBase)) {
-          res.writeHead(400, { "Content-Type": 'text/html;charset="utf-8"' });
-          res.end("Invalid path");
+          const filePath = safeJoin(safeBase, pathName);
+
+          if (!filePath.startsWith(safeBase)) {
+            res.writeHead(400, { "Content-Type": 'text/html;charset="utf-8"' });
+            res.end("Invalid path");
+            return;
+          }
+
+          fs.readFile(
+            filePath,
+            async (err, data) => {
+              if (err) {
+                globalErrorHandler.handleError(
+                  err,
+                  ErrorHandler.ErrorTypes.FILE_ERROR,
+                  ErrorHandler.Severity.MEDIUM,
+                  { filePath, pathName }
+                );
+                res.writeHead(404, {
+                  "Content-Type": 'text/html;charset="utf-8"',
+                });
+                res.end(err.message);
+                return;
+              }
+              if (!err) {
+                // 3. 针对不同的文件返回不同的内容头
+                let extname = path.extname(pathName);
+                let mime = FileMimes[extname];
+                res.writeHead(200, { "Content-Type": mime + ';charset="utf-8"' });
+                res.end(data);
+                return;
+              }
+            }
+          );
+        } catch (error) {
+          globalErrorHandler.handleError(
+            error,
+            ErrorHandler.ErrorTypes.FILE_ERROR,
+            ErrorHandler.Severity.HIGH,
+            { pathName }
+          );
+          res.writeHead(500, { "Content-Type": 'text/html;charset="utf-8"' });
+          res.end("Internal server error");
           return;
         }
-        
-        fs.readFile(
-          filePath,
-          async (err, data) => {
-            if (err) {
-              res.writeHead(404, {
-                "Content-Type": 'text/html;charset="utf-8"',
-              });
-              res.end(err.message);
-              return;
-            }
-            if (!err) {
-              // 3. 针对不同的文件返回不同的内容头
-              let extname = path.extname(pathName);
-              let mime = FileMimes[extname];
-              res.writeHead(200, { "Content-Type": mime + ';charset="utf-8"' });
-              res.end(data);
-              return;
-            }
-          }
-        );
       }
 
       req.on("data", function (chunk) {

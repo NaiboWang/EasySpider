@@ -91,6 +91,16 @@ function LANG(zh, en) {
 }
 
 function isValidMySQLTableName(tableName) {
+    // 使用安全工具类进行验证
+    if (typeof SecurityUtils !== 'undefined') {
+        return SecurityUtils.validateMySQLTableName(tableName);
+    }
+    
+    // 后备验证逻辑
+    if (!tableName || typeof tableName !== 'string') {
+        return false;
+    }
+    
     // 正则表达式：以字母或汉字开头，后接字母、数字、下划线或汉字的字符串，长度为1到64字符
     const pattern = /^[\u4e00-\u9fa5a-zA-Z][\u4e00-\u9fa5a-zA-Z0-9_]{0,63}$/;
     return pattern.test(tableName);
