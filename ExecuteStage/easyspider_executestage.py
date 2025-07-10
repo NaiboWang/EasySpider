@@ -2333,6 +2333,15 @@ if __name__ == '__main__':
         if c.config_folder == "":
             c.config_folder = os.path.expanduser(
                 "~/Library/Application Support/EasySpider/")
+    # 在 linux 里，EasySpider 打包版默认是在 EasySpider 文件夹内执行的，没有 windows 上那种外层的 25kb 启动器
+    # 因此需要特殊处理并判断此时 chrome, chromedriver 和扩展的路径。
+    elif sys.platform == "linux" and platform.architecture()[0] == "64bit" and os.path.exists(os.path.join(os.getcwd(), "resources")):
+        print("Finding chromedriver in EasySpider",
+              os.getcwd())
+        # 相对于下一条检查语句，这里去掉了 EasySpider 文件夹这一层
+        options.binary_location = "resources/app/chrome_linux64/chrome"
+        driver_path = "resources/app/chrome_linux64/chromedriver_linux64"
+        options.add_extension("resources/app/XPathHelper.crx")
     elif os.path.exists(os.getcwd() + "/EasySpider/resources"):  # 打包后的路径
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/EasySpider")
@@ -2361,9 +2370,23 @@ if __name__ == '__main__':
         # 软件dev用
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/ElectronJS")
-        options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
-        driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        options.add_extension("../ElectronJS/XPathHelper.crx")
+        if sys.platform == "win32" and platform.architecture()[0] == "32bit":
+            options.binary_location = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
+            driver_path = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
+        elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
+            options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+            driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
+            options.add_extension("../ElectronJS/XPathHelper.crx")
+        elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
+            options.binary_location = "../ElectronJS/chrome_linux64/chrome"
+            driver_path = "../ElectronJS/chrome_linux64/chromedriver_linux64"
+            options.add_extension("../ElectronJS/XPathHelper.crx")
+        else:
+            print("Unsupported platform for automatic detection. You need to specify chrome executable path, chromedriver path in code.")
+            sys.exit()
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"
