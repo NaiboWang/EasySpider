@@ -6,7 +6,7 @@
     "description": "NoCode Visual Web Crawler",
     "main": "main.js",
     "scripts": {
-        "start_direct": "electron .",
+        "start_direct": "cross-env NODE_ENV=development electron .",
         "change_version": "node change_version.js",
         "start": "electron-forge start",
         "package": "electron-forge package",
@@ -32,6 +32,7 @@
     "repository": "https://github.com/NaiboWang/EasySpider",
     "dependencies": {
         "cors": "^2.8.5",
+        "cross-env": "^7.0.3",
         "electron-squirrel-startup": "^1.0.0",
         "express": "^4.21.2",
         "formidable": "^3.5.0",
