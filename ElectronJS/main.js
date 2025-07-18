@@ -1396,6 +1396,7 @@ async function runBrowser(lang = "en", user_data_folder = "", mobile = false) {
     options.addArguments("--disable-infobars");
     options.addArguments("--disable-web-security");
     options.addArguments("--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process");
+    options.addArguments("--disable-features=DisableLoadExtensionCommandLineSwitch");
     // 添加实验性选项以排除'enable-automation'开关
     options.set("excludeSwitches", ["enable-automation"]);
     options.excludeSwitches("enable-automation");
