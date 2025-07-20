@@ -59,6 +59,15 @@ def get_chrome_version():
             return version_re.findall(_v)[0][:3]
         except WindowsError as e:
             print("check Chrome failed:{}".format(e))
+    elif sys.platform == 'darwin':
+        # 通过读取 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/Current 这一符号连接指向的文件夹的名称，获得 Chrome 版本号
+        try:
+            full_version = os.path.basename(os.path.abspath(os.readlink("/Applications/Google Chrome.app/Contents/Frameworks/Google "
+                                                                "Chrome Framework.framework/Versions/Current")))
+            return full_version.split(".")[0]
+        # 如果找不到 Chrome 程序或者获取错误，回退到默认的 131 版本
+        except (OSError, IndexError):
+            return version
     else:
         return version
 
@@ -92,23 +101,29 @@ old_driver_version = {
 if __name__ == "__main__":
     os.system("npm install -g extract-stealth-evasions") # 安装stealth.min.js
     os.system("npx extract-stealth-evasions") # 提取stealth.min.js
+
+    # chromedriver 在 chrome 114 版本之后，提供了一个新的 API 来获取已知的 Chrome 版本和下载链接
+    # 之前的版本需要手动维护下载链接
+    # 现在可以通过访问 https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json
+    # 来获取最新的 Chrome 版本和下载链接
     driver_downloads = []
-    response = requests.get(chrome_driver_url)
-    if response.status_code == 200:
-        versions = json.loads(response.content)["versions"]
-        versions = versions[::-1] # 倒序排列数组
-        for info in versions:
-            version = info["version"].split(".")[0]
-            if version.find(chrome_version) == 0:
-                downloads = info["downloads"]
-                if "chromedriver" in downloads:
-                    print(info["version"])
-                    driver_downloads = downloads["chromedriver"]
-                    break
+    if int(chrome_version.split(".")[0]) >= 114:
+        response = requests.get(chrome_driver_url)
+        if response.status_code == 200:
+            versions = json.loads(response.content)["versions"]
+            versions = versions[::-1] # 倒序排列数组
+            for info in versions:
+                version = info["version"].split(".")[0]
+                if version.find(chrome_version) == 0:
+                    downloads = info["downloads"]
+                    if "chromedriver" in downloads:
+                        print(info["version"])
+                        driver_downloads = downloads["chromedriver"]
+                        break
+        else:
+            print("Error: ", response.status_code)
+            exit(1)
     else:
-        print("Error: " + response.status_code)
-        exit(1)
-    if not driver_downloads and int(chrome_version) < 115:
         if chrome_version not in old_driver_version:
             print("没有可用的chromedriver")
             exit(1)
@@ -249,7 +264,7 @@ if __name__ == "__main__":
         finally:
             shutil.rmtree("./chromedrivers")
         os.chmod("./chromedriver_mac64", 0o755)
-        os.chmod("./chrome_mac64.app", 0o555)
-        os.chmod("./chrome_mac64.app/Contents/MacOS/Google Chrome", 0o555)
+        os.chmod("./chrome_mac64.app", 0o755)
+        os.chmod("./chrome_mac64.app/Contents/MacOS/Google Chrome", 0o755)
 
     print("Done and don't forget to generate executestage EXEcutable program!")

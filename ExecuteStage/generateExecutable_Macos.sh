@@ -12,6 +12,11 @@ echo "With ddddocr and pandas"
 # # 打包带ddddocr和pandas的版本
 rm -r build
 rm -r dist
-pyinstaller -F --icon=favicon.ico  --add-data "/Users/naibo/anaconda3/lib/python3.11/site-packages/onnxruntime/capi/onnxruntime_pybind11_state.so:onnxruntime/capi"  --add-data "/Users/naibo/anaconda3/lib/python3.11/site-packages/ddddocr/common_old.onnx:ddddocr" easyspider_executestage.py
+# Get the site-packages path for ddddocr and onnxruntime
+# 如果当前终端激活了 conda 环境，下方脚本应当可以正确的从 conda 环境安装的包中获得数据文件位置
+ddddocr_path=$(python3 -c "import ddddocr; print(ddddocr.__path__[0])")
+onnxruntime_path=$(python3 -c "import onnxruntime; print(onnxruntime.__path__[0])")
+
+pyinstaller -F --icon=favicon.ico --add-data "$onnxruntime_path/capi/onnxruntime_pybind11_state.so:onnxruntime/capi" --add-data "$ddddocr_path/common_old.onnx:ddddocr" easyspider_executestage.py
 rm ../.temp_to_pub/EasySpider_MacOS/easyspider_executestage_full
 cp dist/easyspider_executestage ../.temp_to_pub/EasySpider_MacOS/easyspider_executestage_full
