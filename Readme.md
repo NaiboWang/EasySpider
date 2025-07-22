@@ -20,9 +20,16 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 [亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://www.ipwo.net/?code=KK9YVWI2L"><img src="media/IPWO_Proxy.gif" width=850></img></a>
+<a target="_blank" href="https://www.thordata.com/?ls=github&lk=wnb"><img src="media/thordata.jpg" width=850></img></a>
+
+
+[Thordata](https://www.thordata.com/?ls=github&lk=wnb)是全球代理IP解决方案提供商，支持大规模采集公共网络数据，提供 195+ 国家城市、6000 万住宅IP，价格低至 $0.65/GB，支持不限流量、不限IP、不限并发；还包括本土独享ISP静态代理和高性能数据中心代理（均为 $0.75/IP，弹性定价）。点击图片注册后联系中文客服即可免费试用，现在首充还有赠送同额金额活动。可与EasySpider工具配合使用，高效采集网络数据。
+
+
+<!-- <a target="_blank" href="https://www.ipwo.net/?code=KK9YVWI2L"><img src="media/IPWO_Proxy.gif" width=850></img></a>
 
 [IPWO](https://www.ipwo.net/?code=KK9YVWI2L)支持免费测试，作为行业领先的代理IP提供商，拥有 9000万+真实住宅IP，覆盖200+国家和地区，支持无限并发，可用率高达99.9%，帮助用户轻松突破地理限制，实现高效、安全的全球网络访问，与EasySpider完美结合，助力数据采集，尽享无缝体验。 -->
+
 
 <!-- <a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=850></img></a> -->
 
