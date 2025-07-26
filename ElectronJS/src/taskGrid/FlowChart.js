@@ -4,7 +4,7 @@ let root = {
     index: 0, //在nodeList中的索引号
     id: 0,
     parentId: 0,
-    type: -1,
+    type: -1, // 0: 顺序结构；1:循环结构；2:分支结构
     option: 0,
     title: "root",
     sequence: [],
@@ -484,7 +484,7 @@ function operationChange(e, theNode) {
     vueData.nowNodeIndex = actionSequence[theNode.getAttribute("data")];
     theNode.style.borderColor = "blue";
     handleElement(); //处理元素
-    if (debuggable) {
+    if (debuggable && e.button == 0) {
         trailElement(app._data.nowNode, 0);
     } else {
         debuggable = true;
@@ -664,13 +664,14 @@ function toolBoxKernel(e, param = null) {
             isInLoop: false,
         };
         nodeList.push(t);
-        if (option == 8) //循环
+        if (option == 8) // 循环模式下 type 设置为 1
         {
             t["type"] = 1;
-        } else if (option == 9) //判断
+        } else if (option == 9) // 判断模式下 type 设置为 2
         {
             t["type"] = 2;
-            // 增加两个分支
+            // 增加两个分支节点
+            // 这两个分支节点需要放入 nodeList 中，并且需要在 t 的 sequence 中添加它们的 index 
             nt = {
                 id: 0,
                 parentId: 0,
@@ -894,6 +895,10 @@ function deleteElement() {
 }
 
 document.getElementById("flowchart_graph").oncontextmenu = function (e) {
+    let menu = document.getElementById("contextMenu")
+    if (menu) {
+        menu.remove(); //如果右键菜单已经存在，先删除它
+    }
     // 创建一个包含删除选项的右键菜单
     let contextMenu = document.createElement("div");
     contextMenu.id = "contextMenu";
@@ -937,8 +942,8 @@ document.getElementById("flowchart_graph").oncontextmenu = function (e) {
     // 设置右键菜单的样式
     contextMenu.style.position = "absolute";
     contextMenu.style.backgroundColor = "rgb(248, 249, 250)";
-    contextMenu.style.left = event.clientX + "px";
-    contextMenu.style.top = event.clientY + "px";
+    contextMenu.style.left = e.pageX + "px";
+    contextMenu.style.top = e.pageY + "px";
     contextMenu.style.width = LANG("180px", "250px");
 
     // 添加删除元素的功能
