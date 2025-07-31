@@ -60,30 +60,59 @@ def send_email(config):
         except:
             pass
   
-def rename_downloaded_file(download_dir, stop_event):
-    original_files = set(os.listdir(download_dir))
-
+def rename_downloaded_file(stop_event):
+    """
+    监控E:\report目录,重命名下载完成的文件为 'ivt-result' 并保持原文件扩展名。
+    确保下载目录中始终只有一个文件。
+    
+    :param stop_event: 用于停止监控的事件
+    """
+    download_dir = r"E:\report"
+    
+    # 确保目录存在
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+        
     while not stop_event.is_set():
-        files = os.listdir(download_dir)
-        for file in files:
-            if file in original_files:
-                continue  # 跳过原始文件和已重命名的文件
+        try:
+            files = os.listdir(download_dir)
+            for file in files:
+                full_path = os.path.join(download_dir, file)
+                
+                # 跳过部分临时文件和已重命名的文件
+                if full_path.endswith('.crdownload') or full_path.endswith('.htm') or \
+                   full_path.endswith('.html') or full_path.startswith('ivt-result'):
+                    continue
 
-            full_path = os.path.join(download_dir, file)
+                # 获取文件扩展名
+                _, ext = os.path.splitext(file)
+                ext = ext.lower()
 
-            if not full_path.endswith('.crdownload') and not full_path.endswith('.htm') and not full_path.endswith('.html') and not full_path.startswith('esfile_'):
-                new_name = "esfile_" + file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + file.split('/')[-1]
+                # 构建新的文件名
+                new_name = f"ivt-result{ext}"
                 new_path = os.path.join(download_dir, new_name)
+
+                # 如果已存在旧文件,删除它
+                if os.path.exists(new_path):
+                    try:
+                        os.remove(new_path)
+                        print(f"已删除旧文件: {new_path}")
+                    except Exception as e:
+                        print(f"无法删除旧文件 {new_path},错误: {e}")
+                        continue  # 如果无法删除旧文件,则跳过当前文件
+
+                # 重命名新文件
                 try:
                     os.rename(full_path, new_path)
-                    original_files.add(new_name)  # 记录新文件名以避免再次重命名
-                    print(f"文件已重命名为|File has been renamed to: {new_path}")
-                except:
-                    print("文件重命名失败|File rename failed")
+                    print(f"文件已重命名为: {new_path}")
+                except Exception as e:
+                    print(f"文件重命名失败: {full_path} -> {new_path},错误: {e}")
 
-        time.sleep(1)  # 每一秒检查一次
-        # print("下载文件重命名监控中，请等待...|Download file rename monitoring, please wait...")
-    print("下载文件重命名监控已停止。|Download file rename monitoring has stopped.")
+        except Exception as e:
+            print(f"监控下载目录时出错: {e}")
+
+        time.sleep(1)  # 每秒检查一次
+    print("下载文件重命名监控已停止。")
 
 def is_valid_url(url):
     try:
