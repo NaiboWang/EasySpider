@@ -1,1 +1,0 @@
-npm run start_direct
