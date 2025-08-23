@@ -19,8 +19,8 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 <a target="_blank" href="https://get.brightdata.com/njx4r"><img src="media/BrightData.png" width=850></img></a>
 [亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://www.thordata.com/?ls=github&lk=wnb"><img src="media/thordata.jpg" width=850></img></a>
-[Thordata](https://www.thordata.com/?ls=github&lk=wnb)是全球代理IP解决方案提供商，支持大规模采集公共网络数据，提供 195+ 国家城市、6000 万住宅IP，价格低至 $0.65/GB，支持不限流量、不限IP、不限并发；还包括本土独享ISP静态代理和高性能数据中心代理（均为 $0.75/IP，弹性定价）。点击图片注册后联系中文客服即可免费试用，现在首充还有赠送同额金额活动。可与EasySpider工具配合使用，高效采集网络数据。
+<!-- <a target="_blank" href="https://www.thordata.com/?ls=github&lk=wnb"><img src="media/thordata.jpg" width=850></img></a>
+[Thordata](https://www.thordata.com/?ls=github&lk=wnb)是全球代理IP解决方案提供商，支持大规模采集公共网络数据，提供 195+ 国家城市、6000 万住宅IP，价格低至 $0.65/GB，支持不限流量、不限IP、不限并发；还包括本土独享ISP静态代理和高性能数据中心代理（均为 $0.75/IP，弹性定价）。点击图片注册后联系中文客服即可免费试用，现在首充还有赠送同额金额活动。可与EasySpider工具配合使用，高效采集网络数据。 -->
 
 <a target="_blank" href="https://bestproxy.com/?keyword=48xywxar"><img src="media/best_proxy.png" width=850></img></a>
 [BestProxy](https://bestproxy.com/?keyword=48xywxar)全球独享专属资源池，优选海外195+国家/地区高质量住宅IP，本地ISP原生IP，不限量住宅代理、长效ISP代理、静态数据中心代理、网页爬虫API，城市级精准定位，支持HTTP(S)和SOCKS5协议，低检测风险，全方位代理服务解决方案，助力各种场景业务IP代理需求。$0.66/G起按需付费和长期套餐，适合不同预算需求，24/7多语言支持，联系客服免费试用500M。可与EasySpider工具配合使用，高效采集网络数据。
