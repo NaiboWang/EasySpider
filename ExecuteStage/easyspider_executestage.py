@@ -2416,6 +2416,8 @@ if __name__ == '__main__':
                     # Headless mode
                     # options.add_argument("--headless")
                     # print("Headless mode")
+                    options.binary_location = ""
+                    options.extensions.clear()
                     browser_t = MyChrome(command_executor=c.docker_driver, options=options, mode='remote_driver')
             elif browser == "edge":
                 from selenium.webdriver.edge.service import Service as EdgeService
