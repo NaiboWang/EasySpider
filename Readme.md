@@ -19,38 +19,17 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 <a target="_blank" href="https://get.brightdata.com/njx4r"><img src="media/BrightData.png" width=850></img></a>
 [亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
 
-<!-- <a target="_blank" href="https://www.thordata.com/?ls=github&lk=wnb"><img src="media/thordata.jpg" width=850></img></a>
-[Thordata](https://www.thordata.com/?ls=github&lk=wnb)是全球代理IP解决方案提供商，支持大规模采集公共网络数据，提供 195+ 国家城市、6000 万住宅IP，价格低至 $0.65/GB，支持不限流量、不限IP、不限并发；还包括本土独享ISP静态代理和高性能数据中心代理（均为 $0.75/IP，弹性定价）。点击图片注册后联系中文客服即可免费试用，现在首充还有赠送同额金额活动。可与EasySpider工具配合使用，高效采集网络数据。 -->
+<a target="_blank" href="https://www.thordata.com/?ls=tool&lk=easyspider"><img src="media/Thordata.png" width=850></img></a>
+
+[Thordata](https://www.thordata.com/?ls=tool&lk=easyspider) - 高品质网络数据抓取代理服务
+超过6000万个住宅代理的全球网络，可用性高达99.7%，确保稳定可靠的网络数据抓取，以支持 AI、BI和工作流。超过500GB可享60%限时折扣，最低0.7/GB，从易于使用、高质量且价格实惠的代理开始您的网络数据抓取之旅。
+
+全套餐30%优惠码：**THOR3333**
 
 <a target="_blank" href="https://bestproxy.com/?keyword=48xywxar"><img src="media/best_proxy.png" width=850></img></a>
 [BestProxy](https://bestproxy.com/?keyword=48xywxar)全球独享专属资源池，优选海外195+国家/地区高质量住宅IP，本地ISP原生IP，不限量住宅代理、长效ISP代理、静态数据中心代理、网页爬虫API，城市级精准定位，支持HTTP(S)和SOCKS5协议，低检测风险，全方位代理服务解决方案，助力各种场景业务IP代理需求。$0.66/G起按需付费和长期套餐，适合不同预算需求，24/7多语言支持，联系客服免费试用500M。可与EasySpider工具配合使用，高效采集网络数据。
 
-<a target="_blank" href="https://www.ipdodo.com/account/register?invite_code=GE1XXDLJ"><img src="media/IPdodo.png" width=850></img></a>
-[IPdodo](https://www.ipdodo.com/account/register?invite_code=GE1XXDLJ)专注为跨境用户，提供独享/纯净/家宽/原生/双ISP的全球代理IP，不限流量。全球8000万真实住宅IP，覆盖200+国家/地区，99.9%匿名保护，且支持Http/Https/Socks5协议，满足爬虫、数据采集、跨境电商、tk/fb流媒体等业务场景。现在前往IPdodo注册，支持免费试用。
 
-<!-- <a target="_blank" href="https://www.ipwo.net/?code=KK9YVWI2L"><img src="media/IPWO_Proxy.gif" width=850></img></a>
-
-<!-- [IPWO](https://www.ipwo.net/?code=KK9YVWI2L)支持免费测试，作为行业领先的代理IP提供商，拥有 9000万+真实住宅IP，覆盖200+国家和地区，支持无限并发，可用率高达99.9%，帮助用户轻松突破地理限制，实现高效、安全的全球网络访问，与EasySpider完美结合，助力数据采集，尽享无缝体验。 -->
-
-
-<!-- <a target="_blank" href="https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider"><img src="media/capsolver.jpg" width=850></img></a> -->
-
-<!-- [![Capsolver](media/capsolver.jpg)](https://www.capsolver.com/zh?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) -->
-
-<!-- [Capsolver.com](https://www.capsolver.com/?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) is an AI-powered service that specializes in solving various types of captchas automatically. It supports captchas such as [reCAPTCHA V2](https://docs.capsolver.com/guide/captcha/ReCaptchaV2.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [reCAPTCHA V3](https://docs.capsolver.com/guide/captcha/ReCaptchaV3.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [DataDome](https://docs.capsolver.com/guide/captcha/DataDome.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [AWS Captcha](https://docs.capsolver.com/guide/captcha/awsWaf.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [Geetest](https://docs.capsolver.com/guide/captcha/Geetest.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), and Cloudflare [Captcha](https://docs.capsolver.com/guide/antibots/cloudflare_turnstile.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider) / [Challenge 5s](https://docs.capsolver.com/guide/antibots/cloudflare_challenge.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), [Imperva / Incapsula](https://docs.capsolver.com/guide/antibots/imperva.html?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), among others.
-For developers, Capsolver offers API integration options detailed in their [documentation](https://docs.capsolver.com/?utm_source=github&utm_medium=banner_github&utm_campaign=easyspider), facilitating the integration of captcha solving into applications. They also provide browser extensions for [Chrome](https://chromewebstore.google.com/detail/captcha-solver-auto-captc/pgojnojmmhpofjgdmaebadhbocahppod) and [Firefox](https://addons.mozilla.org/es/firefox/addon/capsolver-captcha-solver/), making it easy to use their service directly within a browser. Different pricing packages are available to accommodate varying needs, ensuring flexibility for users. -->
-
-<!-- <a target="_blank" href="https://www.proxy302.com/?ref=wangnaibo"><img src="media/Proxy302.jpg" width=850></img></a>
-
-[Proxy302](https://www.proxy302.com/?ref=wangnaibo)是一个全球代理IP自助超市。按需付费，无需套餐捆绑购买；无阶梯式定价，充值即可使用所有类型的代理IP；免费测试，注册获取$1测试额度。覆盖全球240＋国家和地区，6500万个住宅IP可供选择。Proxy302可配合EasySpider进行数据采集。
-
-<a target="_blank" href="https://www.123proxy.cn/?utm_source=EasySpider"><img src="media/123proxy.png" width=850></img></a>
-
-[123Proxy](https://www.123proxy.cn/?utm_source=EasySpider)是企业级海外代理IP提供商, 拥有独家的8000万+代理IP池，190+国家覆盖，真实家庭住宅IP，适合各种用途的数据采集类任务。它支持免费测试2-4小时，**点击上方图片注册**联系客服即可获取；它还支持15%返现活动，给公司购买代理可以返现到个人，直接微信/支付宝返现，打工人的小福利。123Proxy可配合EasySpider进行数据采集。
-
-<a target="_blank" href="https://koala-ip.com/"><img src="media/Koala-IP.png" width=850></img></a>
-
-[Koala-IP](https://koala-ip.com/)提供海量低价高质量代理IP服务，致力于为客户提供[最优价格](https://zh-cn.koala-ip.com/var-ip)和最稳定的代理IP解决方案。无论你是需要网络爬虫、数据抓取、隐私保护还是跨地域访问，[Koala-IP（中文）](https://zh-cn.koala-ip.com/) 都能满足你的所有需求。[立即注册Koala-IP](https://koala-ip.com/admin/register)，享受超高性价比的代理IP服务，提升你的业务效益！ -->
 
 ## 官方网站/Official Website
 
