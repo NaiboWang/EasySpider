@@ -45,6 +45,7 @@ import sys
 # import hashlib
 import time
 import requests
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from multiprocessing import freeze_support
 freeze_support()  # 防止无限死循环多开
 try:
@@ -73,9 +74,11 @@ desired_capabilities["pageLoadStrategy"] = "none"
 
 
 class BrowserThread(Thread):
-    def __init__(self, browser_t, id, service, version, event, saveName, config, option, commandline_config=""):
+    def __init__(self, browser_t, id, service, version, event, saveName, config, option, shutdown_event, commandline_config=""):
         Thread.__init__(self)
         self.logs = io.StringIO()
+        # 退出事件，用于远程执行时的中断
+        self.shutdown_event = shutdown_event
         self.log = bool(service.get("recordLog", True))
         self.browser = browser_t
         self.option = option
@@ -466,28 +469,41 @@ class BrowserThread(Thread):
     def run(self):
         # 挨个执行程序
         for i in range(len(self.links)):
-            self.print_and_log("正在执行第", i + 1, "/", len(self.links), "个链接")
-            self.print_and_log("Executing link", i + 1,
-                               "/", len(self.links))
-            self.executeNode(0)
-            self.urlId = self.urlId + 1
+            if self.shutdown_event.is_set():
+                self.print_and_log("接收到终止信号，正在中断任务... | Received termination signal, interrupting task...")
+                break
+            self.event.wait()  # 暂停/恢复
+            self.executeNode(self.startSteps, self.links[i], "", i)
         # files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
         # if not files:
         #     os.rmdir("Data/Task_" + str(self.id) + "/" + self.saveName)
-        self.print_and_log("Done!")
-        self.print_and_log("执行完成！")
-        self.saveData(exit=True)
-        self.removeDuplicateData()
+        if self.shutdown_event.is_set():
+            self.print_and_log("任务已中断 | Task interrupted")
+        else:
+            self.print_and_log("Done!")
+            self.print_and_log("执行完成！")
+            self.saveData(exit=True)
+            self.removeDuplicateData()
+            
         if self.outputFormat == "mysql":
             self.mysql.close()
-        try:
-            quitWaitTime = self.service["quitWaitTime"]
-        except:
-            quitWaitTime = 60
-        self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
-        self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
-        time.sleep(quitWaitTime)
+        
+        if not self.shutdown_event.is_set():
+            try:
+                quitWaitTime = self.service["quitWaitTime"]
+            except:
+                quitWaitTime = 60
+            self.print_and_log(f"任务执行完毕，将在{quitWaitTime}秒后自动退出浏览器并清理临时用户目录，等待时间可在保存任务对话框中设置。")
+            self.print_and_log(f"The task is completed, the browser will exit automatically and the temporary user directory will be cleaned up after {quitWaitTime} seconds, the waiting time can be set in the save task dialog.")
+            
+            # 使退出前的等待可被中断
+            wait_end_time = time.time() + quitWaitTime
+            while time.time() < wait_end_time:
+                if self.shutdown_event.is_set():
+                    break
+                time.sleep(0.1)
+
         try:
             self.browser.quit()
         except:
@@ -508,8 +524,8 @@ class BrowserThread(Thread):
     # 定义一个自定义的 print 函数，它将内容同时打印到屏幕和文件中
     def print_and_log(self, *args, **kwargs):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-        # 将内容打印到屏幕
-        print(*args, **kwargs)
+        # 将内容打印到屏幕，立刻输出
+        print(*args, **kwargs, flush=True)
 
         # 将内容写入文件
         print(now + ":", *args, file=self.logs, **kwargs)
@@ -914,6 +930,9 @@ class BrowserThread(Thread):
 
     # 执行节点关键函数部分
     def executeNode(self, nodeId, loopValue="", loopPath="", index=0):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         node = self.procedure[nodeId]
         # WebDriverWait(self.browser, 10).until
         # # 等待元素出现才进行操作，10秒内未出现则报错
@@ -982,6 +1001,7 @@ class BrowserThread(Thread):
             elif node["option"] == 9:  # 条件分支
                 self.judgeExecute(node, loopValue, loopPath, index)
         except Exception as e:
+            if self.shutdown_event.is_set(): return
             self.print_and_log("执行节点<" + node["title"] + ">时出错，将继续执行，错误为：", e)
             self.print_and_log("Error executing node <" + node["title"] + ">, will continue to execute, error is:", e)
         
@@ -1003,6 +1023,9 @@ class BrowserThread(Thread):
 
     # 对判断条件的处理
     def judgeExecute(self, node, loopElement, clickPath="", index=0):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         executeBranchId = 0  # 要执行的BranchId
         for i in node["sequence"]:
             cnode = self.procedure[i]  # 获得条件分支
@@ -1082,6 +1105,9 @@ class BrowserThread(Thread):
                 "判断条件内所有条件分支的条件都不满足|None of the conditions in the judgment condition are met")
 
     def handleHistory(self, node, xpath, thisHandle, thisHistoryURL, thisHistoryLength, index, element=None, elements=None):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         try:
             changed_handle = self.browser.current_window_handle != thisHandle
         except:  # 如果网页被意外关闭了的情况下
@@ -1139,6 +1165,9 @@ class BrowserThread(Thread):
 
     # 对循环的处理
     def loopExecute(self, node, loopValue, loopPath="", index=0):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         time.sleep(0.1)  # 第一次执行循环的时候强制等待1秒
         thisHandle = self.browser.current_window_handle  # 记录本次循环内的标签页的ID
         try:
@@ -1198,7 +1227,10 @@ class BrowserThread(Thread):
             # 无跳转标签页操作
             count = 0  # 执行次数
             bodyText = "-"
+
             while True:  # do while循环
+                if self.shutdown_event.is_set():
+                    break
                 try:
                     finished = False
                     if node["parameters"]["exitCount"] == 0:
@@ -1301,6 +1333,8 @@ class BrowserThread(Thread):
                 index = 0
                 skipCount = node["parameters"]["skipCount"]
                 while index < len(elements):
+                    if self.shutdown_event.is_set():
+                        break
                     if index < skipCount:
                         index += 1
                         self.print_and_log("跳过第" + str(index) + "个元素")
@@ -1345,6 +1379,8 @@ class BrowserThread(Thread):
             index = 0
             skipCount = node["parameters"]["skipCount"]
             while index < len(paths):
+                if self.shutdown_event.is_set():
+                    break
                 if index < skipCount:
                     index += 1
                     self.print_and_log("跳过第" + str(index) + "个元素")
@@ -1390,6 +1426,8 @@ class BrowserThread(Thread):
             skipCount = node["parameters"]["skipCount"]
             index = 0
             for text in textList:
+                if self.shutdown_event.is_set():
+                    break
                 if index < skipCount:
                     index += 1
                     self.print_and_log("跳过第" + str(index) + "个文本")
@@ -1424,6 +1462,8 @@ class BrowserThread(Thread):
             skipCount = node["parameters"]["skipCount"]
             index = 0
             for url in urlList:
+                if self.shutdown_event.is_set():
+                    break
                 if index < skipCount:
                     index += 1
                     self.print_and_log("跳过第" + str(index) + "个网址")
@@ -1449,6 +1489,8 @@ class BrowserThread(Thread):
                         break
         elif int(node["parameters"]["loopType"]) <= 7:  # 命令返回值
             while True:  # do while循环
+                if self.shutdown_event.is_set():
+                    break
                 if int(node["parameters"]["loopType"]) == 5:  # JS
                     output = self.execute_code(
                         0, node["parameters"]["code"], node["parameters"]["waitTime"],
@@ -1478,6 +1520,9 @@ class BrowserThread(Thread):
 
     # 打开网页操作
     def openPage(self, param, loopValue):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         time.sleep(1)  # 打开网页后强行等待至少1秒
         if len(self.browser.window_handles) > 1:
             self.browser.switch_to.window(
@@ -1543,6 +1588,9 @@ class BrowserThread(Thread):
 
     # 键盘输入操作
     def inputInfo(self, param, loopValue):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         time.sleep(0.1)  # 输入之前等待0.1秒
         try:
             xpath = replace_field_values(
@@ -1596,6 +1644,9 @@ class BrowserThread(Thread):
 
     # 点击元素操作
     def clickElement(self, param, loopElement=None, clickPath="", index=0):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         try:
             maxWaitTime = int(param["maxWaitTime"])
         except:
@@ -1784,6 +1835,10 @@ class BrowserThread(Thread):
         self.scrollDown(param)  # 根据参数配置向下滚动
 
     def get_content(self, p, element):
+        if self.shutdown_event.is_set():
+            return ""
+        self.event.wait()
+        # self.print_and_log(p)
         content = ""
         if p["contentType"] == 0:
             # 先处理特殊节点类型
@@ -1964,12 +2019,19 @@ class BrowserThread(Thread):
         return content
 
     def clearOutputParameters(self):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
+
         for key in self.outputParameters:
             self.outputParameters[key] = ""
         self.recordLog("清空输出参数|Clear output parameters")
 
     # 提取数据操作
     def getData(self, param, loopElement, isInLoop=True, parentPath="", index=0):
+        if self.shutdown_event.is_set():
+            return
+        self.event.wait()
         parentPath = replace_field_values(
             parentPath, self.outputParameters, self)
         if param["clear"] == 1:
@@ -2188,6 +2250,50 @@ class BrowserThread(Thread):
                             self.maxViewLength, self.outputParametersRecord)
             self.OUTPUT.append(line)
 
+
+def start_ipc_server(shutdown_event_to_set, key):
+    """在一个新线程中启动一个远程控制服务器。用于在 nodejs 父进程和 python 子进程之间进行通信。
+    :param shutdown_event_to_set: 用于设置主程序中的全局关闭事件
+    :param key: 用于验证远程控制请求的密钥
+    """
+    
+    class ShutdownHandler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            request_key = self.headers.get('Authorization')
+            if request_key != key and request_key != "Bearer " + key:
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write(b'Forbidden: Invalid key.')
+                return
+
+            if self.path == '/shutdown':
+                print("IPC server received shutdown command.")
+                # 设置主程序中的全局关闭事件
+                shutdown_event_to_set.set()
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write(b'Shutdown signal received.')
+            else:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b'Not Found.')
+        def log_message(self, format, *args):
+                # 覆盖此方法以禁止向 stderr 打印日志
+                return
+
+    # 绑定到 localhost 和一个随机可用端口 (port 0)
+    httpd = HTTPServer(("127.0.0.1", 0), ShutdownHandler)
+    
+    # 获取被分配的端口号
+    ipc_port = httpd.socket.getsockname()[1]
+
+     # 关键步骤：将端口号打印到 stdout，以便 Node.js 父进程捕获
+    print(f"IPC_SERVER_PORT:{ipc_port}", flush=True)
+    
+    # 在当前线程中运行服务器，直到被关闭
+    httpd.serve_forever()
+
+
 if __name__ == '__main__':
     # 如果需要调试程序，请在命令行参数中加入--keyboard 0 来禁用键盘监听以提升调试速度
     # If you need to debug the program, please add --keyboard 0 in the command line parameters to disable keyboard listening to improve debugging speed
@@ -2200,6 +2306,8 @@ if __name__ == '__main__':
         "read_type": "remote",
         "headless": False,
         "server_address": "http://localhost:8074",
+        "remote_control": False, # 是否开启远程控制服务器。这个所谓的“远程”其实是指 electron 主程序的控制，无法从外部网络访问（因为端口随机）
+        "remote_control_key": "", # 如果开启远程控制，那么初始化时需要填写此 key，保证安全性
         "keyboard": True,  # 是否监听键盘输入
         "pause_key": "p",  # 暂停键
         "version": "0.6.3",
@@ -2207,7 +2315,10 @@ if __name__ == '__main__':
         "user_folder": "",
     }
     c = Config(commandline_config)
+    remote_key = c.remote_control_key
+    c.remote_control_key = "hidden for security"  # 清空远程控制密钥，防止被其他人使用
     print(c)
+    c.remote_control_key = remote_key  # 恢复远程控制密钥
     options = webdriver.ChromeOptions()
     driver_path = "chromedriver.exe"
     print(sys.platform, platform.architecture())
@@ -2222,6 +2333,15 @@ if __name__ == '__main__':
         if c.config_folder == "":
             c.config_folder = os.path.expanduser(
                 "~/Library/Application Support/EasySpider/")
+    # 在 linux 里，EasySpider 打包版默认是在 EasySpider 文件夹内执行的，没有 windows 上那种外层的 25kb 启动器
+    # 因此需要特殊处理并判断此时 chrome, chromedriver 和扩展的路径。
+    elif sys.platform == "linux" and platform.architecture()[0] == "64bit" and os.path.exists(os.path.join(os.getcwd(), "resources")):
+        print("Finding chromedriver in EasySpider",
+              os.getcwd())
+        # 相对于下一条检查语句，这里去掉了 EasySpider 文件夹这一层
+        options.binary_location = "resources/app/chrome_linux64/chrome"
+        driver_path = "resources/app/chrome_linux64/chromedriver_linux64"
+        options.add_extension("resources/app/XPathHelper.crx")
     elif os.path.exists(os.getcwd() + "/EasySpider/resources"):  # 打包后的路径
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/EasySpider")
@@ -2250,9 +2370,23 @@ if __name__ == '__main__':
         # 软件dev用
         print("Finding chromedriver in EasySpider",
               os.getcwd() + "/ElectronJS")
-        options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
-        driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
-        options.add_extension("../ElectronJS/XPathHelper.crx")
+        if sys.platform == "win32" and platform.architecture()[0] == "32bit":
+            options.binary_location = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chrome.exe")  # 指定chrome位置
+            driver_path = os.path.join(
+                os.getcwd(), "EasySpider/resources/app/chrome_win32/chromedriver_win32.exe")
+            options.add_extension("EasySpider/resources/app/XPathHelper.crx")
+        elif sys.platform == "win32" and platform.architecture()[0] == "64bit":
+            options.binary_location = "../ElectronJS/chrome_win64/chrome.exe"  # 指定chrome位置
+            driver_path = "../ElectronJS/chrome_win64/chromedriver_win64.exe"
+            options.add_extension("../ElectronJS/XPathHelper.crx")
+        elif sys.platform == "linux" and platform.architecture()[0] == "64bit":
+            options.binary_location = "../ElectronJS/chrome_linux64/chrome"
+            driver_path = "../ElectronJS/chrome_linux64/chromedriver_linux64"
+            options.add_extension("../ElectronJS/XPathHelper.crx")
+        else:
+            print("Unsupported platform for automatic detection. You need to specify chrome executable path, chromedriver path in code.")
+            sys.exit()
     else:
         options.binary_location = "./chrome.exe"  # 指定chrome位置
         driver_path = "./chromedriver.exe"
@@ -2293,6 +2427,17 @@ if __name__ == '__main__':
     tmp_options = []
     for id in c.ids:
         tmp_options.append({"options": copy.deepcopy(options), "tmp_user_data_folder": ""})
+    
+    ipc_thread = None
+    shutdown_event = Event()
+    if c.remote_control:
+        if c.remote_control_key == "":
+            print("Remote control is enabled, but no remote control key is set, please set the --remote_control_key parameter to a non-empty value.")
+            print("远程控制已启用，但未设置远程控制密钥，请将--remote_control_key参数设置为非空值。")
+            sys.exit(1)
+        else:
+            ipc_thread = threading.Thread(target=start_ipc_server, args=(shutdown_event, c.remote_control_key), daemon=True)
+            ipc_thread.start() 
 
     if c.user_data:
         tmp_user_folder_parent = os.path.join(os.getcwd(), "TempUserDataFolder")
@@ -2450,7 +2595,7 @@ if __name__ == '__main__':
         event = Event()
         event.set()
         thread = BrowserThread(browser_t, id, service,
-                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i], commandline_config=c)
+                               c.version, event, c.saved_file_name, config=config, option=tmp_options[i], shutdown_event=shutdown_event, commandline_config=c)
         print("Thread with task id: ", id, " is created")
         threads.append(thread)
         thread.start()
@@ -2478,17 +2623,26 @@ if __name__ == '__main__':
         #     print("过Cloudflare验证模式有时候会不稳定，如果无法通过验证则需要隔几分钟重试一次，或者可以更换新的用户信息文件夹再执行任务。")
         #     print("Passing the Cloudflare verification mode is sometimes unstable. If the verification fails, you need to try again every few minutes, or you can change to a new user information folder and then execute the task.")
         # 使用监听器监听键盘输入
+    listener = None
     try:
         from pynput.keyboard import Key, Listener
         if c.keyboard:
-            with Listener(on_press=on_press_creator(press_time, event),
-                          on_release=on_release_creator(event, press_time)) as listener:
-                listener.join()
+            listener = Listener(on_press=on_press_creator(press_time, event),
+                          on_release=on_release_creator(event, press_time))
     except:
         pass
         # print("您的操作系统不支持暂停功能。")
         # print("Your operating system does not support the pause function.")
 
-    for thread in threads:
-        print()
-        thread.join()
+    try:
+        while (any(thread.is_alive() for thread in threads)):
+            for thread in threads:
+                thread.join(0.1)
+    except (KeyboardInterrupt, SystemExit):
+        print("程序被手动终止，正在关闭浏览器...")
+        print("The program is manually terminated, closing the browser...")
+        if not shutdown_event.is_set():
+            shutdown_event.set()
+    finally:
+        if listener is not None and listener.is_alive():
+            listener.stop()

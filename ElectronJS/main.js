@@ -115,6 +115,8 @@ let socket_window = null;
 let socket_start = null;
 let socket_flowchart = null;
 let socket_popup = null;
+// 存储后端(server.js)沟通的 socket
+let socket_backend = null;
 let invoke_window = null;
 
 // var ffi = require('ffi-napi');
@@ -1292,19 +1294,25 @@ wss.on("connection", function (ws) {
             } else if (msg.message.id == 3) {
                 socket_popup = ws;
                 console.log("set socket_popup at time: ", new Date());
+            } else if (msg.message.id == 4) {
+                socket_backend = ws;
+                console.log("set socket_backend at time: ", new Date());
             } else {
                 //其他的ID是用来标识不同的浏览器标签页的
                 // await new Promise(resolve => setTimeout(resolve, 200));
                 let handles = await driver.getAllWindowHandles();
+                // 获得所有位于新的 handles 而不存在于 old_handles 中的 handles，即获得所有新创建页面的句柄
                 if (arrayDifference(handles, old_handles).length > 0) {
                     old_handles = handles;
                     current_handle = handles[handles.length - 1];
+                    // 切换到新增加的窗口
                     await driver.switchTo().window(current_handle);
                     console.log(
                         "New tab opened, change current_handle to: ",
                         current_handle
                     );
                     // 调整浏览器窗口大小，不然扩展会白屏
+                    // 先调整为当前窗口大小加10px，然后再调整回原来的大小
                     let size = await driver.manage().window().getRect();
                     let width = size.width;
                     let height = size.height;
