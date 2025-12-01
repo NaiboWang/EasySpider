@@ -29,8 +29,8 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 <a target="_blank" href="https://bestproxy.com/?keyword=48xywxar"><img src="media/best_proxy.png" width=850></img></a>
 [BestProxy](https://bestproxy.com/?keyword=48xywxar)全球独享专属资源池，优选海外195+国家/地区高质量住宅IP，本地ISP原生IP，不限量住宅代理、长效ISP代理、静态数据中心代理、网页爬虫API，城市级精准定位，支持HTTP(S)和SOCKS5协议，低检测风险，全方位代理服务解决方案，助力各种场景业务IP代理需求。$0.66/G起按需付费和长期套餐，适合不同预算需求，24/7多语言支持，联系客服免费试用500M。可与EasySpider工具配合使用，高效采集网络数据。
 
-<a target="_blank" href="https://app.cyberyozh.com/?utm_source=github&utm_medium=easyspider"><img src="media/BannerCYApp.png" width=850></img></a>
-[CyberYozh App](https://app.cyberyozh.com/?utm_source=github&utm_medium=easyspider)代理与短信激活服务为您提供高度匿名性和连接稳定性，可满足从社交媒体运营到大规模自动化和多账号管理等各种需求。我们的移动代理和住宅代理服务器，以及覆盖100多个国家的虚拟短信激活号码，为您提供最高级别的信任度，助您轻松突破限制、无风险操作。简单快速的接入方式、API支持与全天候技术服务，让您高效工作，无需妥协。
+<!-- <a target="_blank" href="https://app.cyberyozh.com/?utm_source=github&utm_medium=easyspider"><img src="media/BannerCYApp.png" width=850></img></a>
+[CyberYozh App](https://app.cyberyozh.com/?utm_source=github&utm_medium=easyspider)代理与短信激活服务为您提供高度匿名性和连接稳定性，可满足从社交媒体运营到大规模自动化和多账号管理等各种需求。我们的移动代理和住宅代理服务器，以及覆盖100多个国家的虚拟短信激活号码，为您提供最高级别的信任度，助您轻松突破限制、无风险操作。简单快速的接入方式、API支持与全天候技术服务，让您高效工作，无需妥协。 -->
 
 ## 官方网站/Official Website
 
