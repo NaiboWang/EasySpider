@@ -19,18 +19,12 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 <a target="_blank" href="https://get.brightdata.com/njx4r"><img src="media/BrightData.png" width=850></img></a>
 [亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
 
-<a target="_blank" href="https://www.thordata.com/?ls=tool&lk=easyspider"><img src="media/Thordata.png" width=850></img></a>
+<a target="_blank" href="https://dashboard.capsolver.com/passport/register?inviteCode=vjZG0olvd5L3"><img src="media/capsolver.png" width=850></img></a>
 
-[Thordata](https://www.thordata.com/?ls=tool&lk=easyspider) - 高品质网络数据抓取代理服务
-超过6000万个住宅代理的全球网络，可用性高达99.7%，确保稳定可靠的网络数据抓取，以支持 AI、BI和工作流。超过500GB可享60%限时折扣，最低0.7/GB，从易于使用、高质量且价格实惠的代理开始您的网络数据抓取之旅。
-
-全套餐30%优惠码：**THOR3333**
-
-<a target="_blank" href="https://bestproxy.com/?keyword=48xywxar"><img src="media/best_proxy.png" width=850></img></a>
-[BestProxy](https://bestproxy.com/?keyword=48xywxar)全球独享专属资源池，优选海外195+国家/地区高质量住宅IP，本地ISP原生IP，不限量住宅代理、长效ISP代理、静态数据中心代理、网页爬虫API，城市级精准定位，支持HTTP(S)和SOCKS5协议，低检测风险，全方位代理服务解决方案，助力各种场景业务IP代理需求。$0.66/G起按需付费和长期套餐，适合不同预算需求，24/7多语言支持，联系客服免费试用500M。可与EasySpider工具配合使用，高效采集网络数据。
-
-<!-- <a target="_blank" href="https://app.cyberyozh.com/?utm_source=github&utm_medium=easyspider"><img src="media/BannerCYApp.png" width=850></img></a>
-[CyberYozh App](https://app.cyberyozh.com/?utm_source=github&utm_medium=easyspider)代理与短信激活服务为您提供高度匿名性和连接稳定性，可满足从社交媒体运营到大规模自动化和多账号管理等各种需求。我们的移动代理和住宅代理服务器，以及覆盖100多个国家的虚拟短信激活号码，为您提供最高级别的信任度，助您轻松突破限制、无风险操作。简单快速的接入方式、API支持与全天候技术服务，让您高效工作，无需妥协。 -->
+[CapSolver](https://dashboard.capsolver.com/passport/register?inviteCode=vjZG0olvd5L3)是CAPTCHA solving领域的Top 3供应商，提供AI驱动的CAPTCHA solving服务，支持reCAPTCHA, Image CAPTCHA, Cloudflare, AWS WAF and more。专为大批量网页爬取、自动化工作流而生，赋能你的AI、BI项目，解码速度最快可<3s，成功率>99%,宕机时间为0，快速的客服支持，全网性价比最高，还可叠加EasySpider的6%专属折扣码：**ESN**。
+ 
+[CapSolver](https://dashboard.capsolver.com/passport/register?inviteCode=vjZG0olvd5L3) is one of the top 3 providers in the CAPTCHA-solving industry, offering AI-powered solutions that support reCAPTCHA, Image CAPTCHA, Cloudflare, AWS WAF, and more. Designed for high-volume web scraping and automated workflows, it boasts decoding speeds of < 3 seconds, a success rate > 99%, and 0 downtime, empowering your AI and BI projects. Backed by fast customer support, it offers the best value-for-money solution on the market.
+Get your extra 6% extra credit using EasySpider’s bonus code: **ESN**.
 
 ## 官方网站/Official Website
 
