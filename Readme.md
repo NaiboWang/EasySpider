@@ -16,8 +16,12 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 ## 赞助者/Sponsors
 
-<a target="_blank" href="https://get.brightdata.com/njx4r"><img src="media/BrightData.png" width=850></img></a>
-[亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
+<!-- <a target="_blank" href="https://get.brightdata.com/njx4r"><img src="media/BrightData.png" width=850></img></a>
+[亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。 -->
+
+<a target="_blank" href="http://www.ipidea.net/?utm-source=ycj&utm-keyword=?ycj"><img src="media/IPIDEA.jpg" width=850></img></a>
+
+[IPIDEA](http://www.ipidea.net/?utm-source=ycj&utm-keyword=?ycj)通过全球高质量代理系统和自动化抓取工具，帮助企业解决地理与防护限制，快速精准地获取所需数据，提升采集效率，并为AI大模型训练、跨境电商、市场调研等应用场景提供可靠的数据支持。[IPIDEA](http://www.ipidea.net/?utm-source=ycj&utm-keyword=?ycj)还提供开箱即用的标准化数据集与灵活定制的专属数据采集服务。注册即享免费测试！
 
 <a target="_blank" href="https://dashboard.capsolver.com/passport/register?inviteCode=vjZG0olvd5L3"><img src="media/capsolver.png" width=850></img></a>
 
