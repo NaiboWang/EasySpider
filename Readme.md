@@ -16,8 +16,11 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 
 ## 赞助者/Sponsors
 
-<a target="_blank" href="https://get.brightdata.com/njx4r"><img src="media/BrightData.png" width=850></img></a>
-[亮数据BrightData](https://get.brightdata.com/njx4r)是代理市场领导者，覆盖全球的7200万IP，提供真人住宅IP，即时批量采集网络公开数据，成功率亲测有保证。需要性价比高代理IP的可**点击上方图片注册**后联系中文客服，开通后免费试用，**现在有首充多少就送多少的活动**。BrightData可配合EasySpider进行数据采集。
+<a target="_blank" href="https://get.brightdata.com/naibowang"><img src="media/BrightData.png" width=850></img></a>
+[Bright Data（亮数据）](https://get.brightdata.com/naibowang)作为全球领先的代理网络，覆盖全球1.5亿+IP，提供真实住宅IP及采集API，支持大规模稳定采集互联网公开数据，成功率经过实战验证。如需高性价比代理服务，可点击上方图片注册并联系中文客服；目前有“首充多少送多少”、动态IP 5折的优惠活动。Bright Data 也可配合EasySpider等工具进行数据采集。
+
+<a target="_blank" href="https://get.brightdata.com/enbd"><img src="media/BrightData_EN.png" width=850></img></a>
+[Bright Data](https://get.brightdata.com/enbd) is a leading proxy network with 150M+ IPs worldwide, offering real residential Ips and web unlocker to help you collect public web data at scale with proven, high success rates. For cost-effective proxy access, click the banner above to sign up and reach our Chinese support team—there’s currently a promo that matches your first deposit.
 
 <!-- <a target="_blank" href="http://www.ipidea.net/?utm-source=ycj&utm-keyword=?ycj"><img src="media/IPIDEA.jpg" width=850></img></a>
 
