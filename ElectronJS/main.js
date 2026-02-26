@@ -1404,22 +1404,34 @@ async function runBrowser(lang = "en", user_data_folder = "", mobile = false) {
     options.addArguments("--disable-infobars");
     options.addArguments("--disable-web-security");
     options.addArguments("--disable-features=CrossSiteDocumentBlockingIfIsolating,CrossSiteDocumentBlockingAlways,IsolateOrigins,site-per-process");
-    options.addArguments("--disable-features=DisableLoadExtensionCommandLineSwitch");
+
+    options.set("webSocketUrl", true);
+    // 添加以下两个参数来启用 WebExtension 安装
+    options.addArguments('--enable-unsafe-extension-debugging');
+    options.addArguments('--remote-debugging-pipe');
+
     // 添加实验性选项以排除'enable-automation'开关
     options.set("excludeSwitches", ["enable-automation"]);
     options.excludeSwitches("enable-automation");
+
 
     // 添加实验性选项来禁用自动化扩展
     options.set("useAutomationExtension", false);
     // options.addArguments('--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36');
     options.set;
     language = lang;
-    if (lang == "en") {
-        options.addExtensions(path.join(__dirname, "EasySpider_en.crx"));
-    } else if (lang == "zh") {
-        options.addExtensions(path.join(__dirname, "EasySpider_zh.crx"));
-    }
-    options.addExtensions(path.join(__dirname, "XPathHelper.crx"));
+    // if (lang == "en") {
+    //     options.addExtensions(path.join(__dirname, "EasySpider_en.crx"));
+    // } else if (lang == "zh") {
+    //     options.addExtensions(path.join(__dirname, "EasySpider_zh.crx"));
+    // }
+    // options.addExtensions(path.join(__dirname, "XPathHelper.crx"));
+
+    // 使用 BiDi WebExtension API
+    const getWebExtensionInstance = require('./selenium-webdriver-bidi-webExtension/webExtension');
+    const ExtensionData = require('./selenium-webdriver-bidi-webExtension/extensionData');
+
+
     options.setChromeBinaryPath(chromeBinaryPath);
 
     if (user_data_folder != "") {
@@ -1452,16 +1464,43 @@ async function runBrowser(lang = "en", user_data_folder = "", mobile = false) {
     await driver
         .manage()
         .setTimeouts({implicit: 3, pageLoad: 10000, script: 10000});
+    
+    // 创建 WebExtension 实例
+    const webExtension = await getWebExtensionInstance(driver);
+
+    try {
+        // 安装 EasySpider 主扩展 - 使用解压后的文件夹
+        let easySpiderPath;
+        if (lang == "zh") {
+            easySpiderPath = path.join(__dirname, "EasySpider_zh");
+            await webExtension.install(ExtensionData.setPath(easySpiderPath));
+        } else {
+            easySpiderPath = path.join(__dirname, "EasySpider_en");
+            await webExtension.install(ExtensionData.setPath(easySpiderPath));
+        }
+
+    } catch (error) {
+        console.error('安装扩展失败:', error);
+        throw error;
+    }
+    
     await driver.executeScript(
         "Object.defineProperty(navigator, 'webdriver', {get: () => undefined})"
     );
     // await driver.executeScript("localStorage.clear();"); //重置参数数量
-    const cdpConnection = await driver.createCDPConnection("page");
-    let stealth_path = path.join(__dirname, "stealth.min.js");
-    let stealth = fs.readFileSync(stealth_path, "utf8");
-    await cdpConnection.execute("Page.addScriptToEvaluateOnNewDocument", {
-        source: stealth,
-    });
+    
+
+    // 注入 stealth 脚本（使用 Script 类）
+    const Script = require('selenium-webdriver/lib/script.js');
+    let script_path = path.join(__dirname, "stealth.min.js");
+    let stealth_script = fs.readFileSync(script_path, "utf8");
+    
+    const script = new Script(driver);  // ← 实例化 Script 类
+    const scriptId = await script.pin(stealth_script);
+    console.log(`stealth.min.js 已注入，ID: ${scriptId}`);
+
+
+
     if (config_context.user_data_folder == "") {
         //调整浏览器窗口大小
         let size = await driver.manage().window().getRect();

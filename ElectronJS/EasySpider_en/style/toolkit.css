@@ -1,0 +1,215 @@
+.tooltips {
+    width: 330px;
+    min-height: 300px;
+    background-color: white;
+    position: fixed;
+    z-index: 2147483640;
+    right: 30px;
+    bottom: 30px;
+    font-size: 13px !important;
+    font-weight: normal !important;
+    border: solid navy 2px;
+    -webkit-user-select: none;
+    /* 文字不可被选中 */
+}
+
+.tooldrag {
+    background-color: navy;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    height: 26px !important;
+    padding-top: 8px !important;
+    color: white;
+}
+
+.realcontent {
+    text-align: left;
+    color: black!important;
+    padding-top: 10px !important;
+    padding-bottom: 80px !important;
+    padding-left: 20px !important;
+    padding-right: 10px !important;
+}
+
+.innercontent {
+    text-align: left;
+    padding-top: 5px !important;
+    padding-left: 12px !important;
+}
+
+.innercontent a {
+    display: inline-block;
+    text-decoration: none;
+    margin-top: 2px !important;
+    font-size: 13px;
+    color: navy !important;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.innercontent a:hover {
+    color: blue !important;
+}
+
+.innercontent span {
+    font-size: 20px;
+    color: navy;
+    line-height: normal;
+    padding-left: 5px !important;
+}
+
+.nextPage a{
+    color: darkviolet!important;
+}
+
+.nextPage a:hover{
+    color: blue!important;
+}
+
+.nextPage span{
+    color: darkviolet!important;
+}
+
+.tooltips button {
+    margin-top: 7px !important;
+    font-size: 13px;
+    border-radius: 5px;
+    border: solid 2px navy;
+    background-color: white;
+    color: navy;
+    width: 100px;
+    height: 30px;
+    cursor: pointer;
+    margin-left: 15px !important;
+    padding: 0!important;
+}
+
+.tooltips input[type=text] {
+    display: block;
+    margin-top: 7px !important;
+    padding-left: 5px !important;
+    margin-bottom: 7px !important;
+    font-size: 15px;
+    border-radius: 5px;
+    border: solid 2px navy;
+    width: 204px;
+    height: 30px;
+}
+
+.tooltips select {
+    display: block;
+    margin-top: 7px !important;
+    padding-left: 5px !important;
+    margin-bottom: 7px !important;
+    font-size: 15px;
+    border-radius: 5px;
+    border: solid 2px navy;
+    width: 204px;
+    height: 30px;
+}
+
+.tooltips button:hover {
+    color: blue;
+}
+
+
+/* 下面用来对冻结表格首行元素和固定表格宽度和高度设定样式 */
+
+.toolkitcontain {
+    border: 1px solid #cdd !important;
+    /*width: 280px !important;*/
+    /* 上面的宽度设定很重要 */
+    height: 150px;
+    overflow: auto;
+    margin-top: 10px !important;
+    position: relative;
+}
+
+.toolkitcontain table {
+    table-layout: fixed;
+    border-spacing: 0!important;
+    word-break: break-all;
+    word-wrap: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-top: 0px !important;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.toolkitcontain th,
+.toolkitcontain td,
+.toolkitcontain tr {
+    border: 1px solid rgb(78, 78, 78) !important;
+    height: 25px !important;
+    width: 100px !important;
+    text-align: center !important;
+    font-weight: normal !important;
+    overflow: hidden !important;
+    font-size: 11px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+    vertical-align: middle!important;
+    white-space: nowrap;
+}
+
+.toolkitcontain th span{
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    /*position: absolute;*/
+    /*position: ;*/
+    margin-right: 10px;
+    vertical-align: text-bottom!important;
+}
+
+.toolkitcontain th div{
+    display: inline-block!important;
+    overflow: hidden!important;
+    max-width: 90%!important;
+}
+
+.toolkitcontain .toolkittb2 {
+    position: sticky;
+    top: 0px;
+    margin-bottom: 0px;
+    /*background-color: azure;*/
+    background-color: aliceblue;
+    z-index: 1000;
+}
+
+.toolkitcontain .toolkittb4 {
+    position: absolute;
+}
+
+#closeButton {
+    position: absolute;
+    bottom: 0;
+    right: 4px;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.2;
+}
+#closeButton:hover {
+  opacity: 1.0;
+}
+
+#closeButtonLeft {
+    position: absolute;
+    bottom: 0;
+    left: 4px;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.2;
+}
+#closeButtonLeft:hover {
+  opacity: 1.0;
+}
+
+@keyframes blinkAnimation {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
