@@ -33,6 +33,8 @@ Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) t
 [CapSolver](https://dashboard.capsolver.com/passport/register?inviteCode=vjZG0olvd5L3) is one of the top 3 providers in the CAPTCHA-solving industry, offering AI-powered solutions that support reCAPTCHA, Image CAPTCHA, Cloudflare, AWS WAF, and more. Designed for high-volume web scraping and automated workflows, it boasts decoding speeds of < 3 seconds, a success rate > 99%, and 0 downtime, empowering your AI and BI projects. Backed by fast customer support, it offers the best value-for-money solution on the market.
 Get your extra 6% extra credit using EasySpider’s bonus code: **ESN**.
 
+Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) to see how to solve captcha in EasySpider with CapSolver integration.
+
 
 
 ## 官方网站/Official Website
