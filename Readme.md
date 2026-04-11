@@ -35,6 +35,10 @@ Get your extra 6% extra credit using EasySpider’s bonus code: **ESN**.
 
 Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) to see how to solve captcha in EasySpider with CapSolver integration.
 
+<a target="_blank" href="https://www.ipwo.net/?ref=githubwangnaibo"><img src="media/IPWO1.png" width=850></img></a>
+<a target="_blank" href="https://www.ipwo.net/?ref=githubwangnaibo"><img src="media/IPWO2.png" width=850></img></a>
+
+[IPWO爬虫住宅代理](https://www.ipwo.net/?ref=githubwangnaibo)提供全球范围内稳定/高质量/安全的IP代理服务，195+国家活跃住宅IP资源，非常支持 EasySpider 批量采集任务，效率拉满，抢占业务先机！也适用于社交媒体营销、广告验证、品牌保护、SEO等业务，确保您的网络连接速度和稳定性,欢迎加入。戳图片和本条信息[链接注册](https://www.ipwo.net/?ref=githubwangnaibo)可得充裕流量免费测试，联系即响应，售后更放心。
 
 
 ## 官方网站/Official Website
