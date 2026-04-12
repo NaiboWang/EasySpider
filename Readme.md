@@ -4,8 +4,6 @@
 
 A **completely free (including for commercial use and secondary development)** visual browser automation test/data collection/crawler software, which can be used to design and execute tasks in a code-free visual way. You only need to select the content you want to operate on the web page and follow the prompts to complete the design and execution of the task. At the same time, the software can also be executed separately in the command line, so that it can be easily embedded into other systems.
 
-
-
 <a href="https://trendshift.io/repositories/3367" target="_blank"><img src="https://trendshift.io/api/badge/repositories/3367" alt="NaiboWang%2FEasySpider | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 
 ## 下载易采集/Download EasySpider
@@ -13,6 +11,28 @@ A **completely free (including for commercial use and secondary development)** v
 进入 [Releases Page](https://github.com/NaiboWang/EasySpider/releases) 下载最新版本。如果下载速度慢，可以考虑中国境内下载地址：[中国境内下载地址](https://www.easyspider.cn/download.html)。
 
 Refer to the [Releases Page](https://github.com/NaiboWang/EasySpider/releases) to download the latest version of EasySpider.
+
+## 软件使用示例/Software Usage Example
+
+### 示例1/Example 1
+
+（右键）选中一个大商品块 -> 软件自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。
+
+(Right click) Select a large product block -> The software will automatically detect similar blocks -> Click the 'Select All' option -> Click the 'Select Child Elements' option -> Click the 'Collect Data' option, you can collect the information of all products, and will be saved by sub-field.
+
+![animation_zh](media/animation_zh.gif)
+
+### 示例2/Example 2
+
+（右键）选中一个商品标题，同类型标题会被自动匹配，点击“选中全部”选项 -> 点击“采集数据”选项，即可采集到所有商品的标题信息。
+
+同时，选中全部后如果选择“循环点击每个元素”选项，即可自动打开每个商品的详情页，然后可以再继续设置采集详情页的信息。
+
+(Right Click) Select a product title, the same type of title will be automatically matched, click the 'Select All' option -> Click the 'Collect Data' option, you can collect the title information of all products.
+
+At the same time, if you select the 'Loop-click every element' option after selecting all, you can automatically open the details page of each product, and then can set to collect the information of the details page.
+
+![animation_en](media/animation_en.gif)
 
 ## 赞助者/Sponsors
 
@@ -48,28 +68,6 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 访问易采集官网：[www.easyspider.cn](http://www.easyspider.cn)
 
 Visit the official website of EasySpider: [www.easyspider.net](http://www.easyspider.net)
-
-## 软件使用示例/Software Usage Example
-
-### 示例1/Example 1
-
-（右键）选中一个大商品块 -> 软件自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。
-
-(Right click) Select a large product block -> The software will automatically detect similar blocks -> Click the 'Select All' option -> Click the 'Select Child Elements' option -> Click the 'Collect Data' option, you can collect the information of all products, and will be saved by sub-field.
-
-![animation_zh](media/animation_zh.gif)
-
-### 示例2/Example 2
-
-（右键）选中一个商品标题，同类型标题会被自动匹配，点击“选中全部”选项 -> 点击“采集数据”选项，即可采集到所有商品的标题信息。
-
-同时，选中全部后如果选择“循环点击每个元素”选项，即可自动打开每个商品的详情页，然后可以再继续设置采集详情页的信息。
-
-(Right Click) Select a product title, the same type of title will be automatically matched, click the 'Select All' option -> Click the 'Collect Data' option, you can collect the title information of all products.
-
-At the same time, if you select the 'Loop-click every element' option after selecting all, you can automatically open the details page of each product, and then can set to collect the information of the details page.
-
-![animation_en](media/animation_en.gif)
 
 ### 更多特性/More Features
 
