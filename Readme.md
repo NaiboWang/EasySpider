@@ -62,6 +62,10 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 <a target="_blank" href="https://www.ipwo.net/?ref=githubwangnaibo"><img src="media/IPWO2.png" width=850></img></a>
 也适用于社交媒体营销、广告验证、品牌保护、SEO等业务，确保您的网络连接速度和稳定性，欢迎加入。戳图片和本条信息[链接注册](https://www.ipwo.net/?ref=githubwangnaibo)可得充裕流量免费测试，联系即响应，售后更放心。
 
+<a target="_blank" href="https://legionproxy.io/?utm_source=github&utm_campaign=easyspider"><img src="media/LegionProxy.png" width=850></img></a>
+[LegionProxy](https://legionproxy.io/?utm_source=github&utm_campaign=easyspider)作为快速发展的代理网络，覆盖全球195+国家和地区，拥有7400万+真实住宅 IP，提供真实 residential proxies及HTTP/3支持，助力大规模web scraping和自动化任务，有效规避IP封锁。住宅套餐低至$0.60/GB起，支持即时开通，中文客服快速响应。
+
+[LegionProxy](https://legionproxy.io/?utm_source=github&utm_campaign=easyspider) is a fast-growing proxy network with 74M+ residential IPs across 195+ countries, offering real residential proxies and HTTP/3 support to help you run scraping and automation at scale without IP blocks. Residential plans start at just $0.60/GB, with instant activation and responsive support when you need it.
 
 ## 官方网站/Official Website
 
