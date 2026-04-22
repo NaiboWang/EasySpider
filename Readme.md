@@ -1,4 +1,4 @@
-# 易采集/EasySpider: Visual Code-Free Web Crawler
+* # 易采集/EasySpider: Visual Code-Free Web Crawler
 
 一个**完全免费**（**包括商业使用和二次开发**）的可视化浏览器自动化测试/数据采集/爬虫软件，可以使用图形化界面，无代码可视化的设计和执行任务。只需要在网页上选择自己想要操作的内容并根据提示框操作即可完成任务的设计和执行。同时软件还可以单独以命令行的方式进行执行，从而可以很方便的嵌入到其他系统中。 
 
@@ -57,10 +57,19 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 
 <a target="_blank" href="https://www.ipwo.net/?ref=githubwangnaibo"><img src="media/IPWO1.png" width=850></img></a>
 
-[IPWO爬虫住宅代理](https://www.ipwo.net/?ref=githubwangnaibo)提供全球范围内稳定/高质量/安全的IP代理服务，195+国家活跃住宅IP资源，支持HTTP/HTTPS/SOCKS5多种协议和平台，确保用户的灵活性。非常支持EasySpider批量采集任务，效率拉满，抢占业务先机！
+EasySpider 提供零代码可视化爬虫能力，搭配[IPWO爬虫住宅代理](https://www.ipwo.net/?ref=githubwangnaibo)，可实现：
+
+- 真实住宅 IP，大幅降低被封禁风险。
+- 195 + 国家 / 地区精准定位，满足跨境采集需求。
+- 高可用、高并发，轻松应对大型爬虫任务。
+- 可视化配置 + 稳定代理，新手也能高效采集数据。
+- 让爬虫更简单，让数据更安全。
 
 <a target="_blank" href="https://www.ipwo.net/?ref=githubwangnaibo"><img src="media/IPWO2.png" width=850></img></a>
-也适用于社交媒体营销、广告验证、品牌保护、SEO等业务，确保您的网络连接速度和稳定性，欢迎加入。戳图片和本条信息[链接注册](https://www.ipwo.net/?ref=githubwangnaibo)可得充裕流量免费测试，联系即响应，售后更放心。
+
+[IPWO爬虫住宅代理](https://www.ipwo.net/?ref=githubwangnaibo)全球领先代理网络。专注于提供全球各地 195+ 国家、拥有上亿级代理IP池，确保您的网络连接速度和稳定性，欢迎加入。
+
+IPWO海外住宅代理支持HTTP/HTTPS/SOCKS5多种协议和平台，确保用户的灵活性99.9%稳定运行率，兼容指纹浏览器、自动化工具等第三方软件。可适用于网页抓取、数据收集、社交媒体营销、广告验证、品牌保护、SEO等业务。戳本条信息注册即得充裕流量，流量不过期。
 
 <a target="_blank" href="https://legionproxy.io/?utm_source=github&utm_campaign=easyspider"><img src="media/LegionProxy.png" width=850></img></a>
 [LegionProxy](https://legionproxy.io/?utm_source=github&utm_campaign=easyspider)作为快速发展的代理网络，覆盖全球195+国家和地区，拥有7400万+真实住宅 IP，提供真实 residential proxies及HTTP/3支持，助力大规模web scraping和自动化任务，有效规避IP封锁。住宅套餐低至$0.60/GB起，支持即时开通，中文客服快速响应。
