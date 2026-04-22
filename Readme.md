@@ -57,7 +57,7 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 
 <a target="_blank" href="https://www.ipwo.net/?ref=githubwangnaibo"><img src="media/IPWO1.png" width=850></img></a>
 
-EasySpider 提供零代码可视化爬虫能力，搭配[IPWO爬虫住宅代理](https://www.ipwo.net/?ref=githubwangnaibo)，可实现：
+EasySpider提供零代码可视化爬虫能力，搭配[IPWO爬虫住宅代理](https://www.ipwo.net/?ref=githubwangnaibo)，可实现：
 
 - 真实住宅 IP，大幅降低被封禁风险。
 - 195 + 国家 / 地区精准定位，满足跨境采集需求。
