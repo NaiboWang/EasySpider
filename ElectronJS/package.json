@@ -33,6 +33,7 @@
     "dependencies": {
         "cors": "^2.8.5",
         "cross-env": "^7.0.3",
+        "cross-spawn": "^7.0.5",
         "electron-squirrel-startup": "^1.0.0",
         "express": "^4.21.2",
         "formidable": "^3.5.0",
