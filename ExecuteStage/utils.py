@@ -371,7 +371,7 @@ def replace_field_values(orginal_text, outputParameters, browser=None):
                 # that scraped content becomes a safe Python string literal.
                 expr = _substitute_fields_as_python_literal(
                     match.group(1), outputParameters)
-                eval_replaced_text = str(eval(expr))  # noqa: S307 - documented feature, scraped inputs are escaped above
+                eval_replaced_text = str(eval(expr, {"__builtins__": {}}, {"browser": browser} if browser else {}))
                 working_text = working_text.replace(
                     match.group(0), eval_replaced_text)
         if re.search(r'JS\(', working_text, re.IGNORECASE):
