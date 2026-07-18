@@ -190,6 +190,20 @@ function generateUuid() {
 
 // When error occurs in the handler, it will be caught and logged, and a 500 response will be sent if headers have not been sent yet.
 // This is useful to prevent the server from crashing due to unhandled exceptions in the request handlers
+
+// SECURITY (CWE-22): Task and execution-instance identifiers are used as file
+// names under tasks/ and execution_instances/. Any non-integer value (e.g.
+// "../../etc/passwd") would let a caller read or write JSON outside those
+// directories. Enforce a strict non-negative integer id everywhere before it
+// is interpolated into a filesystem path.
+function isSafeId(value) {
+  if (value === undefined || value === null) return false;
+  const s = String(value);
+  if (!/^\d+$/.test(s)) return false;
+  const n = Number(s);
+  return Number.isSafeInteger(n) && n >= 0;
+}
+
 function safeHandler(handler, res) {
   return (...args) => {
     try {
@@ -445,6 +459,10 @@ exports.start = function (port = 8074) {
           body = querystring.parse(body);
           data = JSON.parse(body.params);
           let id = data["id"];
+          if (id !== -1 && id !== "-1" && !isSafeId(id)) {
+            writeError(res, 400, "Invalid task ID.");
+            return;
+          }
           if (data["id"] == -1) {
             file_names = [];
             fs.readdirSync(path.join(getDir(), "tasks")).forEach((file) => {
@@ -519,6 +537,10 @@ exports.start = function (port = 8074) {
             writeError(res, 400, "Task ID is required.");
             return;
           }
+          if (!isSafeId(id)) {
+            writeError(res, 400, "Invalid task ID.");
+            return;
+          }
           let task = fs.readFileSync(
             path.join(getDir(), `tasks/${id}.json`),
             "utf8"
@@ -572,6 +594,10 @@ exports.start = function (port = 8074) {
           }
           if (body["EID"] != "" && body["EID"] != undefined) {
             //覆盖原有的执行实例
+            if (!isSafeId(body["EID"])) {
+              writeError(res, 400, "Invalid EID.");
+              return;
+            }
             eid = parseInt(body["EID"]);
           }
           task["id"] = eid;
@@ -878,6 +904,10 @@ exports.start = function (port = 8074) {
             return;
           }
           let id = params.id;
+          if (!isSafeId(id)) {
+            writeError(res, 400, "Invalid execution instance ID.");
+            return;
+          }
           const process_info = child_processes[id];
           if (process_info && process_info.ipc_port) {
             // 进程正在运行，直接读取日志
