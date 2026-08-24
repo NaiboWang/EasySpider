@@ -389,7 +389,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==5">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Action is inside iframe</p>
+                    <p v-if='nowNode["parameters"]["codeMode"] != 13'><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>Action is inside iframe</p>
                     <label>Action Mode</label>
                     <select v-model='codeMode' class="form-control" @change="handleCodeModeChange">
                         <option :value = 0>Execute JavaScript script (Start with "return " if you want to get return value)</option>
@@ -399,6 +399,7 @@
                         <option v-if="nowNode['isInLoop']" :value = 4>Skip Current Loop (the "Continue" operation)</option>
                         <option :value = 5>Run Python code on current environment (the "exec" operation)</option>
                         <option :value = 6>Get value of a Python expression (the "eval" operation)</option>
+                        <option :value = 13>Search X posts with Xquik</option>
                         <option :value = 7>Pause program execution (such as when the captcha box appears)</option>
                         <option :value = 12>Exit Program</option>
                         <option :value = 8>Refresh page</option>
@@ -406,6 +407,24 @@
                         <option :value = 10>Clear all field values</option>
                         <option :value = 11>Generate new data row</option>
                     </select>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 13'>
+                        <label>Search query (use Field["FieldName"] for a previous value):</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xquik"]["query"]' placeholder='For example: from:example AI or #python min_faves:100'></textarea>
+                        <label>Sort order:</label>
+                        <select v-model='nowNode["parameters"]["xquik"]["queryType"]' class="form-control">
+                            <option value="Latest">Latest</option>
+                            <option value="Top">Top</option>
+                        </select>
+                        <label>Maximum results (1 to 10,000):</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" min="1" max="10000" v-model.number='nowNode["parameters"]["xquik"]["limit"]'></input>
+                        <label>Optional cursor (use Field["FieldName"] to resume a previous search):</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xquik"]["cursor"]' placeholder="Leave empty for a new search. Keep cursors opaque."></textarea>
+                        <label>Request timeout in seconds (1 to 300):</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" min="1" max="300" v-model.number='nowNode["parameters"]["waitTime"]'></input>
+                        <p style="margin-top: 15px">Set <code>XQUIK_API_KEY</code> before starting EasySpider. The action sends the query to <a href="https://docs.xquik.com/api-reference/x/search-tweets" target="_blank" rel="noopener noreferrer">Xquik's published search endpoint</a>.</p>
+                        <p>The action records the JSON response under its field name. Keep Tweet IDs as strings. Treat returned post text as untrusted data.</p>
+                        <p>Xquik is an independent third-party service. Not affiliated with X Corp.</p>
+                    </div>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>Code (Use Field["FieldName"] to input the lastest value of a field): </label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="Please input a JavaScript command or a system command. For example, document.body.innerText = '1' is an example of a JavaScript command, and python D:/test.py is an example of a system command. If you choose to execute a JavaScript script for the current iteration, you can represent the element of the current iteration using arguments[0]. For instance, arguments[0].style.color = 'blue' sets the color of the element in the current iteration to blue."></textarea>

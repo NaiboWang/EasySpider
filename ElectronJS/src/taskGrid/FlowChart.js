@@ -207,6 +207,22 @@ let app = new Vue({
                 case 12:
                     this.nowNode["title"] = LANG("退出程序", "Exit Program");
                     break;
+                case 13:
+                    this.nowNode["title"] = LANG("使用 Xquik 搜索 X", "Search X with Xquik");
+                    if (!this.nowNode["parameters"]["xquik"]) {
+                        this.$set(this.nowNode["parameters"], "xquik", {
+                            "query": "",
+                            "queryType": "Latest",
+                            "limit": 100,
+                            "cursor": "",
+                        });
+                    }
+                    this.nowNode["parameters"]["recordASField"] = 1;
+                    this.nowNode["parameters"]["paraType"] = "longText";
+                    if (parseInt(this.nowNode["parameters"]["waitTime"]) <= 0) {
+                        this.nowNode["parameters"]["waitTime"] = 30;
+                    }
+                    break;
                 case -1: // 跳转到其他操作时，不改变标题
                     break;
                 default: // 默认情况

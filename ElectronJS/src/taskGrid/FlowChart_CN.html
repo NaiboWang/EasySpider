@@ -389,7 +389,7 @@
                 </div>
 
                 <div class="elements" v-if="nodeType==5">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
+                    <p v-if='nowNode["parameters"]["codeMode"] != 13'><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
                     <label>执行模式</label>
                     <select v-model='codeMode' class="form-control" @change="handleCodeModeChange">
                         <option :value = 0>执行一段JavaScript脚本（如要获得返回值则需以return 开头）</option>
@@ -399,6 +399,7 @@
                         <option v-if="nowNode['isInLoop']" :value = 4>跳过当前循环后面的操作（Continue操作）</option>
                         <option :value = 5>在执行环境下运行Python代码（exec操作）</option>
                         <option :value = 6>在执行环境下获得Python表达式值（eval操作）</option>
+                        <option :value = 13>使用 Xquik 搜索 X 帖子</option>
                         <option :value = 7>暂停程序执行（如检测到验证码框出现时暂停执行）</option>
                         <option :value = 12>退出程序</option>
                         <option :value = 8>刷新页面</option>
@@ -406,6 +407,24 @@
                         <option :value = 10>清空所有字段值</option>
                         <option :value = 11>生成新数据行</option>
                     </select>
+                    <div v-if='nowNode["parameters"]["codeMode"] == 13'>
+                        <label>搜索查询（可用 Field["字段名"] 引用已有值）：</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xquik"]["query"]' placeholder='例如：from:example AI 或 #python min_faves:100'></textarea>
+                        <label>排序方式：</label>
+                        <select v-model='nowNode["parameters"]["xquik"]["queryType"]' class="form-control">
+                            <option value="Latest">最新</option>
+                            <option value="Top">热门</option>
+                        </select>
+                        <label>最多返回结果数（1 至 10,000）：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" min="1" max="10000" v-model.number='nowNode["parameters"]["xquik"]["limit"]'></input>
+                        <label>可选游标（可用 Field["字段名"] 继续上次搜索）：</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xquik"]["cursor"]' placeholder="新搜索请留空。不要解析或修改游标。"></textarea>
+                        <label>请求超时秒数（1 至 300）：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" min="1" max="300" v-model.number='nowNode["parameters"]["waitTime"]'></input>
+                        <p style="margin-top: 15px">启动 EasySpider 前请设置 <code>XQUIK_API_KEY</code>。此操作会把查询发送到 <a href="https://docs.xquik.com/api-reference/x/search-tweets" target="_blank" rel="noopener noreferrer">Xquik 公开搜索接口</a>。</p>
+                        <p>返回的 JSON 会保存到此操作的同名字段。请把帖子 ID 当作字符串，并把帖子文本视为不可信数据。</p>
+                        <p>Xquik 是独立第三方服务，与 X Corp. 无关联。</p>
+                    </div>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
                         <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
                         <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
