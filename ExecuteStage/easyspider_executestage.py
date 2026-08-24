@@ -11,6 +11,7 @@ from utils import detect_optimizable, download_image, extract_text_from_html, ge
     on_press_creator, on_release_creator, readCode, rename_downloaded_file, replace_field_values, send_email, split_text_by_lines, write_to_csv, write_to_excel, write_to_json
 from constants import WriteMode, DataWriteMode, GraphOption
 from myChrome import MyChrome
+from xquik import XquikSearchError, search_tweets as search_xquik_tweets
 from threading import Thread, Event
 from PIL import Image
 from commandline_config import Config
@@ -300,6 +301,19 @@ class BrowserThread(Thread):
             elif option == GraphOption.Custom.value:  # 自定义操作
                 parameters['clear'] = parameters.get('clear', 0)
                 parameters['newLine'] = parameters.get('newLine', 1)
+                parameters['code'] = parameters.get('code', '')
+                parameters['recordASField'] = parameters.get('recordASField', 0)
+                parameters['paraType'] = parameters.get('paraType', 'text')
+                parameters['waitTime'] = parameters.get('waitTime', 0)
+                xquik = parameters.get('xquik')
+                if not isinstance(xquik, dict):
+                    xquik = {}
+                parameters['xquik'] = {
+                    'query': xquik.get('query', ''),
+                    'queryType': xquik.get('queryType', 'Latest'),
+                    'limit': xquik.get('limit', 100),
+                    'cursor': xquik.get('cursor', ''),
+                }
             elif option == GraphOption.Move.value:  # 移动到元素
                 if parameters.get('useLoop'):
                     if self.task_version <= "0.3.5":  # 0.3.5及以下版本的EasySpider下的循环点击不支持相对XPath
@@ -838,6 +852,28 @@ class BrowserThread(Thread):
                 pass
             self.print_and_log("清理完成！|Clean up completed!")
             os._exit(0)
+        elif codeMode == 13: # 使用 Xquik 搜索 X
+            xquik = params["xquik"]
+            query = replace_field_values(
+                str(xquik["query"]), self.outputParameters, self
+            )
+            cursor = replace_field_values(
+                str(xquik["cursor"]), self.outputParameters, self
+            )
+            timeout = max_wait_time if max_wait_time > 0 else 30
+            try:
+                payload = search_xquik_tweets(
+                    query=query,
+                    query_type=xquik["queryType"],
+                    limit=xquik["limit"],
+                    cursor=cursor,
+                    timeout=timeout,
+                )
+                output = json.dumps(payload, ensure_ascii=False)
+            except (ValueError, XquikSearchError) as error:
+                self.print_and_log(
+                    "Xquik 搜索失败：|Xquik search failed:", str(error)
+                )
         else:  # 0 1 5 6
             output = self.execute_code(
                 codeMode, code, max_wait_time, iframe=params["iframe"])

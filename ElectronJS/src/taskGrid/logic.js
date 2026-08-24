@@ -315,6 +315,12 @@ function addParameters(t) {
         t["parameters"]["waitTime"] = 0; //最长等待时间
         t["parameters"]["recordASField"] = 0; //是否记录脚本输出
         t["parameters"]["paraType"] = "text"; //记录脚本输出的字段索引
+        t["parameters"]["xquik"] = {
+            "query": "",
+            "queryType": "Latest",
+            "limit": 100,
+            "cursor": "",
+        };
         t["parameters"]["emailConfig"] = {
             "host": "",
             "port": 465,
@@ -708,5 +714,4 @@ if (sId != null && sId != -1) //加载任务
 } else {
     refresh(); //新增任务
 }
-
 

@@ -164,6 +164,38 @@ Refer to [Youtube Playlist](https://youtube.com/playlist?list=PL0kEFEkWrT7mt9MUl
 
 Download sample tasks from the [Examples](Examples) folder of this project, rename them to numbers greater than 0, import them into the `tasks` folder in EasySpider, and then open them in EasySpider.
 
+## 使用 Xquik 搜索 X 帖子 / Search X Posts with Xquik
+
+EasySpider 的自定义操作支持 Xquik 帖子搜索。此操作使用 API 获取限定数量的结果，不需要滚动网页。
+
+EasySpider includes a Xquik search action. It fetches a bounded result set through the API without scrolling a web page.
+
+启动 EasySpider 前设置 API 密钥：
+
+Set the API key before starting EasySpider:
+
+```bash
+export XQUIK_API_KEY="your-api-key"
+```
+
+Start EasySpider from the same terminal session.
+
+Windows PowerShell:
+
+```powershell
+$env:XQUIK_API_KEY = "your-api-key"
+```
+
+从同一个终端会话启动 EasySpider。
+
+在任务设计器中添加“自定义操作”，然后选择“使用 Xquik 搜索 X 帖子”。填写查询、排序方式和结果上限。需要继续搜索时，可传入上次响应的游标。返回的 JSON 会保存到操作的同名字段。
+
+Add a **Custom Action**, then select **Search X posts with Xquik**. Set the query, sort order, and result limit. Pass the previous response cursor to resume a search. EasySpider stores the JSON response under the action's field name.
+
+See the [Xquik tweet-search API](https://docs.xquik.com/api-reference/x/search-tweets) for query operators and response fields. Keep API keys outside task files. Keep Tweet IDs as strings.
+
+Xquik is an independent third-party service. Not affiliated with X Corp. "Twitter" and "X" are trademarks of X Corp.
+
 ## 声明/Declaration
 
 本软件仅供学习交流使用，**严禁使用软件进行任何违法违规的操作，如爬取不允许爬取的政府/军事机关网站等**。使用本软件所造成的**一切后果由使用者自负**，与作者本人无关，**作者不会承担任何责任**。
