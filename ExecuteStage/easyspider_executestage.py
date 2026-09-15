@@ -505,7 +505,8 @@ class BrowserThread(Thread):
                 self.print_and_log("接收到终止信号，正在中断任务... | Received termination signal, interrupting task...")
                 break
             self.event.wait()  # 暂停/恢复
-            self.executeNode(self.startSteps, self.links[i], "", i)
+            self.urlId = i
+            self.executeNode(0)
         # files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
         # if not files:
