@@ -60,7 +60,7 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 [Webshare](https://www.webshare.io/?referral_code=wk8icux0dunp) is an affordable, high-performance proxy provider offering access to over 80 million residential, datacenter, and ISP proxies across 195 countries. Built for seamless web scraping and data collection at scale, plans feature precise country and city targeting with rotating residential bandwidth starting at just $1.40/GB. Test the network risk-free with a permanent free plan offering 10 proxies and 1 GB/month (no credit card required), and use code SPIDER20 for 20% off your first purchase.
 
 <a target="_blank" href="https://www.thordata.com/?ls=github&lk=NaiboWang"><img src="media/Thordata.jpg" width=850></img></a>
-[Thordata](https://www.thordata.com/?ls=github&lk=NaiboWang)为网页自动化、数据采集和AI工作流提供数据访问服务，包括住宅代理、ISP代理、数据中心代理，以及SERP API和Web Scraper API，覆盖190多个国家和地区。适合EasySpider用户进行公开网页数据采集、自动化测试和数据处理。首次购买使用优惠码 **EasySpider10**，可享9折优惠。
+[Thordata](https://www.thordata.com/?ls=github&lk=NaiboWang)为网页自动化、数据采集和AI工作流提供数据访问服务，包括住宅代理、ISP代理、数据中心代理，以及SERP API和Web Scraper API，覆盖190多个国家和地区。适合EasySpider用户进行公开网页数据采集、自动化测试和数据处理。首次购买使用优惠码**EasySpider10**，可享9折优惠。
 
 [Thordata](https://www.thordata.com/?ls=github&lk=NaiboWang) provides data access services for web automation, data collection, and AI workflows, including residential, ISP, and datacenter proxies, as well as SERP API and Web Scraper API services across 190+ countries and regions. It is suitable for EasySpider users working on public-web data collection, automation testing, and data processing. Use promo code **EasySpider10** to get 10% off your first purchase.
 
