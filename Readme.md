@@ -53,16 +53,16 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 
 <a target="_blank" href="https://www.webshare.io/?referral_code=wk8icux0dunp"><img src="media/Webshare.png" width=850></img></a>
 
-[Webshare](https://www.webshare.io/?referral_code=wk8icux0dunp)是一家经济实惠且高性能的代理服务提供商，提供覆盖全球 195 个国家/地区的超过 8000 万个住宅、数据中心及 ISP 代理。其服务专为大规模网络爬虫和数据采集而设计，支持精确到国家和城市的定位，并提供轮换式住宅代理带宽，起价仅为 1.40 美元/GB。您可以利用包含 10 个代理和每月 1GB 流量的永久免费套餐（无需信用卡）无风险试用该网络，首次购买时使用优惠码 **SPIDER20** 还可享受 8 折优惠。
+[Webshare](https://www.webshare.io/?referral_code=wk8icux0dunp)是一家经济实惠且高性能的代理服务提供商，提供覆盖全球195个国家/地区的超过8000万个住宅、数据中心及ISP代理。其服务专为大规模网络爬虫和数据采集而设计，支持精确到国家和城市的定位，并提供轮换式住宅代理带宽，起价仅为1.40美元/GB。您可以利用包含10个代理和每月1GB流量的永久免费套餐（无需信用卡）无风险试用该网络，首次购买时使用优惠码 **SPIDER20** 还可享受8折优惠。
 
 <a target="_blank" href="https://www.webshare.io/?referral_code=wk8icux0dunp"><img src="media/Webshare_EN.png" width=850></img></a>
 
 [Webshare](https://www.webshare.io/?referral_code=wk8icux0dunp) is an affordable, high-performance proxy provider offering access to over 80 million residential, datacenter, and ISP proxies across 195 countries. Built for seamless web scraping and data collection at scale, plans feature precise country and city targeting with rotating residential bandwidth starting at just $1.40/GB. Test the network risk-free with a permanent free plan offering 10 proxies and 1 GB/month (no credit card required), and use code SPIDER20 for 20% off your first purchase.
 
-<a target="_blank" href="https://legionproxy.io/?utm_source=github&utm_campaign=easyspider"><img src="media/LegionProxy.png" width=850></img></a>
-[LegionProxy](https://legionproxy.io/?utm_source=github&utm_campaign=easyspider)作为快速发展的代理网络，覆盖全球195+国家和地区，拥有7400万+真实住宅 IP，提供真实 residential proxies及HTTP/3支持，助力大规模web scraping和自动化任务，有效规避IP封锁。住宅套餐低至$0.60/GB起，支持即时开通，中文客服快速响应。
+<a target="_blank" href="https://www.thordata.com/?ls=github&lk=NaiboWang"><img src="media/Thordata.svg" width=850></img></a>
+[Thordata](https://www.thordata.com/?ls=github&lk=NaiboWang)为网页自动化、数据采集和AI工作流提供数据访问服务，包括住宅代理、ISP代理、数据中心代理，以及SERP API和Web Scraper API，覆盖190多个国家和地区。适合EasySpider用户进行公开网页数据采集、自动化测试和数据处理。
 
-[LegionProxy](https://legionproxy.io/?utm_source=github&utm_campaign=easyspider) is a fast-growing proxy network with 74M+ residential IPs across 195+ countries, offering real residential proxies and HTTP/3 support to help you run scraping and automation at scale without IP blocks. Residential plans start at just $0.60/GB, with instant activation and responsive support when you need it.
+[Thordata](https://www.thordata.com/?ls=github&lk=NaiboWang) provides data access services for web automation, data collection, and AI workflows, including residential, ISP, and datacenter proxies, as well as SERP API and Web Scraper API services across 190+ countries and regions. It is suitable for EasySpider users working on public-web data collection, automation testing, and data processing.
 
 ## 官方网站/Official Website
 

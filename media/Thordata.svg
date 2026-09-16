@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="300" viewBox="0 0 850 300" role="img" aria-labelledby="title desc">
+  <title id="title">Thordata data access infrastructure for EasySpider</title>
+  <desc id="desc">Residential, ISP and datacenter proxies plus SERP and Web Scraper APIs for web automation and data collection.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071b2b"/>
+      <stop offset="0.58" stop-color="#0b4052"/>
+      <stop offset="1" stop-color="#087f75"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#55d6c0"/>
+      <stop offset="1" stop-color="#72b6ff"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ffffff" stroke-opacity=".08"/>
+    </pattern>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="850" height="300" rx="18" fill="url(#background)"/>
+  <rect width="850" height="300" rx="18" fill="url(#grid)"/>
+  <circle cx="736" cy="92" r="116" fill="#59d7c1" fill-opacity=".12" filter="url(#glow)"/>
+  <circle cx="736" cy="92" r="76" fill="none" stroke="#8de5d5" stroke-opacity=".28"/>
+  <circle cx="736" cy="92" r="43" fill="none" stroke="#8de5d5" stroke-opacity=".44"/>
+  <path d="M620 188C674 162 702 133 736 92C770 51 798 36 842 28M650 226C704 197 727 157 758 118C786 83 808 68 850 61" fill="none" stroke="#8de5d5" stroke-opacity=".3" stroke-width="2"/>
+  <circle cx="736" cy="92" r="6" fill="#b8fff1"/>
+  <circle cx="650" cy="226" r="4" fill="#b8fff1"/>
+  <circle cx="842" cy="28" r="4" fill="#b8fff1"/>
+
+  <text x="48" y="62" fill="#aef5e8" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" letter-spacing="2">THORDATA × EASYSPIDER</text>
+  <text x="48" y="113" fill="#ffffff" font-family="Arial, Microsoft YaHei, sans-serif" font-size="39" font-weight="700">Build reliable web data workflows</text>
+  <text x="48" y="148" fill="#d8f4f0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="18">为网页自动化与数据采集提供稳定的数据访问基础</text>
+
+  <rect x="48" y="181" width="7" height="58" rx="3.5" fill="url(#accent)"/>
+  <text x="76" y="201" fill="#ffffff" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="700">Residential · ISP · Datacenter Proxies</text>
+  <text x="76" y="228" fill="#c9e8e4" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15">SERP API · Web Scraper API · 190+ countries</text>
+
+  <rect x="48" y="254" width="174" height="30" rx="15" fill="#ffffff" fill-opacity=".14" stroke="#aef5e8" stroke-opacity=".55"/>
+  <text x="135" y="275" text-anchor="middle" fill="#ffffff" font-family="Arial, Microsoft YaHei, sans-serif" font-size="14" font-weight="700">Explore Thordata →</text>
+</svg>
