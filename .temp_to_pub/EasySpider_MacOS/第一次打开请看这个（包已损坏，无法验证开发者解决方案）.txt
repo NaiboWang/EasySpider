@@ -55,14 +55,6 @@ xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node
 
 现在，您就可以像在其他操作系统中一样设计任务了。
 
-- 使用隐私与安全性批准打开后的执行方式
-
-批准打开EasySpider后，在任务页面点击“本地直接执行（纯净模式）”或“本地直接执行（带用户信息模式）”即可。新版程序会自动启动应用内置并已签名的执行阶段程序，不需要根据页面中显示的路径手动执行 `cd`，也不要使用 App Translocation 生成的 `/private/var/...` 临时路径。
-
-如果需要定时任务或命令行执行，仍可按照下方“执行阶段”说明使用发布目录中的 `execute_macos.sh`；该方式请在实际下载的EasySpider_MacOS目录中运行，不要复制应用运行时显示的private临时目录。
-
-
-
 - 执行阶段
 
 与Intel版本设计阶段操作相同，首次运行'easyspider_executestage'程序时，需要在系统设置 -> 安全性与隐私中设置“仍然允许”，并重新运行"./easyspider_executestage EID"命令，并点击“打开”来运行任务。
