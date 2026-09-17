@@ -36,6 +36,64 @@ let config_context = JSON.parse(
     fs.readFileSync(path.join(task_server.getDir(), `config.json`), "utf8")
 ); //仅在当前进程中使用，不会写入文件
 
+const macOSCommandFolderConfigPath = path.join(
+    task_server.getDir(),
+    "macos_command_folder.json"
+);
+
+function getMacOSCommandLauncher(folder) {
+    if (!folder) {
+        return "";
+    }
+    const absoluteFolder = path.resolve(folder);
+    const appPath = path.join(absoluteFolder, "EasySpider.app");
+    const scriptPath = path.join(absoluteFolder, "execute_macos.sh");
+    const executablePath = path.join(absoluteFolder, "easyspider_executestage");
+    if (!fs.existsSync(appPath) || !fs.existsSync(executablePath)) {
+        return "";
+    }
+    // New packages include the wrapper so it can resolve its own directory.
+    // Retain compatibility with older portable releases that only contain
+    // the execution-stage binary.
+    return fs.existsSync(scriptPath) ? scriptPath : executablePath;
+}
+
+function readSavedMacOSCommandFolder() {
+    try {
+        const saved = JSON.parse(
+            fs.readFileSync(macOSCommandFolderConfigPath, "utf8")
+        );
+        return getMacOSCommandLauncher(saved.folder) ? path.resolve(saved.folder) : "";
+    } catch {
+        return "";
+    }
+}
+
+function detectMacOSCommandFolder() {
+    const savedFolder = readSavedMacOSCommandFolder();
+    if (savedFolder) {
+        return savedFolder;
+    }
+    if (process.platform !== "darwin" || !app.isPackaged) {
+        return "";
+    }
+    // This resolves to the directory containing EasySpider.app during a
+    // normal launch. Under App Translocation it resolves to .../d, which
+    // does not contain the portable executor and therefore fails validation.
+    const appBundlePath = path.resolve(process.resourcesPath, "../..");
+    const candidate = path.dirname(appBundlePath);
+    return getMacOSCommandLauncher(candidate) ? candidate : "";
+}
+
+function saveMacOSCommandFolder(folder) {
+    const absoluteFolder = path.resolve(folder);
+    fs.writeFileSync(
+        macOSCommandFolderConfigPath,
+        JSON.stringify({folder: absoluteFolder}, null, 2)
+    );
+    return absoluteFolder;
+}
+
 if (config.debug) {
     let logPath = "info.log";
     let logFile = fs.createWriteStream(logPath, {flags: "a"});
@@ -97,7 +155,11 @@ if (process.platform === "win32" && process.arch === "ia32") {
         __dirname,
         "chrome_mac64.app/Contents/MacOS/Google Chrome"
     );
-    execute_path = path.join(__dirname, "");
+    // Keep the macOS executor inside the signed application bundle.  An app
+    // opened through Gatekeeper's "Allow Anyway" flow can be App Translocated;
+    // sibling files next to the .app then resolve to a temporary private path.
+    // The packaged macOS build copies this binary into Resources/app.
+    execute_path = path.join(__dirname, "easyspider_executestage");
 } else if (process.platform === "linux") {
     driverPath = path.join(__dirname, "chrome_linux64/chromedriver_linux64");
     chromeBinaryPath = path.join(__dirname, "chrome_linux64/chrome");
@@ -1093,20 +1155,49 @@ async function beginInvoke(msg, ws) {
         // });
 
         let spawn = require("child_process").spawn;
-        if (
-            process.platform != "darwin" &&
-            msg.message.execute_type == 1 &&
-            msg.message.id != -1
-        ) {
-            let child_process = spawn(execute_path, parameters);
-            child_process.stdout.on("data", function (data) {
-                console.log(data.toString());
-            });
+        let execution_started = false;
+        if (msg.message.execute_type == 1 && msg.message.id != -1) {
+            if (process.platform === "darwin" && !fs.existsSync(execute_path)) {
+                console.error("macOS execution stage is missing from the app bundle:", execute_path);
+            } else {
+                const child_process = spawn(execute_path, parameters, {
+                    // All mutable task state belongs in Electron's stable
+                    // userData directory, never in a translocated app path.
+                    cwd: task_server.getDir(),
+                    env: {
+                        ...process.env,
+                        PYTHONUNBUFFERED: "1",
+                        PYTHONUTF8: "1",
+                        EASYSPIDER_DATA_DIR: task_server.getDir(),
+                        EASYSPIDER_APP_RESOURCES: __dirname,
+                    },
+                });
+                execution_started = true;
+                child_process.on("error", (error) => {
+                    console.error("Failed to start execution stage:", error);
+                });
+                child_process.stdout.on("data", function (data) {
+                    console.log(data.toString());
+                });
+            }
         }
         ws.send(
             JSON.stringify({
                 config_folder: task_server.getDir() + "/",
-                easyspider_location: task_server.getEasySpiderLocation(),
+                // Never expose an App Translocation directory as a runnable
+                // command-line location. macOS uses a validated portable
+                // release folder instead.
+                easyspider_location:
+                    process.platform === "darwin"
+                        ? detectMacOSCommandFolder()
+                        : task_server.getEasySpiderLocation(),
+                macos_command_folder:
+                    process.platform === "darwin" ? detectMacOSCommandFolder() : "",
+                macos_command_launcher:
+                    process.platform === "darwin"
+                        ? getMacOSCommandLauncher(detectMacOSCommandFolder())
+                        : "",
+                execution_started,
             })
         );
     } else if (msg.type == 6) {
@@ -1134,6 +1225,59 @@ async function beginInvoke(msg, ws) {
         } catch {
             console.log("Cannot get Cookies");
         }
+    } else if (msg.type == 8) {
+        if (process.platform !== "darwin") {
+            ws.send(JSON.stringify({
+                response_type: "macos_command_folder",
+                canceled: true,
+                error: "The portable execution folder is only used on macOS.",
+            }));
+            return;
+        }
+        const currentFolder = detectMacOSCommandFolder();
+        const parentWindow =
+            invoke_window && !invoke_window.isDestroyed()
+                ? invoke_window
+                : mainWindow;
+        const selection = await dialog.showOpenDialog(parentWindow, {
+            title:
+                language === "zh"
+                    ? "选择 EasySpider_MacOS 发布文件夹"
+                    : "Select the EasySpider_MacOS release folder",
+            defaultPath: currentFolder || app.getPath("downloads"),
+            properties: ["openDirectory"],
+            message:
+                language === "zh"
+                    ? "请选择同时包含 EasySpider.app 和 easyspider_executestage 的文件夹"
+                    : "Select the folder containing EasySpider.app and easyspider_executestage",
+        });
+        if (selection.canceled || selection.filePaths.length === 0) {
+            ws.send(JSON.stringify({
+                response_type: "macos_command_folder",
+                canceled: true,
+            }));
+            return;
+        }
+        const selectedFolder = path.resolve(selection.filePaths[0]);
+        const launcher = getMacOSCommandLauncher(selectedFolder);
+        if (!launcher) {
+            ws.send(JSON.stringify({
+                response_type: "macos_command_folder",
+                canceled: false,
+                error:
+                    language === "zh"
+                        ? "所选文件夹必须同时包含 EasySpider.app 和 easyspider_executestage。"
+                        : "The selected folder must contain both EasySpider.app and easyspider_executestage.",
+            }));
+            return;
+        }
+        saveMacOSCommandFolder(selectedFolder);
+        ws.send(JSON.stringify({
+            response_type: "macos_command_folder",
+            canceled: false,
+            macos_command_folder: selectedFolder,
+            macos_command_launcher: launcher,
+        }));
     } else if (msg.type == 30) {
         send_message_to_browser(
             JSON.stringify({

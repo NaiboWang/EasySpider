@@ -92,8 +92,17 @@
                         <label><a href="https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction"
                                   target="_blank">{{`Click Here~点击这里` | lang}}</a> {{`Here to see argument instruction.~这里查看参数配置说明。` | lang}}</label>
                         <label v-if="OS=='MacOS'">{{`对于MacOS系统，EasySpider提供了两个不同的执行程序，分别为easyspider_executestage和easyspider_executestage_full，前者执行时加载速度较快，并提供了除OCR识别和数据去重以外的全部功能；后者则提供了包括OCR识别和数据去重在内的全部功能，但运行时加载速度较慢，需要等待2-10分钟才能执行程序，请根据自己的需求选择执行哪个程序。~For MacOS system, EasySpider provides two different execution programs, 'easyspider_executestage' and 'easyspider_executestage_full', the former loads faster when executing, and provides all functions except OCR recognition and data deduplication; the latter provides all functions including OCR recognition and data deduplication, but the loading speed is slower when running, and it takes 2-10 minutes to wait for the program to execute, please choose which program to execute according to your needs.` | lang}}</label>
-                        <label>{{ `Please open a terminal (For Windows, please use PowerShell instead of CMD), go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider can quit when executing command for ease of timed execution, and you can set --read_type to "remote" for remote execution):~请在EasySpider目录下打开命令行工具Terminal （Windows请使用PowerShell而不是CMD），然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时可以退出EasySpider以方便定时执行，如需要远程调用则需要将--read_type设置为remote并设置远程地址）：` | lang }}</label>
-                        <textarea class="form-control" style="height:150px">cd {{easyspider_location}}
+                        <label v-if="OS=='MacOS'">{{ `Copy the following command into Terminal. The command uses the real EasySpider_MacOS release folder selected below and does not depend on an App Translocation path. You may quit EasySpider after the execution instance has been generated.~请将以下命令复制到Terminal运行。该命令使用下方选择的真实EasySpider_MacOS发布文件夹，不依赖App Translocation临时路径；生成执行实例后可以退出EasySpider。` | lang }}</label>
+                        <label v-else>{{ `Please open a terminal (For Windows, please use PowerShell instead of CMD), go to EasySpider's folder, and then copy (Command/Ctrl + c) the following command to run the task (EasySpider can quit when executing command for ease of timed execution, and you can set --read_type to "remote" for remote execution):~请在EasySpider目录下打开命令行工具Terminal （Windows请使用PowerShell而不是CMD），然后复制（Command/Ctrl + c）和运行以下命令以执行任务（执行命令时可以退出EasySpider以方便定时执行，如需要远程调用则需要将--read_type设置为remote并设置远程地址）：` | lang }}</label>
+                        <div v-if="OS=='MacOS'" style="margin: 8px 0 10px 0;">
+                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                    v-on:click="selectMacOSCommandFolder">{{ `Select/change EasySpider_MacOS folder~选择或更改EasySpider_MacOS文件夹` | lang }}</button>
+                            <div style="margin-top: 6px; word-break: break-all;">
+                                {{macos_command_folder}}
+                            </div>
+                        </div>
+                        <textarea v-if="OS=='MacOS'" class="form-control" style="height:170px" readonly>{{macos_command_line}}</textarea>
+                        <textarea v-else class="form-control" style="height:150px">cd {{easyspider_location}}
 {{command}} --config_folder "{{config_folder}}" --headless 0 --read_type local --config_file_name config.json --saved_file_name </textarea>
                     </div>
                     <!-- <div class="modal-footer">
@@ -348,6 +357,11 @@
             config_folder: "",
             easyspider_location: "",
             mysql_config_path: "",
+            executionStarted: false,
+            macos_command_folder: "",
+            macos_command_launcher: "",
+            macos_command_line: "",
+            showCommandAfterFolderSelection: false,
             OS: "Windows",
         }, mounted() {
             $.get(this.backEndAddressServiceWrapper + "/getConfig", function (result) {
@@ -397,6 +411,16 @@
             },
             readFromExcel: function () {
                 $('#excelModal').modal('show');
+            }, selectMacOSCommandFolder: function () {
+                this.showCommandAfterFolderSelection = true;
+                ws.send(JSON.stringify({type: 8}));
+            }, showMacOSCommandDialog: function () {
+                changeCommand();
+                if (this.macos_command_launcher !== "") {
+                    $('#myModal').modal('show');
+                } else {
+                    this.selectMacOSCommandFolder();
+                }
             }, submitFile: function () {
                 let form_data = new FormData();
                 this.file = $('#excelFile').prop('files')[0];
@@ -521,8 +545,12 @@
                     }
                 };
                 ws.send(JSON.stringify(message));
-                changeCommand();
-                $('#myModal').modal('show');
+                if (detectOperatingSystemAndArch().OS == 'MacOS') {
+                    this.showMacOSCommandDialog();
+                } else {
+                    changeCommand();
+                    $('#myModal').modal('show');
+                }
                 // }
             },
             remoteExecute: function () {
@@ -558,13 +586,22 @@
                         }
                     };
                     app.$data.ID = result;
+                    app.$data.executionStarted = false;
                     ws.send(JSON.stringify(message));
                     // 使用函数并打印结果
                     const systemInfo = detectOperatingSystemAndArch();
                     // $.get(app.$data.backEndAddressServiceWrapper + "/queryOSVersion", function (OSInfo) {
                     if (systemInfo.OS == 'MacOS') {
                         changeCommand();
-                        $('#myModal').modal('show');
+                        // The packaged macOS executor is now launched inside the
+                        // signed app bundle.  Wait briefly for the websocket
+                        // acknowledgement before falling back to the manual
+                        // command dialog used by older packages.
+                        setTimeout(function () {
+                            if (!app.$data.executionStarted) {
+                                app.showMacOSCommandDialog();
+                            }
+                        }, 1000);
                     }
                     // });
                 });
@@ -587,14 +624,27 @@
             } else if (systemInfo.OS == 'Linux') {
                 app.$data.command = "./EasySpider/resources/app/chrome_linux64/easyspider_executestage --ids '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             } else if (systemInfo.OS == 'MacOS') {
-                if (getUrlParam("lang") == "zh") {
-                    app.$data.easyspider_location = "你的EasySpider文件夹，如：cd /Users/" + app.$data.config_folder.split("/")[2] + "/Downloads/EasySpider_MacOS";
+                if (app.$data.macos_command_launcher !== "") {
+                    app.$data.macos_command_line =
+                        "cd " + quotePOSIXShell(app.$data.macos_command_folder) + "\n" +
+                        quotePOSIXShell(app.$data.macos_command_launcher) +
+                        " --ids " + quotePOSIXShell("[" + app.$data.ID.toString() + "]") +
+                        " --user_data " + (app.$data.with_user_data ? "1" : "0") +
+                        " --server_address " + quotePOSIXShell(app.$data.backEndAddressServiceWrapper) +
+                        " --config_folder " + quotePOSIXShell(app.$data.config_folder) +
+                        " --headless 0 --read_type local" +
+                        " --config_file_name config.json --saved_file_name ''";
                 } else {
-                    app.$data.easyspider_location = "Your EasySpider folder, such as: cd /Users/" + app.$data.config_folder.split("/")[2] + "/Downloads/EasySpider_MacOS";
+                    app.$data.macos_command_line = getUrlParam("lang") == "zh"
+                        ? "请先选择包含 EasySpider.app 和 easyspider_executestage 的 EasySpider_MacOS 文件夹。"
+                        : "Select the EasySpider_MacOS folder containing EasySpider.app and easyspider_executestage first.";
                 }
-                app.$data.command = "./easyspider_executestage --ids '[" + app.$data.ID.toString() + "]' --user_data " + (app.$data.with_user_data ? "1" : "0") + " --server_address " + app.$data.backEndAddressServiceWrapper;
             }
         // });
+    }
+
+    function quotePOSIXShell(value) {
+        return "'" + String(value).replaceAll("'", "'\"'\"'") + "'";
     }
 
     $.get(app.$data.backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {
@@ -626,8 +676,39 @@
     };
     ws.onmessage = function (message) {
         message = JSON.parse(message.data);
-        app.$data.config_folder = message.config_folder.replaceAll("\\", "/");
-        app.$data.easyspider_location = message.easyspider_location.replace("/EasySpider.app/", "");
+        if (message.response_type === "macos_command_folder") {
+            if (message.error) {
+                alert(message.error);
+                app.$data.showCommandAfterFolderSelection = false;
+                return;
+            }
+            if (message.canceled) {
+                app.$data.showCommandAfterFolderSelection = false;
+                return;
+            }
+            app.$data.macos_command_folder = message.macos_command_folder;
+            app.$data.macos_command_launcher = message.macos_command_launcher;
+            changeCommand();
+            if (app.$data.showCommandAfterFolderSelection) {
+                app.$data.showCommandAfterFolderSelection = false;
+                $('#myModal').modal('show');
+            }
+            return;
+        }
+        if (message.config_folder) {
+            app.$data.config_folder = message.config_folder.replaceAll("\\", "/");
+        }
+        if (message.macos_command_folder) {
+            app.$data.macos_command_folder = message.macos_command_folder;
+        }
+        if (message.macos_command_launcher) {
+            app.$data.macos_command_launcher = message.macos_command_launcher;
+        }
+        if (message.easyspider_location && detectOperatingSystemAndArch().OS != 'MacOS') {
+            app.$data.easyspider_location = message.easyspider_location.replace("/EasySpider.app/", "");
+        }
+        changeCommand();
+        app.$data.executionStarted = message.execution_started === true;
     }
     ws.onclose = function () {
         // 关闭 websocket

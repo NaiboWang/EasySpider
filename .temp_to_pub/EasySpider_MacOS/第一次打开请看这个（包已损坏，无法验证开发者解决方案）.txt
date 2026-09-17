@@ -55,8 +55,6 @@ xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources/app/node
 
 现在，您就可以像在其他操作系统中一样设计任务了。
 
-
-
 - 执行阶段
 
 与Intel版本设计阶段操作相同，首次运行'easyspider_executestage'程序时，需要在系统设置 -> 安全性与隐私中设置“仍然允许”，并重新运行"./easyspider_executestage EID"命令，并点击“打开”来运行任务。

@@ -50,6 +50,7 @@ rm -rf "$STAGE_DIR/Code" "$STAGE_DIR/Sample Tasks" "$STAGE_DIR/Data" \
 rm -f "$STAGE_DIR/config.json" "$STAGE_DIR/mysql_config.json"
 mkdir -p "$STAGE_DIR/Code" "$STAGE_DIR/Sample Tasks" "$STAGE_DIR/Data" \
     "$STAGE_DIR/execution_instances"
+cp "$SCRIPT_DIR/execute_macos.sh" "$STAGE_DIR/execute_macos.sh"
 cp "$REPO_ROOT/ExecuteStage"/*.py "$STAGE_DIR/Code/"
 cp "$REPO_ROOT/ExecuteStage/requirements.txt" "$STAGE_DIR/Code/"
 cp "$REPO_ROOT/ExecuteStage/Readme.md" "$STAGE_DIR/Code/"
@@ -69,6 +70,20 @@ find "$STAGE_DIR" -type d -name .pytest_cache -prune -exec rm -rf {} +
 chmod 755 "$STAGE_DIR/first_time_run.sh" "$STAGE_DIR/execute_macos.sh" 2>/dev/null || true
 chmod 755 "$STAGE_DIR/easyspider_executestage" "$STAGE_DIR/easyspider_executestage_full" 2>/dev/null || true
 
+# Keep copies inside the signed app as well as in the portable release folder.
+# Gatekeeper may App-Translocate the .app when a user approves it in Privacy &
+# Security; an external sibling executable would then no longer be reachable
+# at the path shown by the translocated process.  Electron launches these
+# bundled copies with the stable userData directory as their working directory.
+for executor in easyspider_executestage easyspider_executestage_full; do
+    if [[ ! -f "$STAGE_DIR/$executor" ]]; then
+        echo "Missing macOS execution stage: $STAGE_DIR/$executor" >&2
+        exit 1
+    fi
+    cp "$STAGE_DIR/$executor" "$APP_RESOURCES/$executor"
+    chmod 755 "$APP_RESOURCES/$executor"
+done
+
 # Sign only after all files have been copied/deleted. Set CODESIGN_IDENTITY to
 # a Developer ID identity for a distributable build; the default '-' is ad hoc.
 CODESIGN_IDENTITY="${CODESIGN_IDENTITY:--}"
@@ -82,6 +97,8 @@ sign_path() {
 }
 sign_path "$STAGE_DIR/easyspider_executestage"
 sign_path "$STAGE_DIR/easyspider_executestage_full"
+sign_path "$APP_RESOURCES/easyspider_executestage"
+sign_path "$APP_RESOURCES/easyspider_executestage_full"
 sign_path "$APP_PATH"
 codesign --verify --deep --strict "$APP_PATH"
 echo "macOS $HOST_ARCH application staged at $STAGE_DIR"

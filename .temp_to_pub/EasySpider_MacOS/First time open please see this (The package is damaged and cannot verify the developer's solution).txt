@@ -58,7 +58,6 @@ xattr: [Errno 13] Permission denied: 'EasySpider.app/Contents/Resources
 
 Now, you can design tasks as you would in other operating systems.
 
-
 - Execution phase
 
 The operation is the same as the design phase of the Intel version. When running the 'easyspider_executestage' program for the first time, you need to set "Allow Anyway" in System Settings -> Security & Privacy, and re-run the "./easyspider_executestage EID" command, and click "Open" to run the task.

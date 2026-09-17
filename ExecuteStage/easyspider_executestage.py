@@ -40,6 +40,7 @@ import re
 # import shutil
 import subprocess
 import sys
+from pathlib import Path
 # from urllib import parse
 # import base64
 # import hashlib
@@ -71,6 +72,38 @@ if sys.platform != "darwin":
     from myChrome import MyUCChrome
 desired_capabilities = DesiredCapabilities.CHROME
 desired_capabilities["pageLoadStrategy"] = "none"
+
+
+def _runtime_directory():
+    """Return the directory containing the running executor binary/script."""
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent
+    return Path(__file__).resolve().parent
+
+
+def _data_directory():
+    """Resolve mutable task data independently from the app's cwd.
+
+    Electron supplies EASYSPIDER_DATA_DIR when it starts the bundled macOS
+    executor.  A manually launched portable executable keeps the historical
+    behaviour of writing beside the executable; a frozen macOS executable
+    launched directly falls back to Electron's userData location.
+    """
+    configured = os.environ.get("EASYSPIDER_DATA_DIR", "").strip()
+    if configured:
+        return Path(configured).expanduser().resolve()
+    if sys.platform == "darwin" and getattr(sys, "frozen", False):
+        return Path(os.path.expanduser("~/Library/Application Support/EasySpider")).resolve()
+    return Path.cwd().resolve()
+
+
+RUNTIME_DIRECTORY = _runtime_directory()
+DATA_DIRECTORY = _data_directory()
+DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
+# The executor historically uses relative Data/, execution_instances/ and
+# TempUserDataFolder paths throughout the file.  Normalize cwd once so those
+# paths remain valid even when macOS launches the app through App Translocation.
+os.chdir(DATA_DIRECTORY)
 
 
 class BrowserThread(Thread):
@@ -133,8 +166,7 @@ class BrowserThread(Thread):
                                "将从头开始执行，如果需要从上次退出的步骤开始执行，请在保存任务时设置是否从上次保存位置开始执行为“是”。")
             self.print_and_log("In this mode, task ID", self.id,
                                "will start from the beginning, if you want to start from the last step, please set the option 'start from the last step' to 'yes' when saving the task.")
-        stealth_path = driver_path[:driver_path.find(
-            "chromedriver")] + "stealth.min.js"
+        stealth_path = os.path.join(os.path.dirname(driver_path), "stealth.min.js")
         with open(stealth_path, 'r') as f:
             js = f.read()
             self.print_and_log("Loading stealth.min.js")
@@ -473,7 +505,8 @@ class BrowserThread(Thread):
                 self.print_and_log("接收到终止信号，正在中断任务... | Received termination signal, interrupting task...")
                 break
             self.event.wait()  # 暂停/恢复
-            self.executeNode(self.startSteps, self.links[i], "", i)
+            self.urlId = i
+            self.executeNode(0)
         # files = os.listdir("Data/Task_" + str(self.id) + "/" + self.saveName)
         # 如果目录为空，则删除该目录
         # if not files:
@@ -2325,8 +2358,31 @@ if __name__ == '__main__':
     if not os.path.exists(os.getcwd() + "/Data"):
         os.mkdir(os.getcwd() + "/Data")
     if sys.platform == "darwin" and platform.architecture()[0] == "64bit":
-        options.binary_location = "EasySpider.app/Contents/Resources/app/chrome_mac64.app/Contents/MacOS/Google Chrome"
-        driver_path = "EasySpider.app/Contents/Resources/app/chromedriver_mac64"
+        resource_override = os.environ.get("EASYSPIDER_APP_RESOURCES", "").strip()
+        resource_candidates = []
+        if resource_override:
+            resource_candidates.append(Path(resource_override).expanduser().resolve())
+        # Bundled executor: RUNTIME_DIRECTORY is Resources/app.
+        resource_candidates.append(RUNTIME_DIRECTORY)
+        # Portable release fallback: executor is next to EasySpider.app.
+        resource_candidates.append(RUNTIME_DIRECTORY / "EasySpider.app" / "Contents" / "Resources" / "app")
+        # Development fallback when running the Python entry point directly.
+        resource_candidates.append(RUNTIME_DIRECTORY.parent / "ElectronJS")
+        resource_root = next(
+            (candidate for candidate in resource_candidates
+             if (candidate / "chromedriver_mac64").exists() and
+             (candidate / "chrome_mac64.app").exists()),
+            None,
+        )
+        if resource_root is None:
+            raise FileNotFoundError(
+                "Cannot locate the bundled macOS Chrome resources. "
+                "Checked: " + ", ".join(str(candidate) for candidate in resource_candidates)
+            )
+        options.binary_location = str(
+            resource_root / "chrome_mac64.app" / "Contents" / "MacOS" / "Google Chrome"
+        )
+        driver_path = str(resource_root / "chromedriver_mac64")
         print(driver_path)
         if c.config_folder == "":
             c.config_folder = os.path.expanduser(

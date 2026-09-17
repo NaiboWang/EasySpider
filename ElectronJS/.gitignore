@@ -16,6 +16,7 @@ execution_instances/*
 info.log
 npminstall-debug.log
 mysql_config.json
+macos_command_folder.json
 EasySpider_en/
 EasySpider_zh/
 TempUserDataFolder/

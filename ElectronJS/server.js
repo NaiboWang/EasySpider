@@ -33,26 +33,23 @@ function compare(p) {
 }
 
 function getDir() {
-  if (__dirname.indexOf("app") >= 0 && __dirname.indexOf("sources") >= 0) {
-    if (process.platform == "darwin") {
-      return app.getPath("userData");
-    } else {
-      return path.join(__dirname, "../../..");
-    }
-  } else {
-    return __dirname;
-  }
+  // On macOS, never use the packaged app's __dirname for mutable data.
+  // Gatekeeper may launch the app through App Translocation, where that path
+  // points into a temporary private directory.  Electron's userData path is
+  // stable across normal launches and security approval flows.  Preserve the
+  // historical portable-root behaviour on Windows and Linux.
+  if (app.isPackaged && process.platform === "darwin") return app.getPath("userData");
+  if (app.isPackaged) return path.resolve(process.resourcesPath, "../..");
+  return __dirname;
 }
 function getEasySpiderLocation() {
-  if (__dirname.indexOf("app") >= 0 && __dirname.indexOf("sources") >= 0) {
-    if (process.platform == "darwin") {
-      return path.join(__dirname, "../../../");
-    } else {
-      return path.join(__dirname, "../../../");
-    }
-  } else {
-    return __dirname;
+  if (app.isPackaged) {
+    // This is retained for the Windows/Linux resource lookup and diagnostics.
+    // macOS execution no longer depends on this path: the executor is bundled
+    // under Resources/app and is started directly by Electron.
+    return path.resolve(process.resourcesPath, "../..");
   }
+  return __dirname;
 }
 if (!fs.existsSync(path.join(getDir(), "tasks"))) {
   fs.mkdirSync(path.join(getDir(), "tasks"));
