@@ -337,13 +337,13 @@ let app = new Vue({
             let clone_node = DeepClone(this.nowNode);
             clone_node.option = 11; //单独的提取数据参数节点
             clone_node.parameters.index = i;
-            trailElement(clone_node, 0);
+            trialElement(clone_node, 0);
         },
-        trailParam: function (i) { //试运行第i个参数
+        trialParam: function (i) { //试运行第i个参数
             let clone_node = DeepClone(this.nowNode);
             clone_node.option = 11; //单独的提取数据参数节点
             clone_node.parameters.index = i;
-            trailElement(clone_node, 1);
+            trialElement(clone_node, 1);
         },
         deleteParam: function (i) { //删除第i个参数
             this.nowNode["parameters"]["params"].splice(i, 1);
@@ -485,7 +485,7 @@ function operationChange(e, theNode) {
     theNode.style.borderColor = "blue";
     handleElement(); //处理元素
     if (debuggable && e.button == 0) {
-        trailElement(app._data.nowNode, 0);
+        trialElement(app._data.nowNode, 0);
     } else {
         debuggable = true;
     }
@@ -517,7 +517,7 @@ function elementDblClick(e) {
             if (nodeType == 5 && (app._data.nowNode["parameters"]["codeMode"] != 0 && app._data.nowNode["parameters"]["codeMode"] != 2 && app._data.nowNode["parameters"]["codeMode"] != 8)) {
                 showInfo(LANG("试运行自定义操作功能只适用于执行JavaScript和刷新页面操作。", "The trial run custom action function is only applicable to run JavaScript and refresh page operations."));
             } else {
-                trailElement(app._data.nowNode, 1);
+                trialElement(app._data.nowNode, 1);
             }
         }
     } catch (e) {

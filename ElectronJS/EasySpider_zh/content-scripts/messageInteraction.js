@@ -1,5 +1,5 @@
 import { global, LANG, clearEl, readXPath, getElementXPaths } from './global.js';
-import { createNotification, trial } from './trail.js';
+import { createNotification, trial } from './trial.js';
 
 //实现与后台和流程图部分的交互
 

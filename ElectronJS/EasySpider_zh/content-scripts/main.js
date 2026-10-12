@@ -1,6 +1,6 @@
 import { global as global$1, addEl, clearEl, isInIframe, getElementXPaths, readXPath, handleElement, handleDescendents, clearParameters, generateParameters, clearReady, selectAllElements, LANG } from './global.js';
 import { collectSingle, collectMultiNoPattern, collectMultiWithPattern, sendSingleClick, sendChangeOption, sendMouseMove, sendLoopMouseMove, sendLoopClickSingle, sendLoopClickEvery, input } from './messageInteraction.js';
-import { createNotification } from './trail.js';
+import { createNotification } from './trial.js';
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 

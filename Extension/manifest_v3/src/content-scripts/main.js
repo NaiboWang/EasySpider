@@ -22,7 +22,7 @@ import {
 } from "./global.js";
 import ToolKit from "./toolkit.vue";
 import iframe from "./iframe.vue";
-import {createNotification} from './trail.js';
+import {createNotification} from './trial.js';
 
 //表现逻辑层的处理
 

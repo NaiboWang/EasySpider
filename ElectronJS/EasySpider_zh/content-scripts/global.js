@@ -222,12 +222,12 @@ function addEl(e, node = global.NowNode, handle = true) {
 }
 
 //清除选择项
-function clearEl(trail=false) {
+function clearEl(trial=false) {
     //如果最后停留的元素被选中，则调整此元素的style为原始style，否则不进行调整
     for (let node of global.nodeList) {
         node["node"].style.backgroundColor = node["bgColor"];
         node["node"].style.boxShadow = node["boxShadow"];
-        if (global.NowNode == node["node"] && !trail) ;
+        if (global.NowNode == node["node"] && !trial) ;
     }
     for (let node of global.markElements) {
         let element = node.element;

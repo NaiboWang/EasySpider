@@ -213,7 +213,7 @@ function updateParentNode() {
     app._data.parentNode = parentNode;
 }
 
-function trailElement(node, type = 1) {
+function trialElement(node, type = 1) {
     // type=0代表标记节点，type=1代表试运行
     // let parentNode = nodeList[actionSequence[node["parentId"]]];
     // if (node.option == 10) { //条件分支的话，传父元素的父元素

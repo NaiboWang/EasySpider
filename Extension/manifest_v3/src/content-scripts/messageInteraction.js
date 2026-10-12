@@ -1,7 +1,7 @@
 //实现与后台和流程图部分的交互
 
 import {getElementXPaths, global, readXPath, isInIframe, clearEl, LANG} from "./global.js";
-import {trial, createNotification} from "./trail.js";
+import {trial, createNotification} from "./trial.js";
 
 global.ws = new WebSocket("ws://localhost:8084");
 global.ws.onopen = function () {
