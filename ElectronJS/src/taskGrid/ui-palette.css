@@ -1,0 +1,19 @@
+:root {
+    color-scheme: light;
+    --canvas: #f4f7fc;
+    --surface: #ffffff;
+    --surface-subtle: #f0f5fc;
+    --rail: #f7f9fd;
+    --ink: #172b4d;
+    --muted: #536784;
+    --line: #dce5f2;
+    --line-strong: #b5c6df;
+    --accent: #0866db;
+    --accent-hover: #0054bc;
+    --accent-soft: #eaf2ff;
+    --breeze: #536f99;
+    --terra: #536f99;
+    --danger: #b42318;
+    --danger-soft: #fff1f0;
+    --font: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+}

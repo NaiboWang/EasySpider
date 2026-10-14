@@ -1,75 +1,15 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    <script src="jquery-3.4.1.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="bootstrap/js/bootstrap.js"></script>
-    <script src="vue.js"></script>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <title>新任务 | New Task</title>
-<style>
-    @media (max-width: 500px) {
-        #newTask{
-            margin-left:10%!important;
-        }
-    }
-</style>
-
-</head>
-
-
-<body>
-    <div class="row" style="margin-top: 40px" id="newTask">
-        <div class="col-md-8" style="margin:0 auto;" style="text-align: center;">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb" style="padding-left:0;background-color: white">
-                    <li class="breadcrumb-item" @click="gotoHome"><a href="#">{{"Home~首页" | lang}}</a></li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: black">{{"New Task~新任务" | lang}}</li>
-                </ol>
-            </nav>
-            <h4 style="text-align: center;">{{"New Task~新任务" | lang}}</h4>
-            <div class="form-group">
-                <label>{{"Please Input URL (http or https):~请输入网页网址（以http或https开头）：" | lang}}  </label>
-                <textarea class="form-control" id="links" placeholder="links" style="min-height: 100px;">{{"https://www.ebay.com~https://www.baidu.com" | lang}}</textarea>
-            </div>
-            <button type="submit" id="send" class="btn btn-primary">{{"Start Design~开始设计" | lang}}</button>
-<!--            <div class="form-group" style="margin-top: 10px">-->
-<!--                <label>{{"User Data Folder (If you want to load the cookie data from your local browser, please set this folder path, and then cilck the 'Start Design with cookie data from local browser' button to start design the task):~用户本地浏览器数据目录（如果需要使用本地的登录信息和cookie，请设置此目录，并点击下方“带本地数据开始设计”按钮开始设计任务）：" | lang}}</label>-->
-<!--                <textarea class="form-control" id="user-data-folder" style="min-height: 50px;">{{user_data_folder}}</textarea>-->
-<!--                <button type="submit" id="sendWithCookie" style="margin-top: 10px" class="btn btn-primary">{{"Start Design with cookie data from local browser~带本地数据开始设计" | lang}}</button>-->
-<!--            </div>-->
-            <div style="margin-top: 20px">
-                <div v-if="mobile">
-                    <div v-if="language=='zh'">
-                        <p>提示：手机模式设计时如果没有出现操作提示框，请按键盘的Ctrl+Shift+I组合键（MacOS为Command+Option+I组合键）打开开发者工具，然后<b>双击</b>“切换设备”按钮，即可正常出现并使用操作提示框。</p>
-                    </div>
-                    <div v-else>
-                        <p>Tip: If the operation prompt box does not appear when designing in mobile mode, please press the
-                            Ctrl+Shift+I key combination (MacOS is the Command+Option+I key combination) to open the
-                            developer tool, and then <b>double-click</b> the "Toggle Device Toolbar" button, you can normally appear and use the operation toolbox.</p>
-                    </div>
-                    <img src="../img/toggle.png" alt="" style="width: 100%;height: 100%">
-                    <p></p>
-                </div>
-
-                <h5>{{"Example 1~示例1" | lang}}</h5>
-                <p>{{"(Right click) Select a large product block -> Click the 'Select All' option -> Click the 'Select Child Elements' option -> Click the 'Collect Data' option, you can collect the information of all products, and will be saved by sub-field. ~ （右键）选中一个大商品块 -> 自动检测到同类型商品块 -> 点击“选中全部”选项 -> 点击“选中子元素”选项 -> 点击“采集数据”选项，即可采集到所有商品的所有信息，并分成不同字段保存。" | lang}}</p>
-                <img src="../img/animation_zh.gif" alt="" style="width: 100%;height: 100%">
-                <p></p>
-                <h5>{{"Example 2~示例2" | lang}}</h5>
-                <p>{{"（右键）选中一个商品标题，同类型标题会被自动匹配，点击“选中全部”选项 -> 点击“采集数据”选项，即可采集到所有商品的标题信息。~ (Right Click) Select a product title, the same type of title will be automatically matched, click the 'Select All' option -> Click the 'Collect Data' option, you can collect the title information of all products." | lang}}</p>
-                <p>{{"同时，选中全部后如果选择“循环点击每个元素”选项，即可自动打开每个商品的详情页，然后可以再继续设置采集详情页的信息。~ At the same time, if you select the 'Loop-click every element' after selecting all, you can automatically open the details page of each product, and then set to collect the information of the details page." | lang}}</p>
-                <img src="../img/animation_en.gif" alt="" style="width: 100%;height: 100%">
-                <p></p>
-            </div>
-        </div>
-    </div>
-</body>
-
-</html>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><script src="jquery-3.4.1.min.js"></script><script src="vue.js"></script><link rel="stylesheet" href="bootstrap/css/bootstrap.css"><title>新任务 | New Task</title><link rel="stylesheet" href="workspace-ui.css"></head><body>
+<div id="newTask" class="workspace-shell"><aside class="side-rail"><div class="brand"><svg class="brand-wave" viewBox="0 0 42 28" fill="none" aria-hidden="true"><path d="M2 7c7-5 12-5 19-1s12 4 19-1M2 14c7-5 12-5 19-1s12 4 19-1M2 21c7-5 12-5 19-1s12 4 19-1" stroke="currentColor" stroke-width="1.7"/></svg><div><p class="brand-name">EasySpider</p><p class="brand-caption">{{"Automation workspace~自动化工作台" | lang}}</p></div></div><nav class="rail-nav" :aria-label="'Workspace navigation~工作区导航' | lang"><button type="button" class="rail-item" @click="gotoHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1"/></svg><span>{{"Task List~任务列表" | lang}}</span></button><div class="rail-item is-active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>{{"New Task~新建任务" | lang}}</span></div></nav><div class="rail-support"><a href="https://github.com/NaiboWang/EasySpider/wiki" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4zM14 7a3 3 0 0 1 3-3h3v14h-3a3 3 0 0 0-3 3"/></svg>{{"Documentation~使用文档" | lang}}</a><a href="https://github.com/NaiboWang/EasySpider/issues?q=is%3Aissue" target="_blank" rel="noopener noreferrer">{{"Questions and feedback~问题反馈" | lang}}</a></div></aside><main class="workspace-main">
+    <header class="topbar"><button type="button" class="back-link" @click="gotoHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg>{{"Back to task list~返回任务列表" | lang}}</button><span class="mode-label">{{"Design mode~设计模式" | lang}}</span></header>
+    <header class="page-heading"><div><h1>{{"New Task~新建任务" | lang}}</h1><p>{{"Start with a web address, then select content and actions in the design browser.~从一个网页地址开始，在设计浏览器中选择内容与操作。" | lang}}</p></div></header>
+    <section class="content"><section class="sheet"><div class="sheet-body">
+        <nav class="step-strip" :aria-label="'Workflow steps~任务创建步骤' | lang"><div class="step is-current" aria-current="step"><span class="step-number">01</span><strong>{{"Enter URL~输入网址" | lang}}</strong></div><div class="step"><span class="step-number">02</span><strong>{{"Open Browser~打开浏览器" | lang}}</strong></div><div class="step"><span class="step-number">03</span><strong>{{"Design Workflow~设计流程" | lang}}</strong></div></nav>
+        <div class="create-layout"><section class="form-panel"><label class="field-label" for="links">{{"Starting URL~起始网址" | lang}}</label><p id="url-help" class="field-help">{{"One complete URL per line. The first URL opens first in the design browser.~每行填写一个完整网址，设计浏览器会优先打开第一个地址。" | lang}}</p><textarea id="links" class="url-input" aria-describedby="url-help" rows="7">{{"https://www.ebay.com~https://www.baidu.com" | lang}}</textarea><div class="form-actions"><p>{{"Select page elements after the browser opens to create your workflow.~浏览器打开后，选择页面元素即可创建流程。" | lang}}</p><button id="send" type="button" class="primary-action">{{"Start Designing~开始设计" | lang}}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3h7v7M21 3 11 13M10 5H4v15h15v-6"/></svg></button></div></section>
+        <aside class="guide"><h2>{{"What happens next~接下来怎么操作" | lang}}</h2><ol><li><strong>{{"Open the page~打开目标网页" | lang}}</strong><p>{{"EasySpider opens your URL in the design browser.~EasySpider 会在设计浏览器中载入网址。" | lang}}</p></li><li><strong>{{"Select content~选择页面内容" | lang}}</strong><p>{{"Click or right-click the data and actions you need.~单击或右键选择需要的数据与操作。" | lang}}</p></li><li><strong>{{"Save the workflow~保存流程" | lang}}</strong><p>{{"Save the completed workflow, then run it from the task list.~流程设计完成后保存，再从任务列表运行。" | lang}}</p></li></ol></aside></div>
+        <section v-if="mobile" class="mobile-guidance notice"><h2>{{"Mobile emulation is enabled~已开启移动端模拟" | lang}}</h2><p class="help">{{"Choose a phone profile in the browser device toolbar, keep zoom at 100%, then refresh before designing.~请在浏览器设备工具栏中选择手机型号，将缩放比例保持为 100%，刷新页面后开始设计。" | lang}}</p><details class="disclosure"><summary>{{"View device toolbar reference~查看设备工具栏示意图" | lang}}</summary><img class="reference-image" src="../img/toggle.png" :alt="'Chrome device toolbar reference~Chrome 设备工具栏示意图' | lang"></details></section>
+        <details class="disclosure"><summary>{{"View operation examples~查看操作示例" | lang}}</summary><div class="examples-grid"><article class="example-card"><h3>{{"Collect repeated product cards~采集重复的商品卡片" | lang}}</h3><p>{{"Right-click a product card, then choose Select All → Select Sub-elements → Collect Data.~右键一个商品卡片，依次选择“选中全部”→“选中子元素”→“采集数据”。" | lang}}</p><img src="../img/animation_zh.gif" :alt="'Collecting repeated product cards~采集重复商品卡片的操作示例' | lang"></article><article class="example-card"><h3>{{"Collect titles and prices~采集标题与价格" | lang}}</h3><p>{{"Right-click a title and choose Select All → Collect Data. Repeat with a price to add it as another field.~右键一个商品标题，选择“选中全部”→“采集数据”。再对价格重复此操作，将价格添加为另一个字段。" | lang}}</p><img src="../img/animation_en.gif" :alt="'Collecting product titles and prices~采集标题与价格的操作示例' | lang"></article></div></details>
+    </div></section></section>
+</main></div></body></html>
 <script src="global.js"></script>
 <script>
     let app = new Vue({
@@ -82,13 +22,14 @@
         },
         methods: {
             gotoHome: function () {
-                let url = "";
-                if (getUrlParam("lang") == "zh") {
-                    url = "taskList.html?lang=zh&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
-                } else {
-                    url = "taskList.html?lang=en&backEndAddressServiceWrapper=" + app.$data.backEndAddressServiceWrapper
+                const url = new URL('taskList.html', window.location.href);
+                url.searchParams.set('lang', getUrlParam('lang'));
+                url.searchParams.set('type', getUrlParam('type') || '3');
+                for (const key of ['wsport', 'mobile', 'backEndAddressServiceWrapper']) {
+                    const value = getUrlParam(key);
+                    if (value !== '') url.searchParams.set(key, value);
                 }
-                window.location.href = url;
+                window.location.href = url.href;
             }
         }
     });

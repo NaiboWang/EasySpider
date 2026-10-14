@@ -1,135 +1,47 @@
-<!doctype html>
-<html lang="en">
-
-<head>
-    <script src="jquery-3.4.1.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="vue.js"></script>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <link rel="stylesheet" href="element-ui/index.css"></link>
-    <script src="element-ui/index.js"></script>
-    <title>任务列表 | Task List</title>
-</head>
-<style>
-    th, td {
-        text-align: left;
-        vertical-align: middle !important;
-    }
-
-    @media (max-width: 500px) {
-        .tasklist {
-            margin-left: 10% !important;
-
-        }
-    }
-
-    .search-header {
-        display: flex;
-        justify-content: flex-end; /* Right align the search box */
-        align-items: center;
-    }
-
-    .search-input {
-        /*margin-right: 8px; !* Optional: Adjust spacing between input and button *!*/
-    }
-
-    .task-links {
-        display: flex;
-        justify-content: space-between; /* Spread links evenly */
-    }
-</style>
-<body>
-<div class="row" style="margin-top: 40px;">
-    <div style="margin:0 auto; min-width: 70%;" id="taskList" class="tasklist">
-        <h4 style="text-align: center;">{{"Task List~任务列表" | lang}}</h4>
-        <h5 style="text-align: center;"
-            v-if="mobile==1">{{"View this table by direction keys on keyboard~按键盘方向键浏览此表格" | lang}}</h5>
-        <p><a v-if="type==3" href="javascript:void(0)" v-on:click="newTask"
-              class="btn btn-primary">{{"New Task~创建新任务" | lang}}</a></p>
-        <div v-if="type != 3" style="margin-bottom: 20px">
-            <div style="margin-bottom: 5px">{{"提示：下方的官方教程和答疑平台均在Github，可能出现访问速度慢的问题，请耐心等待。~" | lang}}
-            </div>
-            <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/wiki"
-               target="_blank">{{"Software Documentation~软件使用说明文档" | lang}}</a>
-            <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/issues?q=is%3Aissue"
-               target="_blank">{{"Ask questions here~官方答疑平台" | lang}}</a>
-            <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/issues/22"
-               target="_blank">{{"See how to run task by schedule~定时执行任务教程" | lang}}</a>
-            <!--                <a class="btn btn-primary" href="https://github.com/NaiboWang/EasySpider/wiki/Run-multiple-tasks-in-parallel" target="_blank">{{"See how to run multiple tasks in parallel~同时执行多个任务教程" | lang}}</a>-->
-        </div>
-        <el-table
-                style="width: 100%"
-                :empty-text="LANG('No Task~暂无任务')"
-                :data="list.filter(data => !search || (data.name.toLowerCase().includes(search.toLowerCase())) || (data.url.toLowerCase().includes(search.toLowerCase())) || (data.links.includes(search.toLowerCase())) || (data.desc.includes(search.toLowerCase())) || (data.id.toString().includes(search.toLowerCase())))"
-                :default-sort="{prop: 'mtime', order: 'descending'}"
-        >
-
-            <el-table-column
-                    prop="id"
-                    :label="LANG('Task ID~任务ID')"
-                    sortable
-                    width="120"
-                    align="center"
-            >
-            </el-table-column>
-            <el-table-column
-                    prop="name"
-                    :label="LANG('Task Name~任务名称')"
-                    sortable
-                    align="center"
-            >
-            </el-table-column>
-            <el-table-column
-                    prop="url"
-                    label="URL"
-                    sortable
-            >
-            </el-table-column>
-            <!--                <el-table-column-->
-            <!--                  prop="mtime"-->
-            <!--                  :label="LANG('Update Time~更新时间')"-->
-            <!--                  sortable-->
-            <!--                  :formatter="formatDate"-->
-            <!--                  width="170"-->
-            <!--                >-->
-            </el-table-column>
-            <el-table-column
-                    width="350"
-                    align="center">
-                <!-- Header template for the search input -->
-                <template slot="header" slot-scope="scope">
-                    <div class="search-header">
-                        <!-- Search input aligned to the right -->
-                        <el-input
-                                v-model="search"
-                                class="search-input"
-                                prefix-icon="el-icon-search"
-                                :placeholder="LANG('Please input keywords to search~请输入关键词搜索')">
-                        </el-input>
-                        <!--                          <el-button icon="el-icon-search"></el-button>-->
-                    </div>
-                </template>
-                <template slot-scope="scope">
-                    <!-- Use flex container to justify content space-around -->
-                    <div class="task-links">
-                        <a href="javascript:void(0)" v-on:click="browseTask(scope.$index, scope.row)">{{ "View~任务信息"
-                            | lang }}</a>
-                        <a href="javascript:void(0)" v-if="type==3" v-on:click="modifyTask(scope.$index, scope.row)">{{
-                            "Modify~修改任务" | lang }}</a>
-                        <a href="javascript:void(0)"
-                           v-on:dblclick="deleteTask(scope.$index, scope.row)">{{ "Delete (Double Click)~删除任务（双击）" | lang }}</a>
-                    </div>
-                </template>
-            </el-table-column>
-        </el-table>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><script src="jquery-3.4.1.min.js"></script><script src="vue.js"></script><link rel="stylesheet" href="bootstrap/css/bootstrap.css"><link rel="stylesheet" href="element-ui/index.css"><script src="element-ui/index.js"></script><title>Task List | EasySpider</title><link rel="stylesheet" href="workspace-ui.css"></head><body>
+<div id="taskList" class="workspace-shell"><aside class="side-rail"><div class="brand"><svg class="brand-wave" viewBox="0 0 42 28" fill="none" aria-hidden="true"><path d="M2 7c7-5 12-5 19-1s12 4 19-1M2 14c7-5 12-5 19-1s12 4 19-1M2 21c7-5 12-5 19-1s12 4 19-1" stroke="currentColor" stroke-width="1.7"/></svg><div><p class="brand-name">EasySpider</p><p class="brand-caption">{{"Automation workspace~自动化工作台" | lang}}</p></div></div><nav class="rail-nav" :aria-label="'Workspace navigation~工作区导航' | lang"><div class="rail-item is-active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1"/></svg><span>{{"Tasks~任务" | lang}}</span></div></nav><div class="rail-support"><a href="https://github.com/NaiboWang/EasySpider/wiki" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4zM14 7a3 3 0 0 1 3-3h3v14h-3a3 3 0 0 0-3 3"/></svg>{{"Documentation~使用文档" | lang}}</a><a href="https://github.com/NaiboWang/EasySpider/issues?q=is%3Aissue" target="_blank" rel="noopener noreferrer">{{"Questions and feedback~问题反馈" | lang}}</a></div></aside>
+<main class="workspace-main">
+    <header class="topbar"><p class="topbar-label">{{"Task management~任务管理" | lang}}</p><span class="mode-label">{{(type == 3 ? "Design mode~设计模式" : "Execution mode~执行模式") | lang}}</span></header>
+    <header class="page-heading"><div><h1>{{"Task List~任务列表" | lang}}</h1><p>{{"Review task details, then edit or run a saved workflow.~查看任务详情，修改或执行已保存的流程。" | lang}}</p></div><button v-if="type==3" type="button" class="primary-action" @click="newTask"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>{{"New Task~新建任务" | lang}}</button></header>
+    <section class="content">
+        <p v-if="mobile==1" class="notice">{{"Use the keyboard arrow keys to browse this table.~可使用键盘方向键浏览此表格。" | lang}}</p>
+        <section class="sheet" :aria-label="LANG('Task table~任务表格')">
+            <div class="sheet-heading"><h2>{{"All Tasks~全部任务" | lang}}<span class="count">{{list.length}}</span></h2><div class="task-list-actions"><el-input v-model="search" class="task-search" prefix-icon="el-icon-search" clearable :disabled="selectedDelete.busy" :aria-label="LANG('Search tasks~搜索任务')" :placeholder="LANG('Search task ID, name or URL~搜索任务、ID 或网址')"></el-input><button id="task-delete-selected" type="button" class="secondary-action task-selection-action" :disabled="selectedDelete.busy || !selectedTasks.length" @click="openSelectedDelete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/></svg>{{"Delete selected~删除所选" | lang}}<span v-if="selectedTasks.length">({{selectedTasks.length}})</span></button></div></div>
+            <div v-if="selectedTasks.length" class="task-selection-summary" role="status"><span>{{"Selected tasks~已选任务" | lang}} {{selectedTasks.length}}<span v-if="hiddenSelectedCount"> · {{hiddenSelectedCount}} {{"hidden by search~个被搜索隐藏" | lang}}</span></span><button type="button" class="task-action" :disabled="selectedDelete.busy" @click="selectedTaskIds=[]">{{"Clear selection~取消选择" | lang}}</button></div>
+            <el-table class="task-table" :data="visibleTasks" :row-class-name="taskRowClass" :default-sort="{prop: 'mtime', order: 'descending'}">
+                <el-table-column width="56" align="center"><template slot="header" slot-scope="header"><label class="task-select-hit"><input id="task-select-all" class="task-select-box" type="checkbox" :checked="allVisibleSelected" :indeterminate.prop="someVisibleSelected && !allVisibleSelected" :disabled="selectedDelete.busy || !visibleTasks.length" :aria-label="LANG('Select all visible tasks~选择当前显示的全部任务')" @change="selectVisibleTasks($event.target.checked)"></label></template><template slot-scope="scope"><label class="task-select-hit"><input class="task-select-box task-select-row" type="checkbox" v-model="selectedTaskIds" :value="Number(scope.row.id)" :disabled="selectedDelete.busy" :aria-label="LANG('Select task~选择任务')+' #'+scope.row.id+' '+scope.row.name"></label></template></el-table-column>
+                <el-table-column prop="id" :label="LANG('ID~ID')" sortable width="80" align="center"><template slot-scope="scope"><span class="task-id">{{scope.row.id}}</span></template></el-table-column>
+                <el-table-column prop="name" :label="LANG('Task Name~任务名称')" sortable min-width="280"><template slot-scope="scope"><span class="task-name">{{scope.row.name}}</span></template></el-table-column>
+                <el-table-column prop="url" label="URL" sortable min-width="240"><template slot-scope="scope"><span class="task-url" :title="scope.row.url">{{scope.row.url}}</span></template></el-table-column>
+                <el-table-column :label="LANG('Actions~操作')" width="260" align="right"><template slot-scope="scope"><div class="task-links"><button type="button" class="task-action" @click="browseTask(scope.$index,scope.row)">{{"Details~详情" | lang}}</button><button type="button" class="task-action" v-if="type==3" @click="modifyTask(scope.$index,scope.row)">{{"Edit~编辑" | lang}}</button><button type="button" class="task-action task-action--danger" :disabled="selectedDelete.busy" :title="LANG('Double click to delete this task~双击删除此任务')" @dblclick="deleteTask(scope.$index,scope.row)">{{"Delete (double click)~删除（双击）" | lang}}</button></div></template></el-table-column>
+                <template slot="empty"><div class="empty-state"><strong>{{(search ? "No matching tasks~没有匹配的任务" : "No tasks yet~暂无任务") | lang}}</strong><p>{{(search ? "Try a different name, URL or task ID.~请尝试其它名称、网址或任务 ID。" : "Create a task in design mode to start collecting data.~在设计模式中新建任务，开始采集数据。") | lang}}</p><button v-if="!search && type==3" type="button" class="primary-action" @click="newTask">{{"New Task~新建任务" | lang}}</button></div></template>
+            </el-table>
+        </section>
+        <nav v-if="type != 3" class="resource-links" :aria-label="LANG('Help and resources~帮助与资源')"><a href="https://github.com/NaiboWang/EasySpider/wiki" target="_blank" rel="noopener noreferrer">{{"Documentation~使用文档" | lang}}</a><a href="https://github.com/NaiboWang/EasySpider/issues?q=is%3Aissue" target="_blank" rel="noopener noreferrer">{{"Questions and feedback~问题反馈" | lang}}</a><a href="https://github.com/NaiboWang/EasySpider/issues/22" target="_blank" rel="noopener noreferrer">{{"Scheduled tasks guide~定时任务教程" | lang}}</a></nav>
+    </section>
+</main>
+<el-dialog custom-class="task-selection-dialog" :title="LANG('Delete selected tasks~删除所选任务')" :visible.sync="selectedDelete.open" :close-on-click-modal="false" :close-on-press-escape="!selectedDelete.busy" :show-close="!selectedDelete.busy" :before-close="closeSelectedDelete" @opened="focusDeleteConfirmation" @closed="restoreSelectionFocus">
+    <section v-if="!selectedDelete.finished" class="selected-delete-preview" :aria-label="LANG('Tasks to delete~待删除任务')">
+        <h3>{{"Tasks to delete~待删除任务" | lang}} <span class="count">{{selectedDelete.targets.length}}</span></h3>
+        <ul class="selected-delete-task-list"><li v-for="task in selectedDelete.targets" :key="task.id"><span class="task-id">#{{task.id}}</span><span>{{task.name}}</span></li></ul>
+        <p v-if="!selectedDelete.busy" class="selected-delete-warning">{{"Only the tasks listed above will be removed. Check the IDs and names before confirming.~仅删除以上所选任务，请核对编号与名称后再确认。" | lang}}</p>
+    </section>
+    <p v-if="selectedDelete.busy" class="selected-delete-feedback" role="status">{{"Deleting~正在删除" | lang}} {{selectedDelete.completed}} / {{selectedDelete.targets.length}}… <span v-if="selectedDelete.stopRequested">{{"Stopping after the current request.~当前请求结束后停止。" | lang}}</span></p>
+    <section v-if="selectedDelete.finished" class="selected-delete-result" aria-live="polite">
+        <h3>{{"Deletion result~删除结果" | lang}}</h3>
+        <p>{{"Deleted~已删除" | lang}} {{selectedDelete.successCount}} {{"tasks; failed requests~个任务；请求失败" | lang}} {{selectedDelete.failures.length}} {{"tasks.~个。" | lang}}</p>
+        <ul v-if="selectedDelete.failures.length" class="selected-delete-task-list"><li v-for="task in selectedDelete.failures" :key="task.id"><span class="task-id">#{{task.id}}</span><span>{{task.name}}</span></li></ul>
+        <p v-if="selectedDelete.failures.length" class="selected-delete-error">{{"Check whether these tasks still exist and EasySpider is running, then retry. Successful deletions will not be sent again.~请核对任务是否仍存在、服务是否运行，再重试；不会重复提交已成功的编号。" | lang}}</p>
+        <template v-if="selectedDelete.unprocessed.length"><h3>{{"Not processed~尚未处理" | lang}} <span class="count">{{selectedDelete.unprocessed.length}}</span></h3><ul class="selected-delete-task-list"><li v-for="task in selectedDelete.unprocessed" :key="task.id"><span class="task-id">#{{task.id}}</span><span>{{task.name}}</span></li></ul></template>
+        <p v-if="selectedDelete.refreshFailed" class="selected-delete-error">{{"The list could not be refreshed. Close this dialog and refresh the page to check the latest tasks.~任务列表刷新失败，关闭此窗口后请刷新页面核对最新任务。" | lang}}</p>
+    </section>
+    <div slot="footer" class="selected-delete-dialog-actions">
+        <button id="selected-delete-cancel" type="button" class="secondary-action" :disabled="selectedDelete.busy && selectedDelete.stopRequested" @click="selectedDelete.busy ? selectedDelete.stopRequested=true : selectedDelete.open=false">{{(selectedDelete.busy ? 'Stop remaining deletions~停止后续删除' : selectedDelete.finished ? 'Done~完成' : 'Cancel~取消') | lang}}</button>
+        <button v-if="!selectedDelete.finished" id="selected-delete-confirm" type="button" class="primary-action selected-delete-confirm" :disabled="selectedDelete.busy || !selectedDelete.targets.length" @click="deleteSelectedTasks(false)">{{"Confirm deletion~确认删除" | lang}} {{selectedDelete.targets.length}} {{"tasks~个任务" | lang}}</button>
+        <button v-else-if="selectedDelete.failures.length || selectedDelete.unprocessed.length" id="selected-delete-retry" type="button" class="primary-action selected-delete-confirm" @click="deleteSelectedTasks(true)">{{"Retry unfinished tasks~重试未完成任务" | lang}} ({{selectedDelete.failures.length + selectedDelete.unprocessed.length}})</button>
     </div>
-</div>
-</body>
-
-</html>
+</el-dialog>
+</div></body></html>
 <script src="global.js"></script>
 <script>
     let app = new Vue({
@@ -140,8 +52,109 @@
             type: 3, //记录服务行为
             mobile: getUrlParam("mobile"),
             backEndAddressServiceWrapper: getUrlParam("backEndAddressServiceWrapper"),
+            selectedTaskIds: [],
+            selectedDelete: {open: false, busy: false, finished: false, targets: [], completed: 0, successCount: 0, failures: [], unprocessed: [], stopRequested: false, refreshFailed: false},
+        },
+        computed: {
+            visibleTasks: function () {
+                const query = this.search.toLowerCase();
+                return this.list.filter(task => !query || ['name', 'url', 'links', 'desc', 'id'].some(key => String(task[key] == null ? '' : task[key]).toLowerCase().includes(query)));
+            },
+            selectedTasks: function () {
+                const selected = new Set(this.selectedTaskIds);
+                const seen = new Set();
+                return this.list.filter(task => {
+                    const id = Number(task.id);
+                    if (!Number.isSafeInteger(id) || id < 0 || !selected.has(id) || seen.has(id)) return false;
+                    seen.add(id);return true;
+                }).slice().sort((a, b) => Number(a.id) - Number(b.id));
+            },
+            allVisibleSelected: function () {
+                return this.visibleTasks.length > 0 && this.visibleTasks.every(task => this.selectedTaskIds.includes(Number(task.id)));
+            },
+            someVisibleSelected: function () {
+                return this.visibleTasks.some(task => this.selectedTaskIds.includes(Number(task.id)));
+            },
+            hiddenSelectedCount: function () {
+                const visible = new Set(this.visibleTasks.map(task => Number(task.id)));
+                return this.selectedTasks.filter(task => !visible.has(Number(task.id))).length;
+            },
+        },
+        watch: {
+            list: function (tasks) {
+                const existing = new Set(tasks.map(task => Number(task.id)));
+                this.selectedTaskIds = this.selectedTaskIds.filter(id => existing.has(id));
+            },
         },
         methods: {
+            selectVisibleTasks: function (checked) {
+                if (this.selectedDelete.busy) return;
+                const visible = new Set(this.visibleTasks.map(task => Number(task.id)));
+                this.selectedTaskIds = checked ? [...new Set(this.selectedTaskIds.concat([...visible]))] : this.selectedTaskIds.filter(id => !visible.has(id));
+            },
+            taskRowClass: function ({row}) {
+                return this.selectedTaskIds.includes(Number(row.id)) ? 'is-task-selected' : '';
+            },
+            openSelectedDelete: function () {
+                if (this.selectedDelete.busy || !this.selectedTasks.length) return;
+                this.selectedDelete = {open: true, busy: false, finished: false, targets: this.selectedTasks.map(task => ({id: Number(task.id), name: task.name})), completed: 0, successCount: 0, failures: [], unprocessed: [], stopRequested: false, refreshFailed: false};
+            },
+            focusDeleteConfirmation: function () {
+                document.getElementById('selected-delete-cancel').focus();
+            },
+            restoreSelectionFocus: function () {
+                const button = document.getElementById('task-delete-selected');
+                const target = !button.disabled ? button : this.visibleTasks.length ? document.getElementById('task-select-all') : document.querySelector('.task-search input');
+                target.focus();
+            },
+            closeSelectedDelete: function (done) {
+                if (!this.selectedDelete.busy) done();
+            },
+            selectionRequest: function (route, data) {
+                return new Promise((resolve, reject) => {
+                    $.ajax({url: this.backEndAddressServiceWrapper + route, data: data, dataType: 'json', timeout: 15000})
+                        .done(response => response && response.status === false ? reject(new Error('Request failed')) : resolve(response))
+                        .fail(() => reject(new Error('Request failed')));
+                });
+            },
+            deleteSelectedTasks: async function (retry) {
+                const state = this.selectedDelete;
+                if (!state.open || state.busy || (!retry && state.finished)) return;
+                // Only delete the selection reviewed when this dialog was opened.
+                const targets = (retry ? state.failures.concat(state.unprocessed) : state.targets).map(task => ({id: Number(task.id), name: task.name}));
+                if (!targets.length) return;
+                state.busy = true;state.finished = false;state.targets = targets;
+                state.completed = 0;state.successCount = 0;state.failures = [];state.unprocessed = [];state.stopRequested = false;state.refreshFailed = false;
+                const succeeded = new Set();
+                try {
+                    for (const task of targets) {
+                        if (state.stopRequested) {state.unprocessed = targets.slice(state.completed);break;}
+                        try {
+                            const response = await this.selectionRequest('/deleteTask', {id: task.id});
+                            if (!response || response.status !== true) throw new Error('Deletion not acknowledged');
+                            succeeded.add(task.id);state.successCount++;
+                            this.list = this.list.filter(row => Number(row.id) !== task.id);
+                        } catch (error) {
+                            state.failures.push(task);
+                        }
+                        state.completed++;
+                    }
+                    try {
+                        const tasks = await this.selectionRequest('/queryTasks');
+                        if (!Array.isArray(tasks)) throw new Error('Invalid task list');
+                        // The existing endpoint acknowledges before its asynchronous file write.
+                        this.list = tasks.filter(task => !succeeded.has(Number(task.id)));
+                    } catch (error) {
+                        state.refreshFailed = true;
+                    }
+                } finally {
+                    state.busy = false;state.finished = true;
+                    this.$nextTick(() => {
+                        const button = document.querySelector('.selected-delete-dialog-actions button');
+                        if (button) button.focus();
+                    });
+                }
+            },
             formatDate: function (row, column) {
                 //2023-01-01 00:00:00
                 let date = row[column.property];
