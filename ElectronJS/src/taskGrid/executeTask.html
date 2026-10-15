@@ -1,19 +1,79 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><script src="jquery-3.4.1.min.js"></script><script src="vue.js"></script><script src="bootstrap/js/bootstrap.js"></script><link rel="stylesheet" href="bootstrap/css/bootstrap.css"><title>Execute Task | EasySpider</title><link rel="stylesheet" href="workspace-ui.css"></head><body>
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><script src="jquery-3.4.1.min.js"></script><script src="vue.js"></script><script src="bootstrap/js/bootstrap.js"></script><link rel="stylesheet" href="bootstrap/css/bootstrap.css"><title>Execute Task | EasySpider</title><link rel="stylesheet" href="workspace-ui.css"></head><body class="execution-page">
 <div id="tip" class="alert alert-danger tip" role="alert">提示：请先获得任务执行 ID。</div><div id="tipEN" class="alert alert-danger tip" role="alert">Please get an execution ID first.</div><div id="tipID" class="alert alert-info tip" role="status">任务执行配置已更新，执行 ID：<span id="newID_ZH"></span></div><div id="tipID_EN" class="alert alert-info tip" role="status">Execution configuration updated. Execution ID: <span id="newID_EN"></span></div>
 <div id="taskInfo" class="workspace-shell"><aside class="side-rail"><div class="brand"><img class="brand-logo" src="favicon.ico" width="34" height="34" alt="" aria-hidden="true"><div><p class="brand-name">EasySpider</p><p class="brand-caption">{{"Automation workspace~自动化工作台" | lang}}</p></div></div><nav class="rail-nav" :aria-label="'Workspace navigation~工作区导航' | lang"><button type="button" class="rail-item" @click="gotoHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M3 6h1M3 12h1M3 18h1"/></svg><span>{{"Task List~任务列表" | lang}}</span></button><div class="rail-item is-active" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg><span>{{"Execute Task~执行任务" | lang}}</span></div></nav><div class="rail-support"><a href="https://github.com/NaiboWang/EasySpider/wiki" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h7a3 3 0 0 1 3 3v14a3 3 0 0 0-3-3H4zM14 7a3 3 0 0 1 3-3h3v14h-3a3 3 0 0 0-3 3"/></svg>{{"Documentation~使用文档" | lang}}</a><a href="https://github.com/NaiboWang/EasySpider/issues?q=is%3Aissue" target="_blank" rel="noopener noreferrer">{{"Questions and feedback~问题反馈" | lang}}</a></div></aside><main class="workspace-main">
-    <header class="topbar"><div class="page-path"><button type="button" class="back-link" @click="gotoHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg>{{"Task List~任务列表" | lang}}</button><span aria-hidden="true">/</span><button type="button" class="back-link" @click="gotoInfo">{{"Task Details~任务详情" | lang}}</button><span aria-hidden="true">/</span><span>{{"Execute~执行" | lang}}</span></div><span class="mode-label">{{(type == 1 ? "Execution mode~执行模式" : "Design mode~设计模式") | lang}}</span></header>
-    <template v-if="show"><header class="page-heading"><div><h1>{{"Execute Task~执行任务" | lang}}</h1><p>{{"Review parameters before starting a local execution.~确认参数后，在本地启动任务。" | lang}}</p></div></header><section class="content">
-        <div id="tipCustom" class="alert alert-success" role="status" style="display:none">{{tip | lang}}</div>
-        <section class="sheet execution-summary"><div class="sheet-body"><h2>{{task.name}}</h2><p v-if="task.desc" class="task-description">{{task.desc}}</p><p v-else class="task-description">{{"No description~暂无描述" | lang}}</p></div></section>
-        <form id="form"><section class="sheet"><header class="sheet-heading"><h2>{{"Input Parameters~输入参数" | lang}}<span class="count">{{(task.inputParameters || []).length}}</span></h2><button type="button" class="secondary-action" @click="readFromExcel">{{"Import from Excel~从 Excel 导入" | lang}}</button></header><div class="table-scroll"><table class="parameter-table editable-parameters"><thead><tr><th class="id-cell" scope="col">ID</th><th scope="col">{{"Parameter Name~参数名称" | lang}}</th><th scope="col">{{"Invoke Name~调用名称" | lang}}</th><th scope="col">{{"Type~类型" | lang}}</th><th scope="col">{{"Parameter Value~参数值" | lang}}</th></tr></thead><tbody><tr v-for="(parameter,index) in (task.inputParameters || [])" :key="index"><td class="id-cell" data-label="ID">{{index+1}}</td><td :data-label="'Parameter Name~参数名称' | lang">{{parameter.nodeName}}</td><td :data-label="'Invoke Name~调用名称' | lang">{{parameter.name}}</td><td :data-label="'Type~类型' | lang">{{parameter.type}}</td><td class="value-cell" :data-label="'Parameter Value~参数值' | lang"><textarea class="form-control" :name="parameter.name" :aria-label="parameter.nodeName + ' (' + parameter.name + ')'" v-model="parameter.value" rows="3"></textarea></td></tr><tr v-if="!(task.inputParameters || []).length"><td colspan="5" class="empty-cell">{{"No input parameters are required for this task.~此任务无需填写输入参数。" | lang}}</td></tr></tbody></table></div><div class="sheet-body"><p class="field-help">{{"To run this task for multiple pages, enter one URL per line in the Open Page parameter.~如需对多个网页执行任务，可在“打开网页”参数中每行填写一个网址。" | lang}}</p>
-            <details class="disclosure"><summary>{{"Browser data and output settings~浏览器数据与输出设置" | lang}}</summary><div class="settings-grid"><div class="form-group"><label class="field-label" for="user-data-folder">{{"User Data Folder~用户信息目录" | lang}}</label><input id="user-data-folder" type="text" class="form-control" v-model="user_data_folder" aria-describedby="user-data-help"><p id="user-data-help" class="help">{{"To load saved login information, cookies or extensions, set the folder path and use the Data Mode execution button.~如需加载保存的登录信息、Cookie 或插件，请填写目录，并选择“带用户信息模式”执行。" | lang}}</p><p v-if="type!=1" class="help">{{"Data Mode is not supported in the design stage. Close the design browser and enter Execute Task from the startup screen.~设计阶段不支持带用户信息模式，请退出设计浏览器，从启动首页进入执行任务。" | lang}}</p></div><div v-if="task.outputFormat=='mysql'" class="form-group"><label class="field-label" for="mysql-path">{{"MySQL configuration path~MySQL 配置文件路径" | lang}}</label><input id="mysql-path" type="text" class="form-control" v-model="mysql_config_path"><p class="help">{{"Relative to~路径相对于" | lang}} {{config_folder}}</p></div></div></details>
-            <p v-if="task['cloudflare']==1">{{`要想过Cloudflare验证，需要以下目录存在115版本的Chrome Beta版浏览器，注意是Beta版不是正式版：C:\\Program Files\\Google\\Chrome Beta。如果Beta版本不是115，请在软件下载目录中找到Chrome_Beta_115_win64.7z压缩包，然后解压并复制（覆盖）为C:\\Program Files\\Google\\Chrome Beta目录即可。~To pass the Cloudflare verification, you need the following directory to exist in the 115 version of Chrome Beta, note that it is the Beta version not the official version: C:\\Program Files\\Google\\Chrome Beta,
+    <header class="topbar"><div class="page-path"><button type="button" class="back-link" @click="gotoHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5m7-7-7 7 7 7"/></svg>{{"Task List~任务列表" | lang}}</button><span aria-hidden="true">/</span><button type="button" class="back-link" @click="gotoInfo">{{"Task Details~任务详情" | lang}}</button><span aria-hidden="true">/</span><span>{{"Execute~执行" | lang}}</span></div><span class="mode-label">{{(type == 1 ? "Execution mode entry~执行模式入口" : type == 3 ? "Design mode entry~设计模式入口" : "Entry mode unknown~入口模式未识别") | lang}}</span></header>
+    <template v-if="show">
+        <header class="page-heading execution-heading"><div class="execution-title"><h1>{{"Task Execution~任务执行" | lang}}</h1><span v-if="task.id != null" class="execution-task-id">{{"Task ID~任务 ID" | lang}} {{task.id}}</span></div><nav class="execution-jump-links" :aria-label="'Execution sections~执行页分区' | lang"><a href="#execution-inputs">{{"Input parameters~输入参数" | lang}}</a><a href="#execution-local">{{"Run locally~本地直接执行" | lang}}</a><a href="#execution-command">{{"Command line execution~命令行执行" | lang}}</a></nav></header>
+        <section class="content execution-content">
+            <div id="tipCustom" class="alert alert-success" role="status" style="display:none">{{tip | lang}}</div>
+
+            <section class="sheet execution-summary" aria-labelledby="execution-task-name-label">
+                <div class="sheet-body">
+                    <dl class="execution-task-details">
+                        <div><dt id="execution-task-name-label">{{"Task Name~任务名称" | lang}}</dt><dd class="execution-task-name">{{task.name}}</dd></div>
+                        <div><dt>{{"Task Description~任务描述" | lang}}</dt><dd class="execution-task-description">{{task.desc || LANG('暂无描述', 'No description provided')}}</dd></div>
+                    </dl>
+                    <div class="execution-api">
+                        <p><span class="execution-api-label">{{"API URL (POST)~API 调用网址（POST）" | lang}}</span><span class="execution-api-url">{{backEndAddressServiceWrapper}}/invokeTask?id={{task.id}}</span></p>
+                        <p class="help">{{"Example tutorial for invoking a task with a POST request (Postman or JavaScript):~通过 POST 方式进行 API 调用的示例教程（Postman 或 JS 代码）：" | lang}}<a href="https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example" target="_blank" rel="noopener noreferrer">{{"View the API invocation tutorial~查看 API 调用示例教程" | lang}}</a></p>
+                    </div>
+                </div>
+            </section>
+
+            <form id="form" @submit.prevent>
+                <section class="sheet execution-inputs" id="execution-inputs" tabindex="-1" aria-labelledby="execution-inputs-title">
+                    <header class="sheet-heading"><div><h2 id="execution-inputs-title">{{"Input Parameters~输入参数" | lang}}<span class="count">{{(task.inputParameters || []).length}}</span></h2><p class="help">{{"Please enter the parameter values to use for this execution.~请填写本次执行需要使用的参数值。" | lang}}</p></div><button type="button" class="secondary-action" @click="readFromExcel">{{"Read parameters from Excel file~从 Excel 文件读取输入参数" | lang}}</button></header>
+                    <p class="execution-value-help-mobile">{{"To run this task for multiple web pages, enter one URL per line in the Open Page parameter.~如想对多个网页执行此任务，可在“打开网页”操作的参数值中每行填写一个网址。" | lang}}</p>
+                    <div class="table-scroll"><table class="parameter-table editable-parameters">
+                        <thead><tr><th class="id-cell" scope="col">ID</th><th scope="col">{{"Parameter Name~参数名称" | lang}}</th><th scope="col">{{"Invoke Name~调用名称" | lang}}</th><th scope="col">{{"Parameter Type~参数类型" | lang}}</th><th class="value-cell" scope="col">{{"Parameter Value~参数值" | lang}}<span class="execution-value-help">{{"To run this task for multiple web pages, enter one URL per line in the Open Page parameter.~如想对多个网页执行此任务，可在“打开网页”操作的参数值中每行填写一个网址。" | lang}}</span></th></tr></thead>
+                        <tbody><tr v-for="(parameter,index) in (task.inputParameters || [])" :key="index"><td class="id-cell" data-label="ID">{{index+1}}</td><td :data-label="'Parameter Name~参数名称' | lang">{{parameter.nodeName}}</td><td :data-label="'Invoke Name~调用名称' | lang">{{parameter.name}}</td><td :data-label="'Parameter Type~参数类型' | lang">{{parameter.type}}</td><td class="value-cell" :data-label="'Parameter Value~参数值' | lang"><textarea class="form-control" :name="parameter.name" :aria-label="parameter.nodeName + ' (' + parameter.name + ')'" v-model="parameter.value" rows="3"></textarea></td></tr><tr v-if="!(task.inputParameters || []).length"><td colspan="5" class="empty-cell">{{"No input parameters are required for this task.~此任务无需填写输入参数。" | lang}}</td></tr></tbody>
+                    </table></div>
+                </section>
+
+                <section class="sheet execution-local" id="execution-local" tabindex="-1" aria-labelledby="execution-local-title">
+                    <header class="sheet-heading"><h2 id="execution-local-title">{{"Run locally~本地直接执行" | lang}}</h2></header>
+                    <div class="sheet-body">
+                        <div class="form-group">
+                            <label class="field-label" for="user-data-folder">{{"Local browser user data folder~用户本地浏览器数据目录" | lang}}</label>
+                            <p id="user-data-help" class="help">{{"If you want to use login information, extensions and cookies from your local browser, set this folder path, then click the “Directly Run Locally (Data Mode)” button below to start the task.~如果需要使用本地浏览器的登录信息、插件和 Cookie，请设置此目录，并点击下方“本地直接执行（带用户信息模式）”按钮开始执行任务。" | lang}}</p>
+                            <input id="user-data-folder" type="text" class="form-control" v-model="user_data_folder" aria-describedby="user-data-help">
+                            <p v-if="type==3" class="execution-stage-note" role="note">{{"This execution page was opened from the design mode entry. To use Data Mode, close the design browser, then choose Execute Task on the startup screen and open the same task.~当前执行页从设计模式入口打开。使用带用户信息模式时，请先关闭设计浏览器，再从软件首页“执行任务”入口打开同一任务。" | lang}}</p>
+                            <p v-else-if="type!=1" class="execution-stage-note execution-mode-unknown" role="note">{{"The entry mode was not identified, so this page cannot determine whether you came from design mode. Before using Data Mode, make sure the design browser is closed.~当前页面未识别到入口模式，无法判断是否从设计模式进入。使用带用户信息模式前，请确认设计浏览器已经关闭。" | lang}}</p>
+                        </div>
+                        <div v-if="task.outputFormat=='mysql'" class="form-group execution-mysql">
+                            <label class="field-label" for="mysql-path">{{"MySQL configuration file path~MySQL 配置文件路径" | lang}}</label>
+                            <p id="mysql-path-help" class="help">{{"The path is relative to this folder:~路径相对于此文件夹：" | lang}}<span class="execution-path">{{config_folder}}</span></p>
+                            <input id="mysql-path" type="text" class="form-control" v-model="mysql_config_path" aria-describedby="mysql-path-help">
+                        </div>
+                        <p class="execution-cloudflare" v-if="task['cloudflare']==1">{{`要想过Cloudflare验证，需要以下目录存在115版本的Chrome Beta版浏览器，注意是Beta版不是正式版：C:\\Program Files\\Google\\Chrome Beta。如果Beta版本不是115，请在软件下载目录中找到Chrome_Beta_115_win64.7z压缩包，然后解压并复制（覆盖）为C:\\Program Files\\Google\\Chrome Beta目录即可。~To pass the Cloudflare verification, you need the following directory to exist in the 115 version of Chrome Beta, note that it is the Beta version not the official version: C:\\Program Files\\Google\\Chrome Beta,
                 If the Beta version is not 115, please find the Chrome_Beta_115_win64.7z compressed package in the software download directory, then unzip and copy (overwrite) to the C:\\Program Files\\Google\\Chrome Beta directory.` | lang }}</p>
-        </div></section></form>
-        <section class="sheet run-section"><div class="sheet-body"><div><h2>{{"Start a local execution~启动本地执行" | lang}}</h2><p class="help">{{"Hold the pause key (default: p) during execution to pause and enter passwords or captchas manually.~执行过程中长按暂停键（默认 p），即可暂停任务，手动输入密码或验证码。" | lang}}</p></div><div class="inline-actions"><button type="button" class="primary-action" @click="localExecuteInstant(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>{{"Run (Clean Mode)~执行（纯净模式）" | lang}}</button><button type="button" class="secondary-action" @click="localExecuteInstant(true)">{{"Run (Data Mode)~执行（带用户信息模式）" | lang}}</button></div></div></section>
-        <details class="command-section"><summary>{{"Command line execution and execution ID~命令行执行与执行 ID" | lang}}</summary><p class="help">{{"Use command line execution for headless mode, scheduling or other advanced settings.~无头模式、定时执行等高级操作，可使用命令行执行并配置参数。" | lang}}</p><label class="field-label" for="execution-id">{{"Execution ID (EID)~执行 ID（EID）" | lang}}</label><input id="execution-id" class="form-control" v-model="ID" :placeholder="LANG('可留空生成新的执行 ID','Leave blank to generate a new execution ID')" aria-describedby="eid-help"><p class="help" id="eid-help">{{"Execution files are stored in execution_instances. Reusing an ID overwrites its configuration; use a filename other than current_time to append data for incremental collection.~执行文件保存在 execution_instances。复用执行 ID 会覆盖对应配置；文件名不为 current_time 时，可追加文件内容以实现增量采集。" | lang}}</p><div class="inline-actions"><button type="button" class="secondary-action" @click="invokeTask">{{"Get Execution ID~获得任务执行 ID" | lang}}</button><button type="button" class="secondary-action" @click="localExecute(false)">{{"Command line (Clean Mode)~命令行（纯净模式）" | lang}}</button><button type="button" class="secondary-action" @click="localExecute(true)">{{"Command line (Data Mode)~命令行（带用户信息模式）" | lang}}</button></div><p class="help">{{"Get an execution ID first, then open a command line option to view the generated command.~请先获得执行 ID，再点击命令行选项查看生成的命令。" | lang}}</p><p class="help">{{"XPath Helper can be used to test XPath expressions during execution.~执行过程中可使用 XPath Helper 扩展调试 XPath。" | lang}}</p></details>
-        <details class="command-section"><summary>{{"API invocation~API 调用" | lang}}</summary><p class="field-label">{{"API URL (POST)~API 地址（POST）" | lang}}</p><span class="api-address">{{backEndAddressServiceWrapper}}/invokeTask?id={{task.id}}</span><p class="api-docs"><a href="https://github.com/NaiboWang/EasySpider/wiki/API-Invoke-Example" target="_blank" rel="noopener noreferrer">{{"View the POST invocation tutorial~查看 POST 调用示例教程" | lang}}</a></p></details>
-    </section>        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                        <div class="execution-run-actions">
+                            <p class="help">{{"Click a button below to execute the task. During execution, long press the pause key (default: p) to pause for manual intervention, such as entering a password or captcha.~点击下方按钮执行任务。执行过程中可以长按暂停键（默认：p 键）暂停任务，以便人工干预，例如手动输入密码或验证码。" | lang}}</p>
+                            <div class="inline-actions"><button type="button" class="primary-action" @click="localExecuteInstant(false)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg>{{"Directly Run Locally (Clean Mode)~本地直接执行（纯净模式）" | lang}}</button><button type="button" class="secondary-action" @click="localExecuteInstant(true)">{{"Directly Run Locally (Data Mode)~本地直接执行（带用户信息模式）" | lang}}</button></div>
+                            <p class="help execution-xpath-help">{{"You can also use the XPath Helper extension to test XPath expressions at any time during task execution.~执行任务的过程中，也可以随时使用 XPath Helper 扩展来调试 XPath。" | lang}}</p>
+                        </div>
+                    </div>
+                </section>
+            </form>
+
+            <section class="sheet execution-command" id="execution-command" tabindex="-1" aria-labelledby="execution-command-title">
+                <header class="sheet-heading"><h2 id="execution-command-title">{{"Command line execution and execution ID~命令行执行与执行 ID" | lang}}</h2></header>
+                <div class="sheet-body">
+                    <p class="help">{{"For more complex operations, such as headless mode or scheduled execution, use the command line options below and configure the command line arguments.~如果想进行更复杂的操作，如设置无头模式、定时执行等，请使用下方的命令行执行选项，并配置好命令行参数。" | lang}}</p>
+                    <div class="execution-eid-field">
+                        <label class="field-label" for="execution-id">{{"Execution ID (EID)~执行 ID（EID）" | lang}}</label>
+                        <div class="execution-eid-actions"><input id="execution-id" class="form-control" v-model="ID" :placeholder="LANG('留空生成新的执行 ID，或填写已有执行 ID', 'Leave blank for a new execution ID, or enter an existing ID')" aria-describedby="eid-help eid-reuse-help"><button type="button" class="secondary-action" @click="invokeTask">{{"Get Execution ID~获得任务执行 ID" | lang}}</button></div>
+                        <p class="help" id="eid-help">{{"Execution files are stored in the execution_instances folder. To append content to an existing data file for incremental collection, enter the execution ID in advance and use a saved file name other than current_time.~执行文件保存在 execution_instances 文件夹内。提前填写执行 ID，且保存文件名不为 current_time 时，可以追加已有数据文件的内容，实现增量采集。" | lang}}</p>
+                        <p class="help" id="eid-reuse-help">{{"If an execution ID has already been entered or generated here, clicking an execution button or Get Execution ID keeps that ID and overwrites its original execution configuration with the new settings.~如果已在此处填写或生成执行 ID，再点击执行或“获得任务执行 ID”按钮时，执行 ID 将保持不变，对应的原执行配置文件会被新配置覆盖。" | lang}}</p>
+                    </div>
+                    <div class="execution-command-actions">
+                        <p class="help">{{"First click Get Execution ID to obtain the execution ID, then click an Execute task by command line button below to view the command and instructions for running the task.~请先点击“获得任务执行 ID”按钮生成执行 ID，再点击下方“使用命令行执行任务”按钮，查看运行任务所需的命令和说明。" | lang}}</p>
+                        <div class="inline-actions"><button type="button" class="secondary-action" @click="localExecute(false)">{{"Execute task by command line (Clean Mode)~使用命令行执行任务（纯净模式）" | lang}}</button><button type="button" class="secondary-action" @click="localExecute(true)">{{"Execute task by command line (Data Mode)~使用命令行执行任务（带用户信息模式）" | lang}}</button></div>
+                    </div>
+                </div>
+            </section>
+        </section>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
              aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -108,31 +168,31 @@
                         <div class="table-scroll"><table class="table table-bordered excel">
                             <thead>
                             <tr>
-                                <th v-for="i in Math.min(3, task.inputParameters.length)"
-                                    v-if="task.inputParameters.length>0">
+                                <th v-for="i in Math.min(3, (task.inputParameters || []).length)"
+                                    v-if="(task.inputParameters || []).length>0">
                                     {{task.inputParameters[i-1]["name"]}}
                                 </th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
-                                <td v-for="i in Math.min(3, task.inputParameters.length)"
-                                    v-if="task.inputParameters.length>0">
-                                    {{getLine(i,0)}}
+                                <td v-for="i in Math.min(3, (task.inputParameters || []).length)"
+                                    v-if="(task.inputParameters || []).length>0">
+                                    {{task.inputParameters[i-1].value == null ? '' : getLine(i,0)}}
                                 </td>
+                            </tr>
                             <tr>
-                            <tr>
-                                <td v-for="i in Math.min(3, task.inputParameters.length)">
-                                    {{getLine(i,1)}}
+                                <td v-for="i in Math.min(3, (task.inputParameters || []).length)">
+                                    {{task.inputParameters[i-1].value == null ? '' : getLine(i,1)}}
                                 </td>
+                            </tr>
                             <tr>
-                            <tr>
-                                <td v-for="i in Math.min(3, task.inputParameters.length)">
-                                    <div v-if="task.inputParameters[i-1]['value'].toString().split('\n').length >=2 || task.inputParameters[i-1]['name'].indexOf('url') >=0">
+                                <td v-for="i in Math.min(3, (task.inputParameters || []).length)">
+                                    <div v-if="task.inputParameters[i-1].value != null && (task.inputParameters[i-1].value.toString().split('\n').length >=2 || task.inputParameters[i-1].name.indexOf('url') >=0)">
                                         ...
                                     </div>
                                 </td>
-                            <tr>
+                            </tr>
                             </tbody>
                         </table></div>
                         <label v-if='lang == "zh"'
