@@ -15,7 +15,7 @@ button:disabled { cursor: default; opacity: .5; }
 ::-webkit-scrollbar-track { background: transparent; }
 .editor-header { display: flex; align-items: center; gap: 24px; min-height: 64px; padding: 10px 22px; background: var(--surface); border-bottom: 1px solid var(--line); }
 .editor-brand { display: flex; align-items: center; gap: 10px; padding-right: 24px; border-right: 1px solid var(--line); font-size: 19px; font-weight: 650; white-space: nowrap; }
-.editor-brand svg { width: 26px; height: 26px; color: var(--accent); }
+.editor-brand img { flex-shrink: 0; width: 26px; height: 26px; object-fit: contain; }
 .editor-back { display: inline-flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--ink); border: 0; background: transparent; white-space: nowrap; }
 .editor-back svg { width: 16px; height: 16px; }
 .editor-back:hover { color: var(--accent); }
@@ -191,7 +191,7 @@ body.is-resizing-panels, body.is-resizing-panels * { cursor: col-resize !importa
 @media (max-width: 600px) {
     .editor-header { padding: 10px 12px; }
     .editor-brand { padding-right: 12px; }
-    .editor-brand svg { width: 21px; height: 21px; }
+    .editor-brand img { width: 21px; height: 21px; }
     .editor-back { font-size: 12px; }
     .editor-task { order: 3; width: 100%; margin-left: 0; }
     .editor-task h1 { max-width: 100%; font-size: 14px; }

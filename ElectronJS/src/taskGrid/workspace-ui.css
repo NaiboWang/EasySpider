@@ -13,7 +13,7 @@ button:disabled { opacity: .55; cursor: default; }
 .workspace-shell { display: grid; grid-template-columns: 220px minmax(0,1fr); align-items: start; min-height: 100vh; }
 .side-rail { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 26px 22px; background: var(--rail); border-right: 1px solid var(--line); }
 .brand { display: flex; align-items: flex-start; gap: 11px; }
-.brand-wave { flex: 0 0 34px; width: 34px; height: 26px; color: var(--accent); }
+.brand-logo { flex: 0 0 34px; width: 34px; height: 34px; object-fit: contain; }
 .brand-name { margin: 0; font-size: 21px; font-weight: 600; line-height: 1.25; letter-spacing: -.02em; }
 .brand-caption { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .rail-nav { display: grid; gap: 4px; margin-top: 42px; }

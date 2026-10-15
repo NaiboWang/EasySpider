@@ -3,6 +3,9 @@
 (() => {
     const zh = location.pathname.includes('_CN');
     const words = (cn, en) => zh ? cn : en;
+    // Container queries on the inspector trap fixed modals below Bootstrap's backdrop
+    // in Electron 27. Move the mounted element so its Vue bindings stay intact.
+    document.body.appendChild(document.getElementById('myModal_XPath'));
     // Selection belongs to the interface and is never added to task fields.
     const fieldKeys = new WeakMap();
     let fieldKeyCounter = 0;
