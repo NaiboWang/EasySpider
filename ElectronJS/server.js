@@ -51,6 +51,21 @@ function getEasySpiderLocation() {
   }
   return __dirname;
 }
+
+// Reserve IDs until asynchronous writes complete, including across editor windows.
+const pendingTaskIds = new Set();
+function allocateTaskId(taskDirectory) {
+  const occupied = new Set(pendingTaskIds);
+  for (const file of fs.readdirSync(taskDirectory)) {
+    if (!/^\d+\.json$/.test(file)) continue;
+    const id = Number(file.slice(0, -5));
+    if (!Number.isSafeInteger(id)) continue;
+    occupied.add(id);
+  }
+  let maximum = -1;
+  for (const id of occupied) maximum = Math.max(maximum, id);
+  return maximum + 1;
+}
 if (!fs.existsSync(path.join(getDir(), "tasks"))) {
   fs.mkdirSync(path.join(getDir(), "tasks"));
 }
@@ -441,24 +456,17 @@ exports.start = function (port = 8074) {
         } else if (pathName == "/manageTask") {
           body = querystring.parse(body);
           data = JSON.parse(body.params);
-          let id = data["id"];
-          if (data["id"] == -1) {
-            file_names = [];
-            fs.readdirSync(path.join(getDir(), "tasks")).forEach((file) => {
-              try {
-                if (file.split(".")[1] == "json") {
-                  file_names.push(parseInt(file.split(".")[0]));
-                }
-              } catch (error) {}
-            });
-            if (file_names.length == 0) {
-              id = 0;
-            } else {
-              id = Math.max(...file_names) + 1;
-            }
-            data["id"] = id;
-            // write JSON string to a fil
+          let id = Number(data.id);
+          const isNew = id === -1;
+          if (isNew) id = allocateTaskId(path.join(getDir(), 'tasks'));
+          if (!Number.isSafeInteger(id) || id < 0) {
+            writeError(res, 400, 'Invalid task ID.');return;
           }
+          if (pendingTaskIds.has(id)) {
+            writeError(res, 409, 'Task save already in progress.');return;
+          }
+          data.id = id;
+          const taskFile = path.join(getDir(), `tasks/${id}.json`);
           if (data["outputFormat"] == "mysql") {
             let mysql_config_path = path.join(getDir(), "mysql_config.json");
             // 检测文件是否存在
@@ -487,16 +495,22 @@ exports.start = function (port = 8074) {
             });
           }
           data = JSON.stringify(data);
+          pendingTaskIds.add(id);
           // write JSON string to a file
           fs.writeFile(
-            path.join(getDir(), `tasks/${id}.json`),
+            taskFile,
             data,
-            (err) => {}
+            (err) => {
+              pendingTaskIds.delete(id);
+              if (err) {
+                writeError(res, 500, "Cannot save task.");
+                return;
+              }
+              res.writeHead(200, { "Content-Type": "text/plain" });
+              res.write(id.toString(), "utf8");
+              res.end();
+            }
           );
-          
-          res.writeHead(200, { "Content-Type": "text/plain" });
-          res.write(id.toString(), "utf8");
-          res.end();
         } else if (pathName == "/invokeTask") {
           body = querystring.parse(body);
           let data;

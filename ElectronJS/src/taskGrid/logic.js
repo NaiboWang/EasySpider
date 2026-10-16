@@ -494,12 +494,20 @@ let serviceInfo = {
     "version": "0.6.5"
 };
 
+let taskSavePending = false;
+let taskLoadPending = false;
+function updateTaskSaveButtons() {
+    $('#saveButton, #saveAsButton').prop('disabled', taskSavePending || taskLoadPending);
+    $('#myModal').attr('aria-busy', String(taskSavePending || taskLoadPending));
+}
+
 function saveService(type) {
+    if (taskSavePending || taskLoadPending) return;
     let serviceId = $("#serviceId").val();
+    const createTime = type == 1 || !$("#create_time").val() ? formatDateTime(new Date()) : $("#create_time").val();
     let text = LANG("确认要保存任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task (if you can't use the mouse to click, please press the enter key)?");
     if (type == 1) { //任务另存为
         serviceId = -1;
-        $("#create_time").val(formatDateTime(new Date()));
         text = LANG("确认要另存为任务吗（不能用鼠标点击时，请按键盘回车键）？", "Are you sure to save the task as (if you can't use the mouse to click, please press the enter key)?");
     }
     // if (confirm(text)) {
@@ -623,7 +631,7 @@ function saveService(type) {
         "name": serviceName,
         "url": url,
         "links": links,
-        "create_time": $("#create_time").val(),
+        "create_time": createTime,
         "update_time": formatDateTime(new Date()),
         "version": "0.6.5",
         "saveThreshold": saveThreshold,
@@ -654,24 +662,47 @@ function saveService(type) {
             return;
         }
     }
-    $.post(backEndAddressServiceWrapper + "/manageTask", {params: JSON.stringify(serviceInfo)},
-        function (result) {
-            $("#serviceId").val(parseInt(result))
-            if (type == 1) { //任务另存为
-                let currentUrl = window.location.href;
-                let id = getUrlParam("id");
-                let newUrl = currentUrl.replace("id=" + id, "id=" + result + "&saveAs=1");
-                window.location.href = newUrl;
+    taskSavePending = true;
+    updateTaskSaveButtons();
+    return $.post(backEndAddressServiceWrapper + "/manageTask", {params: JSON.stringify(serviceInfo)})
+        .done(function (result) {
+            const value = String(result).trim();
+            if (!/^\d+$/.test(value) || !Number.isSafeInteger(Number(value))) {
+                showError(LANG('保存失败：服务器未返回有效的任务编号，请重试。', 'Save failed: the server did not return a valid task ID. Please retry.'));
+                return;
             }
+            const savedId = Number(value);
+            $('#serviceId').val(savedId);
+            $('#create_time').val(createTime);
+            sId = String(savedId);
+            const savedUrl = new URL(window.location.href);
+            savedUrl.searchParams.set('id', String(savedId));
+            savedUrl.searchParams.set('lang', getCurrentLanguage());
+            savedUrl.searchParams.delete('saveAs');
+            if (type == 1) {
+                savedUrl.searchParams.set('saveAs', '1');
+                window.location.href = savedUrl.href;
+            } else {
+                // Keep the new task identity across refreshes and return navigation.
+                window.history.replaceState(window.history.state, '', savedUrl.href);
+                $('#myModal').modal('hide');
+                showSuccess(LANG('保存成功！', 'Save successfully!'));
+            }
+        })
+        .fail(function () {
+            showError(LANG('保存失败，请检查 EasySpider 服务连接后重试。当前编辑内容保留。', 'Save failed. Check the EasySpider connection and retry. Your edits are retained.'));
+        })
+        .always(function () {
+            taskSavePending = false;
+            updateTaskSaveButtons();
         });
-    // alert("保存成功!");
-    $('#myModal').modal('hide');
-    showSuccess(LANG("保存成功！", "Save successfully!"));
     // }
 }
 
-if (sId != null && sId != -1) //加载任务
+if (sId !== '' && sId != null && sId != -1) //加载任务
 {
+    taskLoadPending = true;
+    updateTaskSaveButtons();
     $.get(backEndAddressServiceWrapper + "/queryTask?id=" + sId, function (result) {
         nodeList = result["graph"];
         app.$data.list.nl = nodeList;
@@ -704,6 +735,10 @@ if (sId != null && sId != -1) //加载任务
             showSuccess(LANG("另存为成功！", "Save as successfully!"));
         }
         refresh();
+        taskLoadPending = false;
+        updateTaskSaveButtons();
+    }).fail(function () {
+        showError(LANG('任务加载失败，请刷新重试；加载完成前不能保存。', 'Task loading failed. Refresh to retry; saving is disabled until the task loads.'));
     });
 } else {
     refresh(); //新增任务
