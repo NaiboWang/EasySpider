@@ -425,12 +425,12 @@ async function beginInvoke(msg, ws) {
                 url =
                     server_address +
                     `/taskGrid/FlowChart_CN.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
-                    server_address;
+                    server_address + '&lang=zh&type=3';
             } else if (language == "en") {
                 url =
                     server_address +
                     `/taskGrid/FlowChart.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
-                    server_address;
+                    server_address + '&lang=en&type=3';
             }
             console.log(url);
             flowchart_window.loadURL(url, {extraHeaders: "pragma: no-cache\n"});
@@ -1722,14 +1722,14 @@ function handleOpenBrowser(
             `/taskGrid/FlowChart.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
             server_address +
             "&mobile=" +
-            mobile.toString();
+            mobile.toString() + '&lang=en&type=3';
     } else if (lang == "zh") {
         url =
             server_address +
             `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
             server_address +
             "&mobile=" +
-            mobile.toString();
+            mobile.toString() + '&lang=zh&type=3';
     }
     // and load the index.html of the app.
     flowchart_window.loadURL(url, {extraHeaders: "pragma: no-cache\n"});

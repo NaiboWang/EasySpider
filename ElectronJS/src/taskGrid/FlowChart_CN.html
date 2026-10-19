@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
-    <script src="jquery-3.4.1.min.js"></script>
+<script src="jquery-3.4.1.min.js"></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="bootstrap/js/bootstrap.js"></script>
-    <script src="vue.js"></script>
+<script src="bootstrap/js/bootstrap.js"></script>
+<script src="vue.js"></script>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.css"></link>
-    <link rel="stylesheet" href="FlowChart.css"></link>
+    <link rel="stylesheet" href="flowchart-editor.css">
     <title>设计流程</title>
 
 </head>
 
-<body>
+<body class="flow-editor">
     <div id="tip" class="alert alert-success alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="tip_message">提示：保存成功！</span>
     </div>
@@ -24,56 +24,48 @@
     <div id="tipError" class="alert alert-danger alert-dismissible fade show" style="position: fixed; width:100%;display: none;">
         <button type="button" class="close" data-dismiss="alert">&times;</button> <span id="error_message">提示：保存名不符合MySQL表名规范，请重试！</span>
     </div>
-    <div id="navigator">
-        <nav aria-label="breadcrumb" v-if="type==1">
-            <ol class="breadcrumb" style="padding-left:23px;padding-bottom: 0;margin-bottom:0;background-color: white">
-                <li @click="gotoHome" class="breadcrumb-item"><a href="#">{{"Home~首页" | lang}}</a></li>
-                <li @click="gotoInfo" aria-current="page" class="breadcrumb-item" style="color: black"><a href="#">{{"Task Information~任务信息" | lang}}</a></li>
-                <li aria-current="page" class="breadcrumb-item active" style="color: black">{{"Task Flow~任务流程" | lang}}</li>
-            </ol>
-        </nav>
-    </div>
-    <div style="display:flex">
-        <div style="width: 200px;float:left;overflow: auto">
-            <div class="toolbox" style="text-align:center;margin: 20px;border-radius:10px;border:navy solid;background-color:rgb(242,243,245);z-index: 9999;">
-                <div style="padding: 10px;border-radius:10px;font-size: 20px;">工具箱</div>
-                <button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="btn btn-primary">保存任务</button>
-                 <button type="button" data=1 draggable="true" class="btn btn-outline-primary options">打开网页</button>
-                <button type="button" data=2 draggable="true" class="btn btn-outline-primary options">点击元素</button>
-                <button type="button" data=3 draggable="true" class="btn btn-outline-primary options">提取数据</button>
-                <button type="button" data=4 draggable="true" class="btn btn-outline-primary options">输入文字</button>
-                <button type="button" data=5 draggable="true" class="btn btn-outline-primary options" style="font-weight: bold">自定义操作</button>
-                <button type="button" data=6 draggable="true" style="font-size: 14px!important;" class="btn btn-outline-primary options">切换下拉选项</button>
-                <button type="button" data=7 draggable="true" class="btn btn-outline-primary options">移动到元素</button>
-                <button type="button" data=8 draggable="true" class="btn btn-outline-primary options" style="font-weight: bold">循环</button>
-                <button type="button" data=9 draggable="true" class="btn btn-outline-primary options" style="font-weight: bold">判断条件</button>
-                <div>----------</div>
-                <button type="button" data=13 draggable="true" class="btn btn-outline-primary options" title="调整下一个要插入的节点的位置">调整锚点</button>
-                <button type="button" data=10 class="btn btn-outline-primary options">剪切元素</button>
-                <button type="button" data=11 class="btn btn-outline-primary options">复制元素</button>
-                <button type="button" data=12 class="btn btn-outline-primary options">删除元素</button>
-                <button type="button" data=0 class="btn btn-outline-primary2 options">取消操作</button>
-                <div style="text-align: left;margin: 10px;font-size:15px!important">提示：拖动上方按钮到流程图箭头处以添加操作，也可以点击按钮再点击箭头。</div>
+    <header id="navigator" class="editor-header">
+        <div class="editor-brand"><img src="favicon.ico" width="26" height="26" alt="" aria-hidden="true"><span>EasySpider</span></div>
+        <button type="button" class="editor-back" @click="gotoHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h14"/></svg>{{"Back to Task List~返回任务列表" | lang}}</button>
+        <div class="editor-task"><h1 id="editor-task-name">新任务</h1><span class="editor-mode">流程设计</span></div>
+        <div class="editor-actions"><button type="button" id="save" data-toggle="modal" data-target="#myModal" onmousedown="$('#myModal').modal('show');" class="editor-button editor-button--primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3h13l4 4v14H3V3h1ZM7 3v6h10V3M7 21v-8h10v8"/></svg>保存任务</button></div>
+    </header>
+    <main class="editor-layout">
+        <aside class="editor-tools" aria-label="操作工具">
+            <label class="tool-search" for="tool-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input id="tool-search" type="search" autocomplete="off" placeholder="搜索操作…" aria-label="搜索操作"></label>
+            <div class="toolbox">
+                <details class="tool-group" open><summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>网页与数据</summary><button type="button" data="1" draggable="true" class="btn btn-outline-primary options">打开网页</button>
+<button type="button" data="2" draggable="true" class="btn btn-outline-primary options">点击元素</button>
+<button type="button" data="3" draggable="true" class="btn btn-outline-primary options">提取数据</button>
+<button type="button" data="4" draggable="true" class="btn btn-outline-primary options">输入文字</button>
+<button type="button" data="5" draggable="true" class="btn btn-outline-primary options">自定义操作</button>
+<button type="button" data="6" draggable="true" class="btn btn-outline-primary options">切换下拉选项</button>
+<button type="button" data="7" draggable="true" class="btn btn-outline-primary options">移动到元素</button></details>
+                <details class="tool-group" open><summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v6M5 14V9h14v5"/><circle cx="12" cy="3" r="2"/><rect x="2" y="14" width="6" height="7" rx="1"/><rect x="16" y="14" width="6" height="7" rx="1"/></svg>流程控制</summary><button type="button" data="8" draggable="true" class="btn btn-outline-primary options">循环</button>
+<button type="button" data="9" draggable="true" class="btn btn-outline-primary options">判断条件</button></details>
+                <details class="tool-group" open><summary><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 3 6 6-12 12H3v-6L15 3ZM12 6l6 6"/></svg>编辑操作</summary><button type="button" data="13" draggable="true" class="btn btn-outline-primary options">调整锚点</button>
+<button type="button" data="10"  class="btn btn-outline-primary options">剪切元素</button>
+<button type="button" data="11"  class="btn btn-outline-primary options">复制元素</button>
+<button type="button" data="12"  class="btn btn-outline-primary options">删除元素</button>
+<button type="button" data="0"  class="btn btn-outline-primary options">取消操作</button></details>
+                <p id="tool-empty" class="tool-empty" hidden>没有匹配的操作，请换个关键词。</p>
             </div>
-        </div>
-        <div style="margin-top:20px;border: solid;height:850px;overflow: auto;width:58%;float:right" id="flowchart_graph">
-            <div id="0" class="clk" data="0">
-            </div>
-            <div style="border-radius: 50%;width: 40px;height: 40px;border:solid black;margin: 5px auto;background-color:lightcyan">
-                <p style="font-size: 22px!important;text-align: center;margin-left: 1px;">■</p>
-            </div>
-        </div>
-        <div style="margin-top:20px;border: solid navy;height:850px;overflow: auto;margin-left:10px;margin-right:10px;width:30%;float:right;min-width:300px">
-            <!-- <div style="display: inline-block;border-bottom:solid 2px;width:100%">
-                <input spellcheck=false style="float:left;margin-left:10px;margin-top:10px;margin-bottom:10px" type="button" class="btn-primary" value="保存任务"></input>
-            </div> -->
+        </aside>
+        <section class="editor-canvas" aria-label="任务流程图">
+            <div class="canvas-toolbar"><h2>任务流程</h2><div class="canvas-toolbar-actions"><button id="center-flow" type="button" class="editor-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>居中定位</button></div></div>
+            <div id="flowchart_graph"><div id="0" class="clk canvas-root" data="0"></div><div class="flow-terminus flow-end"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="1"/></svg>结束</div></div>
+        </section>
+        <aside class="editor-inspector" aria-label="步骤参数">
             <div class="Modify" id="app">
-                <div class="modal fade" id="myModal_XPath" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="inspector-toolbar"><h2>步骤配置</h2><button type="button" class="editor-button" data-toggle="modal" data-target="#myModal">任务设置</button></div>
+                <div class="inspector-selected" v-if="nodeType!=0"><h3>{{list.nl[index.nowNodeIndex].title}}</h3><p>步骤 {{list.nl[index.nowNodeIndex].id}}</p></div>
+                <div class="inspector-empty" v-if="nodeType==0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 3 14 10-7 1-3 7-4-18Z"/></svg><h3>选择一个步骤</h3><p>点击流程节点查看和修改参数。<br>从左侧添加操作，开始设计流程。</p></div>
+                <div class="modal fade" id="myModal_XPath" tabindex="-1" role="dialog" aria-labelledby="xpathModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4 class="modal-title">等价XPath</h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="xpathModalLabel">等价XPath</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="关闭等价 XPath">&times;</button>
                             </div>
                             <div class="modal-body">
                                 <label>以下提供除默认生成的XPath外其余等价的XPath，都能定位到同一个元素（但不完全准确，可能可以定位到除该元素外的其他元素，因此只是提供在这里作为参考）。 </label>
@@ -88,183 +80,143 @@
                     <!-- /.modal -->
                 </div>
 
-                <div>
-                    <label>提示：鼠标移到笑脸可查看提示，在流程图中<b>双击</b>操作可<b>试运行</b>（页面完全加载完毕后），<b>右键</b>点击操作查看更多选项。</label>
-                    <label>选项名称</span>：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input>
-                </div>
+                <div class="step-identity" v-if="nodeType!=0"><label>步骤名称</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='list.nl[index.nowNodeIndex]["title"]'></input></div>
                 <!-- 下面是10种不同类型操作选项的不同的配置页面 -->
-                <div class="elements" v-if="nodeType==1">
+                <div class="elements step-inspector" v-if="nodeType==1">
+<section class="inspector-section"><h3>网页地址</h3>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的链接</p>
+                        <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop' id="step-1-1" data-param="useLoop">使用循环内的链接</label>
                     </div>
+
                     <div v-if='!useLoop'>
 <!--                        <label>url:</label>-->
-<!--                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]'></input>-->
+<!--                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["url"]' id="step-1-2" data-param="url">-->
                         <label v-if='nowNode["parameters"]["url"]!="about:blank"'>链接池（每行一个链接，有多少行链接整个任务流程就会被执行多少次）：</label>
                         <label v-else>链接（只能填写一个链接，因为是手动添加的打开网页操作）：</label>
-                        <textarea spellcheck=false v-if='nowNode["parameters"]["url"]!="about:blank"' onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]'></textarea>
-                        <input spellcheck=false v-else onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["links"]'></input>
-                    </div>
-                    <label>页面加载最长等待时间（秒）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>打开网页后是否向下滚动：</label>
-                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                        <textarea spellcheck=false v-if='nowNode["parameters"]["url"]!="about:blank"' onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["links"]' id="step-1-3" data-param="links"></textarea>
+                        <input spellcheck=false v-else onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["links"]' id="step-1-4" data-param="links">
+                    </div></section>
+<section class="inspector-section"><h3>加载与页面处理</h3>
+                    <label for="step-1-5">页面加载最长等待时间（秒）：</label>
+                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required id="step-1-5" data-param="maxWaitTime"></section>
+<details class="inspector-details"><summary>滚动设置</summary>
+                    <label for="step-1-6">打开网页后是否向下滚动：</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control" id="step-1-6" data-param="scrollType">
                         <option :value = 0>不滚动</option>
                         <option :value = 1>向下滚动一屏</option>
                         <option :value = 2>滚动到底部</option>
                         <option :value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
                     </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
-                    <label>滚动后等待时间（秒）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
-                    <p style="margin-top: 10px">
-                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseOpenPage" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠自定义操作
-                        </a>
-                    </p>
-                    <div :class="{collapse: true, 'show': nowNode['parameters']['cookies'].length!=0}" id="collapseOpenPage">
+
+                    <div class="mode-dependent" v-if="Number(nowNode.parameters.scrollType)!==0"><label for="step-1-7">{{Number(nowNode.parameters.scrollType)===3 ? '滚动启用值（大于 0）' : '滚动次数'}}</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required id="step-1-7" data-param="scrollCount"><p class="mode-help" v-if="Number(nowNode.parameters.scrollType)===3">页面不再变化时停止滚动；此值须大于 0，才能启用连续滚动。</p></div>
+
+                    <div class="mode-dependent" v-if="Number(nowNode.parameters.scrollType)!==0"><label for="step-1-8">滚动后等待时间（秒）：</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required id="step-1-8" data-param="scrollWaitTime"></div></details>
+<details class="inspector-details" :open="Boolean(nowNode.parameters.cookies && nowNode.parameters.cookies.length)"><summary>Cookie 设置</summary>
                         <div>
                             <label>加载后设置Cookies： </label>
                             <p style="margin-bottom: 20px;color:white"><a class="btn btn-primary" @click="getCookies">
                                 点击获取当前页面Cookie
                             </a></p>
                             <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='key=value形式，每行一个键值对' v-model='nowNode["parameters"]["cookies"]' id="pageCookies" style="font-size: 14px!important;"></textarea>
+                                      placeholder='key=value形式，每行一个键值对' v-model='nowNode["parameters"]["cookies"]' id="pageCookies" style="font-size: 14px!important;" data-param="cookies"></textarea>
                         </div>
-                    </div>
-                </div>
+                    </details>
+</div>
 
-                <div class="elements" v-if="nodeType==2">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
+<div class="elements step-inspector" v-if="nodeType==2">
+<section class="inspector-section"><h3>元素定位</h3>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-2-1" data-param="iframe">元素在iframe内</label>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用相对循环内的XPath定位到的元素</p>
+                        <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop' id="step-2-2" data-param="useLoop">使用相对循环内的XPath定位到的元素</label>
                     </div>
                     <div>
-                        <label>XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框文本列表等）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath'></textarea>
-                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
-                        <label>任务运行时最终定位的本元素XPath：</label>
-                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite"></textarea>
+                        <label for="node-xpath" class="locator-label">XPath <span class="help-icon" title="XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框文本列表等）： 相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']" aria-label="XPath（或者用point(10,10)表示点击网页坐标位置(10, 10)以用来点击空白区域推出弹窗对话框文本列表等）： 相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 16v1"/></svg></span></label>
+                        <textarea id="node-xpath" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath' data-param="xpath"></textarea>
+                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-outline-primary" style="margin-top: 10px" title="查看等价 XPath">查看等价 XPath</button></p>
+                        <label for="step-2-3">最终定位 XPath</label>
+                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite" id="step-2-3" data-param="readonly"></textarea>
                     </div>
-                    <p style="margin-top: 10px">
-                        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠自定义操作
-                        </a>
-                    </p>
-                    <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="collapseExample">
-                        <div>
-                            <label>点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
-                            <label>点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
-                        </div>
-                    </div>
-                    <label>点击后页面加载最长等待时间（秒）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required></input>
-                    <label>点击类型（如是否双击）：</label>
-                    <select v-model='nowNode["parameters"]["clickWay"]' class="form-control">
+                    </section>
+<section class="inspector-section"><h3>点击方式</h3>
+                    <label for="step-2-4">点击类型（如是否双击）：</label>
+                    <select v-model='nowNode["parameters"]["clickWay"]' class="form-control" id="step-2-4" data-param="clickWay">
                         <option :value = 0>Selenium点击</option>
                         <option :value = 1>JavaScript点击</option>
                         <option :value = 2>双击</option>
                     </select>
-                    <label>在新标签页打开超链接：</label>
-                    <select v-model='nowNode["parameters"]["newTab"]' class="form-control">
+
+                    <label for="step-2-5">在新标签页打开超链接：</label>
+                    <select v-model='nowNode["parameters"]["newTab"]' class="form-control" id="step-2-5" data-param="newTab">
                         <option :value = 1>是</option>
                         <option :value = 0>否</option>
-                    </select>
+                    </select></section>
+<section class="inspector-section"><h3>加载与页面处理</h3><label for="step-2-6">点击后页面加载最长等待时间（秒）：</label>
+                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['maxWaitTime']" type="number" required id="step-2-6" data-param="maxWaitTime">
+
+                    <label for="step-2-7">文件下载最长等待时间（秒）：</label>
+                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['downloadWaitTime']" type="number" required id="step-2-7" data-param="downloadWaitTime">
+
+                    <label for="step-2-9">点击元素后如有弹窗出现，弹窗处理方式：</label>
+
+                    <p><select v-model='nowNode["parameters"]["alertHandleType"]' class="form-control" id="step-2-8" data-param="alertHandleType">
+                        <option :value = 0>无弹窗</option>
+                        <option :value = 1>接受弹窗（点击弹窗确定按钮）</option>
+                        <option :value = 2>拒绝弹窗（点击弹窗取消按钮，仅限Confirm弹框）</option>
+                    </select></p></section>
+<details class="inspector-details"><summary>滚动设置</summary>
                     <label>点击后是否向下滚动页面：</label>
-                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control" id="step-2-9" data-param="scrollType">
                         <option :value = 0>不滚动</option>
                         <option :value = 1>向下滚动一屏</option>
                         <option :value = 2>滚动到底部</option>
                         <option :value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
                     </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
-                    <label>滚动后等待时间（秒）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
-                    <label>文件下载最长等待时间（秒）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['downloadWaitTime']" type="number" required></input>
-                    <label>点击元素后如有弹窗出现，弹窗处理方式：</label>
-                    <p><select v-model='nowNode["parameters"]["alertHandleType"]' class="form-control">
-                        <option :value = 0>无弹窗</option>
-                        <option :value = 1>接受弹窗（点击弹窗确定按钮）</option>
-                        <option :value = 2>拒绝弹窗（点击弹窗取消按钮，仅限Confirm弹框）</option>
-                    </select></p>
 
+                    <div class="mode-dependent" v-if="Number(nowNode.parameters.scrollType)!==0"><label for="step-2-10">{{Number(nowNode.parameters.scrollType)===3 ? '滚动启用值（大于 0）' : '滚动次数'}}</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required id="step-2-10" data-param="scrollCount"><p class="mode-help" v-if="Number(nowNode.parameters.scrollType)===3">页面不再变化时停止滚动；此值须大于 0，才能启用连续滚动。</p></div>
 
-
-                </div>
-
-                <div class="elements" v-if="nodeType==3">
-                    <p>
-                        <button class="btn btn-primary" v-on:mousedown= 'addParam'>新增字段</button>
-                    </p>
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["clear"]'></input>提取数据前清空其他操作字段已记录的值</p>
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["newLine"]'></input>此提取数据操作后生成新数据行 <span style="font-size: 30px!important;" title="取消勾选则适用于不想每次提取操作都生成一个新行的场景">☺</span></p>
-                    <div class="toolkitcontain">
-                        <table class="toolkittb2" cellspacing="0">
-                            <tbody>
-                                <th>字段名</th>
-                                <th style="width:200px">示例值</th>
-                                <th>操作</th>
-                            </tbody>
-                        </table>
-                        <table class="toolkittb4" cellspacing="0">
-                            <tbody>
-                                <tr v-for="i in params.parameters.length">
-                                    <td style="padding-left:0px"><input spellcheck=false onkeydown="inputDelete(event)" style='padding-left:2px;font-size:13px!important;height:100%' v-model='params.parameters[i-1]["name"]'></input>
-                                    </td>
-                                    <td style="width:200px">{{params.parameters[i-1]["exampleValues"][0]["value"]}}</td>
-                                    <td>
-                                        <a v-on:mousedown="modifyParam(i-1)">修改</a>
-                                        <a v-on:mousedown="deleteParam(i-1)">删除</a>
-                                        <a v-on:mousedown="upParam(i-1)">上移</a>
-                                        <a v-on:mousedown="downParam(i-1)">下移</a>
-                                    </td>
-                                </tr>
-                        </table>
-                    </div>
-                    <div style="font-size: 13px;" v-if="paraIndex<params.parameters.length">
-                        <p>当前编辑字段参数名（点击字段的“修改”选项切换参数）： </p>
-                        <label><strong>{{params.parameters[paraIndex]["name"]}}</strong></label>
-                        <p v-if="nowNode['isInLoop']"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='params.parameters[paraIndex]["relative"]'></input>使用相对循环内的XPATH</p>
-                        <p v-if='!params.parameters[paraIndex]["relative"]'><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='params.parameters[paraIndex]["iframe"]'></input>元素在iframe内</p>
-                        <p>XPath（所有XPath内均可用Field["字段名"]表示参数值，用eval("你的代码")来替换成自定义的变量）： <span style="font-size: 30px!important;" title="相对XPATH写法:以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></p>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='params.parameters[paraIndex]["relativeXPath"]' placeholder="如果要写相对循环内的xpath，可以写如*../div[1]即匹配当前循环元素的父元素的第一个div子元素"></textarea>
-                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex]['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
-                        <label>任务运行时最终定位的本字段XPath：</label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite">{{getFinalXPath(params.parameters[paraIndex]['relativeXPath'], params.parameters[paraIndex]['relative'])}}</textarea>
-                        <div style="margin-top: 10px"><a href="#" v-on:mousedown="trialParam(paraIndex)" style="text-decoration: none">试运行（只测试第一个匹配到的元素）</a></div>
-                        <p style="margin-top: 10px">
-                            <a class="btn btn-primary" data-toggle="collapse" href="#elementAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
-                                点此展开/折叠自定义操作
-                            </a>
-                        </p>
-                        <div :class="{collapse: true, 'show': params.parameters[paraIndex]['beforeJS'].length!=0 || params.parameters[paraIndex]['afterJS'].length!=0}" id="elementAdvanced">
-                            <div>
-                                <label>提取该元素数据<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
-                                <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                          placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='params.parameters[paraIndex]["beforeJS"]'></textarea>
-                                <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["beforeJSWaitTime"]'></input>
-                                <label>提取该元素数据<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
-                                <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='params.parameters[paraIndex]["afterJS"]'></textarea>
-                                <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["afterJSWaitTime"]'></input>
-                            </div>
+                    <div class="mode-dependent" v-if="Number(nowNode.parameters.scrollType)!==0"><label for="step-2-11">滚动后等待时间（秒）：</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required id="step-2-11" data-param="scrollWaitTime"></div></details>
+<details class="inspector-details" :open="Boolean(nowNode.parameters.beforeJS || nowNode.parameters.afterJS)"><summary>执行前后脚本</summary>
+                        <div>
+                            <label for="step-2-12">点击该元素<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]' id="step-2-12" data-param="beforeJS"></textarea>
+                            <label for="step-2-13">最长等待脚本执行时间（0代表无限等待）： </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]' id="step-2-13" data-param="beforeJSWaitTime">
+                            <label for="step-2-14">点击该元素<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]' id="step-2-14" data-param="afterJS"></textarea>
+                            <label for="step-2-15">最长等待脚本执行时间（0代表无限等待）： </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]' id="step-2-15" data-param="afterJSWaitTime">
                         </div>
-                        <label>采集内容类型</label>
-                        <select v-model='params.parameters[paraIndex]["contentType"]' class="form-control">
+                    </details>
+</div>
+
+<div class="elements extraction-fields" v-if="nodeType==3">
+    <div class="field-list-heading"><h3 class="parameter-heading">采集字段</h3><button type="button" class="btn btn-outline-primary" @click="addParam">+ 新增字段</button></div>
+    <p class="field-hint">选择字段，分别设置采集内容和定位方式。</p>
+    <div class="field-bulk-toolbar"><label class="field-check"><input type="checkbox" :checked="allFieldsSelected()" :indeterminate.prop="selectedFieldCount()>0 && !allFieldsSelected()" @change="selectAllFields($event.target.checked)">全选</label><button type="button" class="btn field-bulk-delete" :disabled="!selectedFieldCount()" @click="deleteSelectedFields">删除选中（{{selectedFieldCount()}}）</button></div>
+    <div class="toolkitcontain">
+      <table class="toolkittb4"><colgroup><col style="width:28%"><col style="width:18%"><col style="width:28%"><col style="width:26%"></colgroup>
+        <thead class="toolkittb2"><tr><th scope="col">字段名</th><th scope="col">类型</th><th scope="col">示例值</th><th scope="col">操作</th></tr></thead>
+        <tbody><tr v-for="i in params.parameters.length" :key="fieldKey(params.parameters[i-1])" :class="{'is-selected':paraIndex===i-1}">
+          <td><div class="field-name-cell"><input type="checkbox" v-model="params.selectedFieldIds" :value="fieldKey(params.parameters[i-1])" :aria-label="'选择字段：'+params.parameters[i-1].name"><button type="button" class="field-select" :aria-pressed="paraIndex===i-1" @click="selectField(i-1)">{{params.parameters[i-1].name || '未命名'}}</button></div></td>
+          <td>{{({4:'背景图片',5:'页面网址',6:'页面标题',7:'截图',8:'OCR',9:'JavaScript',10:'选项值',11:'选项文本',12:'系统命令',13:'Python',14:'属性值',15:'常量'})[params.parameters[i-1].contentType] || (params.parameters[i-1].nodeType===3 ? '表单值' : getType(params.parameters[i-1].nodeType,params.parameters[i-1].contentType))}}</td>
+          <td class="field-example" :title="params.parameters[i-1].exampleValues && params.parameters[i-1].exampleValues.length ? params.parameters[i-1].exampleValues[0].value : ''">{{params.parameters[i-1].exampleValues && params.parameters[i-1].exampleValues.length ? params.parameters[i-1].exampleValues[0].value : '—'}}</td>
+          <td><div class="field-actions"><button type="button" class="field-action field-action--edit" title="重新选择元素" aria-label="重新选择元素" @click.stop="reselectField(i-1)" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m4 16-1 5 5-1L20 8l-4-4Z M14 6l4 4"/></svg></button><button type="button" class="field-action field-action--delete" title="删除字段" aria-label="删除字段" @click.stop="deleteParam(i-1)" ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/></svg></button><button type="button" class="field-action field-action--up" title="上移字段" aria-label="上移字段" @click.stop="upParam(i-1)" :disabled="i===1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 14 6-6 6 6"/></svg></button><button type="button" class="field-action field-action--down" title="下移字段" aria-label="下移字段" @click.stop="downParam(i-1)" :disabled="i===params.parameters.length"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="m6 10 6 6 6-6"/></svg></button></div></td>
+        </tr><tr v-if="!params.parameters.length"><td colspan="4" class="field-empty">暂无字段，点击“新增字段”开始配置。</td></tr></tbody>
+      </table>
+    </div>
+    <section class="field-editor" v-if="paraIndex>=0 && paraIndex<params.parameters.length" :key="paraIndex">
+      <h3 class="field-editor-title">编辑字段：<span>{{params.parameters[paraIndex].name || '未命名'}}</span></h3>
+      <div class="field-basics"><div><label for="field-name">字段名称</label><input id="field-name" spellcheck="false" onkeydown="inputDelete(event)" class="form-control"  v-model='params.parameters[paraIndex]["name"]'></div><div><label for="field-nodeType">节点类型</label><select id="field-nodeType" v-model='params.parameters[paraIndex]["nodeType"]' class="form-control">
+                            <option :value = 0>普通节点</option>
+                            <option :value = 1>链接文本</option>
+                            <option :value = 2>链接地址</option>
+                            <option :value = 3>表单值</option>
+                            <option :value = 4>图片地址</option>
+                        </select></div></div>
+      <label for="field-contentType">采集内容</label><select id="field-contentType" v-model='params.parameters[paraIndex]["contentType"]' class="form-control">
                             <option :value = 0>文本（包括子元素）</option>
                             <option :value = 1>文本（不包括子元素）</option>
                             <option :value = 2>innerHTML</option>
@@ -282,7 +234,7 @@
                             <option :value = 10>当前选择框选中的选项值</option>
                             <option :value = 11>当前选择框选中的选项文本</option>
                         </select>
-                        <div v-if='params.parameters[paraIndex]["contentType"] == 15'>
+      <div v-if='params.parameters[paraIndex]["contentType"] == 15'>
                             <label>常量字符串：</label>
                             <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["JS"]' placeholder="此字段类型通常作为备注使用"></input>
                         </div>
@@ -297,28 +249,31 @@
                             <label>最长等待脚本执行时间（0代表无限等待）： </label>
                             <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='params.parameters[paraIndex]["JSWaitTime"]'></input>
                         </div>
-                        <label>节点类型</label>
-                        <select v-model='params.parameters[paraIndex]["nodeType"]' class="form-control">
-                            <option :value = 0>普通节点</option>
-                            <option :value = 1>链接文本</option>
-                            <option :value = 2>链接地址</option>
-                            <option :value = 3>表单值</option>
-                            <option :value = 4>图片地址</option>
-                        </select>
-                        <div v-if='params.parameters[paraIndex]["nodeType"] == 4'>
-                            <label>提取图片地址后是否同时<b>下载图片</b>：</label>
-                            <select v-model='params.parameters[paraIndex]["downloadPic"]' class="form-control">
+
+      <div v-if='params.parameters[paraIndex]["nodeType"] == 4'><label for="field-downloadPic">同时下载图片</label><select id="field-downloadPic" v-model='params.parameters[paraIndex]["downloadPic"]' class="form-control">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
-                            </select>
-                        </div>
-                        <!--                        <label>提取方式</label>-->
-<!--                        <select v-model='params.parameters[paraIndex]["extractType"]' class="form-control">-->
-<!--                            <option :value = 0>普通提取</option>-->
-<!--                            <option :value = 1>OCR提取</option>-->
-<!--                        </select>-->
-                        <label>参数类型转换为（用于Excel和数据库）：</label>
-                        <select v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
+                            </select></div>
+      <label for="field-relativeXPath">XPath</label><textarea id="field-relativeXPath" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" aria-describedby="field-xpath-help" placeholder="相对循环路径示例：*../div[1]，匹配当前循环元素的父元素的第一个 div 子元素" v-model='params.parameters[paraIndex]["relativeXPath"]'></textarea>
+      <p id="field-xpath-help" class="field-hint">支持 Field["字段名"] 和 eval("代码")；相对路径在“定位与循环设置”中开启。</p>
+      <div class="field-reselection" v-if="params.reselection.message" role="status"><p>{{params.reselection.message}}</p><button type="button" class="btn btn-outline-primary" v-if="params.reselection.active" @click="cancelFieldReselection">取消重新选择</button></div>
+      <div class="field-test-actions"><button type="button" class="btn btn-outline-primary field-reselect" @click="reselectField(paraIndex)">重新选择元素</button><button type="button" class="btn btn-outline-primary" @click="trialParam(paraIndex)" title="只测试第一个匹配到的元素">试运行字段</button><button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(params.parameters[paraIndex].allXPaths)">等价 XPath</button></div>
+      <details class="field-details field-final-xpath"><summary>查看最终定位 XPath</summary><textarea class="form-control" rows="2" readonly :value="getFinalXPath(params.parameters[paraIndex].relativeXPath,params.parameters[paraIndex].relative)" aria-label="最终定位 XPath"></textarea></details>
+      <details class="field-details" :open="params.parameters[paraIndex].relative || params.parameters[paraIndex].iframe"><summary>定位与循环设置</summary>
+        <label class="field-check" v-if="nowNode.isInLoop"><input type="checkbox" onkeydown="inputDelete(event)" v-model='params.parameters[paraIndex]["relative"]'>使用相对循环内的 XPath</label>
+        <label class="field-check" v-if="!params.parameters[paraIndex].relative"><input type="checkbox" onkeydown="inputDelete(event)" v-model='params.parameters[paraIndex]["iframe"]'>元素在 iframe 内</label>
+        <p class="field-hint">相对路径以 / 开头，会追加到循环元素的 XPath 后；例如 /div[1]。</p>
+      </details>
+      <details class="field-details" :open="Boolean(params.parameters[paraIndex].beforeJS || params.parameters[paraIndex].afterJS || params.parameters[paraIndex].default)"><summary>脚本与默认值</summary>
+        <label for="field-beforeJS">提取前执行 JavaScript</label><textarea id="field-beforeJS" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder="arguments[0].click()" v-model='params.parameters[paraIndex]["beforeJS"]'></textarea>
+        <label for="field-beforeJSWaitTime">脚本最长等待时间（秒，0 为不限）</label><input id="field-beforeJSWaitTime" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='params.parameters[paraIndex]["beforeJSWaitTime"]'>
+        <label for="field-afterJS">提取后执行 JavaScript</label><textarea id="field-afterJS" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder="arguments[0].click()" v-model='params.parameters[paraIndex]["afterJS"]'></textarea>
+        <label for="field-afterJSWaitTime">脚本最长等待时间（秒，0 为不限）</label><input id="field-afterJSWaitTime" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='params.parameters[paraIndex]["afterJSWaitTime"]'>
+        <label for="field-default">元素找不到时的值</label><input id="field-default" spellcheck="false" onkeydown="inputDelete(event)" class="form-control"  v-model='params.parameters[paraIndex]["default"]'>
+        <p class="field-hint">脚本中用 arguments[0] 表示当前元素。</p>
+      </details>
+      <details class="field-details"><summary>输出与保存设置</summary>
+        <label for="field-paraType">数据类型（Excel / 数据库）</label><select id="field-paraType" v-model='params.parameters[paraIndex]["paraType"]' class="form-control">
                             <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
                             <option value = "int">整数（位数在9位以内）</option>
                             <option value = "double">浮点数（小数）</option>
@@ -330,68 +285,66 @@
                             <option value = "longText">超大文本（单个值长度超过100万）</option>
                             <option value = "bigInt">大整数（位数超过9位）</option>
                         </select>
-                        <label>元素找不到时的值：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='params.parameters[paraIndex]["default"]'></input>
-                        <label style="margin-top: 15px">是否将内容换行（长文章采集想要换行时设置）：</label>
-                        <select v-model='params.parameters[paraIndex]["splitLine"]' class="form-control">
+        <label for="field-splitLine">保留内容换行</label><select id="field-splitLine" v-model='params.parameters[paraIndex]["splitLine"]' class="form-control">
                             <option :value = 0>否</option>
                             <option :value = 1>是</option>
                         </select>
-                        <label style="margin-top: 15px">是否保存该字段（只想把此字段当变量而不想保存时可选否）：</label>
-                        <select v-model='params.parameters[paraIndex]["recordASField"]' class="form-control">
+        <label for="field-recordASField">保存该字段</label><select id="field-recordASField" v-model='params.parameters[paraIndex]["recordASField"]' class="form-control">
                             <option :value = 1>是</option>
                             <option :value = 0>否</option>
                         </select>
-                        <label>参数描述：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" style="min-height: 60px" v-model='params.parameters[paraIndex]["desc"]'></input>
-                    </div>
+        <p class="field-hint">选择“否”时，仅将此字段作为变量使用。</p>
+        <label for="field-desc">字段描述</label><textarea id="field-desc" spellcheck="false" onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='params.parameters[paraIndex]["desc"]'></textarea>
+      </details>
+    </section>
+    <section class="field-step-settings"><h3>本步骤的数据行</h3>
+      <label class="field-check"><input type="checkbox" onkeydown="inputDelete(event)" v-model='nowNode["parameters"]["newLine"]'>提取后生成新数据行</label>
+      <label class="field-check"><input type="checkbox" onkeydown="inputDelete(event)" v-model='nowNode["parameters"]["clear"]'>提取前清空其他操作已记录的字段值</label>
+    </section>
+  </div>
 
-                </div>
-
-
-                <div class="elements" v-if="nodeType==4">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
+  <div class="elements step-inspector" v-if="nodeType==4">
+<section class="inspector-section"><h3>输入内容</h3>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在“文本列表”循环内设置的文本）</p>
-                        <p v-if="useLoop">
-                            <label>索引值（0表示使用整个当前循环的文本，如果大于0则表示当前文本用~来分割开的文本索引取值，即如果当前循环的文本值为A~B，则索引值为1表示输入A，2表示输入B，0表示输入A~B）</label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input></p>
-                        </p>
+                        <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop' id="step-4-1" data-param="useLoop">使用循环内的文本（不勾选则每次输入的文本为下方“输入值”文本框内的文本，勾选后会使用所在“文本列表”循环内设置的文本）</label>
+                        <div v-if="useLoop">
+                            <label>索引值</label><details class="inspector-help"><summary>使用说明</summary><div>索引值（0表示使用整个当前循环的文本，如果大于0则表示当前文本用~来分割开的文本索引取值，即如果当前循环的文本值为A~B，则索引值为1表示输入A，2表示输入B，0表示输入A~B）</div></details>
+                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]' id="step-4-2" data-param="index"></div>
                     </div>
+
 
                     <div v-if='!useLoop'>
-                        <label>输入值（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值，用&lt;enter&gt;或&lt;ENTER&gt;表示模拟按下回车键），用JS("return JS代码")和eval("Python代码")来替换成JavaScript和Python代码返回值：</label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]'></textarea>
-                    </div>
+                        <label for="step-4-3">输入值</label><details class="inspector-help"><summary>使用说明</summary><div>输入值（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值，用&lt;enter&gt;或&lt;ENTER&gt;表示模拟按下回车键），用JS("return JS代码")和eval("Python代码")来替换成JavaScript和Python代码返回值：</div></details>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["value"]' id="step-4-3" data-param="value"></textarea>
+                    </div></section>
+<section class="inspector-section"><h3>元素定位</h3>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-4-4" data-param="iframe">元素在iframe内</label>
 
-                    <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                    <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
-                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
-                    <p style="margin-top: 10px">
-                        <a class="btn btn-primary" data-toggle="collapse" href="#inputAdvanced" role="button" aria-expanded="false" aria-controls="collapseExample">
-                            点此展开/折叠自定义操作
-                        </a>
-                    </p>
-                    <div :class="{collapse: true, 'show': nowNode['parameters']['beforeJS'].length!=0 || nowNode['parameters']['afterJS'].length!=0}" id="inputAdvanced">
+
+                    <label>XPath <span class="help-icon"  title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 16v1"/></svg></span></label>
+                    <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]' id="step-4-5" data-param="xpath"></textarea>
+
+                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-outline-primary" style="margin-top: 10px" title="点此查看其他等价的XPath">查看等价 XPath</button></p></section>
+<details class="inspector-details" :open="Boolean(nowNode.parameters.beforeJS || nowNode.parameters.afterJS)"><summary>执行前后脚本</summary>
                         <div>
-                            <label>对该元素输入文字<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
+                            <label for="step-4-6">对该元素输入文字<strong>前</strong>针对该元素执行一段JavaScript脚本： </label>
                             <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]'></input>
-                            <label>对该元素输入文字<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
-                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]'></textarea>
-                            <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]'></input>
+                                      placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].innerText = arguments[0].innerText.replace("上海","Shanghai")即实现了将元素文字中的“上海”替换成”Shanghai“的功能，然后后续如提取数据时就会提取到替换后的值。' v-model='nowNode["parameters"]["beforeJS"]' id="step-4-6" data-param="beforeJS"></textarea>
+                            <label for="step-4-7">最长等待脚本执行时间（0代表无限等待）： </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["beforeJSWaitTime"]' id="step-4-7" data-param="beforeJSWaitTime">
+                            <label for="step-4-8">对该元素输入文字<strong>后</strong>针对该元素执行一段JavaScript脚本： </label>
+                            <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder='该元素用arguments[0]来表示，示例JS代码：arguments[0].click()即点击此元素' v-model='nowNode["parameters"]["afterJS"]' id="step-4-8" data-param="afterJS"></textarea>
+                            <label for="step-4-9">最长等待脚本执行时间（0代表无限等待）： </label>
+                            <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["afterJSWaitTime"]' id="step-4-9" data-param="afterJSWaitTime">
                         </div>
-                    </div>
-                </div>
+                    </details>
+</div>
 
-                <div class="elements" v-if="nodeType==5">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>操作在iframe内</p>
-                    <label>执行模式</label>
-                    <select v-model='codeMode' class="form-control" @change="handleCodeModeChange">
+<div class="elements step-inspector" v-if="nodeType==5">
+<section class="inspector-section"><h3>操作类型</h3>
+                    <label for="step-5-1">执行模式</label>
+                    <select v-model='codeMode' class="form-control" @change="handleCodeModeChange" id="step-5-1" data-param="codeMode">
                         <option :value = 0>执行一段JavaScript脚本（如要获得返回值则需以return 开头）</option>
                         <option :value = 1>执行一段操作系统级别命令</option>
                         <option v-if="nowNode['isInLoop']" :value = 2>针对当前循环项的JavaScript脚本</option>
@@ -405,11 +358,12 @@
                         <option :value = 9>发送邮件</option>
                         <option :value = 10>清空所有字段值</option>
                         <option :value = 11>生成新数据行</option>
-                    </select>
+                    </select></section>
+<section class="inspector-section"><h3>执行内容</h3>
                     <div v-if='nowNode["parameters"]["codeMode"] < 3 || nowNode["parameters"]["codeMode"] >= 5 && nowNode["parameters"]["codeMode"] <=6'>
-                        <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'"></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 5'>请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
+                        <label for="step-5-2">代码/脚本内容</label><details class="inspector-help"><summary>使用说明</summary><div>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </div></details>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["code"]' placeholder="输入JS或系统命令，如：document.body.innerText = '1' 或 python D:/test.py，分别为JS命令和系统命令示例。如选择针对当前循环项的JS脚本，则循环项元素用arguments[0]表示，如arguments[0].style.color = 'blue'" id="step-5-2" data-param="code"></textarea>
+                        <details class="inspector-help" v-if="nowNode[&quot;parameters&quot;][&quot;codeMode&quot;] == 5"><summary>查看代码说明与示例</summary><pre class="inspector-code-help">请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
 注意包含exec和eval操作的语句和XPath不能在当前页面试运行，只能在任务真正调用时运行。
 此选项为高级功能，可以直接用Python代码操纵正在运行中的浏览器，及可以自定义整个执行环境中的变量，并对变量进行修改赋值等操作，示例：
 1. 用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").send_keys(Keys.END)即可滚动到页面最下方。
@@ -427,22 +381,22 @@ pip install emotlib
 sys.path.append("D:/Python38/Lib/site-packages") # 假设此路径下有emotlib库
 import emotlib # 此时就可以使用emotlib库了
 print(emotlib.emoji()) # 使用其中的函数。
-</pre>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='nowNode["parameters"]["codeMode"] == 6'>请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
+</pre></details>
+                        <details class="inspector-help" v-if="nowNode[&quot;parameters&quot;][&quot;codeMode&quot;] == 6"><summary>查看代码说明与示例</summary><pre class="inspector-code-help">请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
 此选项为高级功能，可以直接返回Python代码的表达式值，并在其他位置用Field["本操作名称"]表示此操作返回值，示例：
 1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").text即可返回当前页面的文字。
 2. 返回自定义全局变量的值：self.myVar
 3. 返回条件判断的值：self.myVar == 1
 4. 判断某个字段提取的值是否等于某个变量的值：self.outputParameters["字段名"] == self.myVar
 
-注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下运行Python代码（exec操作）”选项。</pre>
-                        <p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
-                        <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control">
+注意此功能不能对变量进行赋值操作，即不可以写self.myVar = 1这种，如果想要进行赋值操作，请选择上一个“在执行环境下运行Python代码（exec操作）”选项。</pre></details>
+                        <details class="inspector-details" :open="Boolean(nowNode.parameters.recordASField)"><summary>输出与保存设置</summary><p style="margin-top: 15px">是否将执行后的输出/返回值作为字段记录：</p>
+                        <p><select v-model='nowNode["parameters"]["recordASField"]' class="form-control" id="step-5-3" data-param="recordASField">
                             <option :value = 0>否（仍可在任意操作中用Field["操作名"]表示此命令返回值）</option>
                             <option :value = 1>是（JavaScript脚本需要以return 开头）</option>
                         </select></p>
-                        <p><label>参数类型转换为：</label>
-                        <select v-model='nowNode["parameters"]["paraType"]' class="form-control">
+                        <p><label for="step-5-4">参数类型转换为：</label>
+                        <select v-model='nowNode["parameters"]["paraType"]' class="form-control" id="step-5-4" data-param="paraType">
                             <option value = "text">文本（单个值长度预估超过1万请选择大文本）</option>
                             <option value = "int">整数（位数在9位以内）</option>
                             <option value = "double">浮点数（小数）</option>
@@ -456,101 +410,114 @@ print(emotlib.emoji()) # 使用其中的函数。
                         </select>
                         </p>
                         <p>
-                            <label>记录前清空其他操作字段已记录的值：</label>
-                            <select v-model='nowNode["parameters"]["clear"]' class="form-control">
+                            <label for="step-5-5">记录前清空其他操作字段已记录的值：</label>
+                            <select v-model='nowNode["parameters"]["clear"]' class="form-control" id="step-5-5" data-param="clear">
                                 <option :value = 0>否</option>
                                 <option :value = 1>是</option>
                             </select>
                         </p>
                         <p>
-                            <label>此提取数据操作后生成新数据行：</label>
-                            <select v-model='nowNode["parameters"]["newLine"]' class="form-control">
+                            <label for="step-5-6">此提取数据操作后生成新数据行：</label>
+                            <select v-model='nowNode["parameters"]["newLine"]' class="form-control" id="step-5-6" data-param="newLine">
                                 <option :value = 1>是</option>
                                 <option :value = 0>否</option>
                             </select>
                         </p>
-                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
+                        </details><label for="step-5-7">最长等待脚本执行时间（0代表无限等待）： </label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]' id="step-5-7" data-param="waitTime">
                     </div>
+
                     <div v-if='nowNode["parameters"]["codeMode"] == 7'>
-                        <label>此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘自定义暂停/继续快捷键（默认：p键）后才继续执行。</label>
+                        <label for="step-5-8">此操作可以暂停程序执行，如检测到验证码框出现时暂停执行，直到手动长按键盘自定义暂停/继续快捷键（默认：p键）后才继续执行。</label>
                     </div>
+
                     <div v-if='nowNode["parameters"]["codeMode"] == 8'>
                         <label>此操作可以刷新当前页面。</label>
                     </div>
+
                     <div v-if='nowNode["parameters"]["codeMode"] == 9'>
                         <label>此操作可以发送邮件，如用于爬虫任务完成后发送邮件通知。</label>
                         <label>STMP邮件服务器主机：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["host"]' placeholder="如smtp.163.com"></input>
-                        <label>邮件服务器端口：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["port"]' placeholder="如465"></input>
-                        <label>发件人邮箱用户名：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["username"]'></input>
-                        <label>发件人邮箱密码（设置了密码注意不要轻易泄露任务文件！）：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["password"]' placeholder="多数邮箱服务器为授权码而不是原密码"></input>
-                        <label>收件人邮箱地址：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["to"]' placeholder="多个收件人用英文逗号隔开"></input>
-                        <label>邮件主题：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["subject"]' placeholder="这里写邮件主题"></input>
-                        <label>邮件内容：</label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="这里写邮件内容"></textarea>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["host"]' placeholder="如smtp.163.com" id="step-5-8" data-param="host">
+                        <label for="step-5-9">邮件服务器端口：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["port"]' placeholder="如465" id="step-5-9" data-param="port">
+                        <label for="step-5-10">发件人邮箱用户名：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["username"]' id="step-5-10" data-param="username">
+                        <label for="step-5-11">发件人邮箱密码（设置了密码注意不要轻易泄露任务文件！）：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["password"]' placeholder="多数邮箱服务器为授权码而不是原密码" id="step-5-11" data-param="password">
+                        <label for="step-5-12">收件人邮箱地址：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["to"]' placeholder="多个收件人用英文逗号隔开" id="step-5-12" data-param="to">
+                        <label for="step-5-13">邮件主题：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model='nowNode["parameters"]["emailConfig"]["subject"]' placeholder="这里写邮件主题" id="step-5-13" data-param="subject">
+                        <label for="step-5-14">邮件内容：</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["emailConfig"]["content"]' placeholder="这里写邮件内容" id="step-5-14" data-param="content"></textarea>
                     </div>
+
                     <div v-if='nowNode["parameters"]["codeMode"] == 10'>
                         <label>此操作可以清空所有字段值，如用于爬虫任务开始前清空所有字段值。</label>
                     </div>
+
                     <div v-if='nowNode["parameters"]["codeMode"] == 11'>
                         <label>此操作可以生成新数据行，如用于爬虫任务设计时暂不生成数据行，等所有字段提取结束后统一生成新数据行。</label>
-                    </div>
-                </div>
+                    </div></section>
+<details class="inspector-details"><summary>元素定位</summary>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-5-15" data-param="iframe">操作在iframe内</label></details>
+</div>
 
-                <div class="elements" v-if="nodeType==6">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
+<div class="elements step-inspector" v-if="nodeType==6">
+<section class="inspector-section"><h3>元素定位</h3>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-6-1" data-param="iframe">元素在iframe内</label>
+
+                    <label>XPath </label>
+                    <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]' id="step-6-2" data-param="xpath"></textarea>
+
+                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-outline-primary" style="margin-top: 10px" title="点此查看其他等价的XPath">查看等价 XPath</button></p></section>
+<section class="inspector-section"><h3>下拉选项设置</h3>
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内且循环内是固定文本才显示此行元素 -->
-                        <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用循环内的索引值（不勾选则输入为下方“设定值”文本框内的内容，勾选后会使用所在“文本列表”循环内设置的下拉框索引值）</p>
-                        <p v-if="useLoop">
-                            <label>相对循环内文本索引值（0表示使用整个当前循环的文本当做索引值，如果大于0则表示当前循环的文本用~来分割开的文本索引取值，即如果当前循环的文本值为2~3，这里填写2，则表示取文本第二项，即取值3，表示设置下拉框为第3项）</label>
-                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]'></input></p>
-                        </p>
+                        <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop' id="step-6-3" data-param="useLoop">使用循环内的索引值（不勾选则输入为下方“设定值”文本框内的内容，勾选后会使用所在“文本列表”循环内设置的下拉框索引值）</label>
+                        <div v-if="useLoop">
+                            <label>相对循环内文本索引值</label><details class="inspector-help"><summary>使用说明</summary><div>相对循环内文本索引值（0表示使用整个当前循环的文本当做索引值，如果大于0则表示当前循环的文本用~来分割开的文本索引取值，即如果当前循环的文本值为2~3，这里填写2，则表示取文本第二项，即取值3，表示设置下拉框为第3项）</div></details>
+                            <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" type="number" v-model.number='nowNode["parameters"]["index"]' id="step-6-4" data-param="index"></div>
                     </div>
-                    <label>XPath： </label>
-                    <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='nowNode["parameters"]["xpath"]'></textarea>
-                    <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
+
                     <div v-if="!useLoop">
                         <p>切换模式</p>
-                        <select class="form-control" v-model='nowNode["parameters"]["optionMode"]'>
+                        <select class="form-control" v-model='nowNode["parameters"]["optionMode"]' id="step-6-5" data-param="optionMode">
                             <option :value=0>切换到下一个选项</option>
                             <option :value=1>按索引值切换选项（第一个选项索引值为0）</option>
                             <option :value=2>按选项值切换选项</option>
                             <option :value=3>按选项文本切换选项</option>
                         </select>
-                        <p>设定值（不适用于切换到下一个选项模式）</p>
-                        <input spellcheck=false class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' autoFocus="autofocus" type="text"></input>
-                    </div>
-                </div>
+                        <div class="mode-dependent" v-if="Number(nowNode.parameters.optionMode)!==0"><label for="selectValue">{{Number(nowNode.parameters.optionMode)===1 ? '选项索引（从 0 开始）' : Number(nowNode.parameters.optionMode)===2 ? '选项值' : '选项文本'}}</label><input spellcheck=false class="form-control" id="selectValue" v-model='nowNode["parameters"]["optionValue"]' type="text" data-param="optionValue"></div>
+                    </div></section>
+</div>
 
-                <div class="elements" v-if="nodeType==7">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>元素在iframe内</p>
+<div class="elements step-inspector" v-if="nodeType==7">
+<section class="inspector-section"><h3>元素定位</h3>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-7-1" data-param="iframe">元素在iframe内</label>
+
                     <div v-if="nowNode['isInLoop']">
                         <!-- 如果在循环内才显示此行元素 -->
-                        <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop'></input>使用相对循环内的XPath定位的元素</p>
+                        <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='useLoop' id="step-7-2" data-param="useLoop">使用相对循环内的XPath定位的元素</label>
                     </div>
+
                     <div>
-                        <label>XPath： </label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath'></textarea>
-                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">点此查看其他等价的XPath</button></p>
-                        <label>任务运行时最终定位的本元素XPath：</label>
-                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite"></textarea>
-                    </div>
+                        <label>XPath </label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" v-model='xpath' id="step-7-3" data-param="xpath"></textarea>
+                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode['parameters']['allXPaths'])" class="btn btn-outline-primary" style="margin-top: 10px" title="点此查看其他等价的XPath">查看等价 XPath</button></p>
+                        <label for="step-7-4">任务运行时最终定位的本元素XPath：</label>
+                        <textarea v-model="getFinalXPath(nowNode['parameters']['xpath'], useLoop)" spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" readonly style="background:ghostwhite" id="step-7-4" data-param="readonly"></textarea>
+                    </div></section>
+</div>
 
+<div class="elements step-inspector" v-if="nodeType==8">
+<section class="inspector-section"><h3>循环来源</h3>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-8-1" data-param="iframe">在iframe内操作</label>
 
-                </div>
-
-                <div class="elements" v-if="nodeType==8">
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
                     <!-- 循环选项 -->
                     <label>循环类型：</label>
-                    <select v-model='loopType' class="form-control" @change="handleLoopTypeChange">
+                    <select v-model='loopType' class="form-control" @change="handleLoopTypeChange" id="step-8-2" data-param="loopType">
                         <option :value = 0>单个元素（多用于循环点击下一页）</option>
                         <option :value = 1>不固定元素列表</option>
                         <option :value = 2>固定元素列表</option>
@@ -560,88 +527,97 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <option :value = 6>系统命令返回值</option>
                         <option :value = 7>执行环境下的Python表达式值（eval操作）</option>
                       </select>
+
                     <div v-if='parseInt(loopType) < 2'>
-                        <label>XPath： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder="循环里的XPath不能用@href或者text()这种写法，只能定位元素不能取属性值，即@href和text()这种写法只在提取数据操作中支持，并且不推荐，建议直接在提取数据操作中选择节点类型和采集内容类型。" v-model='nowNode["parameters"]["xpath"]'></textarea>
-                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-primary" style="margin-top: 10px">（测试功能）点此查看其他可能的XPath写法</button></p>
+                        <label for="step-8-3">XPath <span class="help-icon"  title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 16v1"/></svg></span></label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="2" placeholder="循环里的XPath不能用@href或者text()这种写法，只能定位元素不能取属性值，即@href和text()这种写法只在提取数据操作中支持，并且不推荐，建议直接在提取数据操作中选择节点类型和采集内容类型。" v-model='nowNode["parameters"]["xpath"]' id="step-8-3" data-param="xpath"></textarea>
+                        <p><button type="button" data-toggle="modal" data-target="#myModal_XPath" @click="changeXPaths(nowNode.parameters['allXPaths'])" class="btn btn-outline-primary" style="margin-top: 10px" title="（测试功能）点此查看其他可能的XPath写法">其他 XPath</button></p>
                     </div>
+
                     <div v-else-if='parseInt(loopType) == 2'>
-                        <label>XPath列表：</label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个XPath，循环里的XPath不能用@href或者text()这种写法，只能定位元素不能取属性值，即@href和text()这种写法只在提取数据操作中支持，并且不推荐，建议直接在提取数据操作中选择节点类型和采集内容类型。"  v-model='nowNode["parameters"]["pathList"]'></textarea>
+                        <label for="step-8-4">XPath列表：</label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个XPath，循环里的XPath不能用@href或者text()这种写法，只能定位元素不能取属性值，即@href和text()这种写法只在提取数据操作中支持，并且不推荐，建议直接在提取数据操作中选择节点类型和采集内容类型。"  v-model='nowNode["parameters"]["pathList"]' id="step-8-4" data-param="pathList"></textarea>
                     </div>
+
                     <div v-else-if='parseInt(loopType) < 5'>
-                        <label>内容列表（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）：</label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个文本/网址，用~来分割文字，即如果某行值为A~B，则在输入文字操作中可以设定索引值为1表示输入A，2表示输入B，0表示输入A~B" v-model='nowNode["parameters"]["textList"]'></textarea>
+                        <label for="step-8-5">内容列表</label><details class="inspector-help"><summary>使用说明</summary><div>内容列表（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）：</div></details>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" placeholder="每行一个文本/网址，用~来分割文字，即如果某行值为A~B，则在输入文字操作中可以设定索引值为1表示输入A，2表示输入B，0表示输入A~B" v-model='nowNode["parameters"]["textList"]' id="step-8-5" data-param="textList"></textarea>
                     </div>
+
                     <div v-else-if='parseInt(loopType) < 8'>
-                        <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则继续循环，否则停止循环。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 220px; font-size: 15px!important; word-wrap: break-word; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='parseInt(loopType) == 7'>请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
+                        <label for="step-8-6">代码/脚本内容</label><details class="inspector-help"><summary>使用说明</summary><div>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </div></details>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则继续循环，否则停止循环。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。" id="step-8-6" data-param="code"></textarea>
+                        <details class="inspector-help" v-if="parseInt(loopType) == 7"><summary>查看代码说明与示例</summary><pre class="inspector-code-help">请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
 根据Python代码的表达式值来决定是否循环，示例：
 1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"，表示判断当前页面是否为123这个文本。
 2. 返回自定义全局变量的值：self.myVar
 3. 返回条件判断的值：self.myVar > 1
 4. 判断某个字段提取的值是否等于某个变量的值：self.outputParameters["字段名"] == self.myVar
 以上表达式返回值大于0或为真则继续循环，否则停止循环。
-                        </pre>
-                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
-                    </div>
+                        </pre></details>
+                        <label for="step-8-7">最长等待脚本执行时间（0代表无限等待）： </label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]' id="step-8-7" data-param="waitTime">
+                    </div></section>
+<details class="inspector-details" :open="Boolean(nowNode.parameters.exitCount || nowNode.parameters.breakMode)"><summary>循环退出条件</summary>
                     <!-- 这里添加退出循环条件,找不到元素肯定退出循环 -->
                     <div v-if='parseInt(loopType) == 0'>
-                    <label>最多执行循环次数（0代表无限循环直到找不到元素或检测不到页面元素内容变化为止）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]'></input>
-                        <label>检测页面以下元素内容不变化时退出循环（次数为0时生效，如果是多层嵌套iframe，建议写一个只有要提取的iframe页面内才有的元素的XPath，如/html/body/div[@class='LeftSide_menu']）：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]'></input>
+                    <label for="step-8-8">最多执行循环次数</label><details class="inspector-help"><summary>使用说明</summary><div>最多执行循环次数（0代表无限循环直到找不到元素或检测不到页面元素内容变化为止）：</div></details>
+                    <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["exitCount"]' id="step-8-8" data-param="exitCount">
+                        <label for="step-8-9">检测页面以下元素内容不变化时退出循环</label><details class="inspector-help"><summary>使用说明</summary><div>检测页面以下元素内容不变化时退出循环（次数为0时生效，如果是多层嵌套iframe，建议写一个只有要提取的iframe页面内才有的元素的XPath，如/html/body/div[@class='LeftSide_menu']）：</div></details>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="text" v-model='nowNode["parameters"]["exitElement"]' id="step-8-9" data-param="exitElement">
                     </div>
+
 
                     <div id="breakAdvanced" v-if='nowNode["parameters"]["loopType"] < 5'>
                         <div>
-                            <p><label>（自定义操作）使用代码/脚本定义循环退出条件（也可以在流程中添加<b>自定义操作</b>，然后选择<b>退出循环</b>选项）： </label></p>
-                            <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold">
+                            <p><label for="step-8-12">（自定义操作）使用代码/脚本定义循环退出条件（也可以在流程中添加<b>自定义操作</b>，然后选择<b>退出循环</b>选项）： </label></p>
+                            <select v-model='nowNode["parameters"]["breakMode"]' class="form-control" style="font-weight: bold" id="step-8-10" data-param="breakMode">
                                 <option :value = 0>不设置脚本（选择这个下面写了脚本也不会执行）</option>
                                 <option :value = 1>JavaScript脚本返回值（需以return 开头）</option>
                                 <option :value = 2>操作系统级别命令</option>
                             </select>
                             <div>
                                 <textarea spellcheck=false style="margin-top: 10px" onkeydown="inputDelete(event)" class="form-control" rows="2"
-                                          placeholder='命令返回值小于等于0或为假时则直接退出循环，不管其他条件如何。如：document.evaluate("//div[1]/a", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue == null 或 python D:/test.py，分别为JS命令（判断某元素是否存在）和系统命令返回值示例。' v-model='nowNode["parameters"]["breakCode"]'></textarea>
+                                          placeholder='命令返回值小于等于0或为假时则直接退出循环，不管其他条件如何。如：document.evaluate("//div[1]/a", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue == null 或 python D:/test.py，分别为JS命令（判断某元素是否存在）和系统命令返回值示例。' v-model='nowNode["parameters"]["breakCode"]' id="step-8-11" data-param="breakCode"></textarea>
                                 <label>最长等待脚本执行时间（0代表无限等待）：</label>
-                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["breakCodeWaitTime"]'></input>
+                                <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["breakCodeWaitTime"]' id="step-8-12" data-param="breakCodeWaitTime">
                             </div>
                         </div>
-                    </div>
+                    </div></details>
+<section class="inspector-section"><h3>循环执行设置</h3>
 
                     <div v-if="parseInt(loopType) < 5 && parseInt(loopType) > 0">
-                        <label>跳过前几次循环（如要跳过前2个循环则填写2）：</label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["skipCount"]'></input>
+                        <label for="step-8-13">跳过前几次循环（如要跳过前2个循环则填写2）：</label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["skipCount"]' id="step-8-13" data-param="skipCount">
                     </div>
 
-                    <label><b>历史记录回退后</b>等待秒数：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]'></input>
 
-                    <label>执行完是否向下滚动：</label>
-                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control">
+                    <label for="step-8-14"><b>历史记录回退后</b>等待秒数：</label>
+                    <input spellcheck=false onkeydown="inputDelete(event)" required type="number" class="form-control" v-model.number='list.nl[index.nowNodeIndex]["parameters"]["historyWait"]' id="step-8-14" data-param="historyWait"></section>
+<details class="inspector-details"><summary>滚动设置</summary>
+
+                    <label for="step-8-15">执行完是否向下滚动：</label>
+                    <select v-model='nowNode["parameters"]["scrollType"]' class="form-control" id="step-8-15" data-param="scrollType">
                         <option :value = 0>不滚动</option>
                         <option :value = 1>向下滚动一屏</option>
                         <option :value = 2>滚动到底部</option>
                         <option :value = 3>一直滚动直到页面内容无变化（需设置好滚动后的等待时间用于检测页面变化）</option>
                     </select>
-                    <label>滚动次数（滚动类型设置为<b>不滚动</b>或<b>一直滚动</b>时请忽略此项）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required></input>
-                    <label>滚动后等待时间（秒）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required></input>
-                </div>
 
-                <div class="elements" v-if="nodeType==9">
-                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。设计任务时点击分支即可在浏览器中<b>动态调试</b>分支是否满足（不适用于系统命令和Python Eval操作）。</label>
-                </div>
+                    <div class="mode-dependent" v-if="Number(nowNode.parameters.scrollType)!==0"><label for="step-8-16">{{Number(nowNode.parameters.scrollType)===3 ? '滚动启用值（大于 0）' : '滚动次数'}}</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollCount']" type="number" required id="step-8-16" data-param="scrollCount"><p class="mode-help" v-if="Number(nowNode.parameters.scrollType)===3">页面不再变化时停止滚动；此值须大于 0，才能启用连续滚动。</p></div>
 
-                <div class="elements" v-if="nodeType==10">
-                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。设计任务时点击分支即可在浏览器中<b>动态调试</b>分支是否满足（不适用于系统命令和Python Eval操作）。</label>
-                    <p><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]'></input>在iframe内操作</p>
-                    <label>条件类型：</label>
-                    <select v-model='TClass' class="form-control" @change="handleJudgeTypeChange">
+                    <div class="mode-dependent" v-if="Number(nowNode.parameters.scrollType)!==0"><label for="step-8-17">滚动后等待时间（秒）：</label><input spellcheck=false onkeydown="inputDelete(event)" class="form-control" v-model.number="nowNode['parameters']['scrollWaitTime']" type="number" required id="step-8-17" data-param="scrollWaitTime"></div></details>
+</div>
+
+<div class="elements step-inspector" v-if="nodeType==9">
+<section class="inspector-section"><h3>分支执行顺序</h3>
+                    <p class="inspector-note">判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。设计任务时点击分支即可在浏览器中<b>动态调试</b>分支是否满足（不适用于系统命令和Python Eval操作）。</p></section>
+</div>
+
+<div class="elements step-inspector" v-if="nodeType==10">
+<section class="inspector-section"><h3>判断条件</h3>
+                    <label for="step-10-1">条件类型：</label>
+                    <select v-model='TClass' class="form-control" @change="handleJudgeTypeChange" id="step-10-1" data-param="TClass">
                         <option :value = 0>无条件</option>
                         <option :value = 1>当前页面包括文本</option>
                         <option :value = 2>当前页面包括元素</option>
@@ -653,32 +629,40 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <option :value = 8>执行环境下的Python表达式值（eval操作）</option>
                       </select>
 
+
                     <div v-if='TClass > 0 && TClass < 5'>
-                        <label>包含的文字/元素XPATH： <span style="font-size: 30px!important;" title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']">☺</span></label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]'></textarea>
+                        <label for="step-10-2">包含的文字/元素XPATH： <span class="help-icon"  title="相对XPATH写法：以/开头，如循环项XPATH为/html/body/div[1],您的输入为/*[@id='tab-customer'],则最终寻址的xpath为：/html/body/div[1]/*[@id='tab-customer']"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 16v1"/></svg></span></label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" required placeholder="如果是当前循环包含元素，则输入相对元素的xpath（如/div[2]/div[1]/img，如果写相对路径，需要写成/*//img，即检测当前循环项所有的子孙元素是否存在img标签）。" class="form-control" rows="3" v-model='nowNode["parameters"]["value"]' id="step-10-2" data-param="value"></textarea>
                     </div>
+
                     <div v-else-if='TClass > 0 && TClass < 7 || TClass == 8'>
-                        <label>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则执行此分支内操作，否则不执行。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。"></textarea>
-                        <pre class="form-control" style="background: white; margin-top: 20px; min-height: 200px; font-size: 15px!important; word-wrap: break-word!important; white-space: pre-wrap; border-radius: 0; border: 1px solid" disabled v-if='TClass == 8'>请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
+                        <label for="step-10-3">代码/脚本内容</label><details class="inspector-help"><summary>使用说明</summary><div>代码/脚本内容（用Field["字段名"]来输入某字段/自定义操作的最新提取/返回值）： </div></details>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="命令返回值大于0或为真则执行此分支内操作，否则不执行。如：return document.body.scrollWidth > 1000 或 python D:/test.py，分别为JS命令和系统命令返回值示例。" id="step-10-3" data-param="code"></textarea>
+                        <details class="inspector-help" v-if="TClass == 8"><summary>查看代码说明与示例</summary><pre class="inspector-code-help">请先阅读此说明，再在上方输入框（不是本框）写具体代码，如果要执行大量代码，可以直接写outside:myCode.py，这样程序就会读取并执行EasySpider目录下的myCode.py中的代码。
 根据Python代码的表达式值来判断条件是否满足，示例：
 1. 返回当前浏览器对象的相关值，用self.browser表示当前操作的浏览器，可直接用selenium的API进行操作，如self.browser.find_element(By.CSS_SELECTOR, "body").text=="123"，表示判断当前页面是否为123这个文本。
 2. 返回自定义全局变量的值：self.myVar，如果
 3. 返回条件判断的值：self.myVar == 1
 4. 判断某个字段提取的值是否等于某个变量的值：self.outputParameters["字段名"] == self.myVar
 以上表达式返回值大于0或为则执行此分支内操作，否则不执行。
-                        </pre>
-                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
+                        </pre></details>
+                        <label for="step-10-4">最长等待脚本执行时间（0代表无限等待）： </label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]' id="step-10-4" data-param="waitTime">
                     </div>
+
                     <div v-else-if='TClass == 7'>
-                        <label>代码/脚本内容（<a href="https://github.com/NaiboWang/EasySpider/wiki/Example-of-JavaScript-instruction-for-the-current-iteration-in-a-conditional-statement" target="_blank">点击此处</a>查看更多示例）： </label>
-                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="输入针对该循环项的JS命令，该循环项用arguments[0]表示，返回值大于0或为真则执行此分支内操作，否则不执行。如：return arguments[0].innerText.length >5 即判断当前循环项的文本长度是否大于5，注意要配合循环类型为元素相关（如不固定元素列表）使用。"></textarea>
-                        <label>最长等待脚本执行时间（0代表无限等待）： </label>
-                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]'></input>
-                    </div>
-                </div>
-                <div style="margin-top:5px">
+                        <label for="step-10-5">代码/脚本内容（<a href="https://github.com/NaiboWang/EasySpider/wiki/Example-of-JavaScript-instruction-for-the-current-iteration-in-a-conditional-statement" target="_blank">点击此处</a>查看更多示例）： </label>
+                        <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" rows="3" v-model='nowNode["parameters"]["code"]' placeholder="输入针对该循环项的JS命令，该循环项用arguments[0]表示，返回值大于0或为真则执行此分支内操作，否则不执行。如：return arguments[0].innerText.length >5 即判断当前循环项的文本长度是否大于5，注意要配合循环类型为元素相关（如不固定元素列表）使用。" id="step-10-5" data-param="code"></textarea>
+                        <label for="step-10-6">最长等待脚本执行时间（0代表无限等待）： </label>
+                        <input spellcheck=false onkeydown="inputDelete(event)" required class="form-control" type="number" v-model.number='nowNode["parameters"]["waitTime"]' id="step-10-6" data-param="waitTime">
+                    </div></section>
+<details class="inspector-details"><summary>元素定位</summary>
+                    <label class="inspector-check"><input spellcheck=false onkeydown="inputDelete(event)" type="checkbox" v-model='nowNode["parameters"]["iframe"]' id="step-10-7" data-param="iframe">在iframe内操作</label></details>
+<details class="inspector-details"><summary>分支执行顺序</summary>
+                    <label>判断条件是从左往右判断的，即如果最左边的条件分支的判断条件满足，则执行最左边分支内的操作，否则判断从左向右第二个分支的条件是否满足，以此类推。设计任务时点击分支即可在浏览器中<b>动态调试</b>分支是否满足（不适用于系统命令和Python Eval操作）。</label></details>
+</div>
+
+<details class="wait-settings" v-if="nodeType!=0"><summary>等待设置（可选）</summary><div><div class="idle-scroll-wait" v-if="[1,2,8].indexOf(nodeType)!==-1 && Number(nowNode.parameters.scrollType)===0"><label for="idle-scroll-wait">页面处理附加等待（秒）</label><input id="idle-scroll-wait" class="form-control" type="number" step="any" onkeydown="inputDelete(event)" v-model.number="nowNode.parameters.scrollWaitTime" data-param="idleScrollWaitTime"><p class="mode-help">不滚动时仍会等待此时长；启用滚动后，该值用于滚动前后等待。</p></div>
                     <label>操作<b>执行前</b>等待以下元素出现：</label>
                     <textarea spellcheck=false onkeydown="inputDelete(event)" class="form-control" style="min-height: 30px" v-model='list.nl[index.nowNodeIndex]["parameters"]["waitElement"]'
                               placeholder="填写要等待出现元素的XPath，不填写则不等待"></textarea>
@@ -696,89 +680,66 @@ print(emotlib.emoji()) # 使用其中的函数。
                         </select>
                     </div>
                 </div>
+</details>
 <!--                <button class="btn btn-outline-primary" style="margin-top: 20px;" id="confirm">确定</button>-->
 
-            </div>
+            </div></aside></main><footer class="editor-status"><p>拖动操作到箭头处添加步骤；单击节点编辑参数，双击试运行，右键查看更多操作。</p><p><span id="active-tool"></span> <span id="flow-step-count"></span></p></footer>
 
-
-        </div>
-
-    </div>
-
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade task-settings-modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title" id="myModalLabel">保存任务（可按Ctrl+S调出此窗口）</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
-                <div class="modal-body" style="height:60vh;overflow: auto">
-                    <input spellcheck=false onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1"></input>
-                    <input spellcheck=false onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank"></input>
-                    <input spellcheck=false id="create_time" type="hidden"></input>
-                    <label>任务名称：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></input>
-                    <label>任务描述：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></input>
-                    <label>导出数据格式（Excel/CSV/TXT/数据库，<a href="https://www.bilibili.com/video/BV1os4y1679S/" target="_blank">查看MySQL操作教程</a>）：</label>
-                    <select id="outputFormat" class="form-control">
-                        <option value = "csv">CSV（采集长文章推荐使用此格式）</option>
-                        <option value = "xlsx">XLSX（即EXCEL文件，建议单个单元格长度超过500时使用CSV格式存储）</option>
-                        <option value = "txt">TXT</option>
-                        <option value = "json">JSON</option>
-                        <option value = "mysql">MySQL数据库（大量数据推荐使用）</option>
-                    </select>
-                    <label>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
-                    <label>数据写入模式（上方导出文件名/数据库表格名称需固定，同一个任务ID多次执行时生效）：</label>
-                    <select id="dataWriteMode" name="dataWriteMode" class="form-control">
-                        <option value=1>追加写入（如果文件已存在则在原文件后面追加）</option>
-                        <option value=2>覆盖写入（如果文件已存在则覆盖原文件）</option>
-                        <option value=3>重命名写入（如果文件已存在则重命名文件）</option>
-                    </select>
-<!--                    <label>是否为Cloudflare等极端反爬网站（<a href="https://www.bilibili.com/video/BV1Ph4y1E7R9/" target="_blank">查看Cloudflare设计和执行教程</a>）：</label>-->
-<!--                    <select id="cloudflare" name="cloudflare" class="form-control">-->
-<!--                        <option value = 0>否</option>-->
-<!--                        <option value = 1>是（只支持Windows x64系统）</option>-->
-<!--                    </select>-->
-                    <label>执行完成后是否去除重复数据（注意此功能需要等到任务结束时执行，因此执行任务中途退出将无法进行去重）：</label>
-                    <select id="removeDuplicate" name="removeDuplicate" class="form-control">
-                        <option value = 0>否</option>
-                        <option value = 1>是（注意上方文件名应该为固定名称而不是current_time，同时每次执行任务时的执行ID要为同一个）</option>
-                    </select>
-                    <label>执行时通过读取以下Excel（.xlsx）文件来修改各个操作的输入参数，文件格式请在调用任务时点击“从Excel文件读取输入参数”按钮查看：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="为空则不从Excel读取输入参数，文件路径相对于EasySpider文件夹，如inputs/task1.xlsx"></input>
-                    <label>浏览器模拟类型：</label>
-                    <select id="environment" name="environment" class="form-control">
+                <div class="modal-body task-settings-layout"><input spellcheck=false onkeydown="inputDelete(event)" id="serviceId" type="hidden" name="serviceId" value="-1">
+<input spellcheck=false onkeydown="inputDelete(event)" id="url" type="hidden" name="url" value="about:blank">
+<input spellcheck=false id="create_time" type="hidden">
+<input type="hidden" id="browser" name="browser" value="chrome"><nav class="task-settings-nav" role="tablist" aria-orientation="vertical" aria-label="任务设置分组"><button type="button" role="tab" id="settings-tab-basic" data-settings-tab="basic" aria-controls="settings-panel-basic" aria-selected="true" tabindex="0" class="settings-tab is-active">基本信息</button>
+<button type="button" role="tab" id="settings-tab-output" data-settings-tab="output" aria-controls="settings-panel-output" aria-selected="false" tabindex="-1" class="settings-tab">输出保存</button>
+<button type="button" role="tab" id="settings-tab-runtime" data-settings-tab="runtime" aria-controls="settings-panel-runtime" aria-selected="false" tabindex="-1" class="settings-tab">运行设置</button>
+<button type="button" role="tab" id="settings-tab-advanced" data-settings-tab="advanced" aria-controls="settings-panel-advanced" aria-selected="false" tabindex="-1" class="settings-tab">高级设置</button></nav><div class="task-settings-content"><section id="settings-panel-basic" class="task-settings-panel" role="tabpanel" aria-labelledby="settings-tab-basic" ><h3>基本信息</h3><p class="settings-panel-description">名称与描述</p><div class="task-setting-grid"><div class="task-setting-field task-setting-field--wide"><label for="serviceName">任务名称</label><input spellcheck=false onkeydown="inputDelete(event)" required name="serviceName" value="新web采集任务" id="serviceName" class="form-control"></div>
+<div class="task-setting-field task-setting-field--wide"><label for="serviceDescription">任务描述</label><input spellcheck=false onkeydown="inputDelete(event)" id="serviceDescription" name="serviceDescription" class="form-control"></div></div></section>
+<section id="settings-panel-output" class="task-settings-panel" role="tabpanel" aria-labelledby="settings-tab-output" hidden><h3>输出保存</h3><p class="settings-panel-description">数据格式、文件与保存频率</p><div class="task-setting-grid"><div class="task-setting-field"><label for="outputFormat">导出格式</label><select id="outputFormat" class="form-control">
+                        <option value="csv" title="CSV（采集长文章推荐使用此格式）">CSV</option>
+                        <option value="xlsx" title="XLSX（即EXCEL文件，建议单个单元格长度超过500时使用CSV格式存储）">XLSX (Excel)</option>
+                        <option value="txt" title="TXT">TXT</option>
+                        <option value="json" title="JSON">JSON</option>
+                        <option value="mysql" title="MySQL数据库（大量数据推荐使用）">MySQL</option>
+                    </select><p class="mode-help" data-setting-hint="outputFormat"></p><details class="task-setting-note"><summary>使用说明</summary><div>导出数据格式（Excel/CSV/TXT/数据库，<a href="https://www.bilibili.com/video/BV1os4y1679S/" target="_blank">查看MySQL操作教程</a>）：</div></details></div>
+<div class="task-setting-field"><label for="saveName">文件名 / 表名</label><input spellcheck=false onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"><p class="mode-help" data-setting-hint="saveName"></p><details class="task-setting-note"><summary>使用说明</summary><div>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</div></details></div>
+<div class="task-setting-field task-setting-field--wide"><label for="dataWriteMode">写入方式</label><select id="dataWriteMode" name="dataWriteMode" class="form-control">
+                        <option value="1" title="追加写入（如果文件已存在则在原文件后面追加）">追加写入</option>
+                        <option value="2" title="覆盖写入（如果文件已存在则覆盖原文件）">覆盖写入</option>
+                        <option value="3" title="重命名写入（如果文件已存在则重命名文件）">重命名写入</option>
+                    </select><p class="mode-help" data-setting-hint="dataWriteMode"></p><details class="task-setting-note"><summary>使用说明</summary><div>数据写入模式（上方导出文件名/数据库表格名称需固定，同一个任务ID多次执行时生效）：</div></details></div>
+<div class="task-setting-field"><label for="removeDuplicate">任务结束后去重</label><select id="removeDuplicate" name="removeDuplicate" class="form-control">
+                        <option value="0" title="否">否</option>
+                        <option value="1" title="是（注意上方文件名应该为固定名称而不是current_time，同时每次执行任务时的执行ID要为同一个）">是</option>
+                    </select><p class="mode-help" data-setting-hint="removeDuplicate"></p><details class="task-setting-note"><summary>使用说明</summary><div>执行完成后是否去除重复数据（注意此功能需要等到任务结束时执行，因此执行任务中途退出将无法进行去重）：</div></details></div>
+<div class="task-setting-field"><label for="saveThreshold">每 N 条数据保存一次</label><input spellcheck=false onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"><p class="mode-help">保存间隔也影响断点续采的进度记录。</p><details class="task-setting-note"><summary>使用说明</summary><div>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</div></details></div></div></section>
+<section id="settings-panel-runtime" class="task-settings-panel" role="tabpanel" aria-labelledby="settings-tab-runtime" hidden><h3>运行设置</h3><p class="settings-panel-description">浏览器环境与运行控制</p><div class="task-setting-grid"><div class="task-setting-field"><label for="environment">浏览器模拟类型</label><select id="environment" name="environment" class="form-control">
                         <option value = 0>电脑端</option>
                         <option value = 1>手机端</option>
-                    </select>
-                    <label>是否最大化浏览器窗口：</label>
-                    <select id="maximizeWindow" name="maximizeWindow" class="form-control">
+                    </select></div>
+<div class="task-setting-field"><label for="maximizeWindow">最大化浏览器窗口</label><select id="maximizeWindow" name="maximizeWindow" class="form-control">
                         <option value = 0>否</option>
                         <option value = 1>是</option>
-                    </select>
-                    <label>每采集多少条数据保存一次（值越大采集速度越快，但如果意外退出则有数据丢失风险）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" type="number" value="10" id="saveThreshold" name="saveThreshold" class="form-control"></input>
-                    <label>是否要意外退出并重新执行任务时从上次保存的位置继续执行（已采集条数记录间隔为上面设置的值）：</label>
-                    <select id="startFromExit" name="startFromExit" class="form-control">
-                        <option value = 0>否</option>
-                        <option value = 1>是（需要运行同一个任务ID和固定的文件名，请用命令行执行并指定ID）</option>
-                    </select>
-                    <label>任务执行完毕后自动关闭浏览器等待秒数（用户信息临时目录将在浏览器关闭后自动删除）：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" type="number" value="60" id="quitWaitTime" name="quitWaitTime" class="form-control"></input>
-                    <label>控制台预览时数据最大显示长度：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></input>
-                    <label>任务执行时是否记录日志：</label>
-                    <select id="recordLog" name="recordLog" class="form-control">
+                    </select></div>
+<div class="task-setting-field"><label for="quitWaitTime">完成后关闭浏览器等待（秒）</label><input spellcheck=false onkeydown="inputDelete(event)" type="number" value="60" id="quitWaitTime" name="quitWaitTime" class="form-control"><details class="task-setting-note"><summary>使用说明</summary><div>任务执行完毕后自动关闭浏览器等待秒数（用户信息临时目录将在浏览器关闭后自动删除）：</div></details></div>
+<div class="task-setting-field"><label for="pauseKey">暂停 / 继续快捷键</label><input spellcheck=false onkeydown="inputDelete(event)" type="text" value="p" id="pauseKey" class="form-control"></div></div></section>
+<section id="settings-panel-advanced" class="task-settings-panel" role="tabpanel" aria-labelledby="settings-tab-advanced" hidden><h3>高级设置</h3><p class="settings-panel-description">输入覆盖、断点续采与日志</p><div class="task-setting-grid"><div class="task-setting-field task-setting-field--wide"><label for="inputExcel">从 Excel 覆盖输入参数</label><input spellcheck=false onkeydown="inputDelete(event)" id="inputExcel" name="inputExcel" class="form-control" placeholder="为空则不从Excel读取输入参数，文件路径相对于EasySpider文件夹，如inputs/task1.xlsx"><details class="task-setting-note"><summary>使用说明</summary><div>执行时通过读取以下Excel（.xlsx）文件来修改各个操作的输入参数，文件格式请在调用任务时点击“从Excel文件读取输入参数”按钮查看：</div></details></div>
+<div class="task-setting-field task-setting-field--wide"><label for="startFromExit">从上次保存位置继续</label><select id="startFromExit" name="startFromExit" class="form-control">
+                        <option value="0" title="否">否</option>
+                        <option value="1" title="是（需要运行同一个任务ID和固定的文件名，请用命令行执行并指定ID）">是</option>
+                    </select><p class="mode-help">需使用固定文件名，并通过命令行指定同一任务 ID 执行。</p><details class="task-setting-note"><summary>使用说明</summary><div>是否要意外退出并重新执行任务时从上次保存的位置继续执行（已采集条数记录间隔为上面设置的值）：</div></details></div>
+<div class="task-setting-field"><label for="maxViewLength">控制台数据预览长度</label><input spellcheck=false onkeydown="inputDelete(event)" type="number" value="15" id="maxViewLength" class="form-control"></div>
+<div class="task-setting-field"><label for="recordLog">记录运行日志</label><select id="recordLog" name="recordLog" class="form-control">
                         <option value = 1>是</option>
                         <option value = 0>否</option>
-                    </select>
-                    <label>任务暂停/继续快捷键：</label>
-                    <input spellcheck=false onkeydown="inputDelete(event)" type="text" value="p" id="pauseKey" class="form-control"></input>
-                    <input type="hidden" id="browser" name="browser" value="chrome"></input>
-                </div>
+                    </select></div></div></section></div></div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-primary settings-close" data-dismiss="modal">取消</button>
                     <button type="button" id="saveAsButton" style="width: 100px" class="btn btn-outline-primary">另存为</button>
                     <button type="button" id="saveButton" style="width: 100px" class="btn btn-primary">保存</button>
                 </div>
@@ -825,4 +786,5 @@ print(emotlib.emoji()) # 使用其中的函数。
 
 </script>
 
+<script src="flowchart-editor.js"></script>
 </html>
