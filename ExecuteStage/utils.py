@@ -13,7 +13,7 @@ from openpyxl import Workbook, load_workbook
 # import pandas as pd
 # import xlsxwriter
 import requests
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse, urlsplit
 import pymysql
 from lxml import etree
 import smtplib
@@ -200,6 +200,31 @@ def detect_optimizable(param, ignoreWaitElement=True, waitElement=""):
 
 
 
+def _image_file_name(url):
+    """Build a portable basename without changing the URL used for the request."""
+    # Split before decoding so an encoded slash cannot create a subdirectory.
+    file_name = unquote(urlsplit(url).path.rsplit('/', 1)[-1])
+    file_name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '_', file_name).rstrip(' .')
+    if not file_name:
+        file_name = 'image'
+    # Windows also reserves device names when followed by an extension. The
+    # UUID appears after that first extension, so it does not make them safe.
+    device_name = file_name.split('.', 1)[0].rstrip(' ').upper()
+    if re.fullmatch(r'CON|PRN|AUX|NUL|CONIN\$|CONOUT\$|COM[1-9¹²³]|LPT[1-9¹²³]', device_name):
+        file_name = '_' + file_name
+
+    stem, extension = os.path.splitext(file_name)
+    # Image extensions are short. Treat an excessively long suffix as the stem.
+    if len(extension.encode('utf-8')) > 16:
+        stem, extension = file_name, ''
+    # The final name repeats this basename around a 36-character UUID. Limiting
+    # each copy to 80 UTF-8 bytes keeps the whole component below 200 bytes,
+    # leaving room for the directory on Windows and retaining the extension.
+    stem_budget = 80 - len(extension.encode('utf-8'))
+    stem = stem.encode('utf-8')[:stem_budget].decode('utf-8', errors='ignore')
+    return (stem + extension).rstrip(' .') or 'image'
+
+
 def download_image(browser, url, save_directory, element=None):
     # 定义浏览器头信息
     headers = {
@@ -221,7 +246,7 @@ def download_image(browser, url, save_directory, element=None):
     elif is_valid_url(url):
         try:
             # 提取文件名
-            file_name = url.split('/')[-1].split("?")[0]
+            file_name = _image_file_name(url)
 
             # 生成唯一的新文件名
             new_file_name = file_name + '_' + \
