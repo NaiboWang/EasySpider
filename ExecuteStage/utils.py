@@ -1,6 +1,7 @@
 # 工具库
 import csv
 import datetime
+import io
 import json
 import os
 import sys
@@ -292,15 +293,33 @@ def isnotnull(s):
     return len(s) != 0
 
 
+def safe_print(*values, sep=" ", end="\n", file=None, flush=False):
+    """Keep console encoding limitations from interrupting data extraction."""
+    stream = sys.stdout if file is None else file
+    if stream is None:
+        return
+    # Format once: retrying print's individual writes can duplicate a prefix.
+    message = io.StringIO()
+    print(*values, sep=sep, end=end, file=message)
+    text = message.getvalue()
+    try:
+        stream.write(text)
+    except UnicodeEncodeError as error:
+        encoding = getattr(stream, "encoding", None) or error.encoding
+        stream.write(text.encode(encoding, errors="backslashreplace").decode(encoding))
+    if flush:
+        stream.flush()
+
+
 def new_line(outputParameters, maxViewLength, record):
     line = []
     i = 0
     for value in outputParameters.values():
         line.append(value)
         if record[i]:
-            print(value[:maxViewLength], " ", end="")
+            safe_print(value[:maxViewLength], " ", end="")
         i += 1
-    print("")
+    safe_print("")
     return line
 
 
