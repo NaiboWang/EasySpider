@@ -1411,7 +1411,9 @@ function send_message_to_browser(message) {
 const WebSocket = require("ws");
 const {all} = require("express/lib/application");
 const {copy} = require("selenium-webdriver/io");
-let wss = new WebSocket.Server({port: websocket_port});
+// 8084 端口只服务本机页面与浏览器扩展，绑定到回环地址，避免同网段设备直连。
+// 见 issue #986：未限制监听地址时，任意局域网设备都能连上并窃取浏览器 Cookie。
+let wss = new WebSocket.Server({host: "127.0.0.1", port: websocket_port});
 wss.on("connection", function (ws) {
     ws.on("message", async function (message, isBinary) {
         let msg = JSON.parse(message.toString());
