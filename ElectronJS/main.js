@@ -26,6 +26,7 @@ const {exec, spawn, execFile} = require("child_process");
 const iconPath = path.join(__dirname, "favicon.ico");
 const task_server = require(path.join(__dirname, "server.js"));
 const util = require("util");
+const crypto = require("crypto");
 
 let config = fs.readFileSync(
     path.join(task_server.getDir(), `config.json`),
@@ -113,6 +114,9 @@ if(config.webserver_address.includes("localhost") || config.webserver_address.in
 }
 let server_address = `${config.webserver_address}:${config.webserver_port}`;
 const websocket_port = 8084; //目前只支持8084端口，写死，因为扩展里面写死了
+// 每次启动生成一次性 token，仅下发给官方流程图页面。
+// 8084 上只有携带该 token 的连接才能注册 socket_flowchart 或触发 type 7（导出 Cookie）。
+const ws_auth_token = crypto.randomBytes(24).toString("hex");
 console.log("server_address: " + server_address);
 let driverPath = "";
 let chromeBinaryPath = "";
@@ -424,12 +428,12 @@ async function beginInvoke(msg, ws) {
             if (language == "zh") {
                 url =
                     server_address +
-                    `/taskGrid/FlowChart_CN.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
+                    `/taskGrid/FlowChart_CN.html?id=${msg.message.id}&wsport=${websocket_port}&wstoken=${ws_auth_token}&backEndAddressServiceWrapper=` +
                     server_address;
             } else if (language == "en") {
                 url =
                     server_address +
-                    `/taskGrid/FlowChart.html?id=${msg.message.id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
+                    `/taskGrid/FlowChart.html?id=${msg.message.id}&wsport=${websocket_port}&wstoken=${ws_auth_token}&backEndAddressServiceWrapper=` +
                     server_address;
             }
             console.log(url);
@@ -1213,6 +1217,10 @@ async function beginInvoke(msg, ws) {
         }
     } else if (msg.type == 7) {
         // 获得当前页面Cookies
+        if (ws.wsAuthToken !== ws_auth_token) {
+            console.warn("Rejected GetCookies: invalid or missing token");
+            return;
+        }
         try {
             let cookies = await driver.manage().getCookies();
             console.log("Cookies: ", cookies);
@@ -1414,7 +1422,13 @@ const {copy} = require("selenium-webdriver/io");
 // 8084 端口只服务本机页面与浏览器扩展，绑定到回环地址，避免同网段设备直连。
 // 见 issue #986：未限制监听地址时，任意局域网设备都能连上并窃取浏览器 Cookie。
 let wss = new WebSocket.Server({host: "127.0.0.1", port: websocket_port});
-wss.on("connection", function (ws) {
+wss.on("connection", function (ws, req) {
+    // 从握手 URL 取出主进程下发的 token；缺失时为空字符串（后续校验会拒绝）。
+    try {
+        ws.wsAuthToken = new URL(req.url, "http://127.0.0.1").searchParams.get("token") || "";
+    } catch {
+        ws.wsAuthToken = "";
+    }
     ws.on("message", async function (message, isBinary) {
         let msg = JSON.parse(message.toString());
         // console.log("\n\nGET A MESSAGE: ", msg);
@@ -1431,6 +1445,10 @@ wss.on("connection", function (ws) {
                 socket_start = ws;
                 console.log("set socket_start at time: ", new Date());
             } else if (msg.message.id == 2) {
+                if (ws.wsAuthToken !== ws_auth_token) {
+                    console.warn("Rejected socket_flowchart registration: invalid or missing token");
+                    return;
+                }
                 socket_flowchart = ws;
                 // socket_flowchart.on('close', function (event) {
                 //     socket_flowchart = null;
@@ -1719,14 +1737,14 @@ function handleOpenBrowser(
     if (lang == "en") {
         url =
             server_address +
-            `/taskGrid/FlowChart.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
+            `/taskGrid/FlowChart.html?id=${id}&wsport=${websocket_port}&wstoken=${ws_auth_token}&backEndAddressServiceWrapper=` +
             server_address +
             "&mobile=" +
             mobile.toString();
     } else if (lang == "zh") {
         url =
             server_address +
-            `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&backEndAddressServiceWrapper=` +
+            `/taskGrid/FlowChart_CN.html?id=${id}&wsport=${websocket_port}&wstoken=${ws_auth_token}&backEndAddressServiceWrapper=` +
             server_address +
             "&mobile=" +
             mobile.toString();
