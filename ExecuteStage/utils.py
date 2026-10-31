@@ -7,6 +7,7 @@ import sys
 import re
 import time
 import uuid
+import tempfile
 from bs4 import BeautifulSoup
 # import keyboard
 from openpyxl import Workbook, load_workbook
@@ -432,14 +433,26 @@ def write_to_json(file_name, data, types, record, keys):
         # read data from JSON
         with open(file_name, 'r', encoding='utf-8') as f:
             json_data = json.load(f)
-    except:
+    except FileNotFoundError:
         json_data = []
 
+    if not isinstance(json_data, list):
+        raise ValueError("JSON output must contain an array: %s" % file_name)
     json_data.extend(data_to_write)
 
-    # write data to JSON
-    with open(file_name, 'w', encoding='utf-8') as f:
-        json.dump(json_data, f, ensure_ascii=False)
+    # Replace only after serialization succeeds; keep the original on failure.
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+                mode='w', encoding='utf-8',
+                dir=os.path.dirname(os.path.abspath(file_name)),
+                prefix='.easyspider-json-', suffix='.tmp', delete=False) as f:
+            temporary_path = f.name
+            json.dump(json_data, f, ensure_ascii=False)
+        os.replace(temporary_path, file_name)
+    finally:
+        if temporary_path is not None and os.path.exists(temporary_path):
+            os.unlink(temporary_path)
 
 
 def write_to_excel(file_name, data, types, record):
