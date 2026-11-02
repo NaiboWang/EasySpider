@@ -35,10 +35,18 @@ function formatDateTime(date) {
 }
 
 function getUrlParam(name) {
+    if (name === 'lang') return getCurrentLanguage();
     let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
     let r = window.location.search.substr(1).match(reg); //匹配目标参数
     if (r != null) return unescape(r[2]);
     return ""; //返回参数值,默认后台地址
+}
+
+function getCurrentLanguage() {
+    const value = (new URLSearchParams(window.location.search).get('lang') || '').toLowerCase();
+    if (value === 'ch' || value === 'zh' || value.startsWith('zh-')) return 'zh';
+    if (value === 'en' || value.startsWith('en-')) return 'en';
+    return window.location.pathname.endsWith('_CN.html') ? 'zh' : 'en';
 }
 
 // 判断字符串中英文字符的个数哪个多
@@ -83,7 +91,7 @@ Vue.filter('lang', function (value) {
 })
 
 function LANG(zh, en) {
-    if (window.location.href.indexOf("_CN") != -1) {
+    if (getCurrentLanguage() === 'zh') {
         return zh;
     } else {
         return en;
