@@ -728,7 +728,7 @@ If the expression returns a value greater than 0 or evaluates to True, the opera
                         <option value="json">JSON</option>
                         <option value="mysql">MySQL Database (recommended for large amounts of data)</option>
                     </select>
-                    <label>Export File Name/Database Table Name (Can use ../ to represent relative path to change the file save location,the keyword "current_time" will be replaced with the timestamp when the task is executed):</label>
+                    <label>Export File Name/Database Table Name (Use ../ for a relative save path. At task start, "current_time" becomes YYYY_MM_DD_HH_MM_SS and "current_date" becomes YYYY_MM_DD. Example: reports_current_date for daily exports):</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
                     <label>Data Write Mode (The export file/database table name above must be fixed, effective when the same task ID is executed multiple times):</label>
                     <select id="dataWriteMode" name="dataWriteMode" class="form-control">

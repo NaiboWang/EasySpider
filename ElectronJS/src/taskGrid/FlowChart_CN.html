@@ -728,7 +728,7 @@ print(emotlib.emoji()) # 使用其中的函数。
                         <option value = "json">JSON</option>
                         <option value = "mysql">MySQL数据库（大量数据推荐使用）</option>
                     </select>
-                    <label>导出文件名/数据库表格名称（可使用../表示相对路径以改变文件保存位置，名称中的“current_time”会被替换为执行任务时的时间戳）：</label>
+                    <label>导出文件名/数据库表格名称（可使用../表示相对保存路径。任务开始时，“current_time”替换为时间戳YYYY_MM_DD_HH_MM_SS，“current_date”替换为日期YYYY_MM_DD，例如reports_current_date可用于按日保存）：</label>
                     <input spellcheck=false onkeydown="inputDelete(event)" value="current_time" id="saveName" class="form-control"></input>
                     <label>数据写入模式（上方导出文件名/数据库表格名称需固定，同一个任务ID多次执行时生效）：</label>
                     <select id="dataWriteMode" name="dataWriteMode" class="form-control">
