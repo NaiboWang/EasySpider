@@ -79,6 +79,22 @@ python3 easyspider_executestage.py --ids [1]
 
 The above is an example command to run a task with the ID of `1`. For more information on command-line parameters, please refer to: [Argument Instruction](https://github.com/NaiboWang/EasySpider/wiki/Argument-Instruction) on the project's GitHub Wiki.
 
+### 保存名称中的日期 | Dates in Export Names
+
+保存任务时设置的“导出文件名/数据库表格名称”和命令行参数 `--saved_file_name` 支持以下占位符：
+
+- `current_time`：任务开始时的本地时间，格式为 `YYYY_MM_DD_HH_MM_SS`。
+- `current_date`：任务开始时的本地日期，格式为 `YYYY_MM_DD`。
+
+例如，`reports_current_date` 在 2026 年 11 月 3 日执行时会生成 `reports_2026_11_03.csv`（CSV 格式）或使用 `reports_2026_11_03` 作为 MySQL 表名。选择“追加”写入模式并保持相同的任务执行 ID，可把当天多次执行的数据追加到同一文件或表；次日启动的任务使用新的日期。日期在任务开始时确定，跨午夜运行的任务仍使用原名称。命令行指定的名称优先于任务中保存的名称。
+
+The export file/database table name saved in the task and the `--saved_file_name` command-line argument support these placeholders:
+
+- `current_time`: local time at task start, formatted as `YYYY_MM_DD_HH_MM_SS`.
+- `current_date`: local date at task start, formatted as `YYYY_MM_DD`.
+
+For example, running `reports_current_date` on November 3, 2026 produces `reports_2026_11_03.csv` for CSV output, or uses `reports_2026_11_03` as the MySQL table name. Choose **Append** and keep the same execution ID to append repeated runs on the same day to one file or table. A task started the next day uses a new date; a task running across midnight keeps its original name. A command-line name overrides the name saved in the task.
+
 ### VS Code调试 | VS Code Debug
 
 可以用VS Code打开此文件夹即可调试程序，可修改`.vscode`下的`launch.json`文件中的调试参数，调试说明参考：[https://zhuanlan.zhihu.com/p/41189402](https://zhuanlan.zhihu.com/p/41189402)。

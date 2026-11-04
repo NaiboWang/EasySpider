@@ -130,8 +130,8 @@ class BrowserThread(Thread):
         # 名称设定
         if saveName != "":  # 命令行覆盖保存名称
             self.saveName = saveName  # 保存文件的名字
-        now = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        self.saveName = self.saveName.replace("current_time", now)
+        self.saveName = self.saveName.replace("current_time", now.strftime("%Y_%m_%d_%H_%M_%S"))
+        self.saveName = self.saveName.replace("current_date", now.strftime("%Y_%m_%d"))
 
         self.print_and_log("任务ID", id, "的保存文件名为:", self.saveName)
         self.print_and_log("Save Name for task ID", id, "is:", self.saveName)
