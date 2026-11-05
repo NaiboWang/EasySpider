@@ -282,7 +282,7 @@ let app = new Vue({
             }
         },
         getCookies: function () { //获取cookies
-            let command = new WebSocket("ws://localhost:" + getUrlParam("wsport"))
+            let command = new WebSocket("ws://localhost:" + getUrlParam("wsport") + "?token=" + getUrlParam("wstoken"))
             command.onopen = function () {
                 let message = {
                     type: 7, //消息类型，0代表连接操作
