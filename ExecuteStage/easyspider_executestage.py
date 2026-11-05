@@ -233,7 +233,7 @@ class BrowserThread(Thread):
         elif self.outputFormat == "json":
             self.writeMode = WriteMode.Json.value  # JSON模式无需判断是否存在文件
         elif self.outputFormat == "mysql":
-            self.mysql = myMySQL(config["mysql_config_path"])
+            self.mysql = myMySQL(config.get("mysql_config_path", "./mysql_config.json"))
             self.mysql.create_table(self.saveName, service["outputParameters"],
                                     remove_if_exists=self.dataWriteMode == DataWriteMode.Cover.value)
             self.writeMode = WriteMode.MySQL.value  # MySQL模式

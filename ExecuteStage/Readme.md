@@ -95,6 +95,12 @@ The export file/database table name saved in the task and the `--saved_file_name
 
 For example, running `reports_current_date` on November 3, 2026 produces `reports_2026_11_03.csv` for CSV output, or uses `reports_2026_11_03` as the MySQL table name. Choose **Append** and keep the same execution ID to append repeated runs on the same day to one file or table. A task started the next day uses a new date; a task running across midnight keeps its original name. A command-line name overrides the name saved in the task.
 
+### MySQL 配置 | MySQL Configuration
+
+导出到 MySQL 时，请准备包含 `host`、`port`、`username`、`password` 和 `database` 的 `mysql_config.json`。若 `config.json` 未设置 `mysql_config_path`，执行器使用与图形界面相同的默认路径 `./mysql_config.json`；自定义配置文件请在 `config.json` 中设置 `"mysql_config_path": "path/to/mysql_config.json"`。
+
+For MySQL output, provide a `mysql_config.json` containing `host`, `port`, `username`, `password`, and `database`. If `config.json` omits `mysql_config_path`, the executor uses the same default path as the GUI: `./mysql_config.json`. To select a custom file, set `"mysql_config_path": "path/to/mysql_config.json"` in `config.json`.
+
 ### VS Code调试 | VS Code Debug
 
 可以用VS Code打开此文件夹即可调试程序，可修改`.vscode`下的`launch.json`文件中的调试参数，调试说明参考：[https://zhuanlan.zhihu.com/p/41189402](https://zhuanlan.zhihu.com/p/41189402)。
