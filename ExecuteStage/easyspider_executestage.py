@@ -280,12 +280,10 @@ class BrowserThread(Thread):
             if parameters.get("xpath"):
                 parameters["xpath"] = lowercase_tags_in_xpath(parameters["xpath"])
 
-            if parameters.get("waitElementIframeIndex"):
-                parameters["waitElementIframeIndex"] = int(parameters["waitElementIframeIndex"])
-            else:
-                parameters["waitElement"] = ""
-                parameters["waitElementTime"] = 10
-                parameters["waitElementIframeIndex"] = 0
+            # Index 0 means the main page; it must not clear a configured wait.
+            parameters["waitElement"] = parameters.get("waitElement", "")
+            parameters["waitElementTime"] = parameters.get("waitElementTime", 10)
+            parameters["waitElementIframeIndex"] = int(parameters.get("waitElementIframeIndex") or 0)
 
             if option == GraphOption.Get.value:  # 打开网页操作
                 parameters["cookies"] = parameters.get("cookies", "")
@@ -351,8 +349,8 @@ class BrowserThread(Thread):
 
                     waitElement = self.procedure[node["sequence"][0]]["parameters"].get("waitElement", "")
 
-                    if parameters["iframe"] or not params:
-                        parameters["quickExtractable"] = False  # iframe或空字段列表不可以快速提取
+                    if parameters["iframe"] or not params or waitElement:
+                        parameters["quickExtractable"] = False  # iframe、空字段列表或需要等待元素时不可以快速提取
                     else:
                         parameters["quickExtractable"] = True  # 先假设可以快速提取
 
@@ -980,16 +978,22 @@ class BrowserThread(Thread):
                 self.print_and_log("等待元素出现:", waitElement)
                 self.print_and_log(
                     "Waiting for element to appear:", waitElement)
-                if waitElementIframeIndex > 0:
-                    iframes = self.browser.find_elements(
-                        By.CSS_SELECTOR, "iframe", iframe=False)
-                    iframe = iframes[waitElementIframeIndex - 1]
-                    self.browser.switch_to.frame(iframe)
-                WebDriverWait(self.browser, waitElementTime).until(
-                    EC.presence_of_element_located((By.XPATH, waitElement))
-                )
-                if waitElementIframeIndex > 0:
-                    self.browser.switch_to.default_content()
+                self.browser.switch_to.default_content()
+                self.browser.iframe_env = False
+                try:
+                    if waitElementIframeIndex > 0:
+                        iframes = self.browser.find_elements(
+                            By.CSS_SELECTOR, "iframe", iframe=False)
+                        iframe = iframes[waitElementIframeIndex - 1]
+                        self.browser.switch_to.frame(iframe)
+                    # Use Selenium's lookup in the selected frame; MyChrome's
+                    # find_element switches back to the main document.
+                    WebDriverWait(self.browser, waitElementTime).until(
+                        lambda driver: webdriver.Remote.find_element(driver, By.XPATH, waitElement)
+                    )
+                finally:
+                    if waitElementIframeIndex > 0:
+                        self.browser.switch_to.default_content()
         except Exception as e:
             if waitElement != "":
                 self.print_and_log("等待元素出现超时：", waitElement, "，将继续执行。")

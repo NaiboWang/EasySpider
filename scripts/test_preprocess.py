@@ -128,6 +128,29 @@ class PreprocessTests(unittest.TestCase):
         self.assert_populated_extraction(
             {"params": [field("current")], "paras": [field("old")]}, "current")
 
+    def test_wait_element_prevents_quick_extraction(self):
+        for iframe_index, node_type in ((0, 1), ("0", 1), (1, 1), ("1", 1), (0, 4)):
+            for loop_type in (1, 2):
+                for loop_first in (True, False):
+                    with self.subTest(iframe_index=iframe_index, node_type=node_type,
+                                      loop_type=loop_type, loop_first=loop_first):
+                        loop, extract = self.preprocess({
+                            "params": [{**field(), "nodeType": node_type, "downloadPic": 0}],
+                            "waitElement": '//*[@id="ready"]',
+                            "waitElementTime": 5,
+                            "waitElementIframeIndex": iframe_index,
+                        }, loop_type, loop_first)
+                        self.assertEqual(extract["waitElement"], '//*[@id="ready"]')
+                        self.assertEqual(extract["waitElementTime"], 5)
+                        self.assertEqual(extract["waitElementIframeIndex"], int(iframe_index))
+                        self.assertFalse(loop["quickExtractable"])
+
+    def test_legacy_wait_defaults(self):
+        _, extract = self.preprocess({"params": [field()]}, 1, True)
+        self.assertEqual(extract["waitElement"], "")
+        self.assertEqual(extract["waitElementTime"], 10)
+        self.assertEqual(extract["waitElementIframeIndex"], 0)
+
     def test_existing_optimization_guards_remain_active(self):
         for overrides in ({"iframe": True}, {"skipCount": 1}):
             for loop_first in (True, False):
