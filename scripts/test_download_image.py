@@ -64,6 +64,38 @@ class DownloadImageTests(unittest.TestCase):
             r"^photo\.jpg_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_photo\.jpg$",
         )
 
+    def test_http_failure_waits_for_browser_download(self):
+        url = "https://example.com/photo's.png?x=1"
+        session = Mock()
+        session.get.return_value = SimpleNamespace(status_code=403)
+        self.browser.browser.execute_async_script.return_value = (
+            "data:image/png;base64," + base64.b64encode(PNG).decode("ascii")
+        )
+        element = Mock()
+        with patch.object(utils.requests, "session", return_value=session):
+            utils.download_image(self.browser, url, self.directory.name, element)
+        script, passed_url = self.browser.browser.execute_async_script.call_args.args
+        self.assertEqual(passed_url, url)
+        self.assertNotIn(url, script)
+        self.browser.browser.execute_script.assert_not_called()
+        element.screenshot.assert_not_called()
+        self.assertEqual(next(self.output.iterdir()).read_bytes(), PNG)
+
+    def test_browser_failure_keeps_element_screenshot_fallback(self):
+        for result in (None, RuntimeError("script timed out")):
+            with self.subTest(result=result):
+                session = Mock()
+                session.get.return_value = SimpleNamespace(status_code=403)
+                self.browser.browser.execute_async_script.side_effect = (
+                    result if isinstance(result, Exception) else None
+                )
+                self.browser.browser.execute_async_script.return_value = None
+                element = Mock()
+                with patch.object(utils.requests, "session", return_value=session):
+                    utils.download_image(self.browser, "https://example.com/a.png",
+                                         self.directory.name, element)
+                element.screenshot.assert_called_once()
+
     def test_issue_897_colons(self):
         saved = self.download("https://example.com/" + IMAGE_NAME)
         self.assertTrue(saved.name.endswith(IMAGE_NAME.replace(":", "_")))
@@ -169,3 +201,4 @@ class DownloadImageTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+

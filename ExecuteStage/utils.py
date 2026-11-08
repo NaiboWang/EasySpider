@@ -274,10 +274,34 @@ def download_image(browser, url, save_directory, element=None):
                 # browser.print_and_log(f"直接下载图片失败，状态码为:{response.status_code}，尝试使用Selenium下载图片...")
                 # browser.print_and_log(
                     # f"Failed to download image directly, status code is: {response.status_code}, try to download image using Selenium...")
-                JS = "var xhr = new XMLHttpRequest(); xhr.open('GET', '" + url +"', true); xhr.responseType = 'blob'; xhr.onload = function() {var reader = new FileReader(); reader.readAsDataURL(xhr.response); reader.onloadend = function() { var base64data = reader.result;}}; xhr.send();"""
-                base64data = browser.browser.execute_script(JS)
+                # Selenium must wait for both the request and FileReader.
+                # Pass the URL as an argument so quotes cannot break the script.
+                JS = """
+                    const url = arguments[0];
+                    const done = arguments[arguments.length - 1];
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', url, true);
+                    xhr.responseType = 'blob';
+                    xhr.timeout = 10000;
+                    xhr.onerror = xhr.ontimeout = xhr.onabort = () => done(null);
+                    xhr.onload = function () {
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            done(null);
+                            return;
+                        }
+                        const reader = new FileReader();
+                        reader.onerror = reader.onabort = () => done(null);
+                        reader.onload = () => done(reader.result);
+                        reader.readAsDataURL(xhr.response);
+                    };
+                    xhr.send();
+                """
+                try:
+                    base64data = browser.browser.execute_async_script(JS, url)
+                except Exception:
+                    base64data = None
                 if base64data:
-                    image_data = base64data.b64decode(base64data.split(",")[1])
+                    image_data = base64.b64decode(base64data.split(",", 1)[1])
                     with open(save_path, 'wb') as file:
                         file.write(image_data)
                     browser.print_and_log("图片已成功下载到:", save_path)
@@ -855,3 +879,4 @@ class myMySQL:
     
     def __del__(self):
         self.close()
+
