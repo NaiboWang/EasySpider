@@ -73,7 +73,9 @@ def rename_downloaded_file(download_dir, stop_event):
 
             full_path = os.path.join(download_dir, file)
 
-            if not full_path.endswith('.crdownload') and not full_path.endswith('.htm') and not full_path.endswith('.html') and not full_path.startswith('esfile_'):
+            if not os.path.isfile(full_path):
+                continue
+            if not file.endswith(('.crdownload', '.htm', '.html')) and not file.startswith('esfile_'):
                 new_name = "esfile_" + file.split('/')[-1] + '_' + str(uuid.uuid4()) + '_' + file.split('/')[-1]
                 new_path = os.path.join(download_dir, new_name)
                 try:
@@ -855,3 +857,4 @@ class myMySQL:
     
     def __del__(self):
         self.close()
+
