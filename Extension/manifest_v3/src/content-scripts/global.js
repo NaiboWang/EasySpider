@@ -291,6 +291,23 @@ export function LANG(zh, en) {
     }
 }
 
+// Text of the element's own text nodes (not its children), joined with spaces.
+// The executor also joins these text nodes with spaces, so the example values
+// shown while designing match the extracted data.
+function getOwnText(node) {
+    let texts = [];
+    let ndContents = node.childNodes;
+    for (let i = 0; i < ndContents.length; i++) {
+        if (ndContents[i].nodeType === 3) { // if it's a text node
+            let text = ndContents[i].textContent.trim();
+            if (text != "") {
+                texts.push(text);
+            }
+        }
+    }
+    return texts.join(" ").replace(/\s+/g, " ");
+}
+
 function parameterName(value) {
     if (global.lang == 'zh') {
         return value;
@@ -401,14 +418,7 @@ export function generateParameters(type, linktext = true, linkhref = true) {
                 }
             } else if (type == 1) {
                 // ndText = $(nd).contents().filter(function() { return this.nodeType === 3; }).text().replace(/\s+/g, '');
-                ndText = "";
-                let ndContents = nd.childNodes;
-                for (let i = 0; i < ndContents.length; i++) {
-                    if (ndContents[i].nodeType === 3) { // if it's a text node
-                        ndText += ndContents[i].textContent.trim(); // add its content to the string
-                    }
-                }
-                ndText = ndText.replace(/\s+/g, ''); // remove any whitespace characters
+                ndText = getOwnText(nd);
                 pname = parameterName("文本");
                 if (nd.tagName == "IMG") {
                     ndText = nd.getAttribute("src") == null ? "" : nd.getAttribute("src");
@@ -710,14 +720,7 @@ export function handleDescendents(mode = 0) {
 
                     if (index != -1) { //如果是共有元素
                         let unique_index = ndPath;
-                        ndText = "";
-                        let ndContents = nd.childNodes;
-                        for (let i = 0; i < ndContents.length; i++) {
-                            if (ndContents[i].nodeType === 3) { // if it's a text node
-                                ndText += ndContents[i].textContent.trim(); // add its content to the string
-                            }
-                        }
-                        ndText = ndText.replace(/\s+/g, ''); // remove any whitespace characters
+                        ndText = getOwnText(nd);
                         if (ndText != "" || nd == tnode) {
                             global.outputParameterNodes.push({
                                 "node": nd,
@@ -866,14 +869,7 @@ export function handleDescendents(mode = 0) {
                             break;
                         }
                     }
-                    ndText = "";
-                    let ndContents = nd.childNodes;
-                    for (let i = 0; i < ndContents.length; i++) {
-                        if (ndContents[i].nodeType === 3) { // if it's a text node
-                            ndText += ndContents[i].textContent.trim(); // add its content to the string
-                        }
-                    }
-                    ndText = ndText.replace(/\s+/g, ''); // remove any whitespace characters
+                    ndText = getOwnText(nd);
                     let unique_index = ndPath;
                     if (ndText != "" || nd == tnode) {
                         if (mode == 0 || (mode == 1 && (index != -1 || num == 0))) { //如果不是应选尽选，则只添加和第一个元素相同类型的子元素
