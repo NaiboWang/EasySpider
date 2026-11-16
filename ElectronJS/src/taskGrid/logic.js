@@ -8,7 +8,7 @@ let exampleMsg = { //示例消息
     }
 }
 console.log(JSON.stringify(exampleMsg));
-let ws = new WebSocket("ws://localhost:" + getUrlParam("wsport"));
+let ws = new WebSocket("ws://localhost:" + getUrlParam("wsport") + "?token=" + getUrlParam("wstoken"));
 ws.onopen = function () {
     // Web Socket 已连接上，使用 send() 方法发送数据
     console.log("已连接");
