@@ -51,15 +51,17 @@ Get your extra 6% extra credit using EasySpider’s bonus code: **ESN**.
 
 Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) to see how to solve captcha in EasySpider with CapSolver integration.
 
-<a target="_blank" href="https://proxy-seller.com/?partner=21EDFA4F679F4FE3"><img src="media/ProxySeller.png" width=850></img></a>
+<a target="_blank" href="https://www.thordata.com/?ls=des&lk=des"><img src="media/Thordata.jpg" width=850></img></a>
 
-**Proxy-Seller - 专业可靠的网络爬虫与自动化代理服务**
+**Thordata：让 EasySpider 更容易选对代理**
 
-[Proxy-Seller](https://proxy-seller.com/?partner=21EDFA4F679F4FE3)提供高质量的住宅代理、ISP 静态住宅代理、数据中心 IPv4/IPv6 代理及移动代理，覆盖全球 195 多个地区。支持 HTTP(S) 和 SOCKS5 协议，价格灵活，**每个 IP 低至 $0.70 起**，并提供全天候 24/7 客户支持，是网页数据采集、网络爬虫、浏览器自动化及其他在线业务的理想选择。专属 85 折优惠 — 优惠码：**EasySpider666**。
+[Thordata](https://www.thordata.com/?ls=des&lk=des)让 EasySpider 更容易选对代理：批量采集时，使用**旋转住宅代理**自动更换 IP；需要连续浏览、登录或保持任务状态时，切换到**粘性会话**。Thordata 支持国家、城市和 ASN 定向，注册后生成 HTTP(S) 代理连接，复制到 EasySpider 即可使用。适用于商品采集、价格监控、公开网页数据收集和浏览器自动化。EasySpider 用户专享：注册领取试用流量，使用优惠码 **TDSPIDER10** 享 9 折。
 
-**Proxy-Seller - Reliable Proxies for Web Scraping & Automation**
+<a target="_blank" href="https://www.thordata.com/?ls=des&lk=des"><img src="media/Thordata_EN.jpg" width=850></img></a>
 
-[Proxy-Seller](https://proxy-seller.com/?partner=21EDFA4F679F4FE3) provides high-quality Residential, ISP, Datacenter IPv4/IPv6, and Mobile proxies across 195+ locations worldwide. With HTTP(S) and SOCKS5 support, flexible pricing starting at just $0.70 per IP, and 24/7 customer support, Proxy-Seller is an excellent choice for web scraping, data collection, browser automation, and other online tasks. Exclusive 15% Discount - Use Code: **EasySpider666**.
+**Thordata: Choose the Right Proxy for EasySpider**
+
+[Thordata](https://www.thordata.com/?ls=des&lk=des): choose the right proxy for EasySpider. Use **rotating residential proxies** for batch collection and repeated requests. Switch to a **sticky session** when a task needs the same IP while browsing, logging in, or keeping state. Thordata supports country, city, and ASN targeting — generate an HTTP(S) connection after signup and paste it into EasySpider. Useful for product collection, price monitoring, public web data research, and browser automation. **EasySpider users:** get trial traffic after signup and **10% off with code TDSPIDER10**.
 
 <a target="_blank" href="https://byteful.com/proxy-service/residential-proxies?utm_source=github&utm_medium=github-sponsor&utm_campaign=easyspider_github_sponsorship"><img src="media/Byteful.svg" width=850></img></a>
 
@@ -68,6 +70,18 @@ Click [here](https://www.capsolver.com/blog/web-scraping/easyspider-capsolver) t
 <a target="_blank" href="https://byteful.com/proxy-service/residential-proxies?utm_source=github&utm_medium=github-sponsor&utm_campaign=easyspider_github_sponsorship"><img src="media/Byteful_EN.svg" width=850></img></a>
 
 [Byteful](https://byteful.com/proxy-service/residential-proxies?utm_source=github&utm_medium=github-sponsor&utm_campaign=easyspider_github_sponsorship) is a UK-based web data infrastructure platform providing ethically sourced residential, mobile, static residential (ISP) and datacenter proxies alongside API-first tools for web scraping, data collection, and AI-driven automation, processing tens of billions of requests per month. Get access to our ethically sourced proxy network with an exclusive 10% discount code by using **EASYSPIDER10** at checkout. This code only applies to residential data.
+
+<a target="_blank" href="https://puraroute.com/?utm_source=easyspider"><img src="media/PuraRoute.jpg" width=850></img></a>
+
+**PuraRoute：稳定实惠的住宅代理，助力高效网页采集**
+
+[PuraRoute](https://puraroute.com/?utm_source=easyspider)提供稳定、实惠的住宅代理服务，适用于网页采集、批量数据收集及自动化任务。住宅 IP 覆盖全球 195+ 个国家和地区，支持灵活的 IP 轮换、精准地区定位及 HTTP(S)/SOCKS5 协议，轻松满足跨地区数据采集和大规模爬虫任务的需求。动态住宅代理低至 $1.19/GB（100GB 套餐）。使用专属优惠码 **EASYSPIDER10**，还可额外享受 9 折优惠，进一步降低数据采集成本！
+
+<a target="_blank" href="https://puraroute.com/?utm_source=easyspider"><img src="media/PuraRoute_EN.jpg" width=850></img></a>
+
+**PuraRoute: Reliable, Affordable Residential Proxies**
+
+[PuraRoute](https://puraroute.com/?utm_source=easyspider) provides reliable, affordable residential proxies for web scraping, large-scale data collection, and automation. With residential IPs across 195+ countries and regions, flexible IP rotation, precise geo-targeting, and HTTP(S)/SOCKS5 support, PuraRoute makes it easier to collect web data from different locations and scale your scraping projects. Residential proxies start at just $1.19/GB. Use the exclusive code **EASYSPIDER10** for an extra 10% off and keep your scraping costs down!
 
 ## 官方网站/Official Website
 
