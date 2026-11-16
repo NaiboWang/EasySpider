@@ -39,9 +39,12 @@ class DownloadImageTests(unittest.TestCase):
             {"name": "session", "value": "test-token"},
         ]
 
-    def download(self, url):
+    def download(self, url, content_type=None):
         session = Mock()
-        session.get.return_value = SimpleNamespace(status_code=200, content=PNG)
+        headers = {} if content_type is None else {"Content-Type": content_type}
+        session.get.return_value = SimpleNamespace(
+            status_code=200, content=PNG,
+            headers=utils.requests.structures.CaseInsensitiveDict(headers))
         with patch.object(utils.requests, "session", return_value=session):
             utils.download_image(self.browser, url, self.directory.name)
         session.get.assert_called_once()
@@ -123,9 +126,85 @@ class DownloadImageTests(unittest.TestCase):
         self.assertEqual(saved.suffix, ".png")
         self.assertIn("图片", saved.name)
 
+    def test_issue_448_url_without_extension_uses_content_type(self):
+        saved = self.download("https://example.com/images/a1b2c3d4", "image/png")
+        self.assertRegex(
+            saved.name,
+            r"^a1b2c3d4\.png_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_a1b2c3d4\.png$",
+        )
+
+    def test_content_type_parameters_and_case_are_ignored(self):
+        saved = self.download("https://example.com/images/a1b2c3d4", "Image/JPEG; charset=binary")
+        self.assertEqual(saved.suffix, ".jpg")
+
+    def test_url_extension_is_kept_when_content_type_differs(self):
+        saved = self.download("https://example.com/photo.jpg?format=webp", "image/webp")
+        self.assertEqual(saved.suffix, ".jpg")
+        saved.unlink()
+        saved = self.download("https://example.com/PHOTO.JPEG", "image/png")
+        self.assertTrue(saved.name.endswith("_PHOTO.JPEG"))
+
+    def test_non_image_url_suffix_gets_the_image_extension(self):
+        for url, content_type, name in (
+                ("https://example.com/show.php?id=7", "image/png", "show.php.png"),
+                ("https://example.com/photo.jpg!small", "image/jpeg", "photo.jpg!small.jpg"),
+                ("https://example.com/v1.2/render.aspx", "image/webp", "render.aspx.webp")):
+            with self.subTest(url=url):
+                saved = self.download(url, content_type)
+                self.assertTrue(saved.name.startswith(name + "_"), saved.name)
+                self.assertTrue(saved.name.endswith("_" + name), saved.name)
+                saved.unlink()
+
+    def test_non_image_content_type_adds_no_extension(self):
+        for content_type in (None, "application/octet-stream", "text/html"):
+            with self.subTest(content_type=content_type):
+                saved = self.download("https://example.com/images/a1b2c3d4", content_type)
+                self.assertTrue(saved.name.endswith("_a1b2c3d4"))
+                saved.unlink()
+
+    def test_empty_path_fallback_name_uses_content_type(self):
+        saved = self.download("https://example.com/", "image/gif")
+        self.assertTrue(saved.name.startswith("image.gif_"))
+        self.assertEqual(saved.suffix, ".gif")
+
+    def test_long_filename_without_extension_keeps_added_extension(self):
+        saved = self.download("https://example.com/" + "a" * 300, "image/webp")
+        self.assertEqual(saved.suffix, ".webp")
+
+    def test_data_url_uses_its_image_type(self):
+        encoded = base64.b64encode(PNG).decode("ascii")
+        for media_type, suffix in (("image/jpeg", ".jpg"), ("image/png", ".png"),
+                                   ("image/webp", ".webp"), ("image/x-unknown", ".png")):
+            with self.subTest(media_type=media_type), tempfile.TemporaryDirectory() as directory:
+                utils.download_image(self.browser, "data:{};base64,{}".format(media_type, encoded),
+                                     directory)
+                files = list(Path(directory).iterdir())
+                self.assertEqual(len(files), 1)
+                self.assertEqual(files[0].suffix, suffix)
+                self.assertEqual(files[0].read_bytes(), PNG)
+
+    def test_element_screenshot_without_url_extension_is_saved_as_png(self):
+        session = Mock()
+        session.get.return_value = SimpleNamespace(
+            status_code=403, content=b"forbidden",
+            headers=utils.requests.structures.CaseInsensitiveDict({"Content-Type": "text/html"}))
+        self.browser.browser.execute_script.return_value = None
+        element = Mock()
+        element.screenshot.side_effect = lambda path: Path(path).write_bytes(PNG)
+        with patch.object(utils.requests, "session", return_value=session):
+            utils.download_image(self.browser, "https://example.com/images/a1b2c3d4",
+                                 self.directory.name, element)
+        element.screenshot.assert_called_once()
+        files = list(self.output.iterdir())
+        self.assertEqual(len(files), 1)
+        self.assertTrue(files[0].name.startswith("a1b2c3d4.png_"))
+        self.assertEqual(files[0].suffix, ".png")
+
     def test_repeated_downloads_remain_unique(self):
         session = Mock()
-        session.get.return_value = SimpleNamespace(status_code=200, content=PNG)
+        session.get.return_value = SimpleNamespace(
+            status_code=200, content=PNG,
+            headers=utils.requests.structures.CaseInsensitiveDict({"Content-Type": "image/jpeg"}))
         with patch.object(utils.requests, "session", return_value=session):
             for _ in range(2):
                 utils.download_image(self.browser, "https://example.com/photo.jpg", self.directory.name)
@@ -165,6 +244,34 @@ class DownloadImageTests(unittest.TestCase):
         self.assertEqual(len(files), 1, self.browser.print_and_log.call_args_list)
         self.assertEqual(files[0].read_bytes(), PNG)
         self.assertTrue(files[0].name.endswith(IMAGE_NAME.replace(":", "_")))
+
+    def test_issue_448_over_http_adds_extension_from_response(self):
+        class ImageHandler(BaseHTTPRequestHandler):
+            def do_GET(self):
+                self.send_response(200)
+                self.send_header("Content-Type", "image/png")
+                self.send_header("Content-Length", str(len(PNG)))
+                self.end_headers()
+                self.wfile.write(PNG)
+
+            def log_message(self, *args):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), ImageHandler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            url = "http://127.0.0.1:{}/thumb/8f3a2c?w=480".format(server.server_port)
+            utils.download_image(self.browser, url, self.directory.name)
+        finally:
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=5)
+        files = list(self.output.iterdir())
+        self.assertEqual(len(files), 1, self.browser.print_and_log.call_args_list)
+        self.assertEqual(files[0].read_bytes(), PNG)
+        self.assertTrue(files[0].name.startswith("8f3a2c.png_"))
+        self.assertEqual(files[0].suffix, ".png")
 
 
 if __name__ == "__main__":

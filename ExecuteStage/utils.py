@@ -202,8 +202,37 @@ def detect_optimizable(param, ignoreWaitElement=True, waitElement=""):
 
 
 
-def _image_file_name(url):
-    """Build a portable basename without changing the URL used for the request."""
+# File extensions for image media types, used when the URL has no image extension.
+IMAGE_EXTENSIONS = {
+    'image/avif': '.avif',
+    'image/bmp': '.bmp',
+    'image/gif': '.gif',
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/svg+xml': '.svg',
+    'image/tiff': '.tif',
+    'image/vnd.microsoft.icon': '.ico',
+    'image/webp': '.webp',
+    'image/x-icon': '.ico',
+}
+# Extensions that already mark a file name as an image.
+IMAGE_SUFFIXES = set(IMAGE_EXTENSIONS.values()) | {
+    '.apng', '.heic', '.heif', '.jfif', '.jpe', '.jpeg', '.jxl', '.svgz', '.tiff',
+}
+
+
+def _image_extension(media_type):
+    """Return the extension for an image media type, or '' if it is unknown."""
+    media_type = (media_type or '').split(';', 1)[0].strip().lower()
+    return IMAGE_EXTENSIONS.get(media_type, '')
+
+
+def _image_file_name(url, default_extension=''):
+    """Build a portable basename without changing the URL used for the request.
+
+    default_extension is added when the URL path does not end with an image
+    extension of its own.
+    """
     # Split before decoding so an encoded slash cannot create a subdirectory.
     file_name = unquote(urlsplit(url).path.rsplit('/', 1)[-1])
     file_name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', '_', file_name).rstrip(' .')
@@ -219,6 +248,9 @@ def _image_file_name(url):
     # Image extensions are short. Treat an excessively long suffix as the stem.
     if len(extension.encode('utf-8')) > 16:
         stem, extension = file_name, ''
+    if default_extension and extension.lower() not in IMAGE_SUFFIXES:
+        # For example "a1b2c3", "show.php" or "photo.jpg!small".
+        stem, extension = stem + extension, default_extension
     # The final name repeats this basename around a 36-character UUID. Limiting
     # each copy to 80 UTF-8 bytes keeps the whole component below 200 bytes,
     # leaving room for the directory on Windows and retaining the extension.
@@ -236,7 +268,8 @@ def download_image(browser, url, save_directory, element=None):
         base64_data = url.split(",")[1]
         image_data = base64.b64decode(base64_data)
         # 提取文件名
-        file_name = str(uuid.uuid4()) + '.png'
+        media_type = url[len("data:"):].split(",", 1)[0].split(";", 1)[0]
+        file_name = str(uuid.uuid4()) + (_image_extension(media_type) or '.png')
         # 构建保存路径
         save_path = os.path.join(save_directory, file_name)
         # 保存图片到本地
@@ -247,8 +280,22 @@ def download_image(browser, url, save_directory, element=None):
             "The image has been successfully downloaded to:", save_path)
     elif is_valid_url(url):
         try:
+            # 发送 GET 请求获取图片数据，加载浏览器的cookies
+            s = requests.session()
+            cookies = browser.browser.get_cookies()
+            for cookie in cookies:
+                s.cookies.set(cookie['name'], cookie['value'])
+            response = s.get(url, headers=headers)
+            # Many image URLs have no extension: use the type the server sent.
+            # If the request failed, the fallback below usually saves an
+            # element screenshot, which is a PNG.
+            if response.status_code == requests.codes.ok:
+                default_extension = _image_extension(response.headers.get('Content-Type'))
+            else:
+                default_extension = '.png'
+
             # 提取文件名
-            file_name = _image_file_name(url)
+            file_name = _image_file_name(url, default_extension)
 
             # 生成唯一的新文件名
             new_file_name = file_name + '_' + \
@@ -256,12 +303,6 @@ def download_image(browser, url, save_directory, element=None):
 
             # 构建保存路径
             save_path = os.path.join(save_directory, new_file_name)
-            # 发送 GET 请求获取图片数据，加载浏览器的cookies
-            s = requests.session()
-            cookies = browser.browser.get_cookies()
-            for cookie in cookies:
-                s.cookies.set(cookie['name'], cookie['value'])
-            response = s.get(url, headers=headers)
             # 检查响应状态码是否为成功状态
             if response.status_code == requests.codes.ok:
                 # 保存图片到本地
